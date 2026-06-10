@@ -1,11 +1,11 @@
 # [Per-unit Conventions](@id per_unit)
 
 It is often useful to express power systems data in relative terms using per-unit conventions.
-`PowerSystems.jl` supports the automatic conversion of data between three different unit systems:
+`PowerSystems.jl` supports conversion of data between three different unit systems:
 
- 1. `"NATURAL_UNITS"`: The naturally defined units of each parameter (typically MW).
- 2. `"SYSTEM_BASE"`: Parameter values are divided by the system `base_power`.
- 3. `"DEVICE_BASE"`: Parameter values are divided by the device `base_power`.
+ 1. `NU` (natural units): The naturally defined units of each parameter (typically MW).
+ 2. `SU` (system base): Parameter values are divided by the system `base_power`.
+ 3. `DU` (device base): Parameter values are divided by the device `base_power`.
 
 `PowerSystems.jl` supports these unit systems because different power system tools and data
 sets use different units systems by convention, such as:
@@ -15,39 +15,71 @@ sets use different units systems by convention, such as:
   - Production cost modeling data is often gathered from variety of data sources,
     which are typically defined in natural units
 
-These three unit bases allow easy conversion between unit systems.
-This allows `PowerSystems.jl` users to input data in the formats they have available,
-as well as view data in the unit system that is most intuitive to them.
+## Explicit units in accessors
 
-You can get and set the unit system setting of a `System` with [`get_units_base`](@ref) and
-[`set_units_base_system!`](@ref). To support a less stateful style of programming,
-`PowerSystems.jl` provides the `Logging.with_logger`-inspired "context manager"-type
-function [`with_units_base`](@ref), which sets the unit system to a particular value,
-performs some action, then automatically sets the unit system back to its previous value.
+As of PowerSystems 6, unit conversion is **explicit at every call site**: each unit-bearing
+accessor takes a units argument, and each setter takes a unit-tagged value. There is no
+system-wide mutable unit setting that changes what accessors return.
 
-Conversion between unit systems does not change
-the stored parameter values. Instead, unit system conversions are made when accessing
-parameters using the [accessor functions](@ref dot_access), thus making it
-imperative to utilize the accessor functions instead of the "dot" accessor methods to
-ensure the return of the correct values. The units of the parameter values stored in each
-struct are defined in `src/descriptors/power_system_structs.json`.
+```julia
+get_active_power(gen, SU)       # bare Float64, system-base per-unit
+get_active_power(gen, DU)       # bare Float64, device-base per-unit
+get_active_power(gen, NU)       # bare Float64, natural units (MW)
+get_active_power(gen, MW)       # bare Float64 in an explicit Unitful unit
+get_active_power_unitful(gen, SU)  # unit-bearing value (RelativeQuantity / Unitful.Quantity)
 
-There are some unit system conventions in `PowerSystems.jl` when defining new components.
-Currently, when you define components that aren't attached to a `System`,
-you must define all fields in `"DEVICE_BASE"`, except for certain components that don't
-have their own `base_power` rating, such as [`Line`](@ref)s, where the `rating` must be
-defined in `"SYSTEM_BASE"`.
+set_active_power!(gen, 0.9 * SU)    # values must carry their units
+set_active_power!(gen, 90.0 * MW)
+set_rating!(line, 1.2 * DU)
+set_x!(transformer, 105.8 * OHMS)   # impedance/admittance fields accept Ω / S
+```
 
-In the future, `PowerSystems.jl` hopes to support defining components in natural units.
-For now, if you want to define data in natural units, you must first
-set the system units to `"NATURAL_UNITS"`, define an empty component, and then use the
-[accessor functions](@ref dot_access) (e.g., getters and setters), to define each field
-within the component. The accessor functions will then do the data conversion from your
-input data in natural units (e.g., MW or MVA) to per-unit.
+Conversion between unit systems does not change the stored parameter values — storage is
+in device base (`DU`) for most fields. Conversions happen when accessing parameters
+through the accessor functions, making it imperative to use the accessors instead of "dot"
+field access. The units of the stored values for each struct are defined in
+`src/descriptors/power_system_structs.json`.
 
-By default, `PowerSystems.jl` uses `"SYSTEM_BASE"` because many optimization problems won't
-converge when using natural units. If you change the unit setting, it's suggested that you
-switch back to `"SYSTEM_BASE"` before solving an optimization problem (for example in
+Bare `Float64` arguments to converted setters are rejected with an `ArgumentError`: the
+caller must say what units the number is in (`val * SU`, `val * DU`, `val * MW`, …). The
+unit-tagged per-unit values are [`RelativeQuantity`](@ref)s, whose unit marker is carried
+in the type; mixing `DU`- and `SU`-tagged values in arithmetic or comparisons raises a
+clear error instead of producing a silently wrong number.
+
+## Migration guide: stateful → explicit units
+
+Code written against PowerSystems 5 used a mutable system-wide unit setting:
+
+| PowerSystems 5 (stateful)                                                       | PowerSystems 6 (explicit)                                                                       |
+|:------------------------------------------------------------------------------- |:----------------------------------------------------------------------------------------------- |
+| `set_units_base_system!(sys, "SYSTEM_BASE"); get_active_power(gen)`             | `get_active_power(gen, SU)`                                                                     |
+| `with_units_base(sys, UnitSystem.NATURAL_UNITS) do; get_active_power(gen); end` | `get_active_power(gen, NU)`                                                                     |
+| `set_active_power!(gen, 0.9)` (interpreted via system setting)                  | `set_active_power!(gen, 0.9 * SU)`                                                              |
+| `get_rating(line)`                                                              | `get_rating(line, SU)`                                                                          |
+| `scaling_factor_multiplier = get_max_active_power` (1-arg)                      | same name; the multiplier is invoked as `get_max_active_power(gen, units)` with `SU` by default |
+
+Notes:
+
+  - Time-series retrieval passes a units argument to two-argument scaling-factor
+    multipliers; the default for PowerSystems components is `SU`. One-argument multipliers
+    (custom closures) are still invoked with the owner only.
+  - The `UnitSystem` enum (`get_units_base`, `set_units_base_system!`,
+    `with_units_base`) is system metadata only (shown in the `System` summary); it does
+    not affect any conversion.
+  - `CostCurve`/`FuelCurve` take the marker instances (`NaturalUnit()`,
+    `SystemBaseUnit()`, `DeviceBaseUnit()`) for `power_units`.
+
+## Defining components
+
+When you define components that aren't attached to a `System`, field values are stored as
+given, in device base (`DU`), except for certain components that don't have their own
+`base_power` rating, such as [`Line`](@ref)s, where values are relative to the system base
+once attached. To define data in natural units, construct the component and then use the
+explicit-units setters (e.g. `set_active_power!(gen, 90.0 * MW)`); the accessor does the
+conversion to per-unit storage.
+
+By default, downstream optimization packages work in `SU` because many optimization
+problems won't converge when using natural units (for example in
 [`PowerSimulations.jl`](https://sienna-platform.github.io/PowerSimulations.jl/stable/)).
 
 !!! note
