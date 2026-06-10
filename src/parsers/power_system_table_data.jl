@@ -93,7 +93,7 @@ Reads in all the data stored in csv files in a `directory`
 
 # Arguments
 - `directory::AbstractString`: directory containing CSV files
-- `base_power::Float64`: base power for [`System`](@ref)
+- `base_power::Float64`: base power for the constructed [`System`](@ref)
 - `user_descriptor_file::AbstractString`: customized input descriptor file. [Example](https://github.com/Sienna-Platform/PowerSystemsTestData/blob/master/RTS_GMLC/user_descriptors.yaml)
 - `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: `PowerSystems.jl` descriptor file. [Default](https://github.com/Sienna-Platform/PowerSystems.jl/blob/main/src/descriptors/power_system_inputs.json)
 - `generator_mapping_file=GENERATOR_MAPPING_FILE_CDM`: generator mapping configuration file. [Default](https://github.com/Sienna-Platform/PowerSystems.jl/blob/main/src/parsers/generator_mapping_cdm.yaml)

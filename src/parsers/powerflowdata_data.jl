@@ -15,7 +15,7 @@ end
 Constructs a System from PowerModelsData.
 
 # Arguments
-- `pfd_data::Union{PowerFlowDataNetwork, Union{String, IO}}`: PowerModels data object or supported
+- `pfd_data::Union{`[`PowerFlowDataNetwork`](@ref)`, Union{String, IO}}`: PowerModels data object or supported
 load flow case (*.m, *.raw)
 
 # Keyword arguments

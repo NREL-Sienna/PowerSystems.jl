@@ -10,8 +10,8 @@ components that should be considered.
 # Arguments
 
   - `scope_limiter::Union{Function, Nothing}`: see [`ComponentSelector`](@ref)
-  - `selector::ComponentSelector`: the `ComponentSelector` whose components to retrieve
-  - `sys::System`: the system from which to draw components
+  - `selector::`[`ComponentSelector`](@ref): the `ComponentSelector` whose components to retrieve
+  - `sys::`[`System`](@ref): the system from which to draw components
 """
 get_components(
     scope_limiter::Union{Function, Nothing},
@@ -22,11 +22,6 @@ get_components(
 
 """
 Return the components of the [`System`](@ref) that make up the [`ComponentSelector`](@ref).
-
-# Arguments
-
-  - `selector::ComponentSelector`: the `ComponentSelector` whose components to retrieve
-  - `sys::System`: the system from which to draw components
 """
 get_components(selector::ComponentSelector, sys::System) =
     IS.get_components(selector, sys)
@@ -41,9 +36,9 @@ considered.
 # Arguments
 
   - `scope_limiter::Union{Function, Nothing}`: see [`ComponentSelector`](@ref)
-  - `selector::SingularComponentSelector`: the `SingularComponentSelector` whose component
-    to retrieve
-  - `sys::System`: the system from which to draw components
+  - `selector::`[`SingularComponentSelector`](@ref): the `SingularComponentSelector` whose
+    component to retrieve
+  - `sys::`[`System`](@ref): the system from which to draw components
 """
 get_component(
     scope_limiter::Union{Function, Nothing},
@@ -55,11 +50,6 @@ get_component(
 """
 Return the component of the [`System`](@ref) that makes up the
 [`SingularComponentSelector`](@ref); `nothing` if there is none.
-
-# Arguments
-
-  - `selector::SingularComponentSelector`: the `SingularComponentSelector` whose component to retrieve
-  - `sys::System`: the system from which to draw components
 """
 get_component(selector::SingularComponentSelector, sys::System) =
     IS.get_component(selector, sys)
@@ -122,8 +112,8 @@ considered.
 # Arguments
 
   - `scope_limiter::Union{Function, Nothing}`: see [`ComponentSelector`](@ref)
-  - `selector::ComponentSelector`: the `ComponentSelector` whose groups to retrieve
-  - `sys::System`: the system from which to draw components
+  - `selector::`[`ComponentSelector`](@ref): the `ComponentSelector` whose groups to retrieve
+  - `sys::`[`System`](@ref): the system from which to draw components
 """
 get_groups(
     scope_limiter::Union{Function, Nothing},
@@ -134,11 +124,6 @@ get_groups(
 
 """
 Return the groups that make up the [`ComponentSelector`](@ref).
-
-# Arguments
-
-  - `selector::ComponentSelector`: the `ComponentSelector` whose groups to retrieve
-  - `sys::System`: the system from which to draw components
 """
 get_groups(selector::ComponentSelector, sys::System) =
     IS.get_groups(selector, sys)

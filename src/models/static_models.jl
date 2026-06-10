@@ -18,7 +18,7 @@ abstract type StaticInjection <: Device end
 Return false since most devices do not support services by default.
 
 # Arguments
-- `device::Device`: The device.
+- `device::`[`Device`](@ref): The device.
 
 See also: [`supports_services` for `StaticInjection`](@ref supports_services(::StaticInjection)),
 [`supports_services` for `ACBranch`](@ref supports_services(::ACBranch)),
@@ -33,7 +33,7 @@ end
 Return true since static injection devices support services.
 
 # Arguments
-- `device::StaticInjection`: The device.
+- `device::`[`StaticInjection`](@ref): The device.
 
 See also: [`supports_services` for `Device`](@ref supports_services(::Device)),
 [`supports_services` for `ACBranch`](@ref supports_services(::ACBranch)),
@@ -50,7 +50,7 @@ Return the services attached to a device.
 Returns an empty vector for devices that do not support services.
 
 # Arguments
-- `device::Device`: The device.
+- `device::`[`Device`](@ref): The device.
 
 See also: [`add_service!`](@ref), [`remove_service!`](@ref), [`has_service`](@ref)
 """
@@ -68,7 +68,7 @@ Return the [`DynamicInjection`](@ref) component attached to this device,
 or `nothing` if none is attached.
 
 # Arguments
-- `d::StaticInjection`: The static injection device.
+- `d::`[`StaticInjection`](@ref): The static injection device.
 """
 get_dynamic_injector(d::StaticInjection) = nothing
 
@@ -78,7 +78,7 @@ Return the frequency droop of the device's [`DynamicInjection`](@ref) model.
 Throws `ArgumentError` if no dynamic injector is attached.
 
 # Arguments
-- `static_injector::StaticInjection`: The static injection device.
+- `static_injector::`[`StaticInjection`](@ref): The static injection device.
 
 See also: [`get_frequency_droop` for `DynamicGenerator`](@ref get_frequency_droop(::DynamicGenerator)),
 [`get_frequency_droop` for `DynamicInjection`](@ref get_frequency_droop(::V) where {V <: DynamicInjection})

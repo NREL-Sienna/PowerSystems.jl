@@ -5,7 +5,11 @@ const Generators = Array{<:Generator, 1}
 """ Supertype for all Hydropower generation technologies"""
 abstract type HydroGen <: Generator end
 
-""" Supertype for all Hydropower generation technologies that are represented as units (i.e. HydroTurbine and HydroPumpTurbine)"""
+"""
+Supertype for hydropower generation technologies represented as units.
+
+Subtypes include [`HydroTurbine`](@ref) and [`HydroPumpTurbine`](@ref).
+"""
 abstract type HydroUnit <: HydroGen end
 
 """

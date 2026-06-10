@@ -4,8 +4,8 @@ Set a single upstream turbine for a [`HydroReservoir`](@ref).
 This is a convenience wrapper around `set_upstream_turbines!` for the single-turbine case.
 
 # Arguments
-- `reservoir::HydroReservoir`: The hydro reservoir.
-- `turbine::HydroUnit`: The turbine to set as the upstream unit.
+- `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
+- `turbine::`[`HydroUnit`](@ref): The turbine to set as the upstream unit.
 
 See also: [`set_downstream_turbine!`](@ref), [`get_upstream_turbines`](@ref)
 """
@@ -20,8 +20,8 @@ Set a single downstream turbine for a [`HydroReservoir`](@ref).
 This is a convenience wrapper around `set_downstream_turbines!` for the single-turbine case.
 
 # Arguments
-- `reservoir::HydroReservoir`: The hydro reservoir.
-- `turbine::HydroUnit`: The turbine to set as the downstream unit.
+- `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
+- `turbine::`[`HydroUnit`](@ref): The turbine to set as the downstream unit.
 
 See also: [`set_upstream_turbine!`](@ref), [`get_downstream_turbines`](@ref)
 """

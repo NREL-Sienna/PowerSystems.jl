@@ -24,9 +24,6 @@ abstract type DynamicInjection <: Device end
 
 """
 Return an iterator of all [`DynamicComponent`](@ref) fields of a [`DynamicInjection`](@ref) device.
-
-# Arguments
-- `device::DynamicInjection`: The dynamic injection device.
 """
 function get_dynamic_components(device::T) where {T <: DynamicInjection}
     return (
@@ -55,9 +52,6 @@ Return the [`StateTypes`](@ref) for each state of a [`DynamicComponent`](@ref).
 
 The default implementation returns `StateTypes.Differential` for all states.
 Subtypes may override this method to specify different state types.
-
-# Arguments
-- `d::DynamicComponent`: The dynamic component.
 """
 function get_states_types(d::DynamicComponent)
     return fill(StateTypes.Differential, get_n_states(d))
@@ -67,9 +61,6 @@ end
 Return the frequency droop of a [`DynamicInjection`](@ref) device.
 
 Throws `ArgumentError` if not implemented for the specific subtype.
-
-# Arguments
-- `d::DynamicInjection`: The dynamic injection device.
 
 See also: [`get_frequency_droop` for `StaticInjection`](@ref get_frequency_droop(::StaticInjection)),
 [`get_frequency_droop` for `DynamicGenerator`](@ref get_frequency_droop(::DynamicGenerator))

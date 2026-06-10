@@ -42,8 +42,8 @@ Return an iterator of components of type `T` from a [`System`](@ref).
 Call `collect` on the result if an array is desired.
 
 # Arguments
-- `T`: The component type to retrieve. Can be concrete or abstract.
-- `sys::System`: The system to search.
+- `T`: The [`Component`](@ref) type to retrieve. Can be concrete or abstract.
+- `sys::`[`System`](@ref): The system to search.
 - `subsystem_name::Union{Nothing, String}`: (default: `nothing`) If provided, restrict
     results to the named subsystem.
 
@@ -71,11 +71,11 @@ get_components(::Type{T}, sys::System; subsystem_name = nothing) where {T <: Com
 Return a vector of components attached to the given supplemental attribute.
 
 # Arguments
-- `sys::System`: The system to search.
-- `attribute::SupplementalAttribute`: The supplemental attribute whose associated components
-    are returned.
+- `sys::`[`System`](@ref): The system to search.
+- `attribute::`[`SupplementalAttribute`](@ref): The supplemental attribute whose associated
+    components are returned.
 - `component_type::Union{Nothing, Type{<:Component}}`: (default: `nothing`) If provided,
-    only return components of this type. Can be concrete or abstract.
+    only return [`Component`](@ref)s of this type. Can be concrete or abstract.
 
 See also: [`get_associated_components(sys, attribute_type)`](@ref get_associated_components(
     sys::System,
@@ -107,11 +107,11 @@ Return a vector of components that have at least one supplemental attribute of
 `attribute_type` attached.
 
 # Arguments
-- `sys::System`: The system to search.
-- `attribute_type::Type{<:SupplementalAttribute}`: The supplemental attribute type to
-    filter by. Can be concrete or abstract.
+- `sys::`[`System`](@ref): The system to search.
+- `attribute_type::Type{<:SupplementalAttribute}`: The [`SupplementalAttribute`](@ref) type
+    to filter by. Can be concrete or abstract.
 - `component_type::Union{Nothing, Type{<:Component}}`: (default: `nothing`) If provided,
-    only return components of this type. Can be concrete or abstract.
+    only return [`Component`](@ref)s of this type. Can be concrete or abstract.
 
 See also: [`get_associated_components(sys, attribute)`](@ref get_associated_components(
     sys::System,
@@ -143,8 +143,8 @@ Call `collect` on the result if an array is desired.
 # Arguments
 - `filter_func::Function`: A single-argument function returning `true` for components to
     include.
-- `T`: The component type to retrieve. Can be concrete or abstract.
-- `sys::System`: The system to search.
+- `T`: The [`Component`](@ref) type to retrieve. Can be concrete or abstract.
+- `sys::`[`System`](@ref): The system to search.
 - `subsystem_name::Union{Nothing, String}`: (default: `nothing`) If provided, restrict
     results to the named subsystem.
 
@@ -177,7 +177,7 @@ get_components(
 Return the component with the given UUID, or `nothing` if not found.
 
 # Arguments
-- `sys::System`: The system to search.
+- `sys::`[`System`](@ref): The system to search.
 - `uuid::Union{Base.UUID, String}`: The UUID of the component.
 
 See also: [`get_component(T, sys, name)`](@ref get_component(
@@ -198,8 +198,8 @@ If `T` is an abstract type, names must be unique across all subtypes. Use
 [`get_components_by_name`](@ref) when names are not unique across subtypes.
 
 # Arguments
-- `T`: The component type to retrieve. Can be concrete or abstract.
-- `sys::System`: The system to search.
+- `T`: The [`Component`](@ref) type to retrieve. Can be concrete or abstract.
+- `sys::`[`System`](@ref): The system to search.
 - `name::AbstractString`: The name of the component.
 
 # Throws
@@ -224,8 +224,8 @@ is available when [`get_available`](@ref) returns `true`. Equivalent to
 Call `collect` on the result if an array is desired.
 
 # Arguments
-- `T`: The component type to retrieve. Can be concrete or abstract.
-- `sys::System`: The system to search.
+- `T`: The [`Component`](@ref) type to retrieve. Can be concrete or abstract.
+- `sys::`[`System`](@ref): The system to search.
 - `subsystem_name::Union{Nothing, String}`: (default: `nothing`) If provided, restrict
     results to the named subsystem.
 
@@ -255,9 +255,9 @@ Return an iterator of available components attached to a given supplemental attr
 A component is available when [`get_available`](@ref) returns `true`.
 
 # Arguments
-- `sys::System`: The system to search.
-- `attribute::SupplementalAttribute`: The supplemental attribute whose available associated
-    components are returned.
+- `sys::`[`System`](@ref): The system to search.
+- `attribute::`[`SupplementalAttribute`](@ref): The supplemental attribute whose available
+    associated components are returned.
 
 See also: [`get_associated_components`](@ref), [`get_available`](@ref)
 """
@@ -276,8 +276,8 @@ Call `collect` on the result if an array is desired.
 # Arguments
 - `filter_func::Function`: A single-argument function returning `true` for components to
     include.
-- `T`: The component type to retrieve. Can be concrete or abstract.
-- `sys::System`: The system to search.
+- `T`: The [`Component`](@ref) type to retrieve. Can be concrete or abstract.
+- `sys::`[`System`](@ref): The system to search.
 - `subsystem_name::Union{Nothing, String}`: (default: `nothing`) If provided, restrict
     results to the named subsystem.
 
@@ -309,7 +309,7 @@ Return the component with the given UUID if it is available, otherwise return `n
 A component is available when [`get_available`](@ref) returns `true`.
 
 # Arguments
-- `sys::System`: The system to search.
+- `sys::`[`System`](@ref): The system to search.
 - `uuid::Union{Base.UUID, String}`: The UUID of the component to retrieve.
 
 See also: [`get_component(sys, uuid)`](@ref get_component(sys::System, uuid::Base.UUID)),
@@ -328,8 +328,8 @@ Return the component of type `T` with the given name if it is available, otherwi
 If `T` is an abstract type, names must be unique across all subtypes.
 
 # Arguments
-- `T`: The component type to retrieve. Can be concrete or abstract.
-- `sys::System`: The system to search.
+- `T`: The [`Component`](@ref) type to retrieve. Can be concrete or abstract.
+- `sys::`[`System`](@ref): The system to search.
 - `name::AbstractString`: The name of the component.
 
 See also: [`get_component`](@ref), [`get_available`](@ref)

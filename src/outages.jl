@@ -13,7 +13,8 @@ accessors via multiple dispatch:
   post-contingency state should be modeled. The default
   [`get_monitored_components`](@ref) reads `value.monitored_components`; override
   it if your subtype does not carry the field directly.
-- `internal::InfrastructureSystemsInternal` — accessed via `get_internal`.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): accessed via
+  [`get_internal`](@ref).
 
 The default [`supports_time_series`](@ref) returns `true`; override for custom
 outage types that do not support time series.
@@ -133,8 +134,8 @@ vary over time and be attached as time series data.
 - `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency
     state should be modeled when this outage occurs. Empty by default; semantics of an
     empty set are decided by the downstream consumer.
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal
-    reference.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (**Do not
+    modify.**) PowerSystems.jl internal reference.
 
 # See Also
 - [`FixedForcedOutage`](@ref): Unplanned outage type with a fixed (deterministic) outage
@@ -160,8 +161,9 @@ Construct a [`GeometricDistributionForcedOutage`](@ref).
     failure; parameterizes the geometric distribution as `(1 - p)`.
 - `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref).
     Devices are converted to their UUIDs internally; duplicates are collapsed.
-- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`)
-    (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (default:
+    `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems.jl internal
+    reference.
 """
 function GeometricDistributionForcedOutage(;
     mean_time_to_recovery = 0.0,
@@ -198,8 +200,8 @@ a time series identified by the `outage_schedule` name string.
 - `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency
     state should be modeled when this outage occurs. Empty by default; semantics of an
     empty set are decided by the downstream consumer.
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal
-    reference.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (**Do not
+    modify.**) PowerSystems.jl internal reference.
 
 # See Also
 - [`GeometricDistributionForcedOutage`](@ref): Unplanned outage type with geometric
@@ -221,8 +223,9 @@ Construct a [`PlannedOutage`](@ref).
 - `outage_schedule::String`: Name of the time series containing the outage schedule.
 - `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref).
     Devices are converted to their UUIDs internally; duplicates are collapsed.
-- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`)
-    (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (default:
+    `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems.jl internal
+    reference.
 """
 function PlannedOutage(;
     outage_schedule,
@@ -255,8 +258,8 @@ and may vary over time via attached time series data.
 - `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency
     state should be modeled when this outage occurs. Empty by default; semantics of an
     empty set are decided by the downstream consumer.
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal
-    reference.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (**Do not
+    modify.**) PowerSystems.jl internal reference.
 
 # See Also
 - [`GeometricDistributionForcedOutage`](@ref): Unplanned outage type with geometric
@@ -279,8 +282,9 @@ Construct a [`FixedForcedOutage`](@ref).
     outaged (unavailable), `0.0` indicates available.
 - `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref).
     Devices are converted to their UUIDs internally; duplicates are collapsed.
-- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`)
-    (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (default:
+    `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems.jl internal
+    reference.
 """
 function FixedForcedOutage(;
     outage_status,

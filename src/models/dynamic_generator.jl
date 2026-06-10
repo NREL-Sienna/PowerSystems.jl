@@ -184,9 +184,6 @@ end
 """
 Return the frequency droop parameter from the prime mover of a [`DynamicGenerator`](@ref).
 
-# Arguments
-- `dyn_gen::DynamicGenerator`: The dynamic generator.
-
 See also: [`get_frequency_droop`](@ref get_frequency_droop(::V) where {V <: DynamicInjection})
 """
 function get_frequency_droop(dyn_gen::DynamicGenerator)

@@ -6,8 +6,8 @@ Passes `nothing` to remove an existing dynamic injector from the device. Throws
 is provided.
 
 # Arguments
-- `static_injector::StaticInjection`: The static injection device.
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: The dynamic injector to set,
+- `static_injector::`[`StaticInjection`](@ref): The static injection device.
+- `dynamic_injector::Union{Nothing,`[`DynamicInjection`](@ref)`}`: The dynamic injector to set,
   or `nothing` to remove it.
 
 See also: [`get_dynamic_injector`](@ref)

@@ -164,7 +164,7 @@ Throws `ArgumentError` if the hydro turbine is not attached to the reservoir.
 
 # Arguments
 - `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
-- `device::`[`HydroTurbine`](@ref): The turbine to remove.
+- `device::`[`HydroUnit`](@ref): The turbine to remove.
 
 See also: [`clear_turbines!`](@ref), [`has_upstream_turbine`](@ref), [`has_downstream_turbine`](@ref)
 """

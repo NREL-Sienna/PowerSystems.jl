@@ -69,7 +69,7 @@ end
 Checks the system for sum(generator ratings) >= sum(load ratings).
 
 # Arguments
-- `sys::System`: system
+- `sys::`[`System`](@ref): system
 """
 function adequacy_check(sys::System)
     gen = total_capacity_rating(sys)
@@ -84,7 +84,7 @@ end
 Sum of load ratings.
 
 # Arguments
-- `sys::System`: system
+- `sys::`[`System`](@ref): system
 """
 function total_load_rating(sys::System)
     # Assumes system is in system base
@@ -110,7 +110,7 @@ end
 Sum of system generator and storage ratings.
 
 # Arguments
-- `sys::System`: system
+- `sys::`[`System`](@ref): system
 """
 function total_capacity_rating(sys::System)
     total = 0

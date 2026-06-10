@@ -23,11 +23,11 @@ function PowerModelsData(file::Union{String, IO}; kwargs...)
 end
 
 """
-Constructs a System from PowerModelsData.
+Constructs a [`System`](@ref) from [`PowerModelsData`](@ref).
 
 # Arguments
-- `pm_data::Union{PowerModelsData, Union{String, IO}}`: PowerModels data object or supported
-load flow case (*.m, *.raw)
+- `pm_data::Union{PowerModelsData, Union{String, IO}}`: [`PowerModelsData`](@ref) object or
+    supported load-flow case (*.m, *.raw)
 
 # Keyword arguments
 - `ext::Dict`: Contains user-defined parameters. Should only contain standard types.

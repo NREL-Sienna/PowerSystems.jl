@@ -84,7 +84,7 @@ end
 Return the "from" [`ACBus`](@ref) of the branch.
 
 # Arguments
-- `b::Branch`: The branch.
+- `b::`[`Branch`](@ref): The branch.
 
 See also: [`get_to_bus`](@ref), [`get_arc`](@ref)
 """
@@ -94,7 +94,7 @@ get_from_bus(b::Branch) = b.arc.from
 Return the "to" [`ACBus`](@ref) of the branch.
 
 # Arguments
-- `b::Branch`: The branch.
+- `b::`[`Branch`](@ref): The branch.
 
 See also: [`get_from_bus`](@ref), [`get_arc`](@ref)
 """

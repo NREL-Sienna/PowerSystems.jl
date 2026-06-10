@@ -70,7 +70,7 @@ highlight the types most relevant to `PowerSystems.jl` users:
         services from devices reflects the fact that a service is a requirement that
         *devices contribute to*, rather than a physical component itself.
 
-  - [`DeviceParameter`](@extref InfrastructureSystems.DeviceParameter): [`struct`](@ref S)s that carry data describing
+  - [`InfrastructureSystems.DeviceParameter`](@extref): [`struct`](@ref S)s that carry data describing
     the dynamic or economic characteristics of a [`Device`](@ref), such as cost function curves or
     dynamic machine parameters. Decoupling these from the device [`struct`](@ref S) itself allows the
     same physical device to carry different parameter sets depending on the modeling
