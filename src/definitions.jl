@@ -6,8 +6,6 @@ const TurbinePump = NamedTuple{(:turbine, :pump), Tuple{Float64, Float64}}
 # Exception to CamelCase convention for aliases due to confusssing reading of FromToToFrom
 const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 """
-    StartUpStages
-
 `NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}` representing the start-up costs (\$)
 for a multi-start thermal generator at each temperature stage:
 
@@ -28,8 +26,6 @@ single_start_up_to_stages(start_up::Real) =
 
 IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
 @doc"
-    GeneratorCostModels
-
 Enumeration representing different cost models for generators in power system analysis.
 
 | Value               | Description                           |
@@ -637,8 +633,6 @@ IS.@scoped_enum(
     Other = 5,
 )
 @doc"
-    CombinedCycleConfiguration
-
 Enumeration describing the physical layout of a combined cycle power plant.
 
 | Value                           | Description                                                          |

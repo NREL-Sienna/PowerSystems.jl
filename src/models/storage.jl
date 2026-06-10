@@ -1,6 +1,4 @@
 """
-    Storage
-
 Abstract supertype for energy storage technologies.
 
 Storage devices can both inject and absorb power from the grid. Concrete subtypes

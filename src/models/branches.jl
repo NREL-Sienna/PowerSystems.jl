@@ -1,6 +1,4 @@
 """
-    Branch
-
 Supertype for all transmission branches in a power system.
 
 Concrete subtypes include [`AreaInterchange`](@ref). Abstract subtypes include
@@ -11,8 +9,6 @@ See also: [`Device`](@ref), [`ACBranch`](@ref), [`DCBranch`](@ref)
 abstract type Branch <: Device end
 
 """
-    ACBranch
-
 Supertype for all AC branches connecting AC nodes ([`ACBus`](@ref)) or Areas.
 
 Abstract subtypes include [`ACTransmission`](@ref) (AC transmission lines and transformers)
@@ -23,8 +19,6 @@ See also: [`Branch`](@ref), [`DCBranch`](@ref), [`ACTransmission`](@ref), [`TwoT
 abstract type ACBranch <: Branch end
 
 """
-    ACTransmission
-
 Supertype for all AC transmission devices connecting AC nodes only.
 
 Concrete subtypes include [`Line`](@ref), [`MonitoredLine`](@ref), and
@@ -36,8 +30,6 @@ See also: [`ACBranch`](@ref), [`TwoWindingTransformer`](@ref), [`ThreeWindingTra
 abstract type ACTransmission <: ACBranch end
 
 """
-    TwoWindingTransformer
-
 Supertype for all two-winding transformer types.
 
 Concrete subtypes include [`Transformer2W`](@ref), [`TapTransformer`](@ref), and
@@ -48,8 +40,6 @@ See also: [`ACTransmission`](@ref), [`ThreeWindingTransformer`](@ref)
 abstract type TwoWindingTransformer <: ACTransmission end
 
 """
-    ThreeWindingTransformer
-
 Supertype for all three-winding transformer types.
 
 Concrete subtypes include [`Transformer3W`](@ref) and [`PhaseShiftingTransformer3W`](@ref).
@@ -59,8 +49,6 @@ See also: [`ACTransmission`](@ref), [`TwoWindingTransformer`](@ref)
 abstract type ThreeWindingTransformer <: ACTransmission end
 
 """
-    TwoTerminalHVDC
-
 Supertype for all two-terminal HVDC transmission devices between AC buses.
 
 Not to be confused with [`DCBranch`](@ref), which connects DC nodes. Concrete subtypes
@@ -72,8 +60,6 @@ See also: [`ACBranch`](@ref), [`DCBranch`](@ref)
 abstract type TwoTerminalHVDC <: ACBranch end
 
 """
-    DCBranch
-
 Supertype for all DC branches connecting DC nodes ([`DCBus`](@ref)) only.
 
 Concrete subtypes include [`TModelHVDCLine`](@ref).

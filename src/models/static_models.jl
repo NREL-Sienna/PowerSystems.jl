@@ -1,6 +1,4 @@
 """
-    StaticInjection
-
 Abstract type for devices that [inject](@ref I) power or current.
 
 A [static](@ref S) injection is a steady state injection, such as modeling

@@ -1,6 +1,4 @@
 """
-    ElectricLoad
-
 Supertype for all electric loads.
 
 Electric loads consume power from the grid. Abstract subtypes include
@@ -13,8 +11,6 @@ See also: [`StaticInjection`](@ref), [`StaticLoad`](@ref), [`ControllableLoad`](
 abstract type ElectricLoad <: StaticInjection end
 
 """
-    StaticLoad
-
 Supertype for all static electric loads.
 
 Static loads have fixed consumption that cannot be controlled or curtailed. Concrete
@@ -26,8 +22,6 @@ See also: [`ElectricLoad`](@ref), [`ControllableLoad`](@ref)
 abstract type StaticLoad <: ElectricLoad end
 
 """
-    ControllableLoad
-
 Supertype for all controllable electric loads.
 
 Controllable loads can have their consumption adjusted in response to system conditions

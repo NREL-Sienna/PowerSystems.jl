@@ -1,6 +1,4 @@
 """
-    Topology
-
 Abstract supertype for network topology elements.
 
 Subtypes: [`AggregationTopology`](@ref) (e.g., [`Area`](@ref), [`LoadZone`](@ref)),
@@ -9,8 +7,6 @@ Subtypes: [`AggregationTopology`](@ref) (e.g., [`Area`](@ref), [`LoadZone`](@ref
 abstract type Topology <: Component end
 
 """
-    AggregationTopology
-
 Abstract supertype for geographical or electrical aggregation regions.
 
 Subtypes: [`Area`](@ref), [`LoadZone`](@ref)
@@ -27,8 +23,6 @@ Override this method for specific custom aggregation topology types that do not 
 supports_time_series(::AggregationTopology) = true
 
 """
-    Bus
-
 Abstract supertype for all bus types in a power system network.
 
 Subtypes: [`ACBus`](@ref), [`DCBus`](@ref)

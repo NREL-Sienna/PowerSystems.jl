@@ -1,6 +1,4 @@
 """
-    DynamicBranch
-
 Extends an [`ACTransmission`](@ref) branch with the information required for dynamic modeling.
 
 # Arguments

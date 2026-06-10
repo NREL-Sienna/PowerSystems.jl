@@ -1,6 +1,4 @@
 """
-    Contingency
-
 Supertype for contingency events that can be attached to components as supplemental
 attributes.
 

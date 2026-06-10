@@ -1,6 +1,4 @@
 """
-    Service
-
 Abstract supertype for all system services (ancillary services).
 
 Services represent additional requirements and support to ensure reliable electricity

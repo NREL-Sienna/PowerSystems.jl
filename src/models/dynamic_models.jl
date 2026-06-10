@@ -1,6 +1,4 @@
 """
-    DynamicComponent
-
 Abstract type for all sub-components used to compose a [`DynamicInjection`](@ref) device.
 
 Examples include machine models ([`BaseMachine`](@ref)), AVR models ([`AVRFixed`](@ref)),
@@ -11,8 +9,6 @@ See also: [`DynamicInjection`](@ref)
 abstract type DynamicComponent <: DeviceParameter end
 
 """
-    DynamicInjection
-
 Abstract type for all [Dynamic Devices](@ref dynamic_data).
 
 A [dynamic](@ref D) [injection](@ref I) is the continuous time response of a generator,

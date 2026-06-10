@@ -1,6 +1,4 @@
 """
-    Outage
-
 Supertype for outage contingencies representing planned or unplanned equipment outages.
 
 Concrete subtypes include [`GeometricDistributionForcedOutage`](@ref),
@@ -23,8 +21,6 @@ outage types that do not support time series.
 abstract type Outage <: Contingency end
 
 """
-    UnplannedOutage
-
 Abstract supertype for unplanned (forced) outage events.
 
 See also: [`Outage`](@ref), [`GeometricDistributionForcedOutage`](@ref), [`FixedForcedOutage`](@ref)

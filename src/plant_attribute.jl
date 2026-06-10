@@ -1,6 +1,4 @@
 """
-    PowerPlant
-
 Supertype for power plant supplemental attributes that group generating units.
 
 Concrete subtypes include [`ThermalPowerPlant`](@ref), [`HydroPowerPlant`](@ref),

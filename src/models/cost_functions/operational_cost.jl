@@ -1,6 +1,4 @@
 """
-    OperationalCost
-
 Abstract supertype for all operational cost representations.
 
 Concrete subtypes:
