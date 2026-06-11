@@ -408,7 +408,6 @@ function set_units_setting!(value::HybridSystem, settings::Union{SystemUnitsSett
     end
     return
 end
-end
 
 """
 Return an iterator over the subcomponents in the HybridSystem.
