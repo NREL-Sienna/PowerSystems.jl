@@ -7,8 +7,9 @@
 # see [Time Series Data](@ref ts_data).
 
 # ## Example Data and Setup
-# We will make an example [`System`](@ref) with a wind generator and two loads, and
-# add the time series needed to model, for example, the impacts of wind forecast uncertainty.
+# We will make an example [`System`](@ref) with a wind generator, a gas [`ThermalStandard`](@ref),
+# and two loads, then add the time series needed to model, for example, wind forecast
+# uncertainty, time-varying fuel prices, and a planned generator outage.
 # Here is the available data:
 # ```@raw html
 # <img src="../../assets/time_series_tutorial.png" width="100%"/>
@@ -17,6 +18,9 @@
 # output. The forecasts were generated every 30 minutes with a 5-minute [resolution](@ref R)
 # and 1-hour [horizon](@ref H). We also have
 # measurements of what actually happened at 5-minute resolution over the 2 hours.
+# For the gas generator, we have natural-gas fuel prices ($/GJ) at 5-minute resolution (for illustrative purposes only) over
+# the same 2-hour window. Later we will add a planned-outage schedule that takes the unit
+# out of service during the second hour.
 # For the loads, note that the forecast data is missing. We only have the historical
 # measurements of total load for the system, which is normalized to the system's peak load.
 # Load the `PowerSystems`, `Dates`, and `TimeSeries` packages to get started:
@@ -26,7 +30,8 @@ using Dates
 using TimeSeries
 
 # As usual, we need to define a power [`System`](@ref) that holds all our data. Let's define
-# a simple system with a bus, a wind generator, and two loads:
+# a simple system with a bus, a wind generator, a gas thermal unit with a time-invariant
+# cost (see [Adding an Operating Cost](@ref cost_how_to)), and two loads:
 
 system = System(100.0); # 100 MVA base power
 bus1 = ACBus(;
@@ -72,57 +77,117 @@ load2 = PowerLoad(;
     max_active_power = 1.0, # 30 MW per-unitized by device base_power
     max_reactive_power = 0.0,
 );
-add_components!(system, [bus1, wind1, load1, load2])
+heat_rate_curve = PiecewisePointCurve([
+    (5.0, 7.0),
+    (15.0, 8.0),
+    (25.0, 9.0),
+])
+fuel_curve = FuelCurve(; value_curve = heat_rate_curve, fuel_cost = 5.0)
+thermal_cost = ThermalGenerationCost(;
+    variable = fuel_curve,
+    fixed = 0.0,
+    start_up = 0.0,
+    shut_down = 0.0,
+)
+gas1 = ThermalStandard(;
+    name = "gas1",
+    available = true,
+    status = true,
+    bus = bus1,
+    active_power = 0.0,
+    reactive_power = 0.0,
+    rating = 1.0,
+    active_power_limits = (min = 0.2, max = 1.0),
+    reactive_power_limits = nothing,
+    ramp_limits = (up = 0.2, down = 0.2),
+    operation_cost = thermal_cost,
+    base_power = 25.0,
+    time_limits = (up = 1.0, down = 1.0),
+    must_run = false,
+    prime_mover_type = PrimeMovers.CC,
+    fuel = ThermalFuels.NATURAL_GAS,
+)
+add_components!(system, [bus1, wind1, gas1, load1, load2])
 
 # Recall that we can also set the [`System`](@ref)'s unit base to natural units (MW)
 # to make it easier to inspect results:
 
 set_units_base_system!(system, "NATURAL_UNITS")
 
-# Before we get started, print `wind1` to see its data:
-
-wind1
-
-# See the `has_time_series` field at the bottom is `false`.
-# Recall that we also can see a summary of the system by printing it:
+# Before we get started, recall that we also can see a summary of the system by printing it:
 
 system
 
 # Observe that there is no mention of time series data in the system yet.
 # # Add and Retrieve a Single Time Series
-# Let's start by defining and attaching the wind measurements shown in the data above.
-# This is a single time series profile, so we will use a [`SingleTimeSeries`](@ref).
-# First, define a `TimeSeries.TimeArray` of input data, using the 5-minute
-# [resolution](@ref R) to define the time-stamps in the example data:
 
-wind_values = [6.0, 7, 7, 6, 7, 9, 9, 9, 8, 8, 7, 6, 5, 5, 5, 5, 5, 6, 6, 6, 7, 6, 7, 7];
-resolution = Dates.Minute(5);
-timestamps = range(DateTime("2020-01-01T08:00:00"); step = resolution, length = 24);
-wind_timearray = TimeArray(timestamps, wind_values);
+# Define shared time stamps with 5-minute
+# [resolution](@ref R) for the 2-hour window, which will be reused across our time series:
 
-# Now, use the input data to define a Single Time Series in PowerSystems:
+resolution = Dates.Minute(5)
+timestamps = range(DateTime("2020-01-01T08:00:00"); step = resolution, length = 24)
 
+# ### Fuel cost (cost-specific API)
+# Start with fuel prices for `gas1`. Build the [`SingleTimeSeries`](@ref) using
+# a `TimeSeries.TimeArray` of input data:
+
+fuel_cost_values = [
+    4.5, 4.6, 4.7, 4.8, 5.0, 5.2, 5.5, 5.8, 6.0, 6.2, 6.5, 6.8,
+    7.0, 7.0, 6.8, 6.5, 6.2, 6.0, 5.8, 5.5, 5.2, 5.0, 4.8, 4.6,
+]
+fuel_cost_timearray = TimeArray(timestamps, fuel_cost_values)
+fuel_cost_ts = SingleTimeSeries(; name = "gas_price", data = fuel_cost_timearray)
+
+# !!! tip
+#     This 2-hour window illustrates the API. Production cost models typically use longer
+#     horizons (for example, hourly fuel prices over a full day).
+
+# So far, this time series has been defined, but not attached to our [`System`](@ref) in any way.
+# Attach with [`set_fuel_cost!`](@ref) because `gas1` uses a [`FuelCurve`](@ref) in its
+# [`ThermalGenerationCost`](@ref):
+
+set_fuel_cost!(system, gas1, fuel_cost_ts)
+
+# Notice that `fuel_cost` now points to a key with the same name we defined above: "gas_price".
+
+# Retrieve the profile with [`get_fuel_cost`](@ref) (values are in \$/GJ; multiply by the heat rate for \$/MWh):
+
+get_fuel_cost(gas1; start_time = DateTime("2020-01-01T08:00:00"))
+
+# ### Wind measurements (component-field API)
+# A single time-varying profile is always built the same way. What differs is *where* and
+# *how* you attach the data. We just attached one to a cost structure, and now we'll attach
+# one to a component field.
+
+# First, print `wind1` to see its data:
+
+wind1
+
+# See the `has_time_series` field at the bottom is `false`.
+# Now, use same construction pattern above to define the wind output measurements:
+
+wind_values = [6.0, 7, 7, 6, 7, 9, 9, 9, 8, 8, 7, 6, 5, 5, 5, 5, 5, 6, 6, 6, 7, 6, 7, 7]
+wind_timearray = TimeArray(timestamps, wind_values)
 wind_time_series = SingleTimeSeries(;
     name = "max_active_power",
     data = wind_timearray,
-);
+)
 
 # Note that we've chosen the name `max_active_power`, which is the default time series profile
 # name when using
 # [PowerSimulations.jl](https://sienna-platform.github.io/PowerSimulations.jl/stable/formulation_library/RenewableGen/)
 # for simulations.
-# So far, this time series has been defined, but not attached to our [`System`](@ref) in any way. Now,
-# attach it to `wind1` using [`add_time_series!`](@ref add_time_series!(sys::System, component::Component, time_series::TimeSeriesData; features...)):
+# Attach to `wind1` with [`add_time_series!`](@ref add_time_series!(sys::System, component::Component, time_series::TimeSeriesData; features...)):
 
-add_time_series!(system, wind1, wind_time_series);
+add_time_series!(system, wind1, wind_time_series)
 
 # Let's double-check this worked by calling [`show_time_series`](@ref):
 
 show_time_series(wind1)
 
-# Now `wind1` has the first time-series data set. Recall that you can also print `wind1` and
+# Now `wind1` has its first time-series data set. Recall that you can also print `wind1` and
 # check the `has_time_series` field like we did above.
-# Finally, let's retrieve and inspect the new timeseries, using `get_time_series_array`:
+# Finally, let's retrieve and inspect the new timeseries, using [`get_time_series_array`](@ref get_time_series_array(time_series_type::Type{<:TimeSeriesData}, component::Component, time_series_name::String; kwargs...)):
 
 get_time_series_array(SingleTimeSeries, wind1, "max_active_power")
 
@@ -333,6 +398,33 @@ get_forecast_horizon(system)
 
 get_forecast_interval(system)
 
+# # Add Time Series to Supplemental Attributes
+# So far, we attached time series to **component fields** (`wind1`, loads) or **cost data**.
+# Now we'll attach time series to a [`SupplementalAttribute`](@ref), which is
+# contextual metadata linked to components but stored outside their electrical definitions.
+
+# Here we add a [`PlannedOutage`](@ref) schedule on `gas1`. Create the attribute and attach it
+# to the generator with [`add_supplemental_attribute!`](@ref add_supplemental_attribute!(sys::System, component::Component, attribute::IS.SupplementalAttribute)):
+
+planned = PlannedOutage(; outage_schedule = "outage_schedule")
+add_supplemental_attribute!(system, gas1, planned)
+
+# Now we can attach the time series to the **outage attribute** (not to `gas1`) with
+# [`add_time_series!`](@ref add_time_series!(sys::System, component::Component, time_series::TimeSeriesData; features...)):
+
+outage_values = vcat(zeros(12), ones(12))  # in service first hour, outaged second hour
+outage_timearray = TimeArray(timestamps, outage_values)
+outage_ts = SingleTimeSeries(; name = "outage_schedule", data = outage_timearray)
+add_time_series!(system, planned, outage_ts)
+
+# Retrieve from the outage attribute with [`get_time_series_array`](@ref get_time_series_array(time_series_type::Type{<:TimeSeriesData}, component::Component, time_series_name::String; kwargs...)) -- 
+# values are `0.0` (in service) or `1.0` (outaged):
+
+get_time_series_array(SingleTimeSeries, planned, "outage_schedule")
+
+# See [Supplemental attributes](@ref supplemental_attributes_explanation) and
+# [Manipulating Data Sets](@ref "Manipulating Datasets") for general attach and query patterns.
+
 # # Finding, Retrieving, and Inspecting Time Series
 # Now, let's complete this tutorial by doing a few sanity checks on the data that we've added,
 # where are we will also examine components with time series and retrieve
@@ -345,7 +437,7 @@ load1
 
 system
 
-# Notice that a new table has been added -- the Time Series Summary, showing the count of
+# Notice that new tables have been added, showing the count of
 # each Type of component that has a given time series type.
 # Notice that the [`RenewableDispatch`](@ref) generator (`wind1`) only has its [`Deterministic`](@ref) forecast
 # and no [`DeterministicSingleTimeSeries`](@ref). This is because we removed the wind's [`SingleTimeSeries`](@ref)
@@ -438,13 +530,13 @@ sts = get_time_series(SingleTimeSeries, load1, "max_active_power")
 get_resolution(sts)
 
 # # Next Steps
-# In this tutorial, you defined, added, and retrieved four time series data
-# sets, including static time series and deterministic forecasts. Along the way, we
-# reduced data duplication using normalized scaling factors for reuse by multiple components
-# or component fields, as well as by referencing a [`StaticTimeSeries`](@ref) to address missing
-# forecast data.
+# In this tutorial, you defined, added, and retrieved time series on component fields,
+# cost data, and supplemental attributes, including deterministic forecasts. Along the way,
+# we reduced data duplication using normalized scaling factors and
+# [`transform_single_time_series!`](@ref) to address missing load forecast data.
 # Next you might like to:
 #   - [Parse many timeseries data sets from CSV's](@ref parsing_time_series)
 #   - [See how to improve performance efficiency with your own time series data](@ref improve_ts_performance)
 #   - [Review the available time series data formats](@ref ts_data)
 #   - [Learn more about how times series data is stored](@ref "Data Storage")
+#   - [Add Time Series Fuel Cost Data](@ref fuel_curve_timeseries) — fuel curves in depth

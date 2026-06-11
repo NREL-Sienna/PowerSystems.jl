@@ -184,6 +184,37 @@ get_available_components(ThermalStandard, sys)
 
 show_components(ThermalStandard, sys)
 
+# ## Add and Access Contextual Data with Supplemental Attributes
+# Not all modeling data belongs in component fields. Geographic location is an example of
+# contextual information stored as
+# [`SupplementalAttribute`](@ref)s, which can be shared across multiple components. 
+
+# Batch add a shared [`GeographicInfo`](@ref) attribute to the `Solitude` unit and its bus, using
+# [`begin_supplemental_attributes_update`](@ref) and [`add_supplemental_attribute!`](@ref):
+geo = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [-78.5, 38.0]))
+
+begin_supplemental_attributes_update(sys) do
+    add_supplemental_attribute!(sys, solitude, geo)
+    add_supplemental_attribute!(sys, get_bus(solitude), geo)
+end
+
+# List every component that shares this geographic information with [`get_associated_components`](@ref):
+
+get_associated_components(sys, geo)
+
+# See the many-to-many relationship where this latitude and longitude are linked to both the generator and its bus.
+
+# Query attributes on one component with [`get_supplemental_attributes`](@ref):
+
+get_supplemental_attributes(GeographicInfo, solitude)
+
+# Query all geographic attributes in the system with [`get_supplemental_attributes`](@ref):
+
+get_supplemental_attributes(GeographicInfo, sys)
+
+# Other supplemental types — plants, emissions, outages — follow the same attach and query
+# pattern with domain-specific fields. See how to [Group generators into plants](@ref group_generators_into_plants) and [Add emissions to generators](@ref add_emissions_to_generators) for more examples.
+
 # ## Getting Buses
 # We can retrieve the [`ACBus`](@ref) components using
 # [`get_buses`](@ref get_buses(sys::System, bus_numbers::Set{Int})),
@@ -254,4 +285,9 @@ get_name.(get_components(ThermalStandard, sys))
 # We used specific `get_*` functions and `set_*` functions to see and update the fields in
 # [`ThermalStandard`](@ref) and [`ACBus`](@ref) components, but remember that these getters
 # and setters are available for each data field for components of all Types in `PowerSystems.jl`.
-# Follow the next tutorials to learn more in the [Working with Time Series Data](@ref) tutorial.
+
+# Next you might like to:
+#   - Learn about [Supplemental attributes](@ref supplemental_attributes_explanation), contextual data layered on electrical models
+#   - Do the tutorial on [Working with Time Series](@ref "Working with Time Series Data") data
+#   - See how to [Group generators into plants](@ref group_generators_into_plants)
+#   - [Add emissions to generators](@ref add_emissions_to_generators)
