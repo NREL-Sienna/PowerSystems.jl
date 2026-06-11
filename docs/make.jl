@@ -215,7 +215,6 @@ makedocs(
     authors = "Jose Daniel Lara, Daniel Thom, Kate Doubleday, Rodrigo Henriquez-Auba, and Clayton Barrows",
     pages = Any[p for p in pages],
     draft = false,
-    warnonly = [:cross_references],
     plugins = [links, fallbacks],
 )
 
