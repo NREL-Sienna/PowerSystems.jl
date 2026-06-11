@@ -576,12 +576,6 @@ export get_P_ref
 export get_saturation_coeffs
 export get_units_base
 export get_runchecks
-export get_thermal_unit
-export get_electric_load
-export get_storage
-export get_renewable_unit
-export get_interconnection_rating
-export get_interconnection_impedance
 export get_from_to_flow_limit
 export get_to_from_flow_limit
 export get_min_active_power_flow_limit
@@ -924,7 +918,6 @@ include("models/cost_functions/HydroReservoirCost.jl")
 include("models/generated/includes.jl")
 include("models/cost_functions/ReserveDemandCurve.jl")
 include("models/cost_functions/ReserveDemandTimeSeriesCurve.jl")
-include("models/HybridSystem.jl")
 
 #Methods for devices
 include("models/components.jl")

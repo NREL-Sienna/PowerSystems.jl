@@ -464,3 +464,43 @@ function supports_voltage_control(d::SynchronousCondenser)
     bustype = get_bustype(get_bus(d))
     return bustype ∈ (ACBusTypes.PV, ACBusTypes.REF, ACBusTypes.SLACK)
 end
+
+function _get_components(value::HybridSystem)
+    components =
+        [value.thermal_unit, value.electric_load, value.storage, value.renewable_unit]
+    filter!(x -> !isnothing(x), components)
+    return components
+end
+
+function set_units_setting!(
+    value::HybridSystem,
+    settings::Union{SystemUnitsSettings, Nothing},
+)
+    set_units_info!(get_internal(value), settings)
+    for component in _get_components(value)
+        set_units_info!(get_internal(component), settings)
+    end
+    return
+end
+
+"""
+Return an iterator over the subcomponents in the HybridSystem.
+
+# Examples
+```julia
+for subcomponent in get_subcomponents(hybrid_sys)
+    @show subcomponent
+end
+subcomponents = collect(get_subcomponents(hybrid_sys))
+```
+"""
+function get_subcomponents(hybrid::HybridSystem)
+    return (
+        sc for sc in (
+            hybrid.thermal_unit,
+            hybrid.electric_load,
+            hybrid.storage,
+            hybrid.renewable_unit,
+        ) if sc !== nothing
+    )
+end

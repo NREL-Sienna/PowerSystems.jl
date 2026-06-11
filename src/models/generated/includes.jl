@@ -44,6 +44,7 @@ include("ThermalStandard.jl")
 include("SynchronousCondenser.jl")
 include("ThermalMultiStart.jl")
 include("EnergyReservoirStorage.jl")
+include("HybridSystem.jl")
 include("ConstantReserve.jl")
 include("ConstantReserveNonSpinning.jl")
 include("ConstantReserveGroup.jl")
@@ -578,6 +579,7 @@ export get_droop_flag
 export get_dynamic_injector
 export get_e_lim
 export get_efficiency
+export get_electric_load
 export get_eq_p
 export get_ext
 export get_f
@@ -616,6 +618,10 @@ export get_input_code
 export get_input_code_1
 export get_input_code_2
 export get_intake_elevation
+export get_interconnection_efficiency
+export get_interconnection_impedance
+export get_interconnection_rating
+export get_interconnection_rating_unitful
 export get_internal_angle
 export get_internal_angle_bias
 export get_internal_angle_coefficients
@@ -797,6 +803,7 @@ export get_reg
 export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
+export get_renewable_unit
 export get_requirement
 export get_requirement_unitful
 export get_reserves
@@ -818,6 +825,7 @@ export get_start_types
 export get_states
 export get_states_types
 export get_status
+export get_storage
 export get_storage_capacity
 export get_storage_capacity_unitful
 export get_storage_level_limits
@@ -834,6 +842,7 @@ export get_tertiary_star_arc
 export get_tertiary_turns_ratio
 export get_tfh
 export get_tfl
+export get_thermal_unit
 export get_time_at_status
 export get_time_frame
 export get_time_limits
@@ -1317,6 +1326,7 @@ export set_droop_flag!
 export set_dynamic_injector!
 export set_e_lim!
 export set_efficiency!
+export set_electric_load!
 export set_eq_p!
 export set_ext!
 export set_f!
@@ -1350,6 +1360,9 @@ export set_input_code!
 export set_input_code_1!
 export set_input_code_2!
 export set_intake_elevation!
+export set_interconnection_efficiency!
+export set_interconnection_impedance!
+export set_interconnection_rating!
 export set_internal_angle!
 export set_internal_angle_bias!
 export set_internal_angle_coefficients!
@@ -1491,6 +1504,7 @@ export set_reg!
 export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!
+export set_renewable_unit!
 export set_requirement!
 export set_reserves!
 export set_rf!
@@ -1511,6 +1525,7 @@ export set_start_types!
 export set_states!
 export set_states_types!
 export set_status!
+export set_storage!
 export set_storage_capacity!
 export set_storage_level_limits!
 export set_storage_target!
@@ -1526,6 +1541,7 @@ export set_tertiary_star_arc!
 export set_tertiary_turns_ratio!
 export set_tfh!
 export set_tfl!
+export set_thermal_unit!
 export set_time_at_status!
 export set_time_frame!
 export set_time_limits!

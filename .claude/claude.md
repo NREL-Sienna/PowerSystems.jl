@@ -43,11 +43,10 @@ Core component models and definitions:
 - `dynamic_generator.jl` -- dynamic generator models
 - `dynamic_inverter.jl` -- dynamic inverter models
 - `dynamic_loads.jl` -- dynamic load models
-- `HybridSystem.jl` -- hybrid renewable + storage systems
 - `serialization.jl` -- component serialization
 - `supplemental_constructors.jl` -- additional constructors
-- `supplemental_accessors.jl` -- getter methods
-- `supplemental_setters.jl` -- setter methods
+- `supplemental_accessors.jl` -- getter methods (incl. `HybridSystem` subcomponent accessors)
+- `supplemental_setters.jl` -- setter methods (incl. `HybridSystem` guarded subcomponent setters)
 - `generated/` -- auto-generated component type files (**DO NOT EDIT directly**)
 - `cost_functions/` -- operational cost types (ThermalGenerationCost, StorageCost, etc.)
 

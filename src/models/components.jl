@@ -22,45 +22,64 @@ get_base_voltage(c::ThreeWindingTransformer) = error(
     "get_base_voltage_primary/secondary/tertiary.",
 )
 
+# `base_power` is always stored and reported in natural units (MVA). It is the
+# anchor that every other field's per-unitization is defined against, so
+# expressing it in a per-unit base (`SU`/`DU`) is circular. Unlike every other
+# field accessor, `get_base_power`/`set_base_power!` therefore need *no* units
+# argument; an explicit one is accepted only when it denotes natural units —
+# `NU`, or a power-dimensioned `Unitful` unit such as `MW`/`MVA`.
+
 """
-Unit-aware `base_power` accessor returning a bare number. Unlike most field
-accessors, storage is in MVA (natural units), not device-base per-unit — so
-conversion is bespoke. For the unit-bearing value see [`get_base_power_unitful`](@ref).
+Get a component's `base_power` as a bare `Float64` in natural units (MVA).
+
+`get_base_power(c)` returns the stored MVA value. An optional units argument is
+accepted but must denote natural units: `NU`, or a power-dimensioned `Unitful`
+unit (e.g. `MW`, `MVA`). Per-unit bases (`SU`, `DU`) and non-power units error —
+`base_power` is only meaningful in absolute power. See
+[`get_base_power_unitful`](@ref) for the unit-bearing value.
 """
+get_base_power(c::Component) = _get_base_power(c)
 get_base_power(c::Component, u) = IS._strip_units(get_base_power_unitful(c, u))
 
 """
-Unit-aware `base_power` accessor returning a unit-bearing quantity. See
-[`get_base_power`](@ref) for a bare number.
+`base_power` as a unit-bearing quantity (MVA). See [`get_base_power`](@ref).
 """
+get_base_power_unitful(c::Component) = _get_base_power(c) * MVA
 get_base_power_unitful(c::Component, ::NaturalUnit) = _get_base_power(c) * MVA
+# Any power-dimensioned Unitful unit: `uconvert` does the scaling and throws a
+# `Unitful.DimensionError` for non-power units, so wrong units error for free.
 get_base_power_unitful(c::Component, u::Unitful.Units) =
     Unitful.uconvert(u, _get_base_power(c) * MVA)
-get_base_power_unitful(c::Component, ::SystemBaseUnit) =
-    (_get_base_power(c) / _get_system_base_power(c)) * SU
-get_base_power_unitful(c::Component, ::DeviceBaseUnit) = 1.0 * DU
+# Relative per-unit markers (`SU`, `DU`) are not natural units.
+get_base_power_unitful(::Component, u::AbstractRelativeUnit) =
+    _base_power_units_error(u)
 
 """
-Set `base_power` (stored as a bare MVA `Float64`).
+Set a component's `base_power` (stored as a bare MVA `Float64`).
 
-Accepts:
-- `Float64` — interpreted as MVA.
-- `Unitful.Quantity` of power — converted to MW.
-- [`RelativeQuantity`](@ref) in `SU` (system base) — multiplied by the system base.
-
-Setting in device base (`DU`) is rejected: device base is, by definition,
-`1.0 pu` of itself, so the value carries no information.
+Accepts a bare `Float64` (interpreted as MVA) or a power-dimensioned
+`Unitful.Quantity` (e.g. `80.0 * MW`, `90.0 * MVA`). Per-unit inputs (`SU`, `DU`)
+and non-power units error: `base_power` is only meaningful in absolute power.
 """
 set_base_power!(c::Component, val::Float64) = (c.base_power = val)
+# `ustrip(MVA, val)` converts power units and throws for non-power units.
 set_base_power!(c::Component, val::Unitful.Quantity) =
     (c.base_power = Unitful.ustrip(MVA, val))
-set_base_power!(c::Component, val::RelativeQuantity{<:Any, SystemBaseUnit}) =
-    (c.base_power = ustrip(val) * _get_system_base_power(c))
-set_base_power!(::Component, ::RelativeQuantity{<:Any, DeviceBaseUnit}) =
-    error(
-        "Setting base_power in device base (DU) is ambiguous: device base is " *
-        "1.0 pu of itself by construction. Pass MVA, MW, or SU instead.",
+set_base_power!(::Component, ::RelativeQuantity{<:Any, U}) where {U} =
+    _base_power_units_error(U())
+
+"""
+Reject any attempt to read/write `base_power` in non-natural units.
+"""
+function _base_power_units_error(u)
+    throw(
+        ArgumentError(
+            "base_power is always in natural units (MVA). Pass no units, `NU`, " *
+            "or a power-dimensioned Unitful unit such as `MW` or `MVA`; got `$u`. " *
+            "Per-unit bases (`SU`, `DU`) are not valid for base_power.",
+        ),
     )
+end
 
 IS.display_units_arg(::typeof(get_base_power), ::Type{<:Component}) = NU
 IS.display_units_arg(::typeof(get_base_power_unitful), ::Type{<:Component}) = NU
