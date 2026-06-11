@@ -227,62 +227,41 @@ get_bus(retrieved_component)
 #     calculations that the getter functions will properly handle for you, as you'll see
 #     below.
 
-# ## Changing [`System`](@ref) Per-Unit Settings
-# Now, let's use a getter function to look up the solar generator's `rating`:
+# ## Per-Unit Conversions with Explicit Units
+# Now, let's use a getter function to look up the solar generator's `rating`. As of
+# PowerSystems 6, every unit-bearing accessor takes an explicit `units` argument; there is no
+# system-wide setting that changes what getters return (see [Per-unit Conventions](@ref per_unit)).
+# Ask for the rating in **system base** (`SU`):
 
-get_rating(retrieved_component)
+get_rating(retrieved_component, SU)
 
 # !!! tip "Important"
-#     When we defined the solar generator, we defined the rating
-#     as 1.0 per-unit with a device `base_power` of 5.0 MVA. Notice that the rating now reads
-#     0.05. After we attached this component to our [`System`](@ref), its power data is being
-#     returned to us in the [`System`](@ref)'s units base.
-# Let's double-check the [`System`](@ref)'s units base:
-
-get_units_base(sys)
-
-# `SYSTEM_BASE` means all power-related (MW, MVA, MVAR, MW/min) component data in
-# the [`System`](@ref), except for each component's `base_power`, is per-unitized by the
-# system base power for consistency.
-# Check the [`System`](@ref)'s base_power again:
+#     We defined the solar generator with a rating of 1.0 per-unit on a device `base_power`
+#     of 5.0 MVA. In system base it reads 0.05 = (5 MVA) / (100 MVA): power-related data
+#     (MW, MVA, MVAR, MW/min) is per-unitized by the system's base power.
+# Check the [`System`](@ref)'s base power:
 
 get_base_power(sys)
 
-# Notice that when we called `get_rating` above, the solar generator's rating, 5.0 MW,
-# is being returned as 0.05 = (5 MVA)/(100 MVA) using the system base power.
-# Instead of using the [`System`](@ref) base power, let's view everything in MW or MVA -- or what we
-# call "NATURAL_UNITS" in PowerSystems.
-# Change the [`System`](@ref)'s unit system:
+# View the same rating in **natural units** (`NU`, i.e. MW / MVA):
 
-set_units_base_system!(sys, "NATURAL_UNITS")
+get_rating(retrieved_component, NU)
 
-# Now retrieve the solar generator's rating again:
+# The value is now its "natural" value, 5.0 MVA. Finally, in **device base** (`DU`):
 
-get_rating(retrieved_component)
+get_rating(retrieved_component, DU)
 
-# Notice that the value is now its "natural" value, 5.0 MVA.
-# Finally, let's change the [`System`](@ref)'s unit system to the final option, "DEVICE_BASE":
+# This reads 1.0 — 5.0 MVA per-unitized by the device's own `base_power` of 5.0 MVA, which is
+# the format we used to originally define the device.
+#
+# The legacy `UnitSystem` enum (`get_units_base`, `set_units_base_system!`, `with_units_base`)
+# still exists, but it is now **system metadata only**: it is shown in the `System` summary and
+# no longer changes what the accessors return.
 
-set_units_base_system!(sys, "DEVICE_BASE")
+get_units_base(sys)
 
-# And retrieve the solar generator's rating once more:
-
-get_rating(retrieved_component)
-
-# See that now the data is now 1.0 (5.0 MVA per-unitized by the generator (i.e., the device's)
-# `base_power` of 5.0 MVA), which is the format we used to originally define the device.
-# As a shortcut to temporarily set the [`System`](@ref)'s unit system to a particular value, perform
-# some action, and then automatically set it back to what it was before, we can use
-# `with_units_base` and a [`do` block](https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments):
-
-with_units_base(sys, "NATURAL_UNITS") do
-    ## Everything inside this block will run as if the unit system were NATURAL_UNITS
-    get_rating(retrieved_component)
-end
-get_units_base(sys)  # Unit system goes back to previous value when the block ends
-
-# Recall that if you ever need to check a [`System`](@ref)'s settings, including the unit system being
-# used by all the getter functions, you can always just print the [`System`](@ref):
+# Recall that you can always print the [`System`](@ref) to check its settings, including this
+# units-base metadata:
 
 sys
 

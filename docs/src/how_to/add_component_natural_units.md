@@ -6,32 +6,23 @@ using PowerSystemCaseBuilder #hide
 system = build_system(PSISystems, "modified_RTS_GMLC_DA_sys"); #hide
 ```
 
-`PowerSystems.jl` has [three per-unitization options](@ref per_unit) for getting, setting
-and displaying data.
+`PowerSystems.jl` has [three per-unitization options](@ref per_unit) for getting and setting
+data, selected explicitly at each call site by a units argument.
 
-Currently, only one of these options -- `"DEVICE_BASE"` -- is supported when using a
-constructor function define a component. You can see
-[an example of the default capabilities using `"DEVICE_BASE"` here](@ref "Adding Loads and Generators").
+Constructors define a component's numeric fields in **device base** (`DU`): bare numbers
+passed to a constructor are interpreted as per-unit on the device's own `base_power`. You can
+see [an example of defining a component this way here](@ref "Adding Loads and Generators").
 
-We hope to add capability to define components in
-`"NATURAL_UNITS"` with constructors in the future, but for now, below is a workaround
-for users who prefer to define data using `"NATURAL_UNITS"` (e.g., MW, MVA, MVAR, or MW/min):
+If you prefer to define data in **natural units** (e.g., MW, MVA, MVAR, or MW/min), pass
+unit-tagged values to the "setter" functions after constructing the component — the setters
+convert to the stored device-base representation for you. There is no longer a system-wide
+unit setting to toggle (see [Per-unit Conventions](@ref per_unit)).
 
-### Step 1: Set Units Base
-
-Set your (previously-defined) `System`'s units base to `"NATURAL_UNITS"`:
-
-```@repl add_in_nu
-set_units_base_system!(system, "NATURAL_UNITS")
-```
-
-Now, the "setter" functions have been switched to define data using natural units (MW, MVA,
-etc.), taking care of the necessary data conversions behind the scenes.
-
-### Step 2: Define Empty Component
+### Step 1: Define Empty Component
 
 Define an empty component with `0.0` or `nothing` for all the power-related fields except
-`base_power`, which is always in MVA.
+`base_power`, which is always in MVA. (Bare numbers in the constructor are device-base
+per-unit; here every power field starts at `0.0`.)
 
 For example:
 
@@ -56,7 +47,7 @@ gas1 = ThermalStandard(;
 );
 ```
 
-### Step 3: Attach the Component
+### Step 2: Attach the Component
 
 Attach the component to your `System`:
 
@@ -64,24 +55,26 @@ Attach the component to your `System`:
 add_component!(system, gas1)
 ```
 
-### Step 4: Add Data with "setter" Functions
+### Step 3: Add Data with "setter" Functions
 
-Use individual "setter" functions to set each the value of each numeric field in natural
-units:
+Use individual "setter" functions, passing **unit-tagged** natural-units values (`MW`,
+`Mvar`, etc.). The setters convert each value to device base behind the scenes:
 
 ```@repl add_in_nu
-set_rating!(gas1, 30.0) #MVA
-set_active_power_limits!(gas1, (min = 6.0, max = 30.0)) # MW
-set_reactive_power_limits!(gas1, (min = 6.0, max = 30.0)) # MVAR
-set_ramp_limits!(gas1, (up = 6.0, down = 6.0)) #MW/min
+set_rating!(gas1, 30.0 * MVA)
+set_active_power_limits!(gas1, (min = 6.0 * MW, max = 30.0 * MW))
+set_reactive_power_limits!(gas1, (min = 6.0 * Mvar, max = 30.0 * Mvar))
+set_ramp_limits!(gas1, (up = 6.0 * MW, down = 6.0 * MW)) # ramp limits per-unitize by base_power
 ```
 
-Notice the return values are divided by the `base_power` of 30 MW, showing the setters have
-done the per-unit conversion into `"DEVICE_BASE"` behind the scenes.
+A bare number (e.g. `set_rating!(gas1, 30.0)`) is rejected with an `ArgumentError`: setters
+require the value to carry its units. Reading the values back in device base
+(`get_rating(gas1, DU)`) shows them divided by the `base_power` of 30 MVA — the per-unit
+conversion the setters performed.
 
 !!! tip
 
-    Steps 2-4 can be called within a `for` loop to define many components at once (or step 3
+    Steps 1-3 can be called within a `for` loop to define many components at once (or step 2
     can be replaced with [`add_components!`](@ref) to add all components at once).
 
 #### See Also

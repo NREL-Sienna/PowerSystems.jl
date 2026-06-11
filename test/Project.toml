@@ -19,10 +19,6 @@ TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
-[extras]
-PowerFlowFileParser = "bed98974-b02e-5e2f-9ee0-a103f5c450dd"
-PowerTableDataParser = "2b750c0e-0bff-11f1-9200-1befd75df6be"
-
 [sources]
 InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "IS4"}
 PowerSystemCaseBuilder = {url = "https://github.com/NREL-Sienna/PowerSystemCaseBuilder.jl", rev = "psy6"}
