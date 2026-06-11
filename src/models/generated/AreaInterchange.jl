@@ -77,22 +77,22 @@ end
 get_name(value::AreaInterchange) = value.name
 """Get [`AreaInterchange`](@ref) `available`."""
 get_available(value::AreaInterchange) = value.available
-"""Get [`AreaInterchange`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
+"""Get [`AreaInterchange`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
 get_active_power_flow(value::AreaInterchange, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mva), units))
 """Get [`AreaInterchange`](@ref) `active_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow`](@ref)."""
 get_active_power_flow_unitful(value::AreaInterchange, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{ AreaInterchange }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{ AreaInterchange }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{AreaInterchange}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{AreaInterchange}) = InfrastructureSystems.SU
 """Get [`AreaInterchange`](@ref) `from_area`."""
 get_from_area(value::AreaInterchange) = value.from_area
 """Get [`AreaInterchange`](@ref) `to_area`."""
 get_to_area(value::AreaInterchange) = value.to_area
-"""Get [`AreaInterchange`](@ref) `flow_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_flow_limits_unitful`](@ref)."""
+"""Get [`AreaInterchange`](@ref) `flow_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_flow_limits_unitful`](@ref)."""
 get_flow_limits(value::AreaInterchange, units) = InfrastructureSystems._strip_units(get_value(value, Val(:flow_limits), Val(:mva), units))
 """Get [`AreaInterchange`](@ref) `flow_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_flow_limits`](@ref)."""
 get_flow_limits_unitful(value::AreaInterchange, units) = get_value(value, Val(:flow_limits), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_flow_limits), ::Type{ AreaInterchange }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_flow_limits_unitful), ::Type{ AreaInterchange }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_flow_limits), ::Type{AreaInterchange}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_flow_limits_unitful), ::Type{AreaInterchange}) = InfrastructureSystems.SU
 """Get [`AreaInterchange`](@ref) `services`."""
 get_services(value::AreaInterchange) = value.services
 """Get [`AreaInterchange`](@ref) `ext`."""

@@ -127,7 +127,7 @@ function line_rating_calculation(l::Union{Line, MonitoredLine})
     to_voltage_limits = get_voltage_limits(get_arc(l).to)
 
     fr_vmin = isnothing(from_voltage_limits) ? 0.9 : from_voltage_limits.min
-    to_vmin = isnothing(to_voltage_limits) ? 0.9 : from_voltage_limits.min
+    to_vmin = isnothing(to_voltage_limits) ? 0.9 : to_voltage_limits.min
 
     c_max = sqrt(fr_vmin^2 + to_vmin^2 - 2 * fr_vmin * to_vmin * cos(theta_max))
     new_rate = y_mag * max(fr_vmin, to_vmin) * c_max
@@ -144,7 +144,9 @@ function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float
             continue
         end
         if rating_value < 0.0
-            @error "PowerSystems does not support negative line rates. $(field): $(rating)"
+            @error "PowerSystems does not support negative line rates for \
+                    $(summary(branch)) $(field): $(rating_value)." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
             return false
         end
         if rating_value == INFINITE_BOUND
@@ -203,6 +205,12 @@ function check_rating_values(
         if isnothing(rating_value)
             @assert field ∈ [:rating_b, :rating_c]
             continue
+        end
+        if rating_value < 0.0
+            @error "PowerSystems does not support negative transformer rates for \
+                    $(summary(xfrm)) $(field): $(rating_value)." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return false
         end
         if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
             @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Transformer at a $(closest_v_level) kV Voltage level." _group =

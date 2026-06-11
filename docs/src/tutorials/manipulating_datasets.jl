@@ -63,15 +63,17 @@ set_fuel!(solitude, ThermalFuels.NATURAL_GAS)
 show_components(ThermalStandard, sys, [:fuel])
 
 # Similarly, you can updated the `active_power` field using its specific `get_*` and `set_*` functions.
-# We can access this field by using [`get_active_power`](@ref get_active_power(value::ThermalStandard)):
+# Accessors take an explicit `units` argument; here we read it in natural units (MW) with
+# [`get_active_power`](@ref get_active_power(value::ThermalStandard)):
 
-get_active_power(solitude)
+get_active_power(solitude, NU)
 
-# We can then update it using [`set_active_power!`](@ref set_active_power!(value::ThermalStandard, val)):
+# We can then update it with [`set_active_power!`](@ref set_active_power!(value::ThermalStandard, val)),
+# passing a unit-tagged value (a bare number is rejected):
 
-set_active_power!(solitude, 4.0)
+set_active_power!(solitude, 4.0 * MW)
 
-# We can see that our `active_power` field has been updated to 4.0.
+# We can see that our `active_power` field has been updated to 4.0 MW.
 
 # ## Accessing and Updating Multiple Components in the System at Once
 # We can also update more than one component at a time using the [`get_components`](@ref get_components(
@@ -158,7 +160,7 @@ thermal_not_solitude = get_components(x -> get_name(x) != "Solitude", ThermalSta
 # Now let's update the `active_power` field of these four thermal generators using the [`set_active_power!`](@ref) function.
 
 for i in thermal_not_solitude
-    set_active_power!(i, 0.0)
+    set_active_power!(i, 0.0 * MW)
 end
 
 # Let's check the update using [`show_components`](@ref):
@@ -169,7 +171,7 @@ show_components(ThermalStandard, sys, [:active_power])
 # We can filter on any component field. Similarly, let's filter all of the thermal generators
 # that now have an `active_power` of 0.0, and also set their availability to false.
 
-for i in get_components(x -> get_active_power(x) == 0.0, ThermalStandard, sys)
+for i in get_components(x -> get_active_power(x, NU) == 0.0, ThermalStandard, sys)
     set_available!(i, 0)
 end
 

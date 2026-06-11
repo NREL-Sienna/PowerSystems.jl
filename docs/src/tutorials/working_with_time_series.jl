@@ -72,10 +72,8 @@ load2 = PowerLoad(;
 );
 add_components!(system, [bus1, wind1, load1, load2])
 
-# Recall that we can also set the [`System`](@ref)'s unit base to natural units (MW)
-# to make it easier to inspect results:
-
-set_units_base_system!(system, "NATURAL_UNITS")
+# Recall that accessors take an explicit `units` argument, so we can inspect any value in the
+# units we want (e.g. `get_max_active_power(load2, NU)` for MW) without changing global state.
 
 # Before we get started, print `wind1` to see its data:
 
@@ -214,9 +212,9 @@ show_time_series(load1)
 get_time_series_array(SingleTimeSeries, load1, "max_active_power") # in MW
 
 # See that the normalized values have been scaled up by 10 MW.
-# Now let's look at `load2`. First check its `max_active_power` parameter:
+# Now let's look at `load2`. First check its `max_active_power` parameter in natural units (MW):
 
-get_max_active_power(load2)
+get_max_active_power(load2, NU)
 
 # This has a higher peak maximum demand of 30 MW.
 # Next, retrieve its `max_active_power` time series:
@@ -371,9 +369,9 @@ for window in iterate_windows(forecast)
 end
 
 # Finally, use [`get_max_active_power`](@ref get_max_active_power(d::RenewableGen)) to
-# check the expected maximum:
+# check the expected maximum (in natural units, MW):
 
-get_max_active_power(wind1)
+get_max_active_power(wind1, NU)
 
 # See that the forecasts are not exceeding this maximum -- sanity check complete.
 # !!! tip

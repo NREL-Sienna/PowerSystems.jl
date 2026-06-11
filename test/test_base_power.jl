@@ -1,15 +1,12 @@
-# TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
-# (PSB.build_system uses PSY.PowerSystemTableData internally for RTS_GMLC_DA_sys).
-# @testset "Test zero base power correction" begin
-#     sys = @test_logs(
-#         (:warn, r".*changing device base power to match system base power.*"),
-#         match_mode = :any,
-#         build_system(PSISystems, "RTS_GMLC_DA_sys"; force_build = true)
-#     )
-#     for comp in get_components(PSY.SynchronousCondenser, sys)
-#         @test abs(get_base_power(comp)) > eps()
-#     end
-# end
+@testset "Test zero base power correction" begin
+    # The zero-base-power correction (and its warning) now happens inside the
+    # parser packages; the invariant PSY cares about is that no component
+    # arrives with a zero device base.
+    sys = build_system(PSISystems, "RTS_GMLC_DA_sys"; force_build = true)
+    for comp in get_components(PSY.SynchronousCondenser, sys)
+        @test abs(get_base_power(comp, NU)) > eps()
+    end
+end
 
 function thermal_with_base_power(bus::PSY.Bus, name::String, base_power::Float64)
     return ThermalStandard(;
@@ -129,6 +126,36 @@ end
     @test get_ramp_limits_unitful(gen, NU) === nothing
 end
 
+# Regression guard for the explicit-units performance contract (PR #1695):
+# the internal per-unit conversions must compile away so that a literal unit
+# argument yields a type-stable, allocation-free `Float64`, and `ustrip` of the
+# `_unitful` companion must be a no-op equal to the bare getter.
+@testset "Generated getters: type-stable and allocation-free" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+
+    # (1)+(4) Conversions compile away: each literal unit arg infers to Float64.
+    for u in (SU, DU, NU, MW)
+        @test (@inferred get_active_power(gen, u)) isa Float64
+    end
+
+    # (2) `ustrip` is a no-op equal to the bare getter for relative-unit wrappers.
+    for u in (SU, DU, NU)
+        wrapped = get_active_power_unitful(gen, u)
+        @test (@inferred Unitful.ustrip(wrapped)) == get_active_power(gen, u)
+    end
+
+    # (3) A sum loop over the getter is allocation-free once compiled.
+    gens = collect(get_components(ThermalStandard, sys))
+    sum_strip(gs, u) = (s = 0.0; for g in gs
+            s += Unitful.ustrip(get_active_power_unitful(g, u))
+        end; s)
+    for u in (SU, DU, NU)
+        sum_strip(gens, u)  # warm up
+        @test (@inferred sum_strip(gens, u)) isa Float64
+        @test (@allocated sum_strip(gens, u)) == 0
+    end
+end
+
 @testset "Unit-aware set_base_power!" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     system_base = PSY._get_base_power(sys)
@@ -227,6 +254,22 @@ end
     end
 end
 
+# Detached Transformer3W with seeded units_info (system base 100), distinct
+# per-winding base powers (15/20/25 MVA), and base voltages (230/138/69 kV) —
+# deliberately all different so a wrong-base selection is caught.
+function _make_test_3w_xfmr(; system_base = 100.0)
+    xfmr = Transformer3W(nothing)
+    IS.get_internal(xfmr).units_info =
+        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+    set_base_power_12!(xfmr, 15.0)
+    set_base_power_23!(xfmr, 20.0)
+    set_base_power_13!(xfmr, 25.0)
+    set_base_voltage_primary!(xfmr, 230.0)
+    set_base_voltage_secondary!(xfmr, 138.0)
+    set_base_voltage_tertiary!(xfmr, 69.0)
+    return xfmr
+end
+
 @testset "Unit-aware winding impedance/admittance getters on ThreeWindingTransformer" begin
     # Regression guard for a silent units bug. The winding getters must honor the
     # explicit `units` argument. Previously `get_r_primary(c, SU)` fell through to
@@ -238,16 +281,7 @@ end
     # base differs from the system base, so we set them deliberately apart — and
     # use distinct per-winding bases to also catch a wrong-winding base selection.
     system_base = 100.0
-    xfmr = Transformer3W(nothing)
-    IS.get_internal(xfmr).units_info =
-        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
-
-    set_base_power_12!(xfmr, 15.0)
-    set_base_power_23!(xfmr, 20.0)
-    set_base_power_13!(xfmr, 25.0)
-    set_base_voltage_primary!(xfmr, 230.0)
-    set_base_voltage_secondary!(xfmr, 138.0)
-    set_base_voltage_tertiary!(xfmr, 69.0)
+    xfmr = _make_test_3w_xfmr(; system_base = system_base)
 
     # (device-base field, getter, stored DU value, winding base power, base voltage)
     cases = (
@@ -281,21 +315,97 @@ end
     @test get_b(xfmr, NU) ≈ 0.05 * (15.0 / 230.0^2)
 end
 
-# TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
-# (PSB.build_system uses PSY.PowerSystemTableData internally).
-# @testset "Test adding component with zero base power" begin
-#     sys = build_system(PSISystems, "RTS_GMLC_DA_sys")
-#     bus = first(get_components(PSY.Bus, sys))
-#     gen = thermal_with_base_power(bus, "Test Gen with Zero Base Power", 0.0)
-#     @test_logs (:warn, "Invalid range") match_mode = :any add_component!(sys, gen)
-#     gen2 = thermal_with_base_power(bus, "Test Gen with Non-Zero Base Power", 100.0)
-#     @test_nowarn add_component!(sys, gen2)
-#     # uncomment if we correct to non-zero base power.
-#     #=
-#     with_units_base(sys, "SYSTEM_BASE") do
-#         gen_added = PSY.get_component(PSY.ThermalStandard, sys, "Test Gen with Zero Base Power")
-#         PSY.set_reactive_power!(gen_added, 0.0)
-#         @test !isnan(PSY.get_reactive_power(gen_added))
-#     end
-#     =#
-# end
+@testset "ThreeWindingTransformer Unitful-target getters use winding bases" begin
+    system_base = 100.0
+    xfmr = _make_test_3w_xfmr(; system_base = system_base)
+
+    setproperty!(xfmr, :rating_primary, 2.0)
+    # MW must scale by the winding base (15), not the system base (100)
+    @test get_rating_primary(xfmr, MW) ≈ 2.0 * 15.0
+    @test get_rating_primary(xfmr, MW) ≈ get_rating_primary(xfmr, NU)
+    @test get_rating_primary_unitful(xfmr, MW) isa Unitful.Quantity
+
+    setproperty!(xfmr, :r_primary, 0.01)
+    # Ω target must agree with the NU path (and not crash looking for an arc)
+    @test get_r_primary(xfmr, OHMS) ≈ 0.01 * (230.0^2 / 15.0)
+    @test get_r_primary(xfmr, OHMS) ≈ get_r_primary(xfmr, NU)
+
+    setproperty!(xfmr, :b, 0.05)
+    @test get_b(xfmr, SIEMENS) ≈ 0.05 * (15.0 / 230.0^2)
+    @test get_b(xfmr, SIEMENS) ≈ get_b(xfmr, NU)
+end
+
+@testset "ThreeWindingTransformer winding-aware setters round-trip" begin
+    system_base = 100.0
+    xfmr = _make_test_3w_xfmr(; system_base = system_base)
+
+    # Power: MW input divides by the winding base, not the system base
+    set_rating_primary!(xfmr, 30.0 * MW)
+    @test xfmr.rating_primary ≈ 2.0
+    @test get_rating_primary(xfmr, MW) ≈ 30.0
+    # SU: 0.4 SU = 40 MW on the system base = 2.0 DU on the 20 MVA winding
+    set_rating_secondary!(xfmr, 0.4 * SU)
+    @test xfmr.rating_secondary ≈ 2.0
+    @test get_rating_secondary(xfmr, SU) ≈ 0.4
+    # DU input is identity
+    set_rating_tertiary!(xfmr, 1.5 * DU)
+    @test xfmr.rating_tertiary ≈ 1.5
+
+    # Impedance: Ω divides by the winding impedance base V²/S
+    z_base_12 = 230.0^2 / 15.0
+    set_r_12!(xfmr, 0.01 * z_base_12 * OHMS)
+    @test xfmr.r_12 ≈ 0.01
+    @test get_r_12(xfmr, OHMS) ≈ 0.01 * z_base_12
+    # SU impedance: Z_du = Z_su * (winding_base / system_base)
+    set_x_23!(xfmr, 0.6 * SU)
+    @test xfmr.x_23 ≈ 0.6 * (20.0 / system_base)
+    @test get_x_23(xfmr, SU) ≈ 0.6
+
+    # Admittance (primary winding): S divides by the winding base S/V²
+    y_base_12 = 15.0 / 230.0^2
+    set_b!(xfmr, 2.0 * y_base_12 * SIEMENS)
+    @test xfmr.b ≈ 2.0
+    @test get_b(xfmr, SIEMENS) ≈ 2.0 * y_base_12
+    # SU admittance round-trip
+    set_g!(xfmr, 0.3 * SU)
+    @test xfmr.g ≈ 0.3 * (system_base / 15.0)
+    @test get_g(xfmr, SU) ≈ 0.3
+
+    # Bare floats remain rejected
+    @test_throws ArgumentError set_rating_primary!(xfmr, 1.0)
+end
+
+@testset "TwoWindingTransformer Ω/S set→get round-trip uses one base voltage" begin
+    t2w = Transformer2W(nothing)  # base_power = 100.0
+    set_base_voltage_primary!(t2w, 230.0)
+    # Arc endpoint voltage deliberately different from the primary base voltage:
+    # both conversion directions must resolve the same voltage or the round-trip
+    # drifts by (230/115)².
+    set_base_voltage!(get_arc(t2w).from, 115.0)
+
+    set_x!(t2w, 105.8 * OHMS)
+    @test t2w.x ≈ 105.8 / (230.0^2 / 100.0)
+    @test get_x(t2w, OHMS) ≈ 105.8
+
+    y_nat = 3.0 * (100.0 / 230.0^2)
+    set_primary_shunt!(t2w, y_nat * SIEMENS)
+    @test t2w.primary_shunt ≈ 3.0
+    @test get_primary_shunt(t2w, SIEMENS) ≈ y_nat
+end
+
+@testset "Test adding component with zero base power" begin
+    sys = build_system(PSISystems, "RTS_GMLC_DA_sys")
+    bus = first(get_components(PSY.Bus, sys))
+    gen = thermal_with_base_power(bus, "Test Gen with Zero Base Power", 0.0)
+    @test_logs (:warn, "Invalid range") match_mode = :any add_component!(sys, gen)
+    gen2 = thermal_with_base_power(bus, "Test Gen with Non-Zero Base Power", 100.0)
+    @test_nowarn add_component!(sys, gen2)
+    # uncomment if we correct to non-zero base power.
+    #=
+    with_units_base(sys, "SYSTEM_BASE") do
+        gen_added = PSY.get_component(PSY.ThermalStandard, sys, "Test Gen with Zero Base Power")
+        PSY.set_reactive_power!(gen_added, 0.0)
+        @test !isnan(PSY.get_reactive_power(gen_added))
+    end
+    =#
+end

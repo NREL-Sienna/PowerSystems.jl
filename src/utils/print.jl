@@ -11,7 +11,16 @@ function _show_accessor_value(getter_func::Function, ist::Component)
         return getter_func(ist, arg)
     catch err
         err isa ErrorException && occursin("not attached", err.msg) || rethrow()
-        return getter_func(ist, NU)
+        # NU can also fail (it may need the system base or a base voltage).
+        # Display must never error: fall back to the raw stored value, which
+        # the DU conversion returns without touching any base. Only swallow
+        # the engine's own ErrorExceptions — a MethodError here is a bug.
+        try
+            return getter_func(ist, NU)
+        catch err2
+            err2 isa ErrorException || rethrow()
+            return getter_func(ist, DU)
+        end
     end
 end
 

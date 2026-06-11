@@ -1,5 +1,8 @@
 import InfrastructureSystems
 import Unitful
+# PSY no longer exports `ustrip`; Unitful's generic handles both quantity kinds
+# (PSY extends it for `RelativeQuantity`).
+using Unitful: ustrip
 
 # Strip unit wrappers so accessor return values can be compared against the
 # raw struct field type. Compound values (NamedTuple of units) are unwrapped
@@ -303,9 +306,14 @@ function test_accessors(component)
 
         # Unit-aware getters are tagged via `display_units_arg`. For unattached
         # test components, call with `DU` (device base) so the SU conversion
-        # path — which needs system attachment — is skipped.
-        val = if ismissing(IS.display_units_arg(func, ps_type))
+        # path — which needs system attachment — is skipped. Getters tagged `NU`
+        # (e.g. `get_base_power`, which is only meaningful in natural units and
+        # rejects `DU`/`SU`) are called with their own `NU` tag instead.
+        units_arg = IS.display_units_arg(func, ps_type)
+        val = if ismissing(units_arg)
             func(component)
+        elseif units_arg == NU
+            func(component, NU)
         else
             func(component, DU)
         end

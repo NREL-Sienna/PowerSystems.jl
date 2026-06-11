@@ -134,64 +134,64 @@ end
 get_name(value::TapTransformer) = value.name
 """Get [`TapTransformer`](@ref) `available`."""
 get_available(value::TapTransformer) = value.available
-"""Get [`TapTransformer`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
+"""Get [`TapTransformer`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
 get_active_power_flow(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mva), units))
 """Get [`TapTransformer`](@ref) `active_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow`](@ref)."""
 get_active_power_flow_unitful(value::TapTransformer, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-"""Get [`TapTransformer`](@ref) `reactive_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_flow_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
+"""Get [`TapTransformer`](@ref) `reactive_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_flow_unitful`](@ref)."""
 get_reactive_power_flow(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mva), units))
 """Get [`TapTransformer`](@ref) `reactive_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_flow`](@ref)."""
 get_reactive_power_flow_unitful(value::TapTransformer, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
 """Get [`TapTransformer`](@ref) `arc`."""
 get_arc(value::TapTransformer) = value.arc
-"""Get [`TapTransformer`](@ref) `r` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_r_unitful`](@ref)."""
+"""Get [`TapTransformer`](@ref) `r` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_r_unitful`](@ref)."""
 get_r(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:r), Val(:ohm), units))
 """Get [`TapTransformer`](@ref) `r` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_r`](@ref)."""
 get_r_unitful(value::TapTransformer, units) = get_value(value, Val(:r), Val(:ohm), units)
-InfrastructureSystems.display_units_arg(::typeof(get_r), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_r_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-"""Get [`TapTransformer`](@ref) `x` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_x_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_r), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_r_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
+"""Get [`TapTransformer`](@ref) `x` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_x_unitful`](@ref)."""
 get_x(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:x), Val(:ohm), units))
 """Get [`TapTransformer`](@ref) `x` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_x`](@ref)."""
 get_x_unitful(value::TapTransformer, units) = get_value(value, Val(:x), Val(:ohm), units)
-InfrastructureSystems.display_units_arg(::typeof(get_x), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_x_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-"""Get [`TapTransformer`](@ref) `primary_shunt` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_primary_shunt_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_x), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_x_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
+"""Get [`TapTransformer`](@ref) `primary_shunt` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_primary_shunt_unitful`](@ref)."""
 get_primary_shunt(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:primary_shunt), Val(:siemens), units))
 """Get [`TapTransformer`](@ref) `primary_shunt` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_primary_shunt`](@ref)."""
 get_primary_shunt_unitful(value::TapTransformer, units) = get_value(value, Val(:primary_shunt), Val(:siemens), units)
-InfrastructureSystems.display_units_arg(::typeof(get_primary_shunt), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_primary_shunt_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_primary_shunt), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_primary_shunt_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
-"""Get [`TapTransformer`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+"""Get [`TapTransformer`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_unitful`](@ref)."""
 get_rating(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`TapTransformer`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::TapTransformer, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
 
 _get_base_power(value::TapTransformer) = value.base_power
 """Get [`TapTransformer`](@ref) `base_voltage_primary`."""
 get_base_voltage_primary(value::TapTransformer) = value.base_voltage_primary
 """Get [`TapTransformer`](@ref) `base_voltage_secondary`."""
 get_base_voltage_secondary(value::TapTransformer) = value.base_voltage_secondary
-"""Get [`TapTransformer`](@ref) `rating_b` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_b_unitful`](@ref)."""
+"""Get [`TapTransformer`](@ref) `rating_b` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_b_unitful`](@ref)."""
 get_rating_b(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_b), Val(:mva), units))
 """Get [`TapTransformer`](@ref) `rating_b` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_b`](@ref)."""
 get_rating_b_unitful(value::TapTransformer, units) = get_value(value, Val(:rating_b), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating_b), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_b_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-"""Get [`TapTransformer`](@ref) `rating_c` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_c_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_rating_b), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_b_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
+"""Get [`TapTransformer`](@ref) `rating_c` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_c_unitful`](@ref)."""
 get_rating_c(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_c), Val(:mva), units))
 """Get [`TapTransformer`](@ref) `rating_c` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_c`](@ref)."""
 get_rating_c_unitful(value::TapTransformer, units) = get_value(value, Val(:rating_c), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating_c), ::Type{ TapTransformer }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_c_unitful), ::Type{ TapTransformer }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_c), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_c_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
 """Get [`TapTransformer`](@ref) `winding_group_number`."""
 get_winding_group_number(value::TapTransformer) = value.winding_group_number
 """Get [`TapTransformer`](@ref) `control_objective`."""

@@ -492,6 +492,9 @@ export get_time_series_array
 export get_time_series_resolutions
 export supports_time_series
 export supports_supplemental_attributes
+export supports_active_power
+export supports_reactive_power
+export supports_voltage_control
 export get_time_series_timestamps
 export get_time_series_values
 export get_time_series_counts
@@ -621,7 +624,6 @@ export UnitCategory,
     VoltageCategory, CurrentCategory
 export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
 export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
-export ustrip
 # Hand-written unit-bearing companions for `exclude_getter` descriptor entries
 # (their bare-number counterparts get exported via generated/includes.jl).
 export get_base_power_unitful
@@ -659,11 +661,12 @@ import JSON
 import Base.to_index
 import PrettyTables
 import Unitful
-using Unitful: @u_str, @unit, Quantity, Units, uconvert
-import StructTypes
+using Unitful: @u_str, @unit, Quantity, Units, uconvert, ustrip
 
 # Relative-unit primitives live in IS; PSY re-exports them for downstream
 # packages so that `PSY.DU`, `PSY.RelativeQuantity`, etc. keep working.
+# `get_value`/`set_value` are IS's units-interface generics: PSY EXTENDS them
+# (adds the power-domain methods) rather than defining its own functions.
 import InfrastructureSystems:
     AbstractRelativeUnit,
     DeviceBaseUnit,
@@ -673,7 +676,8 @@ import InfrastructureSystems:
     DU,
     SU,
     NU,
-    ustrip
+    get_value,
+    set_value
 
 # Import InfrastructureSystems both as full module name (needed for internal macros like @forward)
 # and with alias for convenient usage throughout the codebase

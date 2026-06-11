@@ -191,6 +191,23 @@ end
     @test PSY.deserialize_quantity(json) ≈ q
 end
 
+@testset "_du_to_su_ratio agrees with base_value ratio for every category" begin
+    gen = MockGen(0.6, 50.0)  # 50 MVA device base, 100 MVA system base, 230 kV
+    for cat in (POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT)
+        @test PSY._du_to_su_ratio(gen, cat) ≈
+              base_value(gen, cat) / system_base_value(gen, cat)
+        # DU → Float64 must agree with the value of DU → SU
+        @test convert_units(gen, 0.6, cat, DU, Float64) ≈
+              ustrip(convert_units(gen, 0.6, cat, DU, SU))
+    end
+end
+
+@testset "Ω/S getters error when base voltage is missing" begin
+    line = Line(nothing)  # demo line: buses carry base_voltage = nothing
+    @test_throws ErrorException get_x(line, OHMS)
+    @test_throws ErrorException get_b(line, SIEMENS)
+end
+
 @testset "Custom Unitful units" begin
     @test 1.0Mvar == 1.0u"MW"  # same dimension
     @test 1.0MVA == 1.0u"MW"

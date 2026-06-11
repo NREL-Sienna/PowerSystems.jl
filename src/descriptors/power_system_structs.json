@@ -7559,9 +7559,11 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
+                    "comment": "the required quantity of the product in p.u. ([`SYSTEM_BASE`](@ref per_unit)), to be scaled by a TimeSeriesData",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "sustained_time",

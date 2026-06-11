@@ -28,7 +28,6 @@ import PowerSystems as PSY
 
 # Create a system
 sys = System(100.0)
-set_units_base_system!(sys, "NATURAL_UNITS")
 
 # Create and add a bus
 bus = ACBus(;
@@ -92,7 +91,6 @@ set_downstream_turbine!(reservoir, turbine)
 ```julia
 
 sys = System(100.0)
-set_units_base_system!(sys, "NATURAL_UNITS")
 
 # Create and add a bus
 bus = ACBus(;

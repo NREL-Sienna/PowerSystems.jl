@@ -11,6 +11,17 @@ field: the device base equals the system base.
 """
 _get_base_power(c::Component) = _get_system_base_power(c)
 
+# Conversion-engine component interface (see src/units/conversions.jl): the
+# engine resolves bases through these three functions, so every getter and
+# setter shares one base-power/base-voltage choice per component type.
+_get_device_base_power(c::Component) = _get_base_power(c)
+get_base_voltage(c::Branch) = get_base_voltage(get_arc(c).from)
+get_base_voltage(c::TwoWindingTransformer) = get_base_voltage_primary(c)
+get_base_voltage(c::ThreeWindingTransformer) = error(
+    "Three-winding transformers have per-winding base voltages; use " *
+    "get_base_voltage_primary/secondary/tertiary.",
+)
+
 # `base_power` is always stored and reported in natural units (MVA). It is the
 # anchor that every other field's per-unitization is defined against, so
 # expressing it in a per-unit base (`SU`/`DU`) is circular. Unlike every other
@@ -54,8 +65,8 @@ set_base_power!(c::Component, val::Float64) = (c.base_power = val)
 # `ustrip(MVA, val)` converts power units and throws for non-power units.
 set_base_power!(c::Component, val::Unitful.Quantity) =
     (c.base_power = Unitful.ustrip(MVA, val))
-set_base_power!(::Component, val::RelativeQuantity) =
-    _base_power_units_error(val.unit)
+set_base_power!(::Component, ::RelativeQuantity{<:Any, U}) where {U} =
+    _base_power_units_error(U())
 
 """
 Reject any attempt to read/write `base_power` in non-natural units.
@@ -77,6 +88,11 @@ IS.display_units_arg(::typeof(set_base_power!), ::Type{<:Component}) = NU
 # Make `_strip_units` work for Unitful quantities; IS doesn't depend on Unitful.
 IS._strip_units(q::Unitful.Quantity) = Unitful.ustrip(q)
 
+# Units passed to 2-arg scaling-factor multipliers during time-series retrieval
+# when the caller does not specify them: system base, matching what
+# simulation/optimization consumers expect.
+IS.default_units(::Component) = SU
+
 #######################################################
 # Units-aware get_value / set_value
 #
@@ -94,170 +110,77 @@ Returns a `RelativeQuantity` (for DU/SU targets) or a `Unitful.Quantity` (for
 natural units like MW). Public getters wrap this in `_strip_units` for the
 bare-number form, with `_unitful` companions returning the wrapped value.
 """
-function get_value(c::Component, ::Val{T}, conversion_unit, units) where {T}
+function get_value(c::Component, field::Val{T}, conversion_unit, units) where {T}
     value = Base.getproperty(c, T)
-    return _convert_from_device_base(c, value, conversion_unit, units)
+    return _convert_from_device_base(
+        _conversion_base(c, field),
+        value,
+        conversion_unit,
+        units,
+    )
 end
 
-# ---- DU → natural power units ----
-_convert_from_device_base(c::Component, value::Float64, ::Val{:mva}, ::typeof(MW)) =
-    value * _get_base_power(c) * u"MW"
+# Base provider for the conversion engine: which object carries the bases for
+# a given field. Components are their own provider; multi-winding components
+# substitute a per-winding view (see `WindingBase` below). This single hook is
+# what makes the generic getter/setter paths winding-aware — no per-type
+# method mirrors.
+_conversion_base(c::Component, ::Any) = c
+_conversion_base(c::ThreeWindingTransformer, field::Val) = WindingBase(c, field)
 
-_convert_from_device_base(c::Component, value::Float64, ::Val{:mva}, ::typeof(Mvar)) =
-    value * _get_base_power(c) * Mvar
-
-function _convert_from_device_base(
-    c::T, value::Number, ::Val{:ohm}, ::typeof(OHMS),
-) where {T <: Branch}
-    base_voltage = get_base_voltage(get_arc(c).from)
-    isnothing(base_voltage) && error("Base voltage is not defined for $(summary(c)).")
-    return value * (base_voltage^2 / _get_base_power(c)) * u"Ω"
-end
-
-function _convert_from_device_base(
-    c::T, value::Number, ::Val{:ohm}, ::typeof(OHMS),
-) where {T <: TwoWindingTransformer}
-    base_voltage = get_base_voltage_primary(c)
-    isnothing(base_voltage) && error("Base voltage is not defined for $(summary(c)).")
-    return value * (base_voltage^2 / _get_base_power(c)) * u"Ω"
-end
-
-function _convert_from_device_base(
-    c::T, value::Number, ::Val{:siemens}, ::typeof(SIEMENS),
-) where {T <: Branch}
-    base_voltage = get_base_voltage(get_arc(c).from)
-    if isnothing(base_voltage)
-        @warn "Base voltage is not set for $(c.name). Returning in device base units."
-        return value * DU
-    end
-    return value * (_get_base_power(c) / base_voltage^2) * u"S"
-end
-
-function _convert_from_device_base(
-    c::T, value::Number, ::Val{:siemens}, ::typeof(SIEMENS),
-) where {T <: TwoWindingTransformer}
-    base_voltage = get_base_voltage_primary(c)
-    if isnothing(base_voltage)
-        @warn "Base voltage is not set for $(c.name). Returning in device base units."
-        return value * DU
-    end
-    return value * (_get_base_power(c) / base_voltage^2) * u"S"
-end
-
-# ---- DU → NU (route to the conversion_unit's natural Unitful unit) ----
-_convert_from_device_base(c::Component, v::Float64, cu::Val{:mva}, ::NaturalUnit) =
-    _convert_from_device_base(c, v, cu, MW)
-_convert_from_device_base(c::Component, v::Number, cu::Val{:ohm}, ::NaturalUnit) =
-    _convert_from_device_base(c, v, cu, OHMS)
-_convert_from_device_base(c::Component, v::Number, cu::Val{:siemens}, ::NaturalUnit) =
-    _convert_from_device_base(c, v, cu, SIEMENS)
-
-# ---- DU → DU (identity; no system info needed) ----
-_convert_from_device_base(::Component, value::Number, ::Val, ::DeviceBaseUnit) =
-    value * DU
-
-# ---- DU → SU (RelativeQuantity{Float64, SystemBaseUnit}) ----
-function _convert_from_device_base(
-    c::Component, value::Float64, ::Val{:mva}, ::SystemBaseUnit,
-)
-    return (value * (_get_base_power(c) / _get_system_base_power(c))) * SU
-end
-
-function _convert_from_device_base(
-    c::T, value::Number, ::Val{:ohm}, ::SystemBaseUnit,
-) where {T <: Branch}
-    return (value * (_get_system_base_power(c) / _get_base_power(c))) * SU
-end
-
-function _convert_from_device_base(
-    c::T, value::Number, ::Val{:siemens}, ::SystemBaseUnit,
-) where {T <: Branch}
-    return (value * (_get_base_power(c) / _get_system_base_power(c))) * SU
-end
-
-# ---- Generic fallback: any Unitful target for :mva ----
-function _convert_from_device_base(
-    c::Component, value::Float64, ::Val{:mva}, units::Unitful.Units,
-)
-    return Unitful.uconvert(units, value * _get_base_power(c) * u"MW")
-end
+# ---- DU → requested units: one delegation to the conversion engine. The
+# field's conversion-unit token picks the physical category; the engine
+# resolves bases through the component interface above. ----
+_convert_from_device_base(base, value::Number, cu::Val, units) =
+    convert_units(base, value, _unit_category(cu), DU, units)
 
 # ---- Nothing passthrough ----
-_convert_from_device_base(::Component, ::Nothing, ::Val, ::Any) = nothing
+_convert_from_device_base(base, ::Nothing, ::Val, ::Any) = nothing
 
 # ---- Compound field types ----
-_convert_from_device_base(c::Component, v::MinMax, cu, u) = (
-    min = _convert_from_device_base(c, v.min, cu, u),
-    max = _convert_from_device_base(c, v.max, cu, u),
+_convert_from_device_base(base, v::MinMax, cu, u) = (
+    min = _convert_from_device_base(base, v.min, cu, u),
+    max = _convert_from_device_base(base, v.max, cu, u),
 )
 
-_convert_from_device_base(c::Component, v::UpDown, cu, u) = (
-    up = _convert_from_device_base(c, v.up, cu, u),
-    down = _convert_from_device_base(c, v.down, cu, u),
+_convert_from_device_base(base, v::UpDown, cu, u) = (
+    up = _convert_from_device_base(base, v.up, cu, u),
+    down = _convert_from_device_base(base, v.down, cu, u),
 )
 
-_convert_from_device_base(c::Component, v::FromTo_ToFrom, cu, u) = (
-    from_to = _convert_from_device_base(c, v.from_to, cu, u),
-    to_from = _convert_from_device_base(c, v.to_from, cu, u),
+_convert_from_device_base(base, v::FromTo_ToFrom, cu, u) = (
+    from_to = _convert_from_device_base(base, v.from_to, cu, u),
+    to_from = _convert_from_device_base(base, v.to_from, cu, u),
 )
 
-_convert_from_device_base(c::Component, v::FromTo, cu, u) = (
-    from = _convert_from_device_base(c, v.from, cu, u),
-    to = _convert_from_device_base(c, v.to, cu, u),
+_convert_from_device_base(base, v::FromTo, cu, u) = (
+    from = _convert_from_device_base(base, v.from, cu, u),
+    to = _convert_from_device_base(base, v.to, cu, u),
 )
 
-_convert_from_device_base(c::Component, v::StartUpShutDown, cu, u) = (
-    startup = _convert_from_device_base(c, v.startup, cu, u),
-    shutdown = _convert_from_device_base(c, v.shutdown, cu, u),
+_convert_from_device_base(base, v::StartUpShutDown, cu, u) = (
+    startup = _convert_from_device_base(base, v.startup, cu, u),
+    shutdown = _convert_from_device_base(base, v.shutdown, cu, u),
 )
 
 #######################################################
 # set_value: accept Unitful.Quantity or RelativeQuantity; return DU scalar
 #######################################################
 
-# ---- From Unitful.Quantity (natural units) ----
-function set_value(c::Component, field, val::Quantity, ::Val{:mva})
-    return Unitful.ustrip(u"MW", val) / _get_base_power(c)
-end
-
-function set_value(
-    c::T, field, val::Quantity, ::Val{:ohm},
-) where {T <: Branch}
-    base_voltage = get_base_voltage(get_arc(c).from)
-    isnothing(base_voltage) && error("Base voltage is not defined for $(summary(c)).")
-    return Unitful.ustrip(u"Ω", val) / (base_voltage^2 / _get_base_power(c))
-end
-
-function set_value(
-    c::T, field, val::Quantity, ::Val{:siemens},
-) where {T <: Branch}
-    base_voltage = get_base_voltage(get_arc(c).from)
-    isnothing(base_voltage) && error("Base voltage is not defined for $(summary(c)).")
-    return Unitful.ustrip(u"S", val) / (_get_base_power(c) / base_voltage^2)
-end
+# ---- From Unitful.Quantity (natural units): inverse engine conversion ----
+set_value(c::Component, field, val::Quantity, cu::Val) = IS._strip_units(
+    convert_units(_conversion_base(c, field), val, _unit_category(cu), NU, DU),
+)
 
 # ---- From RelativeQuantity in DU (trivial) ----
 set_value(::Component, field, val::RelativeQuantity{<:Any, DeviceBaseUnit}, ::Val) =
     ustrip(val)
 
 # ---- From RelativeQuantity in SU ----
-function set_value(
-    c::Component, field, val::RelativeQuantity{<:Any, SystemBaseUnit}, ::Val{:mva},
-)
-    return ustrip(val) / (_get_base_power(c) / _get_system_base_power(c))
-end
-
-function set_value(
-    c::T, field, val::RelativeQuantity{<:Any, SystemBaseUnit}, ::Val{:ohm},
-) where {T <: Branch}
-    return ustrip(val) / (_get_system_base_power(c) / _get_base_power(c))
-end
-
-function set_value(
-    c::T, field, val::RelativeQuantity{<:Any, SystemBaseUnit}, ::Val{:siemens},
-) where {T <: Branch}
-    return ustrip(val) / (_get_base_power(c) / _get_system_base_power(c))
-end
+set_value(c::Component, field, val::RelativeQuantity{<:Any, SystemBaseUnit}, cu::Val) =
+    IS._strip_units(
+        convert_units(_conversion_base(c, field), ustrip(val), _unit_category(cu), SU, DU),
+    )
 
 # ---- Bare Float64 is rejected: callers must attach units explicitly ----
 set_value(::Component, ::Any, ::Float64, ::Val) = throw(
@@ -386,7 +309,7 @@ for (pub, priv, field) in (
         $setter(c::ThreeWindingTransformer, val::Unitful.Quantity) =
             (c.$field = Unitful.ustrip(u"MW", val))
         $setter(c::ThreeWindingTransformer, val::RelativeQuantity{<:Any, SystemBaseUnit}) =
-            (c.$field = IS.ustrip(val) * _get_system_base_power(c))
+            (c.$field = ustrip(val) * _get_system_base_power(c))
         $setter(::ThreeWindingTransformer, ::RelativeQuantity{<:Any, DeviceBaseUnit}) =
             error(
                 "Setting " * $(string(field)) * " in device base (DU) is ambiguous: " *
@@ -432,31 +355,23 @@ function _get_winding_base_voltage(
     return base_voltage
 end
 
-# Units-aware get_value for three-winding transformers. Each winding pair carries
-# its own MVA and kV base, so the component-wide `_get_base_power`/`get_base_voltage`
-# used by the generic `Branch` conversion are wrong here. We route through the
-# `convert_units` engine instead, passing the field as the winding token; the engine
-# pulls the per-winding bases from the accessors below. Dispatch is on the requested
-# `units` type (not the system's mutable unit setting), keeping the hot path type-stable.
-function get_value(
-    c::ThreeWindingTransformer,
-    field::Val{T},
-    conversion_unit::Val,
-    units::IS.AbstractUnitSystem,
-) where {T}
-    return convert_units(
-        c, Base.getproperty(c, T), _unit_category(conversion_unit), DU, units, field,
-    )
+# Each winding pair carries its own MVA and kV base, so the component-wide
+# `_get_base_power`/`get_base_voltage` used by the generic conversion are wrong
+# here. `WindingBase` is a lightweight per-winding *base provider*: it
+# implements the conversion-engine component interface with the winding's
+# bases (the field doubles as the winding token), so the entire 5-arg
+# `convert_units` engine — getters and setters alike — works per-winding.
+struct WindingBase{T <: ThreeWindingTransformer, F <: Val}
+    component::T
+    field::F
 end
+
+_get_device_base_power(w::WindingBase) = _get_winding_base_power(w.component, w.field)
+_get_system_base_power(w::WindingBase) = _get_system_base_power(w.component)
+get_base_voltage(w::WindingBase) = _get_winding_base_voltage(w.component, w.field)
+Base.summary(w::WindingBase) = summary(w.component)
 
 # Physical category implied by a field's conversion unit.
 _unit_category(::Val{:mva}) = POWER
 _unit_category(::Val{:ohm}) = IMPEDANCE
 _unit_category(::Val{:siemens}) = ADMITTANCE
-
-# Per-winding base accessors consumed by `convert_units`. The field doubles as the
-# winding token: it selects which winding's base power and base voltage apply.
-_get_device_base_power(c::ThreeWindingTransformer, field::Val) =
-    _get_winding_base_power(c, field)
-get_base_voltage(c::ThreeWindingTransformer, field::Val) =
-    _get_winding_base_voltage(c, field)
