@@ -41,17 +41,12 @@ gens_2 = get_components(ThermalStandard, sys; subsystem_name = "2")
 get_name.(gens_2)
 ```
 
-# !!! note
+!!! note
 
-# The get_name. command may look like a way to use `.` to access the fields of a
-
-# component, which is method actively discouraged by the Sienna team, however it is a
-
-# [broadcast function](https://blog.glcs.io/broadcasting) in Julia. Using `.` access on
-
-# the fields of a component bypasses Sienna's built-in [per-unit](@ref per_unit)
-
-# handling and will return unexpected results.
+    The `get_name.` command might look like field access, but it is actually Julia's
+    [broadcast](https://blog.glcs.io/broadcasting) syntax for applying `get_name` to each
+    component in the collection. Direct field access using `.` is discouraged in Sienna, as
+    it bypasses the built-in [per-unit](@ref per_unit) handling and can cause incorrect results.
 
 ## Export a subsystem as a new `System`
 
