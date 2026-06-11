@@ -61,7 +61,7 @@ Modules = [IS]
 Pages   = ["geographic_supplemental_attribute.jl"
         ]
 Order = [:type, :function]
-Filter = t -> typeof(t) !== Union && applicable(nameof, typeof(t)) && nameof(t) in names(PowerSystems)
+Filter = t -> typeof(t) !== Union && applicable(nameof, t) && nameof(t) in names(PowerSystems)
 ```
 
 ## Operating Costs
