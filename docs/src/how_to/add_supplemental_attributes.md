@@ -63,5 +63,5 @@ end
 
   - [Query contextual data on a system](@ref query_contextual_data) — retrieve attributes you have attached
   - [Group generators into plants](@ref group_generators_into_plants) — plant-level grouping
-  - [Model generator outages](@ref model_generator_outages) — outage-specific workflows
+  - [Model Outages](@ref model_outages) — outage-specific workflows
   - [Add emissions to generators](@ref add_emissions_to_generators) — emissions metadata

@@ -60,7 +60,7 @@ pages = OrderedDict(
                 "Attach supplemental data to components" => "how_to/add_supplemental_attributes.md",
                 "Query contextual data on a system" => "how_to/use_supplemental_attributes.md",
                 "Group generators into plants" => "how_to/group_generators_into_plants.md",
-                "Model generator outages" => "how_to/model_generator_outages.md",
+                "Model Outages" => "how_to/model_outages.md",
                 "Add emissions to generators" => "how_to/add_emissions_to_generators.md",
                 "Add custom data to a component" => "how_to/adding_additional_fields.md",
             ],

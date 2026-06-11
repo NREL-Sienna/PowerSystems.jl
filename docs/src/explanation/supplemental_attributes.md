@@ -73,7 +73,7 @@ in the [Public API Reference](@ref) docstrings.
 |:----------------------------------------------------------------- |:----------------------------------------------------------------------- |:-------------------------------------------------------------------------------------- |
 | Group units into plants (shafts, penstocks, PCCs, combined cycle) | [Grouping generators into plants](@ref grouping_generators_into_plants) | [Group generators into plants](@ref group_generators_into_plants)                      |
 | Emissions rates and start-up adders                               | [Emissions metadata](@ref emissions_metadata)                           | [Add emissions to generators](@ref add_emissions_to_generators)                        |
-| Planned and forced outages                                        | [Outage and contingency data](@ref outage_and_contingency_data)         | [Model generator outages](@ref model_generator_outages)                                |
+| Planned and forced outages                                        | [Outage and contingency data](@ref outage_and_contingency_data)         | [Model Outages](@ref model_outages)                                                    |
 | Geographic location (GeoJSON)                                     | *(this page)*                                                           | [Parse MATPOWER or PSS/e files](@ref pm_data) — auto-loaded from PSS/e v35 substations |
 | PSS/e transformer impedance correction tables                     | *(this page)*                                                           | [Migrate from version 4.0 to 5.0](@ref psy5_migration)                                 |
 

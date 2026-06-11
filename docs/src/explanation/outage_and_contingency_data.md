@@ -47,5 +47,5 @@ resolution is deferred to the consumer.
 ## See also
 
   - [Supplemental attributes](@ref supplemental_attributes_explanation) — the general concept
-  - [Model generator outages](@ref model_generator_outages) — step-by-step attachment and monitoring setup
+  - [Model Outages](@ref model_outages) — step-by-step attachment and monitoring setup
   - [Working with Time Series](@ref "Working with Time Series Data") — time series for outage schedules and stochastic rates
