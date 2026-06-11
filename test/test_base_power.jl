@@ -126,6 +126,36 @@ end
     @test get_ramp_limits_unitful(gen, NU) === nothing
 end
 
+# Regression guard for the explicit-units performance contract (PR #1695):
+# the internal per-unit conversions must compile away so that a literal unit
+# argument yields a type-stable, allocation-free `Float64`, and `ustrip` of the
+# `_unitful` companion must be a no-op equal to the bare getter.
+@testset "Generated getters: type-stable and allocation-free" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+
+    # (1)+(4) Conversions compile away: each literal unit arg infers to Float64.
+    for u in (SU, DU, NU, MW)
+        @test (@inferred get_active_power(gen, u)) isa Float64
+    end
+
+    # (2) `ustrip` is a no-op equal to the bare getter for relative-unit wrappers.
+    for u in (SU, DU, NU)
+        wrapped = get_active_power_unitful(gen, u)
+        @test (@inferred Unitful.ustrip(wrapped)) == get_active_power(gen, u)
+    end
+
+    # (3) A sum loop over the getter is allocation-free once compiled.
+    gens = collect(get_components(ThermalStandard, sys))
+    sum_strip(gs, u) = (s = 0.0; for g in gs
+            s += Unitful.ustrip(get_active_power_unitful(g, u))
+        end; s)
+    for u in (SU, DU, NU)
+        sum_strip(gens, u)  # warm up
+        @test (@inferred sum_strip(gens, u)) isa Float64
+        @test (@allocated sum_strip(gens, u)) == 0
+    end
+end
+
 @testset "Unit-aware set_base_power!" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     system_base = PSY._get_base_power(sys)
