@@ -102,15 +102,15 @@ pages = OrderedDict(
             ],
         "Model Library" => Any[],
         "Reference" =>
-            Any["Public API" => "api/public.md",
-            "Glossary and Acronyms" => "api/glossary.md",
-            "Type Tree" => "api/type_tree.md",
-            "`ValueCurve` Options" => "api/valuecurve_options.md",
-            "Supported PSS/e Models" => "api/psse_models.md",
-            "Comparison of Load, Generator, and Storage Types" => "api/static_injection_subtypes.md",
-            "Citation" => "api/citation.md",
-            "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
-            "Internals" => "api/internal.md"]
+            Any["Public API" => "reference/public.md",
+            "Glossary and Acronyms" => "reference/glossary.md",
+            "Type Tree" => "reference/type_tree.md",
+            "`ValueCurve` Options" => "reference/valuecurve_options.md",
+            "Supported PSS/e Models" => "reference/psse_models.md",
+            "Comparison of Load, Generator, and Storage Types" => "reference/static_injection_subtypes.md",
+            "Citation" => "reference/citation.md",
+            "Developers" => ["Developer Guidelines" => "reference/developer_guidelines.md",
+            "Internals" => "reference/internal.md"]
             ]
 )
 
