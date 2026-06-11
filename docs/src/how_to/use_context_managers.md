@@ -250,6 +250,7 @@ end
 ## See Also
 
   - [Per-unit Conventions](@ref per_unit) - Learn more about unit systems
-  - [Supplemental Attributes](@ref supplemental_attributes_explanation) - Details on supplemental attribute usage
+  - [Supplemental attributes](@ref supplemental_attributes_explanation) — why contextual data is separate from components
+  - [Attach supplemental data to components](@ref attach_contextual_data) — bulk attachment with `begin_supplemental_attributes_update`
   - [Working with Time Series Data](@ref "Working with Time Series Data") - Tutorial on time series handling
   - [Improve Performance with Time Series Data](@ref improve_ts_performance) - Additional time series performance tips

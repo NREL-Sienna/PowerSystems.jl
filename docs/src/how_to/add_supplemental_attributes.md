@@ -1,35 +1,36 @@
-# [Add Supplemental Attributes to a System](@id add_supplemental_attributes)
+# [Attach supplemental data to components](@id attach_contextual_data)
 
 This how-to shows how to attach supplemental attributes to components in a [`System`](@ref).
-It uses [`FixedForcedOutage`](@ref) as the example attribute type.
+It uses [`FixedForcedOutage`](@ref) as the example. For background on why contextual data
+is kept separate from components, see [Supplemental attributes](@ref supplemental_attributes_explanation).
 
 ## Prerequisites
 
-```@example add_supplemental_attributes
+```@example attach_contextual_data
 using PowerSystems
 using PowerSystemCaseBuilder
 
 sys = build_system(PSISystems, "c_sys5_pjm")
 ```
 
-## Add a single supplemental attribute
+## Attach a single attribute
 
 Retrieve the target component, construct the attribute, then attach it with
 [`add_supplemental_attribute!`](@ref):
 
-```@example add_supplemental_attributes
+```@example attach_contextual_data
 gen = first(get_components(ThermalStandard, sys))
 outage = FixedForcedOutage(; outage_status = 0.0)  # 0.0 = available, 1.0 = outaged
 add_supplemental_attribute!(sys, gen, outage)
 ```
 
-## Add supplemental attributes in bulk
+## Attach attributes in bulk
 
 For adding many attributes at once, use [`begin_supplemental_attributes_update`](@ref)
 to batch the operations. This reduces index update overhead and automatically reverts
 all changes if an error occurs:
 
-```@example add_supplemental_attributes
+```@example attach_contextual_data
 gens = collect(get_components(ThermalStandard, sys))
 gen1 = gens[1]
 gen2 = gens[2]
@@ -46,7 +47,7 @@ end
 
 Attach the same attribute instance to more than one component to model shared properties:
 
-```@example add_supplemental_attributes
+```@example attach_contextual_data
 outage = FixedForcedOutage(; outage_status = 1.0)
 gens = collect(get_components(ThermalStandard, sys))
 gen1 = gens[1]
@@ -60,5 +61,7 @@ end
 
 ## Next steps
 
-See [How to use supplemental attributes](@ref use_supplemental_attributes_how_to) to query
-and filter the attributes you have added.
+  - [Query contextual data on a system](@ref query_contextual_data) — retrieve attributes you have attached
+  - [Group generators into plants](@ref group_generators_into_plants) — plant-level grouping
+  - [Model generator outages](@ref model_generator_outages) — outage-specific workflows
+  - [Add emissions to generators](@ref add_emissions_to_generators) — emissions metadata

@@ -1,160 +1,95 @@
-# [About Supplemental Attributes](@id supplemental_attributes_explanation)
+# [Supplemental attributes](@id supplemental_attributes_explanation)
 
-Supplemental attributes help PowerSystems.jl manage the relationships between power system components and their metadata. Instead of putting everything into basic component definitions, this system keeps electrical data separate from contextual information like location, outages, or plant groupings.
+[`SupplementalAttribute`](@ref) types hold contextual data linked to [`Component`](@ref)s —
+information that sits outside each component's electrical definition. Geographic location,
+outage schedules, plant groupings, emissions profiles, and PSS/e impedance correction tables
+are typical examples. Keeping this metadata separate from component structs reflects how power
+system datasets are actually organized: the same contextual fact often applies to many
+devices, and it changes on a different schedule than network equipment data.
 
-## Why Use Supplemental Attributes?
+## Why separate contextual data from components?
 
-Power system components exist in multiple contexts. A generator isn't just defined by its electrical properties—it also has a geographic location, belongs to a plant, and may share infrastructure with other units.
+Power system components exist in multiple contexts. A generator is not only defined by its
+electrical properties — it also has a location, may belong to a plant, and may share
+infrastructure with other units. Traditional approaches stored this extra information in
+generic dictionary fields, which led to inconsistent data across large systems, difficult
+maintenance, and no validation of what was stored.
 
-Traditional approaches used generic dictionary fields to store this extra information. But this created problems:
+Supplemental attributes address this by using structured types instead of loose dictionaries.
+Electrical behavior stays in component definitions; contextual information lives in
+attributes that can be attached, queried, and shared explicitly.
 
-  - Data inconsistency across large systems
-  - Maintenance difficulties
-  - No validation of the information stored
+## How relationships work
 
-Supplemental attributes solve this by using structured types instead of loose dictionaries. This provides:
-
-**Clean separation**: Electrical behavior stays in component definitions. Everything else goes in attributes.
-
-**Clear relationships**: The connections between components and their contexts are explicit and easy to query.
-
-**Type safety**: The system validates data and gives helpful error messages when something's wrong.
-
-## How Relationships Work
-
-Supplemental attributes use many-to-many relationships. One attribute can connect to multiple components, and one component can have multiple attributes.
+Supplemental attributes use many-to-many relationships. One attribute can connect to
+multiple components, and one component can have multiple attributes.
 
 For example:
 
-  - Multiple generators at the same plant share geographic coordinates
-  - One weather pattern affects several plants in a region
+  - Multiple generators at the same plant can share geographic coordinates
+  - One weather pattern can affect several plants in a region
   - Each generator might have its own maintenance schedule
 
 ```mermaid
 flowchart LR
     A["Attribute A"] --> B["Component 1"]
-    A -->  C["Component2"]
-    D["Attribute B"] -->  C["Component 2"]
-    E["Attribute C"] -->  F["Component 3"]
+    A --> C["Component 2"]
+    D["Attribute B"] --> C
+    E["Attribute C"] --> F["Component 3"]
 ```
 
-This flexibility matches how power systems actually work, where components share resources and are affected by common factors.
+This flexibility matches how power systems actually work, where components share resources
+and are affected by common factors.
 
-Supplemental attributes can be concrete or abstract. See the [Julia Types documentation](https://docs.julialang.org/en/v1/manual/ty) for more information on these types. Here is an example using the `PowerSystems.jl` Type Tree.
-
-```@example types
-using PowerSystems #hide
-import TypeTree: tt #hide
-docs_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "utils"); #hide
-include(joinpath(docs_dir, "docs_utils.jl")); #hide
-print(join(tt(PowerSystems.IS.InfrastructureSystemsType), "")) #hide
-```
-
-The concrete supplemental attributes are the last ones listed in a section. For example, following the first few lines of the type tree: InfrastructureSystems.InfrastructureSystemsType > InfrastructureSystems.AbstractTimeSeriesParameters > InfrastructureSystems.ForecastParameters . InfrastructureSystems.ForecastParameters is the concrete supplemental attribute, and the abstract supplemental attribute is InfrastructureSystems.AbstractTimeSeriesParameters. Providing another example with: InfrastructureSystems.InfrastructureSystemsType > InfrastructureSystems.DeviceParameter > DynamicComponent > PowerSystems.DynamicGeneratorComponent > AVR > AVRFixed . AVRFixed is the concrete supplemental attributes, and the abstract supplemental attributes are the higher up layers.
-
-## Time Series Support
-
-Attributes can include time series data like weather patterns and planned outages.
-
-## Benefits for Modelers
+## Benefits for modelers
 
 This design changes how you build power system models:
 
   - **Build in layers**: Start with electrical models, then add contextual information separately.
   - **Reuse data**: Geographic info and weather patterns can be applied to multiple systems.
   - **Work in teams**: Different people can work on electrical models and contextual data independently.
-  - **Easy updates**: Change outage schedules or weather data without touching electrical models.
+  - **Easy updates**: Change outage schedules or emissions profiles without touching electrical models.
 
-## Compared to Other Approaches
+## Compared to other approaches
 
-Other power system tools handle this differently:
+Other power system tools handle contextual data differently:
 
-**Heavy objects approach**: Some tools put all contextual data directly into component definitions. This makes objects large and unwieldy for big systems.
+**Heavy objects approach**: Some tools put all contextual data directly into component
+definitions. This makes objects large and unwieldy for big systems.
 
-**External database approach**: Others store relationships in separate databases. This can slow things down and complicate deployment.
+**External database approach**: Others store relationships in separate databases. This can
+slow things down and complicate deployment.
 
-**PowerSystems.jl's approach**: Combines the speed of in-memory data with the relationship modeling power typically found only in databases. This works well for interactive analysis.
+**PowerSystems.jl's approach**: Combines the speed of in-memory data with the relationship
+modeling power typically found only in databases. This works well for interactive analysis.
 
-## Existing Supplemental Attributes in PowerSystems
+## What kinds of contextual data are available?
 
-  - [`GeographicInfo`](@ref)
-  - [`ImpedanceCorrectionData`](@ref)
+PowerSystems.jl provides supplemental attribute types for common modeling needs. Each topic
+has a dedicated explanation page and a matching how-to guide; field-level API details live
+in the [Public API Reference](@ref) docstrings.
 
-### Contingency Attributes
+| Modeling need                                                     | Explanation                                                             | How-to                                                                                 |
+|:----------------------------------------------------------------- |:----------------------------------------------------------------------- |:-------------------------------------------------------------------------------------- |
+| Group units into plants (shafts, penstocks, PCCs, combined cycle) | [Grouping generators into plants](@ref grouping_generators_into_plants) | [Group generators into plants](@ref group_generators_into_plants)                      |
+| Emissions rates and start-up adders                               | [Emissions metadata](@ref emissions_metadata)                           | [Add emissions to generators](@ref add_emissions_to_generators)                        |
+| Planned and forced outages                                        | [Outage and contingency data](@ref outage_and_contingency_data)         | [Model generator outages](@ref model_generator_outages)                                |
+| Geographic location (GeoJSON)                                     | *(this page)*                                                           | [Parse MATPOWER or PSS/e files](@ref pm_data) — auto-loaded from PSS/e v35 substations |
+| PSS/e transformer impedance correction tables                     | *(this page)*                                                           | [Migrate from version 4.0 to 5.0](@ref psy5_migration)                                 |
 
-  - [`FixedForcedOutage`](@ref)
-  - [`GeometricDistributionForcedOutage`](@ref)
-  - [`PlannedOutage`](@ref)
+[`GeographicInfo`](@ref) stores GeoJSON location metadata and can be shared across buses.
+When parsing PSS/e v35 files with a substation section, coordinates are automatically
+attached as [`GeographicInfo`](@ref) attributes. See [Parsing MATPOWER or PSS/e Files](@ref pm_data).
 
-#### Narrowing post-contingency monitoring
+[`ImpedanceCorrectionData`](@ref) links a PSS/e Transformer Impedance Correction Table row
+to a transformer. It is typically populated during PSS/e import rather than built by hand.
 
-Every concrete [`Outage`](@ref) carries a `monitored_components` field of type
-`Vector{Base.UUID}`. It identifies the [`Device`](@ref)s whose post-contingency
-state a downstream simulation package (e.g., PowerSimulations) should model when
-this outage occurs. Limiting the list reduces the number of post-outage variables
-and constraints in security-constrained models.
+Attributes can include [time series data](@ref ts_data) — for example, planned outage
+schedules and stochastic forced-outage probabilities.
 
-PowerSystems itself does not attach meaning to the contents of the list. In
-particular, an empty `monitored_components` is left for the consumer to
-interpret — typical conventions are "monitor nothing" (skip post-contingency
-modeling) or "monitor everything" (preserve full N-1 behavior). Pick the policy
-that matches your downstream model.
+## Learn more
 
-The constructor accepts any iterable whose elements are `Base.UUID` or
-`Device` — for example a `Vector`, a generator expression, or the iterator
-returned by [`get_components`](@ref). Devices are converted to UUIDs
-internally:
-
-```julia
-gen1 = get_component(ThermalStandard, system, "gen1")
-gen2 = get_component(ThermalStandard, system, "gen2")
-outage = FixedForcedOutage(;
-    outage_status = 0.0,
-    monitored_components = [gen1, gen2],
-)
-add_supplemental_attribute!(system, gen1, outage)
-
-# Equivalent — every ThermalStandard in the system:
-outage_all = FixedForcedOutage(;
-    outage_status = 0.0,
-    monitored_components = get_components(ThermalStandard, system),
-)
-```
-
-Use the dedicated accessors to inspect or update the list at any time. The
-singular `add_/remove_*!` methods take one `UUID` or `Device`; the plural
-`add_/remove_*s!` and `set_` methods take any iterable of either.
-`set_monitored_components!` requires the list to be empty — call
-`clear_monitored_components!` first to replace an existing list:
-
-```julia
-get_monitored_components(outage)                                  # → Vector{UUID}
-clear_monitored_components!(outage)                               # wipe
-set_monitored_components!(outage, get_components(Line, system))   # populate (must be empty)
-add_monitored_component!(outage, gen2)                            # append one (deduped)
-add_monitored_components!(outage, [gen1, gen2])                   # append many
-remove_monitored_component!(outage, gen1)                         # remove one
-remove_monitored_components!(outage, [gen1, gen2])                # remove many
-```
-
-When `system.runchecks == true`, `add_supplemental_attribute!` resolves each
-UUID against the parent system and raises an `ArgumentError` for any UUID that
-does not point to a `Device` in the system. With `runchecks = false`, UUIDs are
-accepted as-is and resolution is deferred to the consumer.
-
-### Plant Attributes
-
-Plant attributes are a specialized category of supplemental attributes for grouping individual
-generator units into logical plant structures. See [Plant Attributes](@ref plant_attributes)
-for detailed documentation.
-
-  - [`ThermalPowerPlant`](@ref) - Thermal plants with shared shafts
-  - [`CombinedCycleBlock`](@ref) - Combined cycle plants with HRSG configurations
-  - [`CombinedCycleFractional`](@ref) - Combined cycle plants with aggregate heat rate and exclusion groups
-  - [`HydroPowerPlant`](@ref) - Hydro plants with shared penstocks
-  - [`RenewablePowerPlant`](@ref) - Renewable plants with shared PCCs
-
-## Learn More
-
-  - [Add Supplemental Attributes to a System](@ref add_supplemental_attributes) -- step-by-step guide for attaching attributes to components
-  - [`SupplementalAttribute`](@ref) API reference -- complete listing of all supplemental attribute types, their fields, and associated functions
+  - [Attach supplemental data to components](@ref attach_contextual_data) — attach any supplemental attribute to a component
+  - [Query contextual data on a system](@ref query_contextual_data) — retrieve attributes and their associations
+  - [Grouping units and emissions](@ref "Grouping Units and Emissions") — hands-on tutorial
+  - [Type Structure](@ref type_structure) — where supplemental attributes sit in the type hierarchy

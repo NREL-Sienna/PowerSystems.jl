@@ -81,7 +81,8 @@ highlight the types most relevant to `PowerSystems.jl` users:
     component's electrical definition. Separating attributes from [`Component`](@ref)s
     reflects the fact that this metadata is often shared across many devices or updated on
     a different schedule than network equipment data. See
-    [About Supplemental Attributes](@ref supplemental_attributes_explanation).
+    [Supplemental attributes](@ref supplemental_attributes_explanation) and
+    [Grouping generators into plants](@ref grouping_generators_into_plants).
 
   - [`TimeSeriesData`](@ref): the abstract supertype for all time-varying data associated
     with components:

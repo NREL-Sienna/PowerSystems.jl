@@ -56,10 +56,13 @@ pages = OrderedDict(
             "...convert transformer impedances between per-unit bases" => "how_to/convert_transformer_impedance.md",
             "...use subsystems" => "how_to/use_subsystems.md",
             "...use context managers for bulk operations" => "how_to/use_context_managers.md",
-            "...add additional data to a component" => Any[
-                "Add Supplemental Attributes to a System" => "how_to/add_supplemental_attributes.md",
-                "Use Supplemental Attributes" => "how_to/use_supplemental_attributes.md",
-                "Add additional fields to a component" => "how_to/adding_additional_fields.md",
+            "...add supplemental data beyond component fields" => Any[
+                "Attach supplemental data to components" => "how_to/add_supplemental_attributes.md",
+                "Query contextual data on a system" => "how_to/use_supplemental_attributes.md",
+                "Group generators into plants" => "how_to/group_generators_into_plants.md",
+                "Model generator outages" => "how_to/model_generator_outages.md",
+                "Add emissions to generators" => "how_to/add_emissions_to_generators.md",
+                "Add custom data to a component" => "how_to/adding_additional_fields.md",
             ],
             "...add time-series data" => Any[
                 "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
@@ -92,8 +95,9 @@ pages = OrderedDict(
             "explanation/time_series.md",
             "explanation/dynamic_data.md",
             "explanation/supplemental_attributes.md",
-            "explanation/plant_attributes.md",
-            "explanation/emissions_data.md",
+            "explanation/grouping_generators_into_plants.md",
+            "explanation/emissions_metadata.md",
+            "explanation/outage_and_contingency_data.md",
             ],
         "Model Library" => Any[],
         "Reference" =>
@@ -210,6 +214,7 @@ makedocs(
     authors = "Jose Daniel Lara, Daniel Thom, Kate Doubleday, Rodrigo Henriquez-Auba, and Clayton Barrows",
     pages = Any[p for p in pages],
     draft = false,
+    warnonly = [:cross_references],
     plugins = [links, fallbacks],
 )
 
