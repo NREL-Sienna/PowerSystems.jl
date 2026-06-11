@@ -119,6 +119,10 @@ Private = false
 Filter = t -> t ∉ [System]
 ```
 
+```@docs
+check_parallel_branch_type_consistency
+```
+
 ## Advanced Component Selection
 
 The primary way to retrieve components in PowerSystems.jl is with the [`get_components`](@ref) and similar `get_*` methods above. The following `ComponentSelector` interface offers advanced, repeatable component selection primarily for multi-scenario post-processing analytics. See [`PowerAnalytics.jl`](https://sienna-platform.github.io/PowerAnalytics.jl/stable/).
