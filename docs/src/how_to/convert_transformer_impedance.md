@@ -37,11 +37,11 @@ $$Z_{pu,\,\text{new}} = Z_{pu,\,\text{old}} \times \frac{S_{base,\,\text{new}}}{
 
 where:
 
-  - $S_{base,\,\text{new}}$ — your chosen system-wide base MVA.
-  - $S_{rated,\,\text{old}}$ — the transformer's nameplate rated MVA.
-  - $V_{rated,\,\text{old}}$ — the transformer's nameplate rated voltage on the side being
+  - ``S_{base,\,\text{new}}`` — your chosen system-wide base MVA.
+  - ``S_{rated,\,\text{old}}`` — the transformer's nameplate rated MVA.
+  - ``V_{rated,\,\text{old}}`` — the transformer's nameplate rated voltage on the side being
     considered.
-  - $V_{base,\,\text{new}}$ — the system base voltage for that same side.
+  - ``V_{base,\,\text{new}}`` — the system base voltage for that same side.
 
 This calculation only needs to be done once per transformer. Because the per-unit
 impedance of a transformer is identical when referred from either side (provided base
