@@ -64,11 +64,23 @@ function get_services(device::Device)
 end
 
 """
-Return the [`DynamicInjection`](@ref) component attached to this device,
-or `nothing` if none is attached.
+Return `true` if the device has active power as a controllable parameter.
+"""
+supports_active_power(::StaticInjection) = true
 
-# Arguments
-- `d::`[`StaticInjection`](@ref): The static injection device.
+"""
+Return `true` if the device has reactive power as a controllable parameter.
+"""
+supports_reactive_power(::StaticInjection) = true
+
+"""
+Return `true` if the device can control voltage at its connected bus.
+"""
+supports_voltage_control(::StaticInjection) = false
+
+"""
+Return the [`DynamicInjection`](@ref) component attached to this [`StaticInjection`](@ref)
+device, or `nothing` if none is attached.
 """
 get_dynamic_injector(d::StaticInjection) = nothing
 

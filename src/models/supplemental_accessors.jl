@@ -420,3 +420,65 @@ See also: [`supports_services`](@ref)
 function supports_services(::AreaInterchange)
     return true
 end
+
+# supports_active_power overrides for types without controllable active power
+supports_active_power(::SynchronousCondenser) = false
+
+# supports_reactive_power overrides for types without controllable reactive power
+supports_reactive_power(::InterconnectingConverter) = false
+
+# A shunt-admittance component counts as power support only above an absolute
+# threshold, so negligible admittances do not force their host bus to be kept.
+_nonzero_admittance(x::Real) = abs(x) > ZERO_ADMITTANCE_THRESHOLD
+
+# FixedAdmittance / SwitchedAdmittance support active power via conductance
+# (real(Y)) and reactive power via susceptance (imag(Y)), so capability is
+# parameter-dependent rather than a fixed type property.
+supports_active_power(d::FixedAdmittance) = _nonzero_admittance(real(get_Y(d)))
+supports_reactive_power(d::FixedAdmittance) = _nonzero_admittance(imag(get_Y(d)))
+
+# SwitchedAdmittance can also shift admittance via per-block switchable steps, so
+# capability includes the base Y and any block with steps and an above-threshold
+# increment in the relevant component.
+function supports_active_power(d::SwitchedAdmittance)
+    _nonzero_admittance(real(get_Y(d))) && return true
+    return any(
+        n > 0 && _nonzero_admittance(real(yi))
+        for (n, yi) in zip(get_number_of_steps(d), get_Y_increase(d))
+    )
+end
+
+function supports_reactive_power(d::SwitchedAdmittance)
+    _nonzero_admittance(imag(get_Y(d))) && return true
+    return any(
+        n > 0 && _nonzero_admittance(imag(yi))
+        for (n, yi) in zip(get_number_of_steps(d), get_Y_increase(d))
+    )
+end
+
+# FACTSControlDevice reactive power and voltage control depend on control_mode.
+# control_mode is nothing for uninitialized devices (e.g. FACTSControlDevice(nothing)).
+_facts_is_active(d::FACTSControlDevice) =
+    (mode = get_control_mode(d); !isnothing(mode) && mode != FACTSOperationModes.OOS)
+
+# In NML mode both Series and Shunt links operate, enabling active power control.
+# In BYP mode the Series link is bypassed and the Shunt acts as a STATCOM (reactive only).
+function supports_active_power(d::FACTSControlDevice)
+    mode = get_control_mode(d)
+    return !isnothing(mode) && mode == FACTSOperationModes.NML
+end
+
+supports_reactive_power(d::FACTSControlDevice) = _facts_is_active(d)
+
+# supports_voltage_control overrides for types that can control voltage
+supports_voltage_control(::Generator) = true
+supports_voltage_control(::Source) = true
+supports_voltage_control(::Storage) = true
+supports_voltage_control(::StaticInjectionSubsystem) = true
+
+supports_voltage_control(d::FACTSControlDevice) = _facts_is_active(d)
+
+function supports_voltage_control(d::SynchronousCondenser)
+    bustype = get_bustype(get_bus(d))
+    return bustype ∈ (ACBusTypes.PV, ACBusTypes.REF, ACBusTypes.SLACK)
+end
