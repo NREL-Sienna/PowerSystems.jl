@@ -43,6 +43,9 @@ Create the plant with [`HydroPowerPlant`](@ref), attach turbines with
 `add_supplemental_attribute!(sys, turbine, hydro_plant, penstock_number)`, and query with
 [`get_components_in_penstock`](@ref).
 
+Penstock grouping is separate from linking [`HydroReservoir`](@ref) components to turbines;
+see [Link hydro reservoirs to turbines](@ref hydro_resv).
+
 ## Group renewable units by PCC
 
 [`RenewablePowerPlant`](@ref) uses a positional `pcc_number` argument. Supported components
@@ -87,5 +90,5 @@ remove_supplemental_attribute!(sys, gen1, plant)
 ## See also
 
   - [Grouping generators into plants](@ref grouping_generators_into_plants) — when and why to use plant attributes
+  - [Link hydro reservoirs to turbines](@ref hydro_resv) — reservoir ↔ turbine topology
   - [Attach supplemental data to components](@ref attach_contextual_data) — general attachment pattern
-  - [Grouping units and emissions](@ref "Grouping Units and Emissions") — hands-on tutorial

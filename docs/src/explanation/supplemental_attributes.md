@@ -91,5 +91,5 @@ schedules and stochastic forced-outage probabilities.
 
   - [Attach supplemental data to components](@ref attach_contextual_data) — attach any supplemental attribute to a component
   - [Query contextual data on a system](@ref query_contextual_data) — retrieve attributes and their associations
-  - [Grouping units and emissions](@ref "Grouping Units and Emissions") — hands-on tutorial
+  - [Hydro reservoir topology](@ref hydro_reservoir_topology) — linking reservoirs to turbines (component relationships, not supplemental attributes)
   - [Type Structure](@ref type_structure) — where supplemental attributes sit in the type hierarchy

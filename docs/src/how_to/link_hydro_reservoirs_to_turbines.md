@@ -1,26 +1,13 @@
-# [Define Hydro Generators with Reservoirs](@id hydro_resv)
+# [Link hydro reservoirs to turbines](@id hydro_resv)
 
-In the current version of `PowerSystems.jl` there is support and testing for hydropower generation plants with the following structures:
+This how-to shows how to link [`HydroReservoir`](@ref) components to [`HydroTurbine`](@ref)
+and [`HydroPumpTurbine`](@ref) units. For background on the two supported topologies, see
+[Hydro reservoir topology](@ref hydro_reservoir_topology).
 
-## Shared Upstream Reservoir
+Penstock grouping via [`HydroPowerPlant`](@ref) is a separate supplemental-attribute workflow;
+see [Group generators into plants](@ref group_generators_into_plants) § Group hydro units by penstock.
 
-```mermaid
-flowchart TB
- subgraph s1["Hydro Plant 2"]
-        B["Turbine A"]
-        C["Turbine B"]
-  end
- subgraph s2["HydroPlant 1"]
-        D["Turbine C"]
-  end
-    A --- C
-    A["Reservoir"] --- B & D
-
-```
-
-For this model, attach an upstream [`HydroReservoir`](@ref) to any number of [`HydroTurbine`](@ref)s. This can model different power house elevations to consider the effect of the elevation and pressure heads on the specific turbines inside of a power plant.
-
-### Example: Single Turbine with Single Reservoir
+## Link a single turbine to a reservoir
 
 ```@example hydro_resv
 using PowerSystems
@@ -87,7 +74,7 @@ set_downstream_turbine!(reservoir, turbine)
 @assert length(get_connected_head_reservoirs(sys, turbine)) == 1
 ```
 
-### Example: Multiple Turbines with Single Reservoir
+## Link multiple turbines to one reservoir
 
 ```@example hydro_resv
 
@@ -136,23 +123,7 @@ set_downstream_turbines!(reservoir, turbines)
 @assert length(get_downstream_turbines(reservoir)) == 5
 ```
 
-## Head and Tail Reservoirs for Pumped Hydropower Plants
-
-For this model, attach two [`HydroReservoir`](@ref)s to any number of [`HydroPumpTurbine`](@ref)s. The turbine and reservoir structs store the elevations to calculate the elevation and pressure heads for the facility.
-
-```mermaid
-flowchart TB
- subgraph s1["Pumped Hydro Plant"]
-        B["Turbine A"]
-        C["Turbine B"]
-  end
-    A["Head Reservoir"] --- B
-    A --- C
-    C --- D
-    B --- D["Tail Reservoir"]
-```
-
-### Example: Pumped Hydro with Head and Tail Reservoirs
+## Model pumped storage with head and tail reservoirs
 
 ```@example hydro_resv
 # Create a HydroPumpTurbine
@@ -223,3 +194,9 @@ set_upstream_turbine!(tail_reservoir, pump_turbine)
 @assert length(get_connected_head_reservoirs(sys, pump_turbine)) == 1
 @assert length(get_connected_tail_reservoirs(sys, pump_turbine)) == 1
 ```
+
+## See also
+
+  - [Hydro reservoir topology](@ref hydro_reservoir_topology) — when to use each pattern
+  - [Group generators into plants](@ref group_generators_into_plants) — penstock grouping via [`HydroPowerPlant`](@ref)
+  - [`HydroReservoir`](@ref) — API reference (Model Library)

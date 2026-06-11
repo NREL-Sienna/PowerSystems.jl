@@ -104,6 +104,9 @@ data requirements:
     direct dispatch control.
   - [`HydroGen`](@ref): hydro units, which share properties of both dispatchable and
     resource-constrained generation but have unique reservoir and hydrology constraints.
+    See [Hydro reservoir topology](@ref hydro_reservoir_topology) for linking
+    [`HydroReservoir`](@ref) components to turbines, and [Grouping generators into plants](@ref grouping_generators_into_plants)
+    for penstock grouping via [`HydroPowerPlant`](@ref).
 
 An optimization formulation written against [`ThermalGen`](@ref) applies to [`ThermalStandard`](@ref),
 [`ThermalMultiStart`](@ref), and any user-defined thermal subtype without modification. This is

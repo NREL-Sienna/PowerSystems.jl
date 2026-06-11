@@ -67,4 +67,3 @@ length(pairs)
   - [Emissions metadata](@ref emissions_metadata) — emission rate, basis, and start-up adder concepts
   - [Attach supplemental data to components](@ref attach_contextual_data) — general attachment pattern
   - [`ValueCurve` Options](@ref curve_table) — curve types for `emission_rate`
-  - [Grouping units and emissions](@ref "Grouping Units and Emissions") — hands-on tutorial

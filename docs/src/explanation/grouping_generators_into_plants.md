@@ -82,6 +82,9 @@ a common **penstock**
 (the pipe that delivers water to the turbines). Shared penstocks create operational
 dependencies between units.
 
+Reservoir-to-turbine hydraulic topology ([`HydroReservoir`](@ref) links) is modeled separately;
+see [Hydro reservoir topology](@ref hydro_reservoir_topology).
+
 ### Renewable power plants
 
 [`RenewablePowerPlant`](@ref) represents renewable energy plants (wind farms, solar farms)
@@ -105,4 +108,3 @@ Field definitions, supported component types, and accessor functions are documen
 
   - [Supplemental attributes](@ref supplemental_attributes_explanation) — the general concept
   - [Group generators into plants](@ref group_generators_into_plants) — step-by-step attachment
-  - [Grouping units and emissions](@ref "Grouping Units and Emissions") — hands-on tutorial

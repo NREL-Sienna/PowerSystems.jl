@@ -76,7 +76,7 @@ pages = OrderedDict(
 
             ],
             "...customize or add a new Type" => "how_to/add_new_types.md",
-            "...define hydro generators with reservoirs" => "how_to/create_hydro_datasets.md",
+            "...link hydro reservoirs and turbines" => "how_to/link_hydro_reservoirs_to_turbines.md",
             "...handle 3-Winding Transformers" => "how_to/handle_3W_transformers.md",
             "...use PowerSystems.jl with JuMP.jl" => "how_to/jump.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
@@ -96,6 +96,7 @@ pages = OrderedDict(
             "explanation/dynamic_data.md",
             "explanation/supplemental_attributes.md",
             "explanation/grouping_generators_into_plants.md",
+            "explanation/hydro_reservoir_topology.md",
             "explanation/emissions_metadata.md",
             "explanation/outage_and_contingency_data.md",
             ],
