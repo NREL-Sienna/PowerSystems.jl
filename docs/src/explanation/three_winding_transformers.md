@@ -1,4 +1,4 @@
-# [Handle 3-winding transformer data](@id 3wtdata)
+# [3-winding transformer representation](@id 3wtdata)
 
 `PowerSystems.jl` stores the topological data for the [`Transformer3W`](@ref) as the common equivalent circuit in the star (or wye) configuration. In this representation, the series impedances of each winding are transformed into an equivalent star network with a common star bus.
 
@@ -73,8 +73,8 @@ Z_3 &= \frac{1}{2} (Z_{13} + Z_{23} - Z_{12})
 
 Where:
 
-  - $Z_1$: Equivalent series impedance of winding 1, connected between its terminal and the neutral point of the equivalent star.
-  - $Z_2$: Equivalent series impedance of winding 2, connected between its terminal and the neutral point of the equivalent star.
-  - $Z_3$: Equivalent series impedance of winding 3, connected between its terminal and the neutral point of the equivalent star.
+  - ``Z_1``: Equivalent series impedance of winding 1, connected between its terminal and the neutral point of the equivalent star.
+  - ``Z_2``: Equivalent series impedance of winding 2, connected between its terminal and the neutral point of the equivalent star.
+  - ``Z_3``: Equivalent series impedance of winding 3, connected between its terminal and the neutral point of the equivalent star.
 
 We store the data from both representations (Delta and Wye) for completeness as well as the star bus used in the wye representation.
