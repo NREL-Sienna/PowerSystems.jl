@@ -299,16 +299,16 @@ end
 function _post_deserialize_handling(sys::System; runchecks = true, assign_new_uuids = false)
     runchecks && check(sys)
     if assign_new_uuids
-        IS.assign_new_uuid!(sys)
+        assign_new_uuid!(sys)
         for component in get_components(Component, sys)
-            IS.assign_new_uuid!(sys, component)
+            IS.assign_new_id!(sys, component)
         end
         for component in
             IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-            IS.assign_new_uuid!(sys, component)
+            IS.assign_new_id!(sys, component)
         end
-        # Note: this does not change UUIDs for time series data because they are
-        # shared with components.
+        # Note: this reassigns the system UUID and the integer ids of components. It does
+        # not change UUIDs for time series data because they are shared with components.
     end
 end
 
@@ -338,9 +338,9 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
     new_sys = deepcopy(sys)
     filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
 
-    IS.assign_new_uuid!(new_sys)
+    assign_new_uuid!(new_sys)
     for component in get_components(Component, new_sys)
-        IS.assign_new_uuid!(new_sys, component)
+        IS.assign_new_id!(new_sys, component)
     end
 
     return new_sys
@@ -354,15 +354,15 @@ function filter_components_by_subsystem!(
     subsystem::AbstractString;
     runchecks = true,
 )
-    component_uuids = get_component_uuids(sys, subsystem)
+    component_ids = get_component_ids(sys, subsystem)
     for component in get_components(Component, sys)
-        if !in(IS.get_uuid(component), component_uuids)
+        if !in(IS.get_id(component), component_ids)
             remove_component!(sys, component)
         end
     end
 
     for component in IS.get_masked_components(Component, sys.data)
-        if !in(IS.get_uuid(component), component_uuids)
+        if !in(IS.get_id(component), component_ids)
             IS.remove_masked_component!(sys.data, component)
         end
     end
@@ -436,7 +436,11 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     @info "Serialized System metadata to $filename"
 end
 
-IS.assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
+"""
+Assign a new UUID to the system itself. Components are identified by integer ids; see
+[`assign_new_id!`](@ref) to reassign a component's id.
+"""
+assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
 
 """
 Return the internal of the system
@@ -1356,15 +1360,14 @@ function IS.get_components(
 end
 
 """
-Get the component by UUID.
+Get the component by its integer id.
 """
-IS.get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
-IS.get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+IS.get_component(sys::System, id::Int) = IS.get_component(sys.data, id)
 
 """
-Change the UUID of a component.
+Assign a new integer id to a component.
 """
-IS.assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
+IS.assign_new_id!(sys::System, x::Component) = IS.assign_new_id!(sys.data, x)
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
@@ -2032,13 +2035,13 @@ function add_supplemental_attribute!(
     outage::Outage,
 )
     if get_runchecks(sys)
-        for uuid in get_monitored_components(outage)
-            comp = IS.get_component(sys, uuid)  # throws ArgumentError on miss
+        for id in get_monitored_components(outage)
+            comp = IS.get_component(sys, id)  # throws ArgumentError on miss
             if !(comp isa Device)
                 throw(
                     ArgumentError(
-                        "monitored_components on $(typeof(outage)) references UUID " *
-                        "$(uuid), which resolves to $(typeof(comp)); only " *
+                        "monitored_components on $(typeof(outage)) references id " *
+                        "$(id), which resolves to $(typeof(comp)); only " *
                         "Device subtypes are allowed",
                     ),
                 )
@@ -2170,12 +2173,12 @@ function get_associated_supplemental_attributes(
 end
 
 """
-Return the supplemental attribute with the given uuid.
+Return the supplemental attribute with the given integer id.
 
 Throws ArgumentError if the attribute is not stored.
 """
-function get_supplemental_attribute(sys::System, uuid::Base.UUID)
-    return IS.get_supplemental_attribute(sys.data, uuid)
+function get_supplemental_attribute(sys::System, id::Int)
+    return IS.get_supplemental_attribute(sys.data, id)
 end
 
 """
@@ -3212,7 +3215,7 @@ function convert_component!(
         line.ext,
         _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(sys, line)
+    IS.assign_new_id!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -3258,7 +3261,7 @@ function convert_component!(
         line.ext,
         _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(sys, line)
+    IS.assign_new_id!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -3293,7 +3296,7 @@ function convert_component!(
         internal = _copy_internal_for_conversion(old_load),
         services = Device[],
     )
-    IS.assign_new_uuid!(sys, old_load)
+    IS.assign_new_id!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
     # TODO: PSY4
@@ -3337,7 +3340,11 @@ end
 # Use this function to avoid deepcopy of shared_system_references.
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
+    # Carry over both the integer id and the UUID so the converted component inherits the
+    # original's identity. The original component is given a fresh id (assign_new_id!) and
+    # removed before the new component is added, so there is no id collision.
     return InfrastructureSystemsInternal(;
+        id = internal.id,
         uuid = deepcopy(internal.uuid),
         units_info = deepcopy(internal.units_info),
         shared_system_references = nothing,

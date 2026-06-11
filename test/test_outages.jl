@@ -7,11 +7,11 @@
     forced_outages =
         collect(get_supplemental_attributes(GeometricDistributionForcedOutage, sys))
     @test length(forced_outages) == 2
-    @test get_supplemental_attribute(sys, IS.get_uuid(forced_outages[1])) ==
+    @test get_supplemental_attribute(sys, IS.get_id(forced_outages[1])) ==
           forced_outages[1]
     planned_outages = collect(get_supplemental_attributes(PlannedOutage, sys))
     @test length(planned_outages) == 2
-    @test get_supplemental_attribute(sys, IS.get_uuid(planned_outages[1])) ==
+    @test get_supplemental_attribute(sys, IS.get_id(planned_outages[1])) ==
           planned_outages[1]
 
     geos = get_supplemental_attributes(GeographicInfo, sys)
@@ -34,11 +34,11 @@
         for type in (GeometricDistributionForcedOutage, PlannedOutage, GeographicInfo)
             attributes = get_supplemental_attributes(type, gen)
             @test length(attributes) == 1
-            uuid = IS.get_uuid(attributes[1])
-            get_supplemental_attribute(sys, uuid)
-            get_supplemental_attribute(gen, uuid)
-            @test get_supplemental_attribute(gen, uuid) ==
-                  get_supplemental_attribute(sys, uuid)
+            id = IS.get_id(attributes[1])
+            get_supplemental_attribute(sys, id)
+            get_supplemental_attribute(gen, id)
+            @test get_supplemental_attribute(gen, id) ==
+                  get_supplemental_attribute(sys, id)
         end
     end
 
@@ -152,8 +152,8 @@ end
     sys = create_system_with_outages()
     gens = collect(get_components(ThermalStandard, sys))
     gen1, gen2 = gens[1], gens[2]
-    uuid1 = IS.get_uuid(gen1)
-    uuid2 = IS.get_uuid(gen2)
+    id1 = IS.get_id(gen1)
+    id2 = IS.get_id(gen2)
 
     # Default is empty for all three concrete types
     @test isempty(
@@ -166,13 +166,13 @@ end
     @test isempty(get_monitored_components(PlannedOutage(; outage_schedule = "x")))
     @test isempty(get_monitored_components(FixedForcedOutage(; outage_status = 0.0)))
 
-    # Construct with UUIDs
-    fo_uuid = GeometricDistributionForcedOutage(;
+    # Construct with integer ids
+    fo_id = GeometricDistributionForcedOutage(;
         mean_time_to_recovery = 1.0,
         outage_transition_probability = 0.5,
-        monitored_components = [uuid1, uuid2],
+        monitored_components = [id1, id2],
     )
-    @test get_monitored_components(fo_uuid) == Set([uuid1, uuid2])
+    @test get_monitored_components(fo_id) == Set([id1, id2])
 
     # Construct with Device references
     fo_dev = GeometricDistributionForcedOutage(;
@@ -180,7 +180,7 @@ end
         outage_transition_probability = 0.5,
         monitored_components = [gen1, gen2],
     )
-    @test get_monitored_components(fo_dev) == Set([uuid1, uuid2])
+    @test get_monitored_components(fo_dev) == Set([id1, id2])
 
     # Construct with the FlattenIteratorWrapper returned by get_components
     fo_iter = GeometricDistributionForcedOutage(;
@@ -188,71 +188,71 @@ end
         outage_transition_probability = 0.5,
         monitored_components = get_components(ThermalStandard, sys),
     )
-    @test get_monitored_components(fo_iter) == Set(IS.get_uuid.(gens))
+    @test get_monitored_components(fo_iter) == Set(IS.get_id.(gens))
 
-    # Construction silently dedups duplicate UUIDs
+    # Construction silently dedups duplicate ids
     fo_dup = GeometricDistributionForcedOutage(;
         mean_time_to_recovery = 1.0,
         outage_transition_probability = 0.5,
-        monitored_components = [uuid1, uuid1, uuid2],
+        monitored_components = [id1, id1, id2],
     )
-    @test get_monitored_components(fo_dup) == Set([uuid1, uuid2])
+    @test get_monitored_components(fo_dup) == Set([id1, id2])
 
     # Same for PlannedOutage and FixedForcedOutage
     po = PlannedOutage(; outage_schedule = "1", monitored_components = [gen1])
-    @test get_monitored_components(po) == Set([uuid1])
-    ff = FixedForcedOutage(; outage_status = 1.0, monitored_components = [uuid2])
-    @test get_monitored_components(ff) == Set([uuid2])
+    @test get_monitored_components(po) == Set([id1])
+    ff = FixedForcedOutage(; outage_status = 1.0, monitored_components = [id2])
+    @test get_monitored_components(ff) == Set([id2])
 
-    # set_monitored_components! accepts UUID and Device iterables
+    # set_monitored_components! accepts id and Device iterables
     o = FixedForcedOutage(; outage_status = 0.0)
-    set_monitored_components!(o, [uuid1])
-    @test get_monitored_components(o) == Set([uuid1])
+    set_monitored_components!(o, [id1])
+    @test get_monitored_components(o) == Set([id1])
     set_monitored_components!(o, [gen2])
-    @test get_monitored_components(o) == Set([uuid2])
-    set_monitored_components!(o, Base.UUID[])
+    @test get_monitored_components(o) == Set([id2])
+    set_monitored_components!(o, Int[])
     @test isempty(get_monitored_components(o))
     # set_ also accepts a FlattenIteratorWrapper from get_components
     set_monitored_components!(o, get_components(ThermalStandard, sys))
-    @test get_monitored_components(o) == Set(IS.get_uuid.(gens))
-    set_monitored_components!(o, Base.UUID[])
+    @test get_monitored_components(o) == Set(IS.get_id.(gens))
+    set_monitored_components!(o, Int[])
 
-    # add_monitored_component! with single UUID or Device, including dedup
-    add_monitored_component!(o, uuid1)
+    # add_monitored_component! with single id or Device, including dedup
+    add_monitored_component!(o, id1)
     add_monitored_component!(o, gen2)
-    @test get_monitored_components(o) == Set([uuid1, uuid2])
+    @test get_monitored_components(o) == Set([id1, id2])
     add_monitored_component!(o, gen1)  # duplicate, should no-op
-    @test get_monitored_components(o) == Set([uuid1, uuid2])
+    @test get_monitored_components(o) == Set([id1, id2])
     @test length(get_monitored_components(o)) == 2
 
     # add_monitored_components! with iterables: Vector, generator, FlattenIteratorWrapper
     o2 = FixedForcedOutage(; outage_status = 0.0)
-    add_monitored_components!(o2, [uuid1, gen2])  # mixed UUID + Device
-    @test get_monitored_components(o2) == Set([uuid1, uuid2])
+    add_monitored_components!(o2, [id1, gen2])  # mixed id + Device
+    @test get_monitored_components(o2) == Set([id1, id2])
     add_monitored_components!(o2, (g for g in gens[1:2]))  # generator, all already present
-    @test get_monitored_components(o2) == Set([uuid1, uuid2])
+    @test get_monitored_components(o2) == Set([id1, id2])
     o3 = FixedForcedOutage(; outage_status = 0.0)
     add_monitored_components!(o3, get_components(ThermalStandard, sys))
-    @test get_monitored_components(o3) == Set(IS.get_uuid.(gens))
+    @test get_monitored_components(o3) == Set(IS.get_id.(gens))
 
-    # remove_monitored_component! with single UUID or Device
-    remove_monitored_component!(o, uuid1)
-    @test get_monitored_components(o) == Set([uuid2])
+    # remove_monitored_component! with single id or Device
+    remove_monitored_component!(o, id1)
+    @test get_monitored_components(o) == Set([id2])
     remove_monitored_component!(o, gen2)
     @test isempty(get_monitored_components(o))
-    # Removing absent UUID is a no-op
-    remove_monitored_component!(o, uuid1)
+    # Removing absent id is a no-op
+    remove_monitored_component!(o, id1)
     @test isempty(get_monitored_components(o))
 
     # remove_monitored_components! with an iterable
     remove_monitored_components!(o3, get_components(ThermalStandard, sys))
     @test isempty(get_monitored_components(o3))
 
-    # Validation under runchecks=true: a bogus UUID at attach time raises
-    bogus_uuid = Base.UUID("00000000-0000-0000-0000-000000000000")
+    # Validation under runchecks=true: a bogus id at attach time raises
+    bogus_id = 999_999
     bad_outage = FixedForcedOutage(;
         outage_status = 0.0,
-        monitored_components = [bogus_uuid],
+        monitored_components = [bogus_id],
     )
     @test_throws ArgumentError add_supplemental_attribute!(sys, gen1, bad_outage)
 
@@ -262,18 +262,18 @@ end
     gen_nc = first(get_components(ThermalStandard, sys_nocheck))
     bad_outage2 = FixedForcedOutage(;
         outage_status = 0.0,
-        monitored_components = [bogus_uuid],
+        monitored_components = [bogus_id],
     )
     add_supplemental_attribute!(sys_nocheck, gen_nc, bad_outage2)
-    @test bogus_uuid in get_monitored_components(bad_outage2)
+    @test bogus_id in get_monitored_components(bad_outage2)
 
-    # A non-Device UUID is rejected under runchecks=true
+    # A non-Device id is rejected under runchecks=true
     sys2 = create_system_with_outages()
     bus = first(get_components(ACBus, sys2))
-    bus_uuid = IS.get_uuid(bus)
+    bus_id = IS.get_id(bus)
     bad_kind = FixedForcedOutage(;
         outage_status = 0.0,
-        monitored_components = [bus_uuid],
+        monitored_components = [bus_id],
     )
     gen_for_attach = first(get_components(ThermalStandard, sys2))
     @test_throws ArgumentError add_supplemental_attribute!(sys2, gen_for_attach, bad_kind)
@@ -288,24 +288,24 @@ end
         set_monitored_components!(outage, gens)
     end
 
-    # Round-trip via to_json/from_json, preserving UUIDs.
+    # Round-trip via to_json/from_json, preserving integer ids.
     test_dir = mktempdir()
     path = joinpath(test_dir, "sys_with_monitored.json")
     to_json(sys, path; force = true)
     sys2 = System(path)
 
-    # Every outage must come back with the same monitored UUIDs (set semantics —
-    # order is not preserved), and each UUID must still resolve to a Device in
+    # Every outage must come back with the same monitored ids (set semantics —
+    # order is not preserved), and each id must still resolve to a Device in
     # the new system.
-    expected_uuids = Set(IS.get_uuid.(gens))
+    expected_ids = Set(IS.get_id.(gens))
     outages2 = collect(get_supplemental_attributes(Outage, sys2))
     @test length(outages2) == 4
     for outage in outages2
-        uuids = get_monitored_components(outage)
-        @test uuids isa Set{Base.UUID}
-        @test uuids == expected_uuids
-        for uuid in uuids
-            comp = IS.get_component(sys2, uuid)
+        ids = get_monitored_components(outage)
+        @test ids isa Set{Int}
+        @test ids == expected_ids
+        for id in ids
+            comp = IS.get_component(sys2, id)
             @test comp isa ThermalStandard
         end
     end

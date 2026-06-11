@@ -155,9 +155,8 @@ end
 
     # Test debugging functions.
     component = first(components)
-    uuid = IS.get_uuid(component)
-    @test get_name(get_component(sys, uuid)) == get_name(component)
-    @test get_name(get_component(sys, string(uuid))) == get_name(component)
+    id = IS.get_id(component)
+    @test get_name(get_component(sys, id)) == get_name(component)
 end
 
 @testset "Test remove_component" begin

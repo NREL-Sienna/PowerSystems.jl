@@ -174,14 +174,16 @@ end
     ) !== nothing
 end
 
-@testset "Test deserialization with new UUIDs" begin
+@testset "Test deserialization with new identities" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     sys2, result = validate_serialization(sys; assign_new_uuids = true)
     @test result
+    # The system itself is still identified by a UUID, which is reassigned.
     @test IS.get_uuid(sys) != IS.get_uuid(sys2)
+    # Components are identified by integer ids, which are reassigned.
     for component1 in get_components(Component, sys)
         component2 = get_component(typeof(component1), sys2, get_name(component1))
-        @test IS.get_uuid(component1) != IS.get_uuid(component2)
+        @test IS.get_id(component1) != IS.get_id(component2)
     end
 end
 

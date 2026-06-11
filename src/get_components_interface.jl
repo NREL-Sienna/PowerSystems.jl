@@ -126,10 +126,9 @@ get_components(
 
 # get_component
 """
-Get the component by UUID.
+Get the component by its integer id.
 """
-get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys, uuid)
-get_component(sys::System, uuid::String) = IS.get_component(sys, uuid)
+get_component(sys::System, id::Int) = IS.get_component(sys, id)
 
 """
 Get the component of type T with name. Returns nothing if no component matches. If T is an abstract
