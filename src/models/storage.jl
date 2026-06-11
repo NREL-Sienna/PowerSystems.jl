@@ -1,8 +1,8 @@
 """
 Abstract supertype for energy storage technologies.
 
-Storage devices can both inject and absorb power from the grid. Concrete subtypes
-include [`EnergyReservoirStorage`](@ref) and [`HybridSystem`](@ref).
+Storage devices can both inject and absorb power from the grid. The concrete subtype is
+[`EnergyReservoirStorage`](@ref).
 
 See also: [`StaticInjection`](@ref)
 """

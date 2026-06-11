@@ -3,8 +3,6 @@
 A **dynamic device** is a power system component whose behavior is described by differential equations that evolve over time, rather than by a single steady-state operating point. Dynamic devices capture the [transient response](https://en.wikipedia.org/wiki/Transient_response) of equipment — such as how a generator's rotor speed, voltage, or current changes in the milliseconds to seconds following a disturbance. In `PowerSystems.jl`, every dynamic device is attached to a corresponding [static](@ref S) component that provides the power flow
 solution, while the dynamic component adds the differential equations needed for transient stability and electromagnetic simulation.
 
-A dynamic device has two data layers, the static data layer with static components, and the dynamic data layer with dynamic components.
-
 ## Static and Dynamic Data Layers
 
 `PowerSystems.jl` uses two categories to define data for dynamic simulations:
@@ -12,7 +10,7 @@ A dynamic device has two data layers, the static data layer with static componen
  1. [Static](@ref S) components, which includes the data needed to run a power flow problem
  2. [Dynamic](@ref D) components are those that define differential equations to run a transient simulation. **These dynamic data are attached to the static components.**
 
-Although `PowerSystems.jl` is not constrained to only PSS/e files, commonly the data for a dynamic simulation comes in a pair of files: One for the static data power flow case (e.g.,`.raw` file) and a second one with the dynamic components information (e.g., `.dyr` file). However, `PowerSystems.jl` is able to take any power flow case and specify dynamic components to it. The two data layers in `PowerSystems.jl`, static components and dynamic components, are similar to the data division between the static and dynamic data layers.
+This division mirrors how dynamic simulation data is commonly distributed: a power flow case (e.g., a PSS/e `.raw` file) paired with a file of dynamic component data (e.g., a `.dyr` file). `PowerSystems.jl` is not constrained to PSS/e files, however — it can take any power flow case and attach dynamic components to it.
 
 ### Layer 1: Static Components
 

@@ -57,9 +57,17 @@ $$X_{pu,\,\text{new}} = 0.10 \times \frac{100}{50} \times \left(\frac{115}{115}\
 ## Step 3: Read impedance values in PowerSystems.jl
 
 `PowerSystems.jl` stores transformer impedance on the **device base** internally.
-Getter functions such as [`get_x`](@ref) automatically apply the base conversion and
-return the value on whichever base the [`System`](@ref) is currently set to, following the
-conventions described in [Per-unit Conventions](@ref per_unit).
+Getter functions such as [`get_x`](@ref) automatically apply the MVA-ratio part of the
+base conversion ($S_{base,\,\text{new}} / S_{rated,\,\text{old}}$) and return the value on
+whichever base the [`System`](@ref) is currently set to, following the conventions
+described in [Per-unit Conventions](@ref per_unit).
+
+!!! warning
+
+    The automatic conversion assumes the transformer's rated voltages match the base
+    voltages of the buses it connects. If they differ, apply the
+    $(V_{rated,\,\text{old}} / V_{base,\,\text{new}})^2$ correction from Step 2 manually
+    before storing the impedance.
 
 The example below builds the same transformer used in Step 2 (50 MVA, 115/13.8 kV,
 $X_{pu} = 0.10$ on its own nameplate base):
@@ -101,7 +109,7 @@ xfmr = Transformer2W(;
     r = 0.0,
     x = 0.10,               # p.u. on device base (nameplate: 50 MVA, 115/13.8 kV)
     primary_shunt = 0.0 + 0.0im,
-    rating = 0.5,           # MVA rating in SYSTEM_BASE p.u.: 50 MVA / 100 MVA system base
+    rating = 1.0,           # p.u. on the device base: 50 MVA / 50 MVA nameplate rating
     base_power = 50.0,      # MVA — transformer nameplate rating
 )
 

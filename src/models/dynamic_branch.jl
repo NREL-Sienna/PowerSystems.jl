@@ -68,13 +68,13 @@ get_r(value::DynamicBranch) = get_r(value.branch)
 get_x(value::DynamicBranch) = get_x(value.branch)
 """Return susceptance `b` from the underlying branch of a [`DynamicBranch`](@ref)."""
 get_b(value::DynamicBranch) = get_b(value.branch)
-"""Return the A-side `rating` from the underlying branch of a [`DynamicBranch`](@ref)."""
+"""Return the `rating` from the underlying branch of a [`DynamicBranch`](@ref)."""
 get_rating(value::DynamicBranch) = get_rating(value.branch)
 """Return `angle_limits` from the underlying branch of a [`DynamicBranch`](@ref)."""
 get_angle_limits(value::DynamicBranch) = get_angle_limits(value.branch)
-"""Return the B-side `rating` from the underlying branch of a [`DynamicBranch`](@ref)."""
+"""Return the second rating (`rating_b`, e.g., a short-term emergency rating) from the underlying branch of a [`DynamicBranch`](@ref)."""
 get_rating_b(value::DynamicBranch) = get_rating_b(value.branch)
-"""Return the C-side `rating` from the underlying branch of a [`DynamicBranch`](@ref)."""
+"""Return the third rating (`rating_c`, e.g., an emergency rating) from the underlying branch of a [`DynamicBranch`](@ref)."""
 get_rating_c(value::DynamicBranch) = get_rating_c(value.branch)
 """Return `services` from the underlying branch of a [`DynamicBranch`](@ref)."""
 get_services(value::DynamicBranch) = get_services(value.branch)

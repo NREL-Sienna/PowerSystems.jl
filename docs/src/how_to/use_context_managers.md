@@ -87,56 +87,21 @@ from repeated index updates.
 If an error occurs during the update, all changes are automatically reverted, ensuring data
 consistency.
 
-### Example: Adding Multiple Supplemental Attributes
-
 ```julia
-using PowerSystems
-
-# Define some supplemental attributes (e.g., outage data)
-outage1 = FixedForcedOutage(;
-    mean_time_to_recovery = 8.0,
-    mean_time_to_failure = 1000.0,
-)
-
-outage2 = FixedForcedOutage(;
-    mean_time_to_recovery = 12.0,
-    mean_time_to_failure = 800.0,
-)
-
-# Get components to attach attributes to
-gen1 = get_component(ThermalStandard, sys, "322_CT_6")
-gen2 = get_component(ThermalStandard, sys, "323_CC_1")
-
-# Use context manager for efficient bulk addition
 begin_supplemental_attributes_update(sys) do
-    add_supplemental_attribute!(sys, gen1, outage1)
-    add_supplemental_attribute!(sys, gen2, outage2)
-    # Add many more attributes...
-end
-```
-
-### Example: Bulk Operations with Error Handling
-
-```julia
-# If an error occurs, all changes are automatically reverted
-try
-    begin_supplemental_attributes_update(sys) do
-        add_supplemental_attribute!(sys, component1, attribute1)
-        add_supplemental_attribute!(sys, component2, attribute2)
-        # ... more operations ...
-        error("Something went wrong!")  # All changes will be reverted
+    for gen in get_components(ThermalStandard, sys)
+        outage = GeometricDistributionForcedOutage(;
+            mean_time_to_recovery = 8.0,
+            outage_transition_probability = 0.001,
+        )
+        add_supplemental_attribute!(sys, gen, outage)
     end
-catch e
-    @warn "Operation failed, changes were reverted" exception=e
 end
 ```
 
-!!! note
-
-    Without using this context manager, each individual call to
-    `add_supplemental_attribute!` updates internal indexes separately, which can be slow
-    when adding many attributes. The context manager batches all updates together for
-    better performance.
+Without the context manager, each individual call to `add_supplemental_attribute!` updates
+internal indexes separately, which can be slow when adding many attributes. For a complete
+worked example, see [Attach supplemental data to components](@ref attach_contextual_data).
 
 ## Using `begin_time_series_update`
 
@@ -182,70 +147,26 @@ begin_time_series_update(sys) do
 end
 ```
 
-### Example: Adding Time Series from Multiple Sources
-
-```@example use_context_managers
-# When you have time series data from multiple sources
-begin_time_series_update(sys) do
-    for component in get_components(Generator, sys)
-        # Create time series data specific to each component
-        # (In practice, this might come from CSV files, databases, or other sources)
-        component_data = Dict(
-            DateTime("2020-01-01T00:00:00") => rand(24),
-            DateTime("2020-01-02T00:00:00") => rand(24),
-        )
-
-        forecast = Deterministic(
-            "max_active_power_2",
-            component_data,
-            resolution;
-            scaling_factor_multiplier = get_max_active_power,
-        )
-        add_time_series!(sys, component, forecast)
-    end
-end
-```
-
 !!! tip
 
     When adding thousands of time series arrays, using `begin_time_series_update` can
     provide significant performance improvements by reducing file I/O and database
     transaction overhead.
 
-## Best Practices
+## Nesting Context Managers
 
- 1. **Always use context managers for bulk operations**: When adding multiple supplemental
-    attributes or time series, use the appropriate context manager to improve performance.
+Context managers can be nested if needed:
 
- 2. **Automatic cleanup**: Context managers ensure cleanup happens even if errors occur, so
-    your system state remains consistent.
-
- 3. **Nested context managers**: You can nest context managers if needed:
-
-    ```julia
-    with_units_base(sys, "NATURAL_UNITS") do
-        begin_time_series_update(sys) do
-            # Add time series with natural unit scaling factors
-            for gen in get_components(Generator, sys)
-                # ... add time series ...
-            end
+```julia
+with_units_base(sys, "NATURAL_UNITS") do
+    begin_time_series_update(sys) do
+        # Add time series with natural unit scaling factors
+        for gen in get_components(Generator, sys)
+            # ... add time series ...
         end
     end
-    ```
-
- 4. **Error handling**: The context managers automatically handle cleanup, but you can still
-    use `try-catch` blocks for application-specific error handling:
-
-    ```julia
-    try
-        begin_time_series_update(sys) do
-            # ... operations ...
-        end
-    catch e
-        @error "Time series update failed" exception=e
-        # Handle application-specific recovery
-    end
-    ```
+end
+```
 
 ## See Also
 

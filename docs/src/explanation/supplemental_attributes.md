@@ -17,7 +17,11 @@ maintenance, and no validation of what was stored.
 
 Supplemental attributes address this by using structured types instead of loose dictionaries.
 Electrical behavior stays in component definitions; contextual information lives in
-attributes that can be attached, queried, and shared explicitly.
+attributes that can be attached, queried, and shared explicitly. This lets you build models
+in layers (electrical first, context later), reuse contextual data across systems, and
+update outage schedules or emissions profiles without touching electrical models — while
+keeping the speed of in-memory data rather than relying on heavyweight component objects or
+an external relationship database.
 
 ## How relationships work
 
@@ -40,28 +44,6 @@ flowchart LR
 
 This flexibility matches how power systems actually work, where components share resources
 and are affected by common factors.
-
-## Benefits for modelers
-
-This design changes how you build power system models:
-
-  - **Build in layers**: Start with electrical models, then add contextual information separately.
-  - **Reuse data**: Geographic info and weather patterns can be applied to multiple systems.
-  - **Work in teams**: Different people can work on electrical models and contextual data independently.
-  - **Easy updates**: Change outage schedules or emissions profiles without touching electrical models.
-
-## Compared to other approaches
-
-Other power system tools handle contextual data differently:
-
-**Heavy objects approach**: Some tools put all contextual data directly into component
-definitions. This makes objects large and unwieldy for big systems.
-
-**External database approach**: Others store relationships in separate databases. This can
-slow things down and complicate deployment.
-
-**PowerSystems.jl's approach**: Combines the speed of in-memory data with the relationship
-modeling power typically found only in databases. This works well for interactive analysis.
 
 ## What kinds of contextual data are available?
 

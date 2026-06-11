@@ -2,8 +2,8 @@
 $(TYPEDEF)
 $(TYPEDFIELDS)
 
-    ImportExportCost(import_offer_curves, export_offer_curves, energy_import_weekly_limit, energy_export_weekly_limits, ancillary_service_offers)
-    ImportExportCost(; import_offer_curves, export_offer_curves, energy_export_weekly_limits, ancillary_service_offers)
+    ImportExportCost(import_offer_curves, export_offer_curves, energy_import_weekly_limit, energy_export_weekly_limit, ancillary_service_offers)
+    ImportExportCost(; import_offer_curves, export_offer_curves, energy_import_weekly_limit, energy_export_weekly_limit, ancillary_service_offers)
 
 An operating cost for imports/exports and ancillary services from neighboring areas. The data model
 employs a CostCurve{PiecewiseIncrementalCurve} with an implied zero cost at zero power.
@@ -58,7 +58,7 @@ get_export_offer_curves(value::ImportExportCost) = value.export_offer_curves
 get_ancillary_service_offers(value::ImportExportCost) = value.ancillary_service_offers
 """Return the `energy_import_weekly_limit` field of [`ImportExportCost`](@ref)."""
 get_energy_import_weekly_limit(value::ImportExportCost) = value.energy_import_weekly_limit
-"""Return the `energy_export_weekly_limits` field of [`ImportExportCost`](@ref)."""
+"""Return the `energy_export_weekly_limit` field of [`ImportExportCost`](@ref)."""
 get_energy_export_weekly_limit(value::ImportExportCost) = value.energy_export_weekly_limit
 
 """Set the `import_offer_curves` field of [`ImportExportCost`](@ref)."""
@@ -73,7 +73,7 @@ set_ancillary_service_offers!(value::ImportExportCost, val) =
 """Set the `energy_import_weekly_limit` field of [`ImportExportCost`](@ref)."""
 set_energy_import_weekly_limit!(value::ImportExportCost, val) =
     value.energy_import_weekly_limit = val
-"""Set the `energy_export_weekly_limits` field of [`ImportExportCost`](@ref)."""
+"""Set the `energy_export_weekly_limit` field of [`ImportExportCost`](@ref)."""
 set_energy_export_weekly_limit!(value::ImportExportCost, val) =
     value.energy_export_weekly_limit = val
 

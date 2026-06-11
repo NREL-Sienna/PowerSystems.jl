@@ -85,6 +85,7 @@ change manually, see
 
 !!! note
 
-    The return value of the getter functions, e.g., [`get_x`](@ref) for the transformer
-    impedances will perform these transformations automatically, following the convention
-    described on this page.
+    The getter functions, e.g., [`get_x`](@ref) for the transformer impedances, apply the
+    MVA-ratio part of this conversion automatically, assuming the transformer's rated
+    voltages match the base voltages of its buses. If they differ, the voltage-ratio
+    correction must be applied manually before storing the impedance.

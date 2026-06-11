@@ -47,7 +47,8 @@ end
 """
 Return the services attached to a device.
 
-Returns an empty vector for devices that do not support services.
+Throws an error for devices that do not support services
+(see [`supports_services`](@ref supports_services(::Device))).
 
 # Arguments
 - `device::`[`Device`](@ref): The device.

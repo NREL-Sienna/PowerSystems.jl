@@ -5,7 +5,8 @@ Subsystems are named groupings of components within a [`System`](@ref), useful f
 representing e.g., regional partitions or study areas. Components must be added
 separately via [`add_component_to_subsystem!`](@ref).
 
-Throws `ArgumentError` if the maximum number of subsystems has been reached.
+Throws `InfrastructureSystems.InvalidValue` if the number of subsystems would exceed the
+number of buses in the system.
 
 See also: [`remove_subsystem!`](@ref), [`get_subsystems`](@ref)
 """

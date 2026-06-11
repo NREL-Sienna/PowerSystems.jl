@@ -29,7 +29,7 @@ See also: [`Outage`](@ref), [`GeometricDistributionForcedOutage`](@ref), [`Fixed
 abstract type UnplannedOutage <: Outage end
 
 """
-All `PowerSystems.jl` [`Outage`](@ref) types support time series. This can be overridden for custom 
+All `PowerSystems.jl` [`Outage`](@ref) types support time series. This can be overridden for custom
 outage types that do not support time series.
 """
 supports_time_series(::Outage) = true
@@ -119,6 +119,7 @@ end
     struct GeometricDistributionForcedOutage <: UnplannedOutage
         mean_time_to_recovery::Float64
         outage_transition_probability::Float64
+        monitored_components::Set{Base.UUID}
         internal::InfrastructureSystemsInternal
     end
 
@@ -189,6 +190,7 @@ get_outage_transition_probability(value::GeometricDistributionForcedOutage) =
 """
     struct PlannedOutage <: Outage
         outage_schedule::String
+        monitored_components::Set{Base.UUID}
         internal::InfrastructureSystemsInternal
     end
 
@@ -245,6 +247,7 @@ get_outage_schedule(value::PlannedOutage) = value.outage_schedule
 """
     struct FixedForcedOutage <: UnplannedOutage
         outage_status::Float64
+        monitored_components::Set{Base.UUID}
         internal::InfrastructureSystemsInternal
     end
 

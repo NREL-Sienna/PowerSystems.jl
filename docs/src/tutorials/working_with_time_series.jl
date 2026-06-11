@@ -429,25 +429,14 @@ get_time_series_array(SingleTimeSeries, planned, "outage_schedule")
 # Now, let's complete this tutorial by doing a few sanity checks on the data that we've added,
 # where are we will also examine components with time series and retrieve
 # the time series data in a few more ways.
-# First, recall that we can print a component to check its `has_time_series` field:
-
-load1
-
-# Also, recall we can print the [`System`](@ref) to summarize the data in our system:
+# Recall we can print the [`System`](@ref) to summarize the data in our system:
 
 system
 
 # Notice that new tables have been added, showing the count of
-# each Type of component that has a given time series type.
-# Notice that the [`RenewableDispatch`](@ref) generator (`wind1`) only has its [`Deterministic`](@ref) forecast
-# and no [`DeterministicSingleTimeSeries`](@ref). This is because we removed the wind's [`SingleTimeSeries`](@ref)
-# before calling `transform_single_time_series!`, preventing a conflict with its existing
-# [`Deterministic`](@ref) forecast.
-# Let's verify `wind1`'s time series to confirm:
-
-show_time_series(wind1)
-
-# See that it only has the [`Deterministic`](@ref) forecast, as expected.
+# each Type of component that has a given time series type. As expected from the earlier
+# removal, `wind1` has only its [`Deterministic`](@ref) forecast and no
+# [`DeterministicSingleTimeSeries`](@ref).
 # Finally, let's do a last data sanity check on the forecasts. Since we defined the wind
 # time series in MW instead of scaling factors, let's make sure none of our forecasts exceeds
 # the `max_active_power` parameter.
