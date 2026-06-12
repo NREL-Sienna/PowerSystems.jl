@@ -4,49 +4,33 @@ When working with generators in PowerSystems.jl, it's important to understand th
 
 ## Base Power
 
-**Base power** is the reference power value used for per-unitization of a specific device.
+**Base power** is the reference power value used for per-unitization of a specific
+device — the denominator when converting device parameters to per-unit values, typically
+the nameplate capacity. It answers: "What is the natural scale of this device?"
 
-  - **Purpose**: Serves as the denominator when converting device parameters to per-unit values
-  - **Units**: Always stored in **natural units** (MVA)
-  - **Typical value**: The nameplate capacity of the device
-  - **Access**: Retrieved using [`get_base_power(device)`](@ref)
-
-Base power is a fundamental parameter for the per-unit system and represents the natural scale of the device. For more details on per-unitization, see the [Per-unit Conventions](@ref per_unit) page.
+Base power is a fundamental parameter for the per-unit system. For more details on per-unitization, see the [Per-unit Conventions](@ref per_unit) page.
 
 ## Rating
 
-**Rating** represents the maximum AC side output power rating of the synchronous machine or generator.
+**Rating** represents the maximum AC side output power rating of the synchronous machine
+or generator — the maximum apparent power (MVA) that the generator's electrical
+components can safely handle, considering constraints such as:
 
-  - **Purpose**: Defines the maximum apparent power (MVA) that the generator's electrical components can safely handle
-
-  - **Units**: Stored in per-unit using **device base** (i.e., divided by the device's `base_power`)
-
-  - **Physical meaning**: The maximum MVA output considering electrical constraints such as:
-
-      + Stator winding thermal limits
-      + Rotor field winding limits
-      + Cooling system capacity
-
-  - **Access**: Retrieved using [`get_rating(device)`](@ref)
+  - Stator winding thermal limits
+  - Rotor field winding limits
+  - Cooling system capacity
 
 The rating is typically determined by the electrical design and thermal limits of the synchronous machine itself. It represents the maximum capability of the electrical generator, independent of the prime mover.
 
 ## Maximum Active Power
 
-**Maximum active power** represents the maximum real power output of the prime mover.
+**Maximum active power** represents the maximum real power (MW) output of the prime
+mover, considering constraints such as:
 
-  - **Purpose**: Defines the maximum real power (MW) that the prime mover can deliver
-
-  - **Units**: Stored in per-unit using **device base** (i.e., divided by the device's `base_power`)
-
-  - **Physical meaning**: The maximum MW output considering prime mover constraints such as:
-
-      + Turbine capacity (for steam, gas, or hydro turbines)
-      + Combustion chamber limits (for gas turbines)
-      + Boiler capacity (for steam generators)
-      + Fuel flow limitations
-
-  - **Access**: Retrieved using [`get_max_active_power(device)`](@ref)
+  - Turbine capacity (for steam, gas, or hydro turbines)
+  - Combustion chamber limits (for gas turbines)
+  - Boiler capacity (for steam generators)
+  - Fuel flow limitations
 
 The maximum active power is determined by the mechanical system that drives the generator. This is often less than the rating when considering only real power production.
 
@@ -59,14 +43,6 @@ The maximum active power is determined by the mechanical system that drives the 
 | Base Power       | Natural units (MVA) | [`get_base_power()`](@ref)       |
 | Rating           | Device base (p.u.)  | [`get_rating()`](@ref)           |
 | Max Active Power | Device base (p.u.)  | [`get_max_active_power()`](@ref) |
-
-### Physical Interpretation
-
-The relationship between these three quantities can be understood as follows:
-
-  - **Base Power**: "What is the natural scale of this device?"
-  - **Rating**: "What is the maximum apparent power the electrical generator can produce?"
-  - **Max Active Power**: "What is the maximum real power the prime mover can deliver?"
 
 ### Example
 

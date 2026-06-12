@@ -56,7 +56,7 @@ Validates if a device is eligible to contribute to a service.
 # Arguments
 - `sys::`[`System`](@ref): PowerSystem System
 - `component::`[`StaticInjection`](@ref): Static injection device
-- `service::`[`Service`](@ref)': Service for which the device is eligible to contribute
+- `service::`[`Service`](@ref): Service for which the device is eligible to contribute
 """
 function verify_device_eligibility(
     sys::System,
@@ -833,7 +833,7 @@ Set the no-load cost for a [`StaticInjection`](@ref) device with a [`MarketBidCo
 # Arguments
 - `sys::`[`System`](@ref): PowerSystem System
 - `component::`[`StaticInjection`](@ref): Static injection device
-- `time_series_data::Union{Float64, IS.TimeSeriesData}': the data. If a time series, must be of eltype `Float64`.
+- `time_series_data::Union{Float64, IS.TimeSeriesData}`: the data. If a time series, must be of eltype `Float64`.
 """
 function set_no_load_cost!(
     sys::System,
@@ -852,7 +852,7 @@ Set the `incremental_initial_input` for a [`StaticInjection`](@ref) device with 
 # Arguments
 - `sys::`[`System`](@ref): PowerSystem System
 - `component::`[`StaticInjection`](@ref): Static injection device
-- `time_series_data::Union{Float64, IS.TimeSeriesData}': the data. If a time series, must be of eltype `Float64`.
+- `time_series_data::Union{Float64, IS.TimeSeriesData}`: the data. If a time series, must be of eltype `Float64`.
 """
 function set_incremental_initial_input!(
     sys::System,
@@ -871,7 +871,7 @@ Set the `decremental_initial_input` for a [`StaticInjection`](@ref) device with 
 # Arguments
 - `sys::`[`System`](@ref): PowerSystem System
 - `component::`[`StaticInjection`](@ref): Static injection device
-- `time_series_data::Union{Float64, IS.TimeSeriesData}': the data. If a time series, must be of eltype `Float64`.
+- `time_series_data::Union{Float64, IS.TimeSeriesData}`: the data. If a time series, must be of eltype `Float64`.
 """
 function set_decremental_initial_input!(
     sys::System,
@@ -919,7 +919,7 @@ single number or a time series.
 # Arguments
 - `sys::`[`System`](@ref): PowerSystem System
 - `component::`[`StaticInjection`](@ref): Static injection device
-- `data::Union{Float64, IS.TimeSeriesData}': the data. If a time series, must be of eltype
+- `data::Union{Float64, IS.TimeSeriesData}`: the data. If a time series, must be of eltype
   `Float64`.
 """
 function set_shut_down!(
@@ -945,7 +945,7 @@ Adds service bids time-series data to the [`MarketBidCost`](@ref).
 # Arguments
 - `sys::`[`System`](@ref): PowerSystem System
 - `component::`[`StaticInjection`](@ref): Static injection device
-- `service::`[`Service`](@ref)': Service for which the device is eligible to contribute
+- `service::`[`Service`](@ref): Service for which the device is eligible to contribute
 - `time_series_data::IS.TimeSeriesData`: TimeSeriesData
 """
 function set_service_bid!(

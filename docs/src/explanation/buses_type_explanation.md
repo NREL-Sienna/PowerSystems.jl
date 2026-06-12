@@ -52,9 +52,9 @@ misleading results in large or radially structured networks.
       + Unknown: Real Power ($P$) and Reactive Power ($Q$). These values are calculated as residuals after the power flow solution converges to account for system losses and imbalances and are allocated using participation factors in the model formulation.
       + This kind of bus absorbs or supplies the difference between the total generation and total load plus losses in the system. There can be several slack buses in a system.
 
-  - Ref:
+  - `REF`:
 
-      + Known: Voltage Magnitude ($|V|$) and Voltage Angle ($\delta$). Typically, the angle is set to 0 degrees for simplicity, and the voltage is set to a fixed value per unit.0 degrees for simplicity and the voltage is set to a fixed value per unit.
+      + Known: Voltage Magnitude ($|V|$) and Voltage Angle ($\delta$). Typically, the angle is set to 0 degrees for simplicity, and the voltage is set to a fixed value per unit.
       + Unknown: Real Power ($P$) and Reactive Power ($Q$). These values are calculated as residuals after the power flow solution converges to account for system losses and imbalances when there is a single slack bus that matches the reference bus.
       + Serves as the "reference" for all other bus voltage angles in the AC interconnected system.
 

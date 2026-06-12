@@ -76,29 +76,14 @@ set_downstream_turbine!(reservoir, turbine)
 
 ## Link multiple turbines to one reservoir
 
+Reusing the system from the previous example, create additional turbines and link all of
+them to the reservoir at once. Note that the second constructor omits the optional fields
+shown in the first example.
+
 ```@example hydro_resv
-
-sys = System(100.0)
-set_units_base_system!(sys, "NATURAL_UNITS")
-
-# Create and add a bus
-bus = ACBus(;
-    number = 1,
-    name = "bus1",
-    available = true,
-    bustype = ACBusTypes.PV,
-    angle = 0.0,
-    magnitude = 1.0,
-    voltage_limits = (min = 0.9, max = 1.1),
-    base_voltage = 230.0,
-    area = nothing,
-    load_zone = nothing,
-)
-add_component!(sys, bus)
-# Create multiple turbines and connect them to a single reservoir
-turbines = []
-for i in 1:5
-    turbine = HydroTurbine(;
+turbines = HydroUnit[turbine]  # start with the turbine from the previous example
+for i in 2:5
+    new_turbine = HydroTurbine(;
         name = "Turbine$i",
         available = true,
         bus = bus,
@@ -111,11 +96,11 @@ for i in 1:5
         powerhouse_elevation = 500.0 + i * 10.0,  # Different elevations
         efficiency = 0.85 + i * 0.02,
     )
-    add_component!(sys, turbine)
-    push!(turbines, turbine)
+    add_component!(sys, new_turbine)
+    push!(turbines, new_turbine)
 end
 
-# Link all turbines at once
+# Link all turbines at once (replaces any previously linked turbines)
 set_downstream_turbines!(reservoir, turbines)
 
 # Verify connections
@@ -124,6 +109,8 @@ set_downstream_turbines!(reservoir, turbines)
 ```
 
 ## Model pumped storage with head and tail reservoirs
+
+The pumped-storage example below continues with the same system and bus.
 
 ```@example hydro_resv
 # Create a HydroPumpTurbine

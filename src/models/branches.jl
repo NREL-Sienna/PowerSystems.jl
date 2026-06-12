@@ -81,7 +81,7 @@ function supports_services(::ACBranch)
 end
 
 """
-Return the "from" [`ACBus`](@ref) of the branch.
+Return the "from" [`Bus`](@ref) of the branch.
 
 # Arguments
 - `b::`[`Branch`](@ref): The branch.
@@ -91,7 +91,7 @@ See also: [`get_to_bus`](@ref), [`get_arc`](@ref)
 get_from_bus(b::Branch) = b.arc.from
 
 """
-Return the "to" [`ACBus`](@ref) of the branch.
+Return the "to" [`Bus`](@ref) of the branch.
 
 # Arguments
 - `b::`[`Branch`](@ref): The branch.

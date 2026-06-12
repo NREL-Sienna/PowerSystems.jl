@@ -6,7 +6,8 @@ delivery. Examples include reserve products for responding to unexpected disturb
 (such as the sudden loss of a generator or transmission line), automatic generation
 control, and transmission interface limits.
 
-Subtypes: [`AbstractReserve`](@ref), [`AGC`](@ref), [`TransmissionInterface`](@ref)
+Subtypes: [`AbstractReserve`](@ref), [`AGC`](@ref), [`ConstantReserveGroup`](@ref),
+[`TransmissionInterface`](@ref)
 """
 abstract type Service <: Component end
 

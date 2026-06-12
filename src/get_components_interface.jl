@@ -174,7 +174,8 @@ get_components(
 """
     get_component(sys::System, uuid::Union{Base.UUID, String})
 
-Return the component with the given UUID, or `nothing` if not found.
+Return the component with the given UUID. Throws `ArgumentError` if no component with
+that UUID exists.
 
 # Arguments
 - `sys::`[`System`](@ref): The system to search.
@@ -305,8 +306,9 @@ get_available_components(
 """
     get_available_component(sys::System, uuid::Union{Base.UUID, String})
 
-Return the component with the given UUID if it is available, otherwise return `nothing`.
-A component is available when [`get_available`](@ref) returns `true`.
+Return the component with the given UUID if it is available, or `nothing` if the
+component exists but is unavailable. Throws `ArgumentError` if no component with that
+UUID exists. A component is available when [`get_available`](@ref) returns `true`.
 
 # Arguments
 - `sys::`[`System`](@ref): The system to search.

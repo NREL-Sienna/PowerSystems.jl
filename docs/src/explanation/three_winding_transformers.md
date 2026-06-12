@@ -4,7 +4,7 @@
 
 ## The "Starbus" Representation
 
-The resulting $Z_{12}, Z_{23},$ and $Z_{13}$ represent the series impedances in a star network. The common point of this star network is the conceptual "starbus" or internal neutral node. Each winding's terminal in the power system network is then connected to its corresponding impedance in this equivalent star.
+The measured pairwise leakage impedances $Z_{12}, Z_{23},$ and $Z_{13}$ between each pair of windings are converted into the equivalent star impedances $Z_1, Z_2,$ and $Z_3$. The common point of this star network is the conceptual "starbus" or internal neutral node. Each winding's terminal in the power system network is then connected to its corresponding impedance in this equivalent star.
 
 ```mermaid
 graph TD
@@ -30,32 +30,33 @@ PSS®E represents a [`Transformer3W`](@ref) as a single element with a dedicated
 
 It does not explicitly store the equivalent star (wye) impedances. Instead, it stores the following:
 
-  - Positive Sequence Impedance (R1-2, X1-2): Resistance and reactance between winding 1 (primary) and winding 2 (secondary) in per-unit on the transformer's base MVA.
+  - Positive Sequence Impedance (R1-2, X1-2): Resistance and reactance between winding 1 (primary) and winding 2 (secondary).
 
-  - Positive Sequence Impedance (R1-3, X1-3): Resistance and reactance between winding 1 (primary) and winding 3 (tertiary) in per-unit on the transformer's base MVA.
+  - Positive Sequence Impedance (R1-3, X1-3): Resistance and reactance between winding 1 (primary) and winding 3 (tertiary).
 
-  - Positive Sequence Impedance (R2-3, X2-3): Resistance and reactance between winding 2 (secondary) and winding 3 (tertiary) in per-unit on the transformer's base MVA.
+  - Positive Sequence Impedance (R2-3, X2-3): Resistance and reactance between winding 2 (secondary) and winding 3 (tertiary).
 
   - Star Bus Number: The star bus number is optional and it might be represented or not.
 
+The per-unit base of the impedance fields depends on the record's CZ flag: system base MVA
+when CZ = 1, or the corresponding winding-pair base (SBASE1-2, etc.) when CZ = 2. The
+parser handles both conventions.
+
 ### Magnetizing Admittance
 
-  - Magnetizing Conductance (GMAG1): Core loss conductance in per-unit on the transformer's base MVA, usually referred to the primary winding.
-  - Magnetizing Susceptance (BMAG1): Magnetizing susceptance in per-unit on the transformer's base MVA, usually referred to the primary winding.
+  - Magnetizing Admittance (MAG1, MAG2): Core loss conductance and magnetizing susceptance, referred to the winding 1 bus. The base depends on the record's CM flag: per-unit on the system base when CM = 1, or no-load loss in watts and exciting current when CM = 2.
 
 ### Tap Settings and Phase Shift
 
-  - Winding 1 Tap Ratio (RATIO1): Tap ratio for the primary winding.
-  - Winding 2 Tap Ratio (RATIO2): Tap ratio for the secondary winding.
-  - Winding 3 Tap Ratio (RATIO3): Tap ratio for the tertiary winding.
-  - Phase Shift (ANGLE1, ANGLE2, ANGLE3): Phase shift in degrees applied by each winding.
+  - Winding Tap Ratios (WINDV1, WINDV2, WINDV3): Off-nominal turns ratio of each winding, either in per-unit of the connected bus base voltage (CW = 1) or as a winding voltage in kV (CW = 2).
+  - Nominal Voltages (NOMV1, NOMV2, NOMV3): Nominal (rated) voltage of each winding in kV.
+  - Phase Shift (ANG1, ANG2, ANG3): Phase shift in degrees applied by each winding.
 
 ### Winding Ratings
 
-  - Winding 1 MVA Base (SBASE1): Base apparent power for winding 1.
-  - Winding 2 MVA Base (SBASE2): Base apparent power for winding 2.
-  - Winding 3 MVA Base (SBASE3): Base apparent power for winding 3.
-  - Nominal Voltages (WINDV1, WINDV2, WINDV3): Nominal voltage levels of each winding in kV.
+  - Winding 1 MVA Base (SBASE1-2): Base apparent power for the winding 1-2 pair.
+  - Winding 2 MVA Base (SBASE2-3): Base apparent power for the winding 2-3 pair.
+  - Winding 3 MVA Base (SBASE3-1): Base apparent power for the winding 3-1 pair.
 
 ### Control Information (Optional)
 

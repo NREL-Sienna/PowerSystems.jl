@@ -27,7 +27,8 @@
 
   - *DC*: Direct current
 
-  - *DERA1*:
+  - *DERA1*: Distributed Energy Resource Aggregate model Type A1, the PSS®E implementation
+    of the WECC DER_A dynamic model
 
   - *Deterministic*: mathematical model in which the outcomes are precisely determined through known relationships among states and events. For contrast, see the definition of [Probabilistic](@ref P).
 
@@ -132,7 +133,7 @@
 ### R
 
   - *REECB1*: Renewable Energy Electric Controller Type B1
-  - *REPCA1*: REPCA1: Renewable Energy Power Controller Type A1
+  - *REPCA1*: Renewable Energy Power Controller Type A1
   - *Resolution*: The period of time between each discrete value in a time series. All resolutions
     are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
     has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`.
@@ -193,6 +194,6 @@
   - *ZIP load*: A ZIP load model accounts for the voltage-dependency of a load and is primarily used
     for dynamics modeling. It includes three kinds of load: constant impedance (Z), constant current (I),
     and constant power (P), though many dynamics models just use the constant impedance model.
-    [`StandardLoad`](@ref) and [`ExponentialLoad`](@ref) are both ZIP load models:
-    [`StandardLoad`](@ref) breaks up the load into each of its three components, while
-    [`ExponentialLoad`](@ref) expresses the load as an exponential equation.
+    [`StandardLoad`](@ref) is a ZIP load model that breaks up the load into each of its
+    three components. [`ExponentialLoad`](@ref) instead expresses the voltage dependency
+    as an exponential equation, of which the ZIP components are special cases.

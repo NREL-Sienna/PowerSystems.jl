@@ -36,8 +36,9 @@ Calculate the torque constant `C` for an induction motor model from load-torque 
 Throws an error if any of A, B, or C is negative (coefficients must be non-negative and sum to 1).
 
 # Arguments
-- `A::Float64`: Load torque coefficient for the constant component.
-- `B::Float64`: Load torque coefficient for the speed-proportional component.
+- `A::Float64`: Load torque coefficient for the quadratic speed term.
+- `B::Float64`: Load torque coefficient for the linear speed term. The constant term is
+    `C = 1 - A - B`.
 """
 function calculate_IM_torque_params(A::Float64, B::Float64)
     C = 1.0 - A - B

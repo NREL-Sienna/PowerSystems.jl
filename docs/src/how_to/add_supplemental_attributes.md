@@ -24,38 +24,22 @@ outage = FixedForcedOutage(; outage_status = 0.0)  # 0.0 = available, 1.0 = outa
 add_supplemental_attribute!(sys, gen, outage)
 ```
 
-## Attach attributes in bulk
+## Attach attributes in bulk and share them across components
 
 For adding many attributes at once, use [`begin_supplemental_attributes_update`](@ref)
 to batch the operations. This reduces index update overhead and automatically reverts
-all changes if an error occurs:
+all changes if an error occurs. The same attribute instance can be attached to more than
+one component to model shared properties:
 
 ```@example attach_contextual_data
 gens = collect(get_components(ThermalStandard, sys))
 gen1 = gens[1]
 gen2 = gens[2]
-outage1 = FixedForcedOutage(; outage_status = 0.0)
-outage2 = FixedForcedOutage(; outage_status = 1.0)
+shared_outage = FixedForcedOutage(; outage_status = 1.0)
 
 begin_supplemental_attributes_update(sys) do
-    add_supplemental_attribute!(sys, gen1, outage1)
-    add_supplemental_attribute!(sys, gen2, outage2)
-end
-```
-
-## Share one attribute across multiple components
-
-Attach the same attribute instance to more than one component to model shared properties:
-
-```@example attach_contextual_data
-outage = FixedForcedOutage(; outage_status = 1.0)
-gens = collect(get_components(ThermalStandard, sys))
-gen1 = gens[1]
-gen2 = gens[2]
-
-begin_supplemental_attributes_update(sys) do
-    add_supplemental_attribute!(sys, gen1, outage)
-    add_supplemental_attribute!(sys, gen2, outage)
+    add_supplemental_attribute!(sys, gen1, shared_outage)
+    add_supplemental_attribute!(sys, gen2, shared_outage)
 end
 ```
 

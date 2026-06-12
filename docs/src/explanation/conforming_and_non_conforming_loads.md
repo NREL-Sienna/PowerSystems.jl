@@ -43,7 +43,7 @@ generation rather than passive demand. This is also known as "Dispatchable Deman
 
 In `PowerSystems.jl`, these distinctions surface in two places:
 
- 1. **The `conformity` field.** Concrete subtypes of [`StaticLoad`](@ref) carry a
+ 1. **The `conformity` field.** Most concrete subtypes of [`StaticLoad`](@ref) carry a
     `conformity` field that records whether a load is conforming or non-conforming (see the
     [`LoadConformity`](@ref)). This field exists for monitoring and
     bookkeeping purposes — it allows downstream tools and analysts to identify which loads
