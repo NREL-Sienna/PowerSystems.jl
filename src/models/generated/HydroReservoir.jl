@@ -31,19 +31,19 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`
+- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref ReservoirDataType) selected for `level_data_type`
 - `initial_level::Float64`: Initial level of the reservoir relative to the `storage_level_limits.max`.
 - `spillage_limits::Union{Nothing, MinMax}`: Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed.
-- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
-- `outflow::Float64`: Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
+- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`).
+- `outflow::Float64`: Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`).
 - `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
 - `intake_elevation::Float64`: Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.
 - `head_to_volume_factor::ValueCurve`: Head to volume relationship for the reservoir.
-- `upstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir.
-- `downstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units.
+- `upstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [`HydroUnit`](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir.
+- `downstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [`HydroUnit`](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units.
 - `upstream_reservoirs::Vector{Device}`: (default: `Device[]`) Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs.
 - `operation_cost::HydroReservoirCost`: (default: `HydroReservoirCost(nothing)`) [`OperationalCost`](@ref) of reservoir.
-- `level_data_type::ReservoirDataType`: (default: `ReservoirDataType.USABLE_VOLUME`) Reservoir level data type. See [ReservoirDataType](@ref) for reference.
+- `level_data_type::ReservoirDataType`: (default: `ReservoirDataType.USABLE_VOLUME`) Reservoir level data type. See [`ReservoirDataType`](@ref).
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -52,15 +52,15 @@ mutable struct HydroReservoir <: Device
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`"
+    "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref ReservoirDataType) selected for `level_data_type`"
     storage_level_limits::MinMax
     "Initial level of the reservoir relative to the `storage_level_limits.max`."
     initial_level::Float64
     "Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed."
     spillage_limits::Union{Nothing, MinMax}
-    "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`)."
+    "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`)."
     inflow::Float64
-    "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`)."
+    "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`)."
     outflow::Float64
     "Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`."
     level_targets::Union{Nothing, Float64}
@@ -68,15 +68,15 @@ mutable struct HydroReservoir <: Device
     intake_elevation::Float64
     "Head to volume relationship for the reservoir."
     head_to_volume_factor::ValueCurve
-    "Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
+    "Vector of [`HydroUnit`](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
     upstream_turbines::Vector{HydroUnit}
-    "Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
+    "Vector of [`HydroUnit`](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
     downstream_turbines::Vector{HydroUnit}
     "Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs."
     upstream_reservoirs::Vector{Device}
     "[`OperationalCost`](@ref) of reservoir."
     operation_cost::HydroReservoirCost
-    "Reservoir level data type. See [ReservoirDataType](@ref) for reference."
+    "Reservoir level data type. See [`ReservoirDataType`](@ref)."
     level_data_type::ReservoirDataType
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}

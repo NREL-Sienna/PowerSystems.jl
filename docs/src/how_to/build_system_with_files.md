@@ -14,7 +14,7 @@ manually is:
     your dataset. Use [`add_component!`](@ref) to add each component to the [`System`](@ref).
  4. Similarly, add cost and time series data either within each `for` loop, or after the
     components have been defined using [`begin_time_series_update`](@ref).
- 5. [Save your `System` to a JSON](@ref "Write, View, and Load Data with a JSON") once you are
+ 5. [Save your `System` to a JSON](@ref serialize_data) once you are
     finished
 
 The following example demonstrates this process for selected component
@@ -32,7 +32,7 @@ In this example, it is assumed that the CSV files are stored in a directory
 called `MyData`. In each section below, ensure your data follows the row-column format
 before beginning, and that your data are in the given units.
 
-These are the depedencies needed for this how-to:
+These are the dependencies needed for this how-to:
 
 ```julia
 using PowerSystems
@@ -184,9 +184,9 @@ end
 
 !!! warning
 
-    When defining a branch that isn't attached to a `System` yet, you must define the
+    When defining a branch that isn't attached to a [`System`](@ref) yet, you must define the
     thermal rating of the transmission line [per-unitized in "SYSTEM_BASE"](@ref per_unit)
-    using the base power of the `System` you plan to connect it to -- defined above as
+    using the base power of the [`System`](@ref) you plan to connect it to -- defined above as
     `system_base_power`.
 
 ## Adding Thermal Generators and their Costs
@@ -208,9 +208,9 @@ with the convention used in the `Bus Number` column of `Buses.csv`.
 
 Read in the contents of the CSV file `Thermal_Gens.csv` to a data frame and
 customize the parameter names based on the column names in your CSV file.  Note
-that the [`PrimeMovers`](@ref pm_list) in the `thermal_gens` data frame are
+that [`PrimeMovers`](@ref) in the `thermal_gens` data frame are
 consistent with EIA Form 923, and the `Fuel Type` column data are consistent
-with the [`ThermalFuels`](@ref tf_list) naming convention.
+with the [`ThermalFuels`](@ref) naming convention.
 
 ```julia
 thermal_gens = CSV.read("MyData/Thermal_Gens.csv", DataFrame)
@@ -233,7 +233,7 @@ constructor and data stored in the `thermal_gens` data frame.
 
 !!! warning
 
-    When you define components that aren't attached to a `System` yet, the constructors
+    When you define components that aren't attached to a [`System`](@ref) yet, the constructors
     assume define all fields related to power are
     [per-unitized in "DEVICE_BASE"](@ref per_unit). Divide all fields with units such as MW,
     MVA, MVAR, or MW/min using the `base_power` of the component (with the exception of
@@ -275,8 +275,7 @@ In this example the [`ThermalGenerationCost`](@ref) constructor is defined by a
 [`FuelCurve`](@ref). We are also assuming that the data needed to build each
 [`FuelCurve`](@ref) can be found in two separate CSV files. The first,
 `Thermal_Gens.csv`, has already been defined in the previous step. The second,
-`Thermal_Fuel_Rates.csv`, contains information regarding each [`FuelType`](@ref
-tf_list) and its cost:
+`Thermal_Fuel_Rates.csv`, contains information regarding each [`ThermalFuels`](@ref) fuel type and its cost:
 
 | Fuel Type    | Fuel Price | CO2 rate | NOX rate | SO2 rate |
 |:------------ |:---------- |:-------- |:-------- |:-------- |
@@ -322,7 +321,7 @@ shut_down_cost = "Shut Down Cost (dollar)"
 for row in eachrow(thermal_gens)
     thermal = get_component(ThermalStandard, sys, row[gen_name])
     heat_rate_curve =
-        PieceWiseIncrementalCurve(row[heat_rate_base], row[load_point], row[heat_rate])
+        PiecewiseIncrementalCurve(row[heat_rate_base], row[load_point], row[heat_rate])
     fuel_curve =
         FuelCurve(;
             value_curve = heat_rate_curve,
@@ -346,7 +345,7 @@ For more information regarding thermal cost functions please visit
 The following section demonstrates how to add solar generators and their time
 series to a [`System`](@ref). However, if you desire to add other
 [`RenewableDispatch`](@ref) generator types, such as wind, the process is exactly the
-same, with changing the [prime mover type](@ref pm_list) from `PrimeMovers.PVe` to
+same, with changing [`PrimeMovers`](@ref) from `PrimeMovers.PVe` to
 `PrimeMovers.WT`.
 
 We assume the data needed to build each solar powered
@@ -497,7 +496,7 @@ values in MW for each hydro generator:
 | 1/1/23 1:00 | 0.325386 | 0.325409 | 0.314454 | ... |
 | ...         | ...      | ...      | ...      | ... |
 
-Each time series for its respective hydro generator has an hourly resolution,
+Each time series for its respective hydro generator has an hourly [resolution](@ref R),
 and is for the year 2023, plus one full day into 2024, for a total of 366 days,
 and 8784 values per column.
 
@@ -604,13 +603,13 @@ region's name, and contain the time series values in MW for each region:
 | 1/1/23 1:00 | 4994.53821 | 1726.22134 | 2273.63274 |
 | ...         | ...        | ...        | ...        |
 
-Each time series for its respective load region has an hourly resolution, and
+Each time series for its respective load region has an hourly [resolution](@ref R), and
 is for the year 2023, plus one full day into 2024, for a total of 366 days, and
 8784 values per column. Ensure that your time series file is similarly
 formatted.
 
 Create a data frame from `Load_Time_Series.csv` and define variables for the
-aforementioned resolution and time stamps:
+aforementioned [resolution](@ref R) and time stamps:
 
 ```julia
 load_time_series = CSV.read("MyData/Load_Time_Series.csv", DataFrame)
@@ -680,8 +679,8 @@ Additional resources to help you built your own custom [`System`](@ref):
     `for` loop from a .csv, if you don't have PSS/e files available for
     [automated parsing](@ref dyr_data)
   - See more on how to [Parse Time Series Data from .csv's](@ref parsing_time_series)
-  - See how to [Add a New or Custom Type](@ref)
-  - See how to [Add a Component in Natural Units](@ref), which is an alternative to the
+  - See how to [Add a New or Custom Type](@ref add_new_types)
+  - See how to [Add a Component in Natural Units](@ref add_component_natural_units), which is an alternative to the
     per-unitized `for` loops above, but requires more code
-  - See how to [Write, View, and Load Data with a JSON](@ref) to efficiently save your
+  - See how to [Write, View, and Load Data with a JSON](@ref serialize_data) to efficiently save your
     [`System`](@ref) once you've built it

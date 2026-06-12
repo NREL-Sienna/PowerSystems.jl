@@ -3,15 +3,15 @@
 
 # get_components
 """
-Get the components of the [`System`](@ref) that make up the [`ComponentSelector`](@ref).
+Return the components of the [`System`](@ref) that make up the [`ComponentSelector`](@ref).
 Optionally specify a filter function `scope_limiter` as the first argument to limit the
 components that should be considered.
 
 # Arguments
 
   - `scope_limiter::Union{Function, Nothing}`: see [`ComponentSelector`](@ref)
-  - `selector::ComponentSelector`: the `ComponentSelector` whose components to retrieve
-  - `sys::System`: the system from which to draw components
+  - `selector::`[`ComponentSelector`](@ref): the `ComponentSelector` whose components to retrieve
+  - `sys::`[`System`](@ref): the system from which to draw components
 """
 get_components(
     scope_limiter::Union{Function, Nothing},
@@ -21,19 +21,14 @@ get_components(
     IS.get_components(scope_limiter, selector, sys)
 
 """
-Get the components of the [`System`](@ref) that make up the [`ComponentSelector`](@ref).
-
-# Arguments
-
-  - `selector::ComponentSelector`: the `ComponentSelector` whose components to retrieve
-  - `sys::System`: the system from which to draw components
+Return the components of the [`System`](@ref) that make up the [`ComponentSelector`](@ref).
 """
 get_components(selector::ComponentSelector, sys::System) =
     IS.get_components(selector, sys)
 
 # get_component
 """
-Get the component of the [`System`](@ref) that makes up the
+Return the component of the [`System`](@ref) that makes up the
 [`SingularComponentSelector`](@ref); `nothing` if there is none. Optionally specify a filter
 function `scope_limiter` as the first argument to limit the components that should be
 considered.
@@ -41,9 +36,9 @@ considered.
 # Arguments
 
   - `scope_limiter::Union{Function, Nothing}`: see [`ComponentSelector`](@ref)
-  - `selector::SingularComponentSelector`: the `SingularComponentSelector` whose component
-    to retrieve
-  - `sys::System`: the system from which to draw components
+  - `selector::`[`SingularComponentSelector`](@ref): the `SingularComponentSelector` whose
+    component to retrieve
+  - `sys::`[`System`](@ref): the system from which to draw components
 """
 get_component(
     scope_limiter::Union{Function, Nothing},
@@ -53,13 +48,8 @@ get_component(
     IS.get_component(scope_limiter, selector, sys)
 
 """
-Get the component of the [`System`](@ref) that makes up the
+Return the component of the [`System`](@ref) that makes up the
 [`SingularComponentSelector`](@ref); `nothing` if there is none.
-
-# Arguments
-
-  - `selector::SingularComponentSelector`: the `SingularComponentSelector` whose component to retrieve
-  - `sys::System`: the system from which to draw components
 """
 get_component(selector::SingularComponentSelector, sys::System) =
     IS.get_component(selector, sys)
@@ -115,15 +105,15 @@ get_available_component(
 
 # get_groups
 """
-Get the groups that make up the [`ComponentSelector`](@ref). Optionally specify a filter
+Return the groups that make up the [`ComponentSelector`](@ref). Optionally specify a filter
 function `scope_limiter` as the first argument to limit the components that should be
 considered.
 
 # Arguments
 
   - `scope_limiter::Union{Function, Nothing}`: see [`ComponentSelector`](@ref)
-  - `selector::ComponentSelector`: the `ComponentSelector` whose groups to retrieve
-  - `sys::System`: the system from which to draw components
+  - `selector::`[`ComponentSelector`](@ref): the `ComponentSelector` whose groups to retrieve
+  - `sys::`[`System`](@ref): the system from which to draw components
 """
 get_groups(
     scope_limiter::Union{Function, Nothing},
@@ -133,12 +123,7 @@ get_groups(
     IS.get_groups(scope_limiter, selector, sys)
 
 """
-Get the groups that make up the [`ComponentSelector`](@ref).
-
-# Arguments
-
-  - `selector::ComponentSelector`: the `ComponentSelector` whose groups to retrieve
-  - `sys::System`: the system from which to draw components
+Return the groups that make up the [`ComponentSelector`](@ref).
 """
 get_groups(selector::ComponentSelector, sys::System) =
     IS.get_groups(selector, sys)

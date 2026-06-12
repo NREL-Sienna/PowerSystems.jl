@@ -30,8 +30,8 @@ sys = System(100.0)
 # ## Adding Buses
 # We'll start by creating some buses. By referring to the documentation for
 # [ACBus](@ref), notice that we need define some basic data, including the bus's
-# unique identifier and name, base voltage, and whether it's a [load, generator,
-# or reference bus](@ref acbustypes_list).
+# unique identifier and name, base voltage, and whether it's a load, generator,
+# or reference bus ([`ACBusTypes`](@ref)).
 # Let's start with a reference bus:
 
 bus1 = ACBus(;
@@ -47,8 +47,8 @@ bus1 = ACBus(;
 
 # This bus is on a 230 kV AC transmission network, with an allowable voltage range of
 # 0.9 to 1.05 p.u. We are assuming it is currently operating at 1.0 p.u. voltage and
-# an angle of 0 radians. Notice that we've defined this bus as [reference bus or slack
-# bus](@ref acbustypes_list), where it will be used for balancing power flow in power
+# an angle of 0 radians. Notice that we've defined this bus as a [`ACBusTypes`](@ref)`.REF` reference
+# (slack) bus, where it will be used for balancing power flow in power
 # flow studies.
 # Let's add this bus to our [`System`](@ref) with [`add_component!`](@ref add_component!(sys::System, component::Component; kwargs...)):
 
@@ -75,7 +75,7 @@ bus2 = ACBus(;
     base_voltage = 230.0,
 );
 
-# Notice that we've defined this bus with [power and voltage variables](@ref acbustypes_list),
+# Notice that we've defined this bus with power and voltage variables ([`ACBusTypes`](@ref)`.PV`),
 # suitable for power flow studies.
 # Let's also add this to our [`System`](@ref):
 
@@ -162,7 +162,7 @@ solar = RenewableDispatch(;
 );
 
 # Note that we've used a generic [renewable generator](@ref RenewableDispatch) to model
-# solar, but we can specify that it is solar through the [prime mover](@ref pm_list).
+# solar, but we can specify that it is solar through the [`PrimeMovers`](@ref) code `PVe`.
 # Finally, we'll also add a 30 MW gas [thermal generator](@ref ThermalStandard) to `bus1`
 # because a slack bus require a controllable generator component:
 
@@ -292,10 +292,17 @@ sys
 # In this tutorial, you manually created a power [`System`](@ref), added and then retrieved its components,
 # and modified the [`System`](@ref) per-unit settings.
 # Next, you might want to:
-#   - [Add time series data to components in the `System`](@ref tutorial_time_series)
-#   - [Add necessary data for dynamic simulations](@ref "Adding Data for Dynamic Simulations")
 #   - Import a [`System`](@ref) [from an existing Matpower or PSSE file](@ref pm_data) or
 #     [with PSSE dynamic data](@ref dyr_data) instead of creating it manually
 #   - [Create your own `System` from .csv files instead of creating it manually](@ref system_from_csv)
 #   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
-#   - See a workaround for how to [Add a Component in Natural Units](@ref)
+#   - See a workaround for how to [Add a Component in Natural Units](@ref add_component_natural_units)
+#   - Do the tutorial on [Manipulating Data Sets](@ref "Manipulating Datasets") to attach and query data on an existing system
+
+# You might also want to explore other types of data to add to your [`System`](@ref), such as:
+
+#   - [Add necessary data for dynamic simulations](@ref "Adding Data for Dynamic Simulations")
+#   - Learn about [Supplemental attributes](@ref supplemental_attributes_explanation), contextual data layered on electrical models
+#   - Do the tutorial on [Working with Time Series](@ref "Working with Time Series Data") data
+#   - [Group generators into plants](@ref group_generators_into_plants) — plant-level grouping
+#   - [Add emissions to generators](@ref add_emissions_to_generators) — emissions metadata

@@ -47,7 +47,7 @@ show_components(ThermalStandard, threebus_sys, [:bus])
 
 slack_bus = first(get_components(x -> get_bustype(x) == ACBusTypes.REF, Bus, threebus_sys))
 
-# Notice we filtered by the [bus type](@ref acbustypes_list) to get the bus(es) we wanted.
+# Notice we filtered by [`ACBusTypes`](@ref) to get the bus(es) we wanted.
 # Next, manually define a [`Source`](@ref):
 
 inf_source = Source(;
@@ -328,7 +328,7 @@ threebus_sys
 # a more complex EMT simulation with the additional dynamic inverter and dynamic lines.
 # Next, you might like to:
 #   - Read more about the static and dynamic data layers and the dynamic data format in
-#     [Dynamic Devices](@ref).
+#     [Dynamic Devices](@ref dynamic_data).
 #   - Review the specific subsystem models available in `PowerSystems.jl` for [Machine](@ref),
 #     [Shaft](@ref), [AVR](@ref), [PSS](@ref),
 #     [Prime Mover and Turbine Governor](@ref TurbineGov), [Converter](@ref),

@@ -27,7 +27,7 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `bus::ACBus`: Bus that this component is connected to
+- `bus::ACBus`: The [`ACBus`](@ref) that this component is connected to
 - `Y::Complex{Float64}`: Initial admittance at N = 0
 - `initial_status::Vector{Int}`: (default: `Int[]`) Vector of initial switched shunt status, one for in-service and zero for out-of-service for block i (1 through 8)
 - `number_of_steps::Vector{Int}`: (default: `Int[]`) Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.
@@ -43,7 +43,7 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Bus that this component is connected to"
+    "The [`ACBus`](@ref) that this component is connected to"
     bus::ACBus
     "Initial admittance at N = 0"
     Y::Complex{Float64}

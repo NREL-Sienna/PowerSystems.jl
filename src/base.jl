@@ -59,9 +59,9 @@ System(; kwargs...)
 
 # Arguments
 - `base_power::Float64`: the base power value for the system
-- `buses::Vector{ACBus}`: an array of buses
+- `buses::Vector{`[`ACBus`](@ref)`}`: an array of buses
 - `components...`: Each element (e.g., `buses`, `generators`, ...) must be an iterable
-    containing subtypes of `Component`.
+    containing subtypes of [`Component`](@ref).
 - `file::AbstractString`: Path to a Matpower, PSSE, or JSON file ending with .m, .raw, or .json
 
 # Keyword arguments
@@ -78,7 +78,7 @@ System(; kwargs...)
 - `time_series_read_only::Bool=false`: Open the time series store in read-only mode.
     This is useful for reading time series data without modifying it.
 - `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
-- `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
+- `compression::`[`CompressionSettings`](@ref): Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
 - `unit_system::String`: (Default = `"SYSTEM_BASE"`) Set the unit system for
     [per-unitization](@ref per_unit) while getting and setting data (`"SYSTEM_BASE"`,
@@ -88,10 +88,10 @@ System(; kwargs...)
 - `loadzone_name_formatter`: A function that takes a load zone identifier (typically an `Int`) and returns a `String` to use as the load zone name when [parsing PSSe or Matpower files](@ref pm_data).
 - `gen_name_formatter`: A function that takes a `Dict` of generator data and returns a `String` to use as the generator name when [parsing PSSe or Matpower files](@ref pm_data).
 - `shunt_name_formatter`: A function that takes a `Dict` of shunt data and returns a `String` to use as the [`FixedAdmittance`](@ref) name when [parsing PSSe or Matpower files](@ref pm_data).
-- `branch_name_formatter`: A function that takes a `Dict` of branch data, a from-bus (`ACBus`), and a to-bus (`ACBus`), and returns a `String` to use as the branch name when [parsing PSSe or Matpower files](@ref pm_data).
+- `branch_name_formatter`: A function that takes a `Dict` of branch data, a from-bus ([`ACBus`](@ref)), and a to-bus ([`ACBus`](@ref)), and returns a `String` to use as the branch name when [parsing PSSe or Matpower files](@ref pm_data).
 - `pm_data_corrections::Bool`: A function that applies the correction to the data from [`PowerModels.jl`](https://lanl-ansi.github.io/PowerModels.jl/stable/).
 - `import_all::Bool`: A boolean flag to indicate whether to import all available data when [parsing PSSe or Matpower files](@ref pm_data). The additional data will be stored in the `ext` dictionary and can be retrieved using [`get_ext`](@ref)
-- `internal::IS.InfrastructureSystemsInternal`: Internal structure for [`InfrastructureSystems.jl`](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a `System` manually.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): Internal structure for [`InfrastructureSystems.jl`](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a [`System`](@ref) manually.
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
 large datasets from overwhelming system memory (see [Data Storage](@ref)).
@@ -389,7 +389,7 @@ end
 Construct a System from a subsystem of an existing system.
 
 # Arguments
-- `sys::System`: the base system from which the subsystems are derived
+- `sys::`[`System`](@ref): the base system from which the subsystems are derived
 - `subsystem::String`: the name of the subsystem to extract from the original system
 
 # Keyword arguments
@@ -450,7 +450,7 @@ end
 Serializes a system to a JSON file and saves time series to an HDF5 file.
 
 # Arguments
-- `sys::System`: system
+- `sys::`[`System`](@ref): system
 - `filename::AbstractString`: filename to write
 
 # Keyword arguments
@@ -953,9 +953,9 @@ end
 Similar to [`add_component!`](@ref) but for services.
 
 # Arguments
-- `sys::System`: system
-- `service::Service`: service to add
-- `contributing_devices`: Must be an iterable of type Device
+- `sys::`[`System`](@ref): system
+- `service::`[`Service`](@ref): service to add
+- `contributing_devices`: Must be an iterable of type [`Device`](@ref)
 """
 function add_service!(sys::System, service::Service, contributing_devices; kwargs...)
     _add_service!(sys, service, contributing_devices; kwargs...)
@@ -966,9 +966,9 @@ end
 Similar to [`add_component!`](@ref) but for services.
 
 # Arguments
-- `sys::System`: system
-- `service::Service`: service to add
-- `contributing_device::Device`: Valid Device
+- `sys::`[`System`](@ref): system
+- `service::`[`Service`](@ref): service to add
+- `contributing_device::`[`Device`](@ref): Valid Device
 """
 function add_service!(sys::System, service::Service, contributing_device::Device; kwargs...)
     _add_service!(sys, service, [contributing_device]; kwargs...)
@@ -980,9 +980,9 @@ Similar to [`add_service!`](@ref) but for Service and Device already stored in t
 Performs validation checks on the device and the system
 
 # Arguments
-- `device::Device`: Device
-- `service::Service`: Service
-- `sys::System`: system
+- `device::`[`Device`](@ref): Device
+- `service::`[`Service`](@ref): Service
+- `sys::`[`System`](@ref): system
 """
 function add_service!(device::Device, service::Service, sys::System)
     throw_if_not_attached(service, sys)
@@ -995,8 +995,8 @@ end
 Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 
 # Arguments
-- `sys::System`: system
-- `service::ConstantReserveGroup`: service to add
+- `sys::`[`System`](@ref): system
+- `service::`[`ConstantReserveGroup`](@ref): service to add
 """
 function add_service!(
     sys::System,
@@ -1032,9 +1032,9 @@ end
 Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 
 # Arguments
-- `sys::System`: system
-- `service::ConstantReserveGroup`: service to add
-- `contributing_services`: contributing services to the group
+- `sys::`[`System`](@ref): system
+- `service::`[`ConstantReserveGroup`](@ref): service to add
+- `contributing_services`: contributing [`Service`](@ref) instances to the group
 """
 function add_service!(
     sys::System,
@@ -1107,9 +1107,9 @@ begin_time_series_update(func::Function, sys::System) =
 Add time series data from a metadata file or metadata descriptors.
 
 # Arguments
-- `sys::System`: system
+- `sys::`[`System`](@ref): system
 - `metadata_file::AbstractString`: metadata file for timeseries
-  that includes an array of IS.TimeSeriesFileMetadata instances or a vector.
+  that includes an array of [`InfrastructureSystems.TimeSeriesFileMetadata`](@extref) instances or a vector.
 - `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
 function add_time_series!(sys::System, metadata_file::AbstractString; resolution = nothing)
@@ -1125,8 +1125,8 @@ end
 Add time series data from a metadata file or metadata descriptors.
 
 # Arguments
-- `sys::System`: system
-- `timeseries_metadata::Vector{IS.TimeSeriesFileMetadata}`: metadata for timeseries
+- `sys::`[`System`](@ref): system
+- `timeseries_metadata::Vector{`[`InfrastructureSystems.TimeSeriesFileMetadata`](@extref)`}`: metadata for timeseries
 - `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
 function add_time_series!(
@@ -1833,11 +1833,11 @@ end
 Return a vector of time series data from a metadata file.
 
 # Arguments
-- `data::SystemData`: system
+- `sys::`[`System`](@ref): system
 - `metadata_file::AbstractString`: path to metadata file
 - `resolution::{Nothing, Dates.Period}`: skip data that doesn't match this resolution
 
-See InfrastructureSystems.TimeSeriesFileMetadata for description of what the file
+See [`InfrastructureSystems.TimeSeriesFileMetadata`](@extref) for description of what the file
 should contain.
 """
 function make_time_series(sys::System, metadata_file::AbstractString; resolution = nothing)
@@ -1853,8 +1853,8 @@ end
 Return a vector of time series data from a vector of TimeSeriesFileMetadata values.
 
 # Arguments
-- `data::SystemData`: system
-- `timeseries_metadata::Vector{TimeSeriesFileMetadata}`: metadata values
+- `sys::`[`System`](@ref): system
+- `timeseries_metadata::Vector{`[`InfrastructureSystems.TimeSeriesFileMetadata`](@extref)`}`: metadata values
 - `resolution::{Nothing, Dates.Period}`: skip data that doesn't match this resolution
 """
 function make_time_series(
@@ -1924,9 +1924,9 @@ because it reads time series data from media.
 Call `collect` on the result to get an array.
 
 # Arguments
-- `sys::System`: system
+- `sys::`[`System`](@ref): system
 - `filter_func = nothing`: Only return time series for which this returns true.
-- `type = nothing`: Only return time series with this type.
+- `type = nothing`: Only return time series with this [`TimeSeriesData`](@ref) type.
 - `name = nothing`: Only return time series matching this value.
 - `resolution = nothing`: Only return time series matching this resolution.
 - `interval = nothing`: Only return time series matching this interval.
@@ -2039,13 +2039,13 @@ transform (`delete_existing = true`). Set `delete_existing = false` to preserve 
 and interval are skipped, allowing multiple calls with different resolutions to coexist.
 
 # Arguments
-- `sys::System`: System containing the components.
+- `sys::`[`System`](@ref): System containing the components.
 - `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
 - `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
 - `resolution::Union{Nothing, Dates.Period} = nothing`: If set, only transform time series
    with this resolution.
 - `delete_existing::Bool = true`: If `true`, delete all existing
-   `DeterministicSingleTimeSeries` before transforming.
+   [`DeterministicSingleTimeSeries`](@ref) before transforming.
 """
 function transform_single_time_series!(
     sys::System,
@@ -2171,40 +2171,25 @@ function get_supplemental_attributes(
 end
 
 """
-    get_associated_supplemental_attributes(obj)
+    get_associated_supplemental_attributes(sys::System, ::Type{T}; attribute_type = nothing)
 
-Retrieves supplemental attributes associated with the given object.
-
-This function extracts and returns additional metadata or auxiliary information
-that is linked to the specified object, typically used for extended functionality
-or configuration purposes.
+Return the supplemental attributes associated with components of type `T`.
 
 # Arguments
-- `obj`: The object for which to retrieve associated supplemental attributes
-
-# Returns
-- Collection of supplemental attributes associated with the input object
+- `sys::`[`System`](@ref): System containing the components.
+- `::Type{T}`: [`Component`](@ref) type to filter by.
+- `attribute_type::Union{Nothing, Type{<:SupplementalAttribute}}`: (default: `nothing`)
+    Optionally restrict the result to a single supplemental attribute type.
 
 # Examples
 ```julia
-gen_attr_pairs = get_component_supplemental_attribute_pairs(
-    GeometricDistributionForcedOutage,
-    ThermalStandard,
+attrs = get_associated_supplemental_attributes(
     sys,
+    ThermalStandard;
+    attribute_type = GeometricDistributionForcedOutage,
 )
-for (gen, attr) in gen_attr_pairs
-    @show summary(gen) summary(attr)
-end
-
-my_generators = [gen1, gen2, gen3]
-gen_attr_pairs_limited = get_component_supplemental_attribute_pairs(
-    GeometricDistributionForcedOutage,
-    ThermalStandard,
-    sys,
-    components = my_generators,
-)
-for (gen, attr) in gen_attr_pairs_limited
-    @show summary(gen) summary(attr)
+for attr in attrs
+    @show summary(attr)
 end
 ```
 """
@@ -2253,9 +2238,9 @@ The return type is `NamedTuple{(:component, :supplemental_attribute), Tuple{T, U
 where `T` is the component type and `U` is the supplemental attribute type.
 
 # Arguments
-- `sys::System`: System containing the components and attributes.
-- `::Type{T}`: Type of the components to filter by. Can be concrete or abstract.
-- `::Type{U}`: Type of the supplemental attributes to filter by. Can be concrete or abstract.
+- `sys::`[`System`](@ref): System containing the components and attributes.
+- `::Type{T}`: Type of the [`Component`](@ref) to filter by. Can be concrete or abstract.
+- `::Type{U}`: Type of the [`SupplementalAttribute`](@ref) to filter by. Can be concrete or abstract.
 - `components`: Optional iterable. If set, filter pairs where the component is in this
   iterable.
 - `attributes`: Optional iterable. If set, filter pairs where the supplemental attribute is
@@ -2668,7 +2653,7 @@ Allow types to implement handling of special cases during deserialization.
 
 # Arguments
 - `component::Dict`: The component serialized as a dictionary.
-- `::Type`: The type of the component.
+- `::Type`: The type of the [`Component`](@ref).
 """
 handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = nothing
 
@@ -3480,7 +3465,7 @@ series and/or supplemental attributes.
 
 # Arguments
 
-  - `data::System`: the `System` to copy
+  - `sys::`[`System`](@ref): the `System` to copy
   - `skip_time_series::Bool = true`: whether to skip copying time series
   - `skip_supplemental_attributes::Bool = true`: whether to skip copying supplemental
     attributes

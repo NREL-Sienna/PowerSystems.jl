@@ -45,20 +45,19 @@ typeof(solitude)
 
 get_fuel(solitude)
 
-# You can see a [`ThermalFuels`](@ref tf_list) option returned.
+# You can see a [`ThermalFuels`](@ref) option returned.
 # To recap, [`get_component`](@ref) will return a component object, but we can use a specific `get_*` function to return the data in a particular field.
 # !!! warning
-#     Using the "dot" access to get a field value from a component is actively discouraged, use `get_*` functions instead.
-#     Julia syntax enables access to this data using the "dot" access (e.g., `solitude.fuel`), however this is discouraged for two reasons:
-#      1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
-#      2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit](https://sienna-platform.github.io/PowerSystems.jl/stable/explanation/per_unit/#per_unit) section for more details)
+#     Using the "dot" access to get a field value from a component (e.g., `solitude.fuel`)
+#     is actively discouraged — use `get_*` functions instead.
+#     See [Accessing data stored in a component](@ref dot_access) for why.
 # To update a field we can use a specific `set_*`, or setter function, which are defined for each component field.
 # We can use [`set_fuel!`](@ref set_fuel!(value::ThermalStandard, val)) to update the `fuel` field of Solitude to natural gas.
 
 set_fuel!(solitude, ThermalFuels.NATURAL_GAS)
 
 # We can use [`show_components`](@ref) again to check that the `Solitude` `fuel` has been
-# updated to [`ThermalFuels.NATURAL_GAS`](@ref tf_list):
+# updated to [`ThermalFuels`](@ref)`.NATURAL_GAS`:
 
 show_components(ThermalStandard, sys, [:fuel])
 
@@ -184,6 +183,37 @@ get_available_components(ThermalStandard, sys)
 
 show_components(ThermalStandard, sys)
 
+# ## Add and Access Contextual Data with Supplemental Attributes
+# Not all modeling data belongs in component fields. Geographic location is an example of
+# contextual information stored as
+# [`SupplementalAttribute`](@ref)s, which can be shared across multiple components. 
+
+# Batch add a shared [`GeographicInfo`](@ref) attribute to the `Solitude` unit and its bus, using
+# [`begin_supplemental_attributes_update`](@ref) and [`add_supplemental_attribute!`](@ref):
+geo = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [-78.5, 38.0]))
+
+begin_supplemental_attributes_update(sys) do
+    add_supplemental_attribute!(sys, solitude, geo)
+    add_supplemental_attribute!(sys, get_bus(solitude), geo)
+end
+
+# List every component that shares this geographic information with [`get_associated_components`](@ref):
+
+get_associated_components(sys, geo)
+
+# See the many-to-many relationship where this latitude and longitude are linked to both the generator and its bus.
+
+# Query attributes on one component with [`get_supplemental_attributes`](@ref):
+
+get_supplemental_attributes(GeographicInfo, solitude)
+
+# Query all geographic attributes in the system with [`get_supplemental_attributes`](@ref):
+
+get_supplemental_attributes(GeographicInfo, sys)
+
+# Other supplemental types — plants, emissions, outages — follow the same attach and query
+# pattern with domain-specific fields. See how to [Group generators into plants](@ref group_generators_into_plants) and [Add emissions to generators](@ref add_emissions_to_generators) for more examples.
+
 # ## Getting Buses
 # We can retrieve the [`ACBus`](@ref) components using
 # [`get_buses`](@ref get_buses(sys::System, bus_numbers::Set{Int})),
@@ -254,4 +284,9 @@ get_name.(get_components(ThermalStandard, sys))
 # We used specific `get_*` functions and `set_*` functions to see and update the fields in
 # [`ThermalStandard`](@ref) and [`ACBus`](@ref) components, but remember that these getters
 # and setters are available for each data field for components of all Types in `PowerSystems.jl`.
-# Follow the next tutorials to learn how to [work with time series](@ref tutorial_time_series).
+
+# Next you might like to:
+#   - Learn about [Supplemental attributes](@ref supplemental_attributes_explanation), contextual data layered on electrical models
+#   - Do the tutorial on [Working with Time Series](@ref "Working with Time Series Data") data
+#   - See how to [Group generators into plants](@ref group_generators_into_plants)
+#   - [Add emissions to generators](@ref add_emissions_to_generators)

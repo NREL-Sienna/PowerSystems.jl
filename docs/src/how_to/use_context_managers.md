@@ -1,16 +1,16 @@
-# Use Context Managers for Efficient Bulk Operations
+# [Use Context Managers for Efficient Bulk Operations](@id use_context_managers)
 
 `PowerSystems.jl` provides several "context manager" functions that help you perform bulk
 operations more efficiently and safely. These functions temporarily change system settings or
 optimize batch operations, then automatically restore the original state when complete.
 
-Context managers in PowerSystems follow a pattern similar to `Logging.with_logger` in Julia.
+Context managers in `PowerSystems.jl` follow a pattern similar to `Logging.with_logger` in Julia.
 They accept a function (typically as a `do` block) that executes with modified settings,
 ensuring cleanup even if errors occur.
 
 ## Available Context Managers
 
-PowerSystems provides three main context managers:
+`PowerSystems.jl` provides three main context managers:
 
  1. [`with_units_base`](@ref) - Temporarily change unit system for getting/setting component data
  2. [`begin_supplemental_attributes_update`](@ref) - Optimize bulk addition/removal of supplemental attributes
@@ -19,7 +19,7 @@ PowerSystems provides three main context managers:
 ## Using `with_units_base`
 
 The [`with_units_base`](@ref) function temporarily changes the [unit system](@ref per_unit)
-for a `System` or `Component`, executes your code, then automatically restores the original
+for a [`System`](@ref) or [`Component`](@ref), executes your code, then automatically restores the original
 unit system. This is useful when you need to retrieve or set values in a specific unit system
 without permanently changing the system's configuration.
 
@@ -31,7 +31,7 @@ without permanently changing the system's configuration.
 
 ### Example: Getting Component Data in Natural Units
 
-```julia
+```@example use_context_managers
 using PowerSystems
 using PowerSystemCaseBuilder
 
@@ -49,7 +49,7 @@ end
 
 ### Example: Setting Multiple Component Values in Natural Units
 
-```julia
+```@example use_context_managers
 # Temporarily change units to add/modify multiple components in natural units
 with_units_base(sys, "NATURAL_UNITS") do
     for gen in get_components(ThermalStandard, sys)
@@ -66,7 +66,7 @@ end
 
 You can also use `with_units_base` on individual components:
 
-```julia
+```@example use_context_managers
 active_power_mw = with_units_base(gen, UnitSystem.NATURAL_UNITS) do
     get_active_power(gen)
 end
@@ -87,56 +87,21 @@ from repeated index updates.
 If an error occurs during the update, all changes are automatically reverted, ensuring data
 consistency.
 
-### Example: Adding Multiple Supplemental Attributes
-
 ```julia
-using PowerSystems
-
-# Define some supplemental attributes (e.g., outage data)
-outage1 = FixedForcedOutage(;
-    mean_time_to_recovery = 8.0,
-    mean_time_to_failure = 1000.0,
-)
-
-outage2 = FixedForcedOutage(;
-    mean_time_to_recovery = 12.0,
-    mean_time_to_failure = 800.0,
-)
-
-# Get components to attach attributes to
-gen1 = get_component(ThermalStandard, sys, "322_CT_6")
-gen2 = get_component(ThermalStandard, sys, "323_CC_1")
-
-# Use context manager for efficient bulk addition
 begin_supplemental_attributes_update(sys) do
-    add_supplemental_attribute!(sys, gen1, outage1)
-    add_supplemental_attribute!(sys, gen2, outage2)
-    # Add many more attributes...
-end
-```
-
-### Example: Bulk Operations with Error Handling
-
-```julia
-# If an error occurs, all changes are automatically reverted
-try
-    begin_supplemental_attributes_update(sys) do
-        add_supplemental_attribute!(sys, component1, attribute1)
-        add_supplemental_attribute!(sys, component2, attribute2)
-        # ... more operations ...
-        error("Something went wrong!")  # All changes will be reverted
+    for gen in get_components(ThermalStandard, sys)
+        outage = GeometricDistributionForcedOutage(;
+            mean_time_to_recovery = 8.0,
+            outage_transition_probability = 0.001,
+        )
+        add_supplemental_attribute!(sys, gen, outage)
     end
-catch e
-    @warn "Operation failed, changes were reverted" exception=e
 end
 ```
 
-!!! note
-
-    Without using this context manager, each individual call to
-    `add_supplemental_attribute!` updates internal indexes separately, which can be slow
-    when adding many attributes. The context manager batches all updates together for
-    better performance.
+Without the context manager, each individual call to `add_supplemental_attribute!` updates
+internal indexes separately, which can be slow when adding many attributes. For a complete
+worked example, see [Attach supplemental data to components](@ref attach_contextual_data).
 
 ## Using `begin_time_series_update`
 
@@ -154,7 +119,7 @@ If an error occurs during the update, changes are automatically reverted.
 
 ### Example: Adding Multiple Time Series
 
-```julia
+```@example use_context_managers
 using PowerSystems
 using Dates
 
@@ -182,74 +147,31 @@ begin_time_series_update(sys) do
 end
 ```
 
-### Example: Adding Time Series from Multiple Sources
-
-```julia
-# When you have time series data from multiple sources
-begin_time_series_update(sys) do
-    for component in get_components(Generator, sys)
-        # Create time series data specific to each component
-        # (In practice, this might come from CSV files, databases, or other sources)
-        component_data = Dict(
-            DateTime("2020-01-01T00:00:00") => rand(24),
-            DateTime("2020-01-02T00:00:00") => rand(24),
-        )
-
-        forecast = Deterministic(
-            "max_active_power",
-            component_data,
-            resolution;
-            scaling_factor_multiplier = get_max_active_power,
-        )
-        add_time_series!(sys, component, forecast)
-    end
-end
-```
-
 !!! tip
 
     When adding thousands of time series arrays, using `begin_time_series_update` can
     provide significant performance improvements by reducing file I/O and database
     transaction overhead.
 
-## Best Practices
+## Nesting Context Managers
 
- 1. **Always use context managers for bulk operations**: When adding multiple supplemental
-    attributes or time series, use the appropriate context manager to improve performance.
+Context managers can be nested if needed:
 
- 2. **Automatic cleanup**: Context managers ensure cleanup happens even if errors occur, so
-    your system state remains consistent.
-
- 3. **Nested context managers**: You can nest context managers if needed:
-
-    ```julia
-    with_units_base(sys, "NATURAL_UNITS") do
-        begin_time_series_update(sys) do
-            # Add time series with natural unit scaling factors
-            for gen in get_components(Generator, sys)
-                # ... add time series ...
-            end
+```julia
+with_units_base(sys, "NATURAL_UNITS") do
+    begin_time_series_update(sys) do
+        # Add time series with natural unit scaling factors
+        for gen in get_components(Generator, sys)
+            # ... add time series ...
         end
     end
-    ```
-
- 4. **Error handling**: The context managers automatically handle cleanup, but you can still
-    use `try-catch` blocks for application-specific error handling:
-
-    ```julia
-    try
-        begin_time_series_update(sys) do
-            # ... operations ...
-        end
-    catch e
-        @error "Time series update failed" exception=e
-        # Handle application-specific recovery
-    end
-    ```
+end
+```
 
 ## See Also
 
   - [Per-unit Conventions](@ref per_unit) - Learn more about unit systems
-  - [Supplemental Attributes](@ref supplemental_attributes) - Details on supplemental attribute usage
-  - [Working with Time Series Data](@ref tutorial_time_series) - Tutorial on time series handling
-  - [Improve Performance with Time Series Data](@ref) - Additional time series performance tips
+  - [Supplemental attributes](@ref supplemental_attributes_explanation) — why contextual data is separate from components
+  - [Attach supplemental data to components](@ref attach_contextual_data) — bulk attachment with `begin_supplemental_attributes_update`
+  - [Working with Time Series Data](@ref "Working with Time Series Data") - Tutorial on time series handling
+  - [Improve Performance with Time Series Data](@ref improve_ts_performance) - Additional time series performance tips

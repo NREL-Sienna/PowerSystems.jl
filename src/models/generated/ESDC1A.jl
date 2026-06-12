@@ -55,7 +55,7 @@ Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds
 	Vf: Exciter Output, 
 	Vr3: Rate feedback integrator
 - `n_states::Int`: (**Do not modify.**) The ESDC1A has 5 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) ESDC1A has 5 [differential](@ref states_list) [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) ESDC1A has 5 [differential](@ref StateTypes) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ESDC1A <: AVR
@@ -100,7 +100,7 @@ mutable struct ESDC1A <: AVR
     states::Vector{Symbol}
     "(**Do not modify.**) The ESDC1A has 5 states"
     n_states::Int
-    "(**Do not modify.**) ESDC1A has 5 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) ESDC1A has 5 [differential](@ref StateTypes) [states](@ref S)"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

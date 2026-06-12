@@ -14,8 +14,20 @@ links = InterLinks(
 
 # This is a fallback for the docstrings that are referenced within IS docstrings
 fallbacks = ExternalFallbacks(
+    "add_supplemental_attribute!" => "@extref InfrastructureSystems.add_supplemental_attribute!",
+    "remove_supplemental_attribute!" => "@extref InfrastructureSystems.remove_supplemental_attribute!",
     "ComponentContainer" => "@extref InfrastructureSystems.ComponentContainer",
-    "InfrastructureSystemsComponent" => "@extref InfrastructureSystems.InfrastructureSystemsComponent"
+    "ComponentUUIDs" => "@extref InfrastructureSystems.ComponentUUIDs",
+    "InfrastructureSystemsComponent" => "@extref InfrastructureSystems.InfrastructureSystemsComponent",
+    "InfrastructureSystemsInternal" => "@extref InfrastructureSystems.InfrastructureSystemsInternal",
+    "PiecewiseLinearData" => "@extref InfrastructureSystems.PiecewiseLinearData",
+    "SupplementalAttributeAssociations" => "@extref InfrastructureSystems.SupplementalAttributeAssociations",
+    "SupplementalAttributeManager" => "@extref InfrastructureSystems.SupplementalAttributeManager",
+    "SystemData" => "@extref InfrastructureSystems.SystemData",
+    "TimeSeriesManager" => "@extref InfrastructureSystems.TimeSeriesManager",
+    "TimeSeriesMetadata" => "@extref InfrastructureSystems.TimeSeriesMetadata",
+    "TimeSeriesStorage" => "@extref InfrastructureSystems.TimeSeriesStorage",
+    "get_uuid" => "@extref InfrastructureSystems.get_uuid",
 )
 
 # This is commented out because the output is not user-friendly. Deliberation on how to best
@@ -40,8 +52,6 @@ pages = OrderedDict(
                 "Save and read data with a JSON" => "how_to/serialize_data.md",
             ],
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
-            "...use context managers for bulk operations" => "how_to/use_context_managers.md",
-            "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add time-series data" => Any[
                 "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
                 "Improve performance with time series data" => "how_to/improve_ts_performance.md",
@@ -53,9 +63,20 @@ pages = OrderedDict(
                 "Add time series fuel costs" => "how_to/add_fuel_curve_timeseries.md",
 
             ],
+            "...add supplemental data beyond component fields" => Any[
+                "Attach supplemental data to components" => "how_to/add_supplemental_attributes.md",
+                "Query contextual data on a system" => "how_to/use_supplemental_attributes.md",
+                "Group generators into plants" => "how_to/group_generators_into_plants.md",
+                "Model Outages" => "how_to/model_outages.md",
+                "Add emissions to generators" => "how_to/add_emissions_to_generators.md",
+                "Add custom data to a component" => "how_to/adding_additional_fields.md",
+            ],
+            "...read component values in different unit systems" => "how_to/convert_unit_systems.md",
+            "...use subsystems" => "how_to/use_subsystems.md",
+            "...use context managers for bulk operations" => "how_to/use_context_managers.md",
             "...customize or add a new Type" => "how_to/add_new_types.md",
-            "...define hydro generators with reservoirs" => "how_to/create_hydro_datasets.md",
-            "...handle 3-Winding Transformers" => "how_to/handle_3W_transformers.md",
+            "...link hydro reservoirs and turbines" => "how_to/link_hydro_reservoirs_to_turbines.md",
+            "...convert transformer impedances between per-unit bases" => "how_to/convert_transformer_impedance.md",
             "...use PowerSystems.jl with JuMP.jl" => "how_to/jump.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...update to a new `PowerSystems.jl` version" => Any[
@@ -69,26 +90,27 @@ pages = OrderedDict(
             "explanation/buses_type_explanation.md",
             "explanation/per_unit.md",
             "explanation/power_concepts.md",
-            "explanation/conforming_and_non_conforming_loads.md",
-            "explanation/transformer_per_unit_models.md",
             "explanation/time_series.md",
             "explanation/dynamic_data.md",
+            "explanation/three_winding_transformers.md",
             "explanation/supplemental_attributes.md",
-            "explanation/plant_attributes.md",
-            "explanation/emissions_data.md",
+            "explanation/conforming_and_non_conforming_loads.md",
+            "explanation/grouping_generators_into_plants.md",
+            "explanation/hydro_reservoir_topology.md",
+            "explanation/emissions_metadata.md",
+            "explanation/outage_and_contingency_data.md",
             ],
         "Model Library" => Any[],
         "Reference" =>
-            Any["Public API" => "api/public.md",
-            "Glossary and Acronyms" => "api/glossary.md",
-            "Type Tree" => "api/type_tree.md",
-            "`ValueCurve` Options" => "api/valuecurve_options.md",
-            "Specifying the category of..." => "api/enumerated_types.md",
-            "Supported PSS/e Models" => "api/psse_models.md",
-            "Comparison of Load, Generator, and Storage Types" => "api/static_injection_subtypes.md",
-            "Citation" => "api/citation.md",
-            "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
-            "Internals" => "api/internal.md"]
+            Any["Public API" => "reference/public.md",
+            "Glossary and Acronyms" => "reference/glossary.md",
+            "Type Tree" => "reference/type_tree.md",
+            "`ValueCurve` Options" => "reference/valuecurve_options.md",
+            "Supported PSS/e Models" => "reference/psse_models.md",
+            "Comparison of Load, Generator, and Storage Types" => "reference/static_injection_subtypes.md",
+            "Citation" => "reference/citation.md",
+            "Developers" => ["Developer Guidelines" => "reference/developer_guidelines.md",
+            "Internals" => "reference/internal.md"]
             ]
 )
 

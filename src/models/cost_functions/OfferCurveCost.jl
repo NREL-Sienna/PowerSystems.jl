@@ -1,6 +1,4 @@
 """
-    OfferCurveCost
-
 Abstract type for representing cost curves used in market bidding and offer mechanisms.
 
 This serves as the base type for various cost curve implementations including:

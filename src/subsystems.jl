@@ -1,5 +1,14 @@
 """
 Add a new subsystem to the system.
+
+Subsystems are named groupings of components within a [`System`](@ref), useful for
+representing e.g., regional partitions or study areas. Components must be added
+separately via [`add_component_to_subsystem!`](@ref).
+
+Throws `InfrastructureSystems.InvalidValue` if the number of subsystems would exceed the
+number of buses in the system.
+
+See also: [`remove_subsystem!`](@ref), [`get_subsystems`](@ref)
 """
 function add_subsystem!(sys::System, subsystem_name::AbstractString)
     _check_num_subsystems(sys)
@@ -8,24 +17,32 @@ end
 
 """
 Return the number of subsystems stored in the system.
+
+See also: [`get_subsystems`](@ref), [`add_subsystem!`](@ref)
 """
 get_num_subsystems(sys::System) = IS.get_num_subsystems(sys.data)
 
 """
-Return an iterator of all subsystem names in the system.
+Return an iterator of subsystem name strings stored in the system.
+
+See also: [`add_subsystem!`](@ref), [`get_num_subsystems`](@ref), [`get_subsystem_components`](@ref)
 """
 get_subsystems(sys::System) = IS.get_subsystems(sys.data)
 
 """
 Remove a subsystem from the system.
 
-Throws ArgumentError if the subsystem name is not stored.
+Throws `ArgumentError` if the subsystem name is not stored.
+
+See also: [`add_subsystem!`](@ref), [`get_subsystems`](@ref)
 """
 remove_subsystem!(sys::System, subsystem_name::AbstractString) =
     IS.remove_subsystem!(sys.data, subsystem_name)
 
 """
 Return true if the system has one or more subsystems.
+
+See also: [`get_subsystems`](@ref), [`add_subsystem!`](@ref)
 """
 function has_subsystems(sys::System)
     for _ in get_subsystems(sys)
@@ -37,6 +54,13 @@ end
 
 """
 Add a component to a subsystem.
+
+The subsystem must already exist (see [`add_subsystem!`](@ref)). If the component is a
+[`StaticInjectionSubsystem`](@ref), all of its subcomponents are also added.
+
+Throws `ArgumentError` if the subsystem name is not stored.
+
+See also: [`remove_component_from_subsystem!`](@ref), [`get_subsystem_components`](@ref)
 """
 function add_component_to_subsystem!(
     sys::System,
@@ -91,9 +115,11 @@ function handle_component_removal_from_subsystem!(
 end
 
 """
-Return a Generator of all components in the subsystem.
+Return an iterator of all components in the subsystem.
 
-Throws ArgumentError if the subsystem name is not stored.
+Throws `ArgumentError` if the subsystem name is not stored.
+
+See also: [`add_component_to_subsystem!`](@ref), [`get_subsystems`](@ref)
 """
 get_subsystem_components(sys::System, subsystem_name::AbstractString) =
     IS.get_subsystem_components(sys.data, subsystem_name)
@@ -101,7 +127,12 @@ get_subsystem_components(sys::System, subsystem_name::AbstractString) =
 """
 Remove a component from a subsystem.
 
-Throws ArgumentError if the subsystem name or component is not stored.
+If the component is a [`StaticInjectionSubsystem`](@ref), all of its subcomponents are
+also removed from the subsystem.
+
+Throws `ArgumentError` if the subsystem name or component is not stored.
+
+See also: [`add_component_to_subsystem!`](@ref), [`get_subsystem_components`](@ref)
 """
 function remove_component_from_subsystem!(
     sys::System,
@@ -116,36 +147,39 @@ end
 """
 Remove a component from all subsystems it belongs to.
 """
-remove_component_from_subsystems!(
-    sys::System,
-    component::Component,
-) = remove_component_from_subsystems!(sys.data, component)
+remove_component_from_subsystems!(sys::System, component::Component) =
+    remove_component_from_subsystems!(sys.data, component)
 
 """
-Return true if the component is in the subsystem.
+Return true if the component is assigned to the subsystem.
+
+See also: [`is_assigned_to_subsystem`](@ref), [`get_subsystem_components`](@ref), [`add_component_to_subsystem!`](@ref)
 """
-has_component(
-    sys::System,
-    subsystem_name::AbstractString,
-    component::Component,
-) = IS.has_component(sys.data, subsystem_name, component)
+has_component(sys::System, subsystem_name::AbstractString, component::Component) =
+    IS.has_component(sys.data, subsystem_name, component)
 
 """
-Return a Vector of subsystem names that contain the component.
+Return a `Vector` of subsystem name strings that contain the component.
+
+See also: [`is_assigned_to_subsystem`](@ref), [`add_component_to_subsystem!`](@ref)
 """
-get_assigned_subsystems(
-    sys::System,
-    component::Component,
-) = IS.get_assigned_subsystems(sys.data, component)
+get_assigned_subsystems(sys::System, component::Component) =
+    IS.get_assigned_subsystems(sys.data, component)
 
 """
-Return true if the component is assigned to any subsystems.
+Return true if the component is assigned to any subsystem.
+
+See also: [`is_assigned_to_subsystem(sys, component, subsystem_name)`](@ref is_assigned_to_subsystem(::System, ::Component, ::AbstractString)),
+[`get_assigned_subsystems`](@ref)
 """
 is_assigned_to_subsystem(sys::System, component::Component) =
     IS.is_assigned_to_subsystem(sys.data, component)
 
 """
-Return true if the component is assigned to the subsystem.
+Return true if the component is assigned to the named subsystem.
+
+See also: [`is_assigned_to_subsystem(sys, component)`](@ref is_assigned_to_subsystem(::System, ::Component)),
+[`get_assigned_subsystems`](@ref)
 """
 is_assigned_to_subsystem(
     sys::System,
@@ -195,10 +229,7 @@ function _check_branch_consistency(sys::System, branch::Branch)
     _check_subsystem_assignments(sys, branch, get_arc(branch), msg; symmetric_diff = true)
 end
 
-function _check_branch_consistency(
-    sys::System,
-    branch::ThreeWindingTransformer,
-)
+function _check_branch_consistency(sys::System, branch::ThreeWindingTransformer)
     msg = "A branch must be assigned to the same subystems as its arc."
     arcs = [
         get_primary_star_arc(branch),
