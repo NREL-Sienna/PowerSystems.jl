@@ -1507,7 +1507,7 @@ const _pti_defaults_v35 = Dict(
     "OWNER" => _default_owner,
     "FACTS CONTROL DEVICE" => _default_facts,
     "SWITCHED SHUNT" => _default_switched_shunt,
-    "CASE IDENTIFICATION" => _default_case_identification,
+    "CASE IDENTIFICATION" => _default_case_identification_v35,
     "GNE DEVICE" => _default_gne_device,
     "INDUCTION MACHINE" => _default_induction_machine,
     "SUBSTATION DATA" => _default_substation_data_v35,
@@ -1974,6 +1974,9 @@ function _parse_pti_data(data_io::IO)
     end
 
     current_dtypes = is_v35 ? _pti_dtypes_v35 : _pti_dtypes
+    if get(ENV, "PTI_VERSION", false) ∈ ("v31", "v32") # special override
+        current_dtypes["BRANCH"] = setdiff(deepcopy(PowerSystems._branch_dtypes), [("MET", Int64)])
+    end
 
     line_index = 1
     while line_index <= length(data_lines)
@@ -2192,9 +2195,16 @@ function _parse_pti_data(data_io::IO)
                     end
 
                     if section_data["REV"] != "" && section_data["REV"] < 33
-                        @info(
+                        @warn(
                             "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.",
                         )
+                        if section_data["REV"] ∈ (31, 32)
+                            @info(
+                                """Try setting the following and rerun:
+                                    ENV["PTI_VERSION"] = "v$(section_data["REV"])" 
+                                """
+                            )
+                        end
                     end
 
                     if is_v35
