@@ -1151,7 +1151,7 @@ function correct_thermal_limits!(data::Dict{String, <:Any})
                     new_rate = min(new_rate, branch["c_rating_a"][c] * m_vmax)
                 end
 
-                @info "this code only supports positive rate_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(round(mva_base*new_rate, digits=4))" maxlog =
+                @info "this code only supports positive rate_a values, changing the value $(branch["rate_a"][c]) on branch $(branch["index"])$(cnd_str) to $(round(mva_base*new_rate, digits=4))" maxlog =
                     PS_MAX_LOG
 
                 if haskey(data, "conductors")
@@ -1766,7 +1766,7 @@ function check_voltage_setpoints(data::Dict{String, <:Any})
             bus_id = gen["gen_bus"]
             bus = data["bus"][bus_id]
             if gen["vg"][c] != bus["vm"][c]
-                @info "the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)" maxlog =
+                @info "the $(cnd_str)voltage setpoint of $(gen["vg"][c]) on generator $(i) does not match the value $(bus["vm"][c]) at bus $(bus_id)" maxlog =
                     PS_MAX_LOG
             end
         end
