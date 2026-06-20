@@ -19,7 +19,7 @@ key benefits:
     type.
 
  2. **Generic and extensible model logic:** Downstream packages such as
-    [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/)
+    [`PowerSimulations.jl`](https://sienna-platform.github.io/PowerSimulations.jl/stable/)
     define optimization formulations against abstract types. A new concrete component type
     slots into existing model formulations automatically, as long as it implements the
     expected interface. This means users can define technologies not yet in the package and

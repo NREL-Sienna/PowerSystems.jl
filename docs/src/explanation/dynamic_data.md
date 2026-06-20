@@ -18,7 +18,7 @@ The first data layer contains all the information necessary to run a power flow 
 
   - Vector of `Bus` elements, that define all the buses in the network.
   - Vector of `Branch` elements, that define all the branches elements (that connect two buses) in the network.
-  - Vector of [`StaticInjection`](@ref) elements, that define all the devices connected to buses that can inject (or withdraw) power. These static devices, typically generators, in [`PowerSimulationsDynamics`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) are used to solve the power flow problem that determines the active and reactive power provided for each device.
+  - Vector of [`StaticInjection`](@ref) elements, that define all the devices connected to buses that can inject (or withdraw) power. These static devices, typically generators, in [`PowerSimulationsDynamics`](https://sienna-platform.github.io/PowerSimulationsDynamics.jl/stable/) are used to solve the power flow problem that determines the active and reactive power provided for each device.
   - Vector of [`PowerLoad`](@ref) elements, that define all the loads connected to buses that can withdraw current. These are also used to solve power flow.
   - Vector of `Source` elements, that define source components behind a reactance that can inject or withdraw current.
   - The base of power used to define per unit values, in MVA as a `Float64` value. See [Per-unit Conventions](@ref per_unit).
