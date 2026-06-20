@@ -67,6 +67,19 @@ Framework: [Diataxis](https://diataxis.fr/). Sienna guides:
 
 Docstrings: cover all public-interface elements (IS is selective about exports); include signatures + argument lists; automate with `DocStringExtensions.TYPEDSIGNATURES` (`TYPEDFIELDS` sparingly); add "see also" links for same-named (multiple-dispatch) functions. API docs: public in `docs/src/api/public.md` via `@autodocs` (`Public=true, Private=false`); internals in `docs/src/api/internals.md`.
 
+**The documentation must build to succeed.** Before considering any documentation-affecting task complete, confirm the docs build cleanly — a broken docs build is a task failure, not a warning. Documenter treats missing docstring references, broken `@ref` links, and failing doctests as errors:
+
+```sh
+julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'   # first time
+julia --project=docs docs/make.jl                                                              # must finish without errors
+```
+
+Where the package provides a docstring-coverage checker, also run it so every exported symbol is documented (this is enforced in CI):
+
+```sh
+julia --project=test scripts/check_docstrings.jl <PackageName>
+```
+
 ## Design Principles
 
 - Elegance and concision in both interface and implementation
