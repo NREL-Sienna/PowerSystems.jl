@@ -1973,10 +1973,10 @@ function _parse_pti_data(data_io::IO)
         4 # Start for all v33 files
     end
 
-    current_dtypes = is_v35 ? _pti_dtypes_v35 : _pti_dtypes
-    if get(ENV, "PTI_VERSION", false) ∈ ("v31", "v32") # special override
-        current_dtypes["BRANCH"] = setdiff(deepcopy(PowerSystems._branch_dtypes), [("MET", Int64)])
-    end
+current_dtypes = deepcopy(is_v35 ? _pti_dtypes_v35 : _pti_dtypes)
+if !is_v35 && get(ENV, "PTI_VERSION", "") ∈ ("v31", "v32") # special override
+    current_dtypes["BRANCH"] = setdiff(_branch_dtypes, [("MET", Int64)])
+end
 
     line_index = 1
     while line_index <= length(data_lines)
