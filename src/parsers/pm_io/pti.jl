@@ -2063,7 +2063,7 @@ function _parse_pti_data(data_io::IO)
                             point_index = 1
                             element_index = 1
                             while element_index <= length(processing_elements) &&
-                                element_index + 2 <= length(processing_elements)
+                                  element_index + 2 <= length(processing_elements)
                                 t_str = strip(processing_elements[element_index])
                                 re_str = strip(processing_elements[element_index + 1])
                                 im_str = strip(processing_elements[element_index + 2])
@@ -2121,7 +2121,7 @@ function _parse_pti_data(data_io::IO)
                         point_index = 1
                         element_index = 1
                         while element_index <= length(processing_elements) &&
-                            element_index + 2 <= length(processing_elements)
+                              element_index + 2 <= length(processing_elements)
                             t_str = strip(processing_elements[element_index])
                             re_str = strip(processing_elements[element_index + 1])
                             im_str = strip(processing_elements[element_index + 2])

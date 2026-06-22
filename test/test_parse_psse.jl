@@ -665,4 +665,18 @@ end
         COD1 = 3,
     )
     @test PowerSystems.get_branch_type_psse(d) == PhaseShiftingTransformer
+
+    # Explicit UNDEFINED winding-group path
+    d = _psse_branch_dict(; tap = 1.0, shift = π / 12, COD1 = 0)
+    @test PowerSystems.get_branch_type_psse(d) == PhaseShiftingTransformer
+
+    # UNDEFINED group + near-zero shift + tap-controllable (COD1=1) + identity tap →
+    # must NOT be demoted to Transformer2W; the tap-control capability keeps it as
+    # TapTransformer.
+    d = _psse_branch_dict(;
+        tap = 1.0,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 1,
+    )
+    @test PowerSystems.get_branch_type_psse(d) == TapTransformer
 end

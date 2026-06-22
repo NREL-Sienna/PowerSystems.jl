@@ -1258,9 +1258,11 @@ function get_branch_type_psse(
     if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
         # Degenerate PST: controllable but shift is effectively zero → demote
         if is_zero_shift && !is_alpha_controllable
-            @warn "PhaseShiftingTransformer with near-zero shift ($(rad2deg(shift))°) normalised to $(is_identity_tap ? "Transformer2W" : "TapTransformer")" _group =
+            demoted_type =
+                (is_identity_tap && !is_tap_controllable) ? Transformer2W : TapTransformer
+            @warn "PhaseShiftingTransformer with near-zero shift ($(rad2deg(shift))°) normalised to $demoted_type" _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
-            return is_identity_tap ? Transformer2W : TapTransformer
+            return demoted_type
         end
         return PhaseShiftingTransformer
     elseif (is_tap_controllable || (tap != 1.0)) &&
@@ -1284,8 +1286,7 @@ function _normalized_arc_key(f_bus::Int, t_bus::Int)
 end
 
 function _is_near_zero_impedance_line(d::Dict)
-    return abs(d["br_r"]) <= ZERO_IMPEDANCE_RESISTANCE_THRESHOLD &&
-           abs(d["br_x"]) <= ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+    return iszero(d["br_r"]) && abs(d["br_x"]) <= ZERO_IMPEDANCE_REACTANCE_THRESHOLD
 end
 
 function _is_active_pti_branch(d::Dict)
@@ -1293,11 +1294,10 @@ function _is_active_pti_branch(d::Dict)
 end
 
 function _expected_discrete_state(d::Dict, bus_f::ACBus, bus_t::ACBus)
-    available = d["br_status"] == 1
-    if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
-       get_bustype(bus_t) == ACBusTypes.ISOLATED
-        available = false
-    end
+    available =
+        _is_active_pti_branch(d) &&
+        get_bustype(bus_f) != ACBusTypes.ISOLATED &&
+        get_bustype(bus_t) != ACBusTypes.ISOLATED
     status = if available
         DiscreteControlledBranchStatus.CLOSED
     else
@@ -1347,10 +1347,10 @@ function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
                 get(line_near_zero_by_arc, arc_key, false)
             if all_lines_near_zero
                 overrides[arc_key] = DiscreteControlledACBranch
-                @warn "Normalizing mixed parallel Line/DiscreteControlledACBranch on near-zero-impedance arc $(arc_key[1])-$(arc_key[2]) to DiscreteControlledACBranch." _group =
+                @warn "Normalizing mixed parallel $(join(branch_types, "/")) on near-zero-impedance arc $(arc_key[1])-$(arc_key[2]) to DiscreteControlledACBranch." _group =
                     IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
             else
-                @warn "Keeping mixed parallel Line/DiscreteControlledACBranch on arc $(arc_key[1])-$(arc_key[2]) because at least one Line has non-negligible impedance." _group =
+                @warn "Keeping mixed parallel $(join(branch_types, "/")) on arc $(arc_key[1])-$(arc_key[2]) because at least one Line has non-negligible impedance." _group =
                     IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
             end
         end
