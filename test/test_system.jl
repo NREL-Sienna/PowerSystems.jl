@@ -157,6 +157,14 @@ end
     component = first(components)
     id = IS.get_id(component)
     @test get_name(get_component(sys, id)) == get_name(component)
+
+    # get_available_component by integer id mirrors get_component for available components
+    # and returns nothing for unavailable ones.
+    avail = first(c for c in get_components(get_available, ThermalStandard, sys))
+    @test get_available_component(sys, IS.get_id(avail)) === avail
+    set_available!(avail, false)
+    @test isnothing(get_available_component(sys, IS.get_id(avail)))
+    set_available!(avail, true)
 end
 
 @testset "Test remove_component" begin

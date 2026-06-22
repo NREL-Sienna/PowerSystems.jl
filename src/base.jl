@@ -3341,8 +3341,8 @@ end
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
     # Carry over both the integer id and the UUID so the converted component inherits the
-    # original's identity. The original component is given a fresh id (assign_new_id!) and
-    # removed before the new component is added, so there is no id collision.
+    # original's identity. Callers reassign the original a fresh id (assign_new_id!) before
+    # adding the new component, which frees the original id, so there is no id collision.
     return InfrastructureSystemsInternal(;
         id = internal.id,
         uuid = deepcopy(internal.uuid),

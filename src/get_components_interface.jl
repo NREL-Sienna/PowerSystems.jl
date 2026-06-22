@@ -185,11 +185,9 @@ get_available_components(
 
 # get_available_component
 """
-Get the available component by UUID.
+Get the available component by its integer id.
 """
-get_available_component(sys::System, uuid::Base.UUID) =
-    IS.get_available_component(sys, uuid)
-get_available_component(sys::System, uuid::String) = IS.get_available_component(sys, uuid)
+get_available_component(sys::System, id::Int) = IS.get_available_component(sys, id)
 
 """
 Like [`get_component`](@ref) but also returns `nothing` if the component is not [`get_available`](@ref).
