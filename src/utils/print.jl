@@ -144,8 +144,8 @@ end
 Show all components of the given type in a table.
 
 # Arguments
-- `sys::System`: System containing the components.
-- `component_type::Type{<:Component}`: Type to display. Must be a concrete type.
+- `sys::`[`System`](@ref): System containing the components.
+- `component_type::Type{<:`[`Component`](@ref)`}`: Type to display. Must be a concrete type.
 - `additional_columns::Union{Dict, Vector}`: Additional columns to display.
   The Dict option is a mapping of column name to function. The function must accept
   a component.

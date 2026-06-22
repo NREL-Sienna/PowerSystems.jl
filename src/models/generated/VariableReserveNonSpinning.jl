@@ -28,7 +28,7 @@ This is only an upwards reserve. For faster-responding upwards or downwards rese
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`
-- `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
+- `requirement::Float64`: the required quantity of the product should be scaled by a [`TimeSeriesData`](@ref)
 - `sustained_time::Float64`: (default: `14400.0`) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
 - `max_output_fraction::Float64`: (default: `1.0`) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`
 - `max_participation_factor::Float64`: (default: `1.0`) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`
@@ -43,7 +43,7 @@ mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
     available::Bool
     "the saturation time_frame in minutes to provide reserve contribution"
     time_frame::Float64
-    "the required quantity of the product should be scaled by a TimeSeriesData"
+    "the required quantity of the product should be scaled by a [`TimeSeriesData`](@ref)"
     requirement::Float64
     "the time in seconds reserve contribution must sustained at a specified level"
     sustained_time::Float64

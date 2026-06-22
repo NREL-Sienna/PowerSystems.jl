@@ -70,7 +70,7 @@ A 3-winding phase-shifting transformer.
 - `primary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a primary bus `to` the star bus
 - `secondary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` the star bus
 - `tertiary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus
-- `star_bus::ACBus`: Star (hidden) Bus that this component (equivalent model) is connected to
+- `star_bus::ACBus`: Star (hidden) [`ACBus`](@ref) that this component (equivalent model) is connected to
 - `active_power_flow_primary::Float64`: Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)
 - `reactive_power_flow_primary::Float64`: Initial condition of reactive power flow through the transformer primary side to star (hidden) bus (MW)
 - `active_power_flow_secondary::Float64`: Initial condition of active power flow through the transformer secondary side to star (hidden) bus (MW)
@@ -111,9 +111,9 @@ A 3-winding phase-shifting transformer.
 - `rating_secondary::Float64`: (default: `0.0`) Rating (in MVA) for secondary winding.
 - `rating_tertiary::Float64`: (default: `0.0`) Rating (in MVA) for tertiary winding.
 - `phase_angle_limits::MinMax`: (default: `(min=-3.1416, max=3.1416)`) Minimum and maximum phase angle limits (radians)
-- `control_objective_primary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)
-- `control_objective_secondary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)
-- `control_objective_tertiary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `control_objective_primary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref)
+- `control_objective_secondary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref)
+- `control_objective_tertiary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -129,7 +129,7 @@ mutable struct PhaseShiftingTransformer3W <: ThreeWindingTransformer
     secondary_star_arc::Arc
     "An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus"
     tertiary_star_arc::Arc
-    "Star (hidden) Bus that this component (equivalent model) is connected to"
+    "Star (hidden) [`ACBus`](@ref) that this component (equivalent model) is connected to"
     star_bus::ACBus
     "Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)"
     active_power_flow_primary::Float64
@@ -211,11 +211,11 @@ mutable struct PhaseShiftingTransformer3W <: ThreeWindingTransformer
     rating_tertiary::Float64
     "Minimum and maximum phase angle limits (radians)"
     phase_angle_limits::MinMax
-    "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref)"
     control_objective_primary::TransformerControlObjective
-    "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref)"
     control_objective_secondary::TransformerControlObjective
-    "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref)"
     control_objective_tertiary::TransformerControlObjective
     "Services that this device contributes to"
     services::Vector{Service}

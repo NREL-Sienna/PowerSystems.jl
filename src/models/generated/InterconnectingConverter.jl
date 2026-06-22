@@ -24,13 +24,13 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Interconnecting Power Converter (IPC) for transforming power from an ACBus to a DCBus
+Interconnecting Power Converter (IPC) for transforming power from an [`ACBus`](@ref) to a [`DCBus`](@ref)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `bus::ACBus`: Bus on the AC side of this converter
-- `dc_bus::DCBus`: Bus on the DC side of this converter
+- `bus::ACBus`: The [`ACBus`](@ref) on the AC side of this converter
+- `dc_bus::DCBus`: The [`DCBus`](@ref) on the DC side of this converter
 - `active_power::Float64`: Active power (MW) on the DC side, validation range: `active_power_limits`
 - `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
@@ -49,9 +49,9 @@ mutable struct InterconnectingConverter <: StaticInjection
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Bus on the AC side of this converter"
+    "The [`ACBus`](@ref) on the AC side of this converter"
     bus::ACBus
-    "Bus on the DC side of this converter"
+    "The [`DCBus`](@ref) on the DC side of this converter"
     dc_bus::DCBus
     "Active power (MW) on the DC side"
     active_power::Float64

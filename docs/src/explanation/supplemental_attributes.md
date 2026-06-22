@@ -1,238 +1,77 @@
-# [Supplemental Attributes](@id supplemental_attributes)
+# [Supplemental attributes](@id supplemental_attributes_explanation)
 
-While the [`ext` field is a mechanism](@ref additional_fields) for adding arbitrary metadata. PowerSystems.jl, has moved towards a more structured and formalized way of handling supplemental data using `SupplementalAttribute` structs. This is designed to store metadata in a more organized fashion than a generic dictionary. These attributes are intended to be attached to a [`Component`](@ref) types.
+[`SupplementalAttribute`](@ref) types hold contextual data linked to [`Component`](@ref)s —
+information that sits outside each component's electrical definition. Geographic location,
+outage schedules, plant groupings, emissions profiles, and PSS/e impedance correction tables
+are typical examples. Keeping this metadata separate from component structs reflects how power
+system datasets are actually organized: the same contextual fact often applies to many
+devices, and it changes on a different schedule than network equipment data.
 
-Supplemmental attributes can be shared between components or have 1-1 relationships. This is particularly
-useful to represent components in the same geographic location or outages for multiple components. Conversely, components can contain many attributes.
+## Why separate contextual data from components?
+
+Power system components exist in multiple contexts. A generator is not only defined by its
+electrical properties — it also has a location, may belong to a plant, and may share
+infrastructure with other units. Traditional approaches stored this extra information in
+generic dictionary fields, which led to inconsistent data across large systems, difficult
+maintenance, and no validation of what was stored.
+
+Supplemental attributes address this by using structured types instead of loose dictionaries.
+Electrical behavior stays in component definitions; contextual information lives in
+attributes that can be attached, queried, and shared explicitly. This lets you build models
+in layers (electrical first, context later), reuse contextual data across systems, and
+update outage schedules or emissions profiles without touching electrical models — while
+keeping the speed of in-memory data rather than relying on heavyweight component objects or
+an external relationship database.
+
+## How relationships work
+
+Supplemental attributes use many-to-many relationships. One attribute can connect to
+multiple components, and one component can have multiple attributes.
+
+For example:
+
+  - Multiple generators at the same plant can share geographic coordinates
+  - One weather pattern can affect several plants in a region
+  - Each generator might have its own maintenance schedule
 
 ```mermaid
 flowchart LR
     A["Attribute A"] --> B["Component 1"]
-    A -->  C["Component2"]
-    D["Attribute B"] -->  C["Component 2"]
-    E["Attribute C"] -->  F["Component 3"]
+    A --> C["Component 2"]
+    D["Attribute B"] --> C
+    E["Attribute C"] --> F["Component 3"]
 ```
 
-Supplemental attributes can also contain timeseries in the same fashion that a component can allowing the user to model time varying attributes like outage time series or weather dependent probabilities. See the section [`Working with Time Series Data`](@ref tutorial_time_series) for details on time series handling.
+This flexibility matches how power systems actually work, where components share resources
+and are affected by common factors.
 
-## Getting the attributes in a system
+## What kinds of contextual data are available?
 
-You can retrieve the attributes in a system using the function [`get_supplemental_attributes`](@ref).
-You must pass a supplemental attribute type, which can be concrete or abstract. If you pass an abstract type, all concrete types
-that are subtypes of the abstract type will be returned.
+PowerSystems.jl provides supplemental attribute types for common modeling needs. Each topic
+has a dedicated explanation page and a matching how-to guide; field-level API details live
+in the [Public API Reference](@ref) docstrings.
 
-```julia
-for outage in get_supplemental_attributes(FixedForcedOutage, system)
-    @show summary(outage)
-end
-```
+| Modeling need                                                     | Explanation                                                             | How-to                                                                                 |
+|:----------------------------------------------------------------- |:----------------------------------------------------------------------- |:-------------------------------------------------------------------------------------- |
+| Group units into plants (shafts, penstocks, PCCs, combined cycle) | [Grouping generators into plants](@ref grouping_generators_into_plants) | [Group generators into plants](@ref group_generators_into_plants)                      |
+| Emissions rates and start-up adders                               | [Emissions metadata](@ref emissions_metadata)                           | [Add emissions to generators](@ref add_emissions_to_generators)                        |
+| Planned and forced outages                                        | [Outage and contingency data](@ref outage_and_contingency_data)         | [Model Outages](@ref model_outages)                                                    |
+| Geographic location (GeoJSON)                                     | *(this page)*                                                           | [Parse MATPOWER or PSS/e files](@ref pm_data) — auto-loaded from PSS/e v35 substations |
+| PSS/e transformer impedance correction tables                     | *(this page)*                                                           | [Migrate from version 4.0 to 5.0](@ref psy5_migration)                                 |
 
-You can optionally pass a filter function to reduce the returned attributes. This example will
-return only FixedForcedOutage instances that have a mean time to recovery greater than or equal to 0.5.
+[`GeographicInfo`](@ref) stores GeoJSON location metadata and can be shared across buses.
+When parsing PSS/e v35 files with a substation section, coordinates are automatically
+attached as [`GeographicInfo`](@ref) attributes. See [Parsing MATPOWER or PSS/e Files](@ref pm_data).
 
-```julia
-for outage in get_supplemental_attributes(
-    x -> get_mean_time_to_recovery(x) >= 0.5,
-    FixedForcedOutage,
-    system,
-)
-    @show summary(outage)
-end
-```
+[`ImpedanceCorrectionData`](@ref) links a PSS/e Transformer Impedance Correction Table row
+to a transformer. It is typically populated during PSS/e import rather than built by hand.
 
-## Getting the attributes associated with a component
+Attributes can include [time series data](@ref ts_data) — for example, planned outage
+schedules and stochastic forced-outage probabilities.
 
-You can retrieve the attributes associated with a component using the function [`get_supplemental_attributes`](@ref).
-This method signatures are identical to the versions above that operate on a system; just swap the system for a component.
+## Learn more
 
-You must pass a supplemental attribute type, which can be concrete or abstract. If you pass an abstract type, all concrete types
-that are subtypes of the abstract type will be returned.
-
-```julia
-gen1 = get_component(ThermalStandard, system, "gen1")
-for outage in get_supplemental_attributes(FixedForcedOutage, gen)
-    @show summary(outage)
-end
-```
-
-You can optionally pass a filter function to reduce the returned attributes. This example will
-return only FixedForcedOutage instances that have a mean time to recovery greater than or equal to 0.5.
-
-```julia
-for outage in get_supplemental_attributes(
-    x -> get_mean_time_to_recovery(x) >= 0.5,
-    gen,
-    FixedForcedOutage,
-)
-    @show summary(outage)
-end
-```
-
-## Getting the attributes associated with a component type
-
-You can retrieve the attributes associated with any component of a given type
-using the function [`get_associated_supplemental_attributes`](@ref). If one attribute is attached to
-multiple components of the given type, it will still only appear once in the result.
-
- 1. Get all the attributes associated with all components of a given type.
-
-    ```julia
-    for outage in get_associated_supplemental_attributes(system, ThermalStandard)
-        @show summary(outage)
-    end
-    ```
-
- 2. Same as #1, but filter the results by attribute type, which can be concrete or abstract.
-
-    ```julia
-    for outage in
-        get_associated_supplemental_attributes(
-        system,
-        ThermalStandard;
-        attribute_type = FixedForcedOutage,
-    )
-        @show summary(outage)
-    end
-    ```
-
-## Getting the components associated with an attribute
-
-You can retrieve the components associated with a single supplemental attribute using the
-function [`get_associated_components`](@ref).
-
- 1. Get all components associated with a single supplemental attribute.
-
-    ```julia
-    outage = first(get_supplemental_attributes(FixedForcedOutage, system))
-    for component in get_associated_components(system, outage)
-        @show summary(component)
-    end
-    ```
-
- 2. Same as #1, but filter the results by component type, which can be concrete or abstract.
-
-    ```julia
-    outage = first(get_supplemental_attributes(FixedForcedOutage, system))
-    for component in get_associated_components(system, outage; component_type = ThermalStandard)
-        @show summary(component)
-    end
-    ```
-
-## Getting the components associated with an attribute type
-
-You can retrieve the components associated with any supplemental attribute of a given type
-using the function [`get_associated_components`](@ref).
-
- 1. Get all components associated with any supplemental attribute of a given type.
-
-    ```julia
-    for component in get_associated_components(system, FixedForcedOutage)
-        @show summary(component)
-    end
-    ```
-
- 2. Same as #1, but filter the results by component type, which can be concrete or abstract.
-
-    ```julia
-    for component in
-        get_associated_components(system, FixedForcedOutage; component_type = ThermalStandard)
-        @show summary(component)
-    end
-    ```
-
-## Getting component / supplemental attribute pairs
-
-The function [`get_component_supplemental_attribute_pairs`](@ref) returns a vector of component / supplemental
-attribute pairs based on types and optional filters. This can be more efficient than double for loops
-that iterate over components and their associated attributes independently.
-
-```julia
-for (gen, outage) in get_component_supplemental_attribute_pairs(
-    ThermalStandard,
-    FixedForcedOutage,
-    system,
-)
-    @show summary(gen) summary(outage)
-end
-```
-
-## Adding Time Series to an attribute
-
-## Existing Supplemental Attributes in PowerSystems
-
-  - [`GeographicInfo`](@ref)
-  - [`ImpedanceCorrectionData`](@ref)
-
-### Contingency Attributes
-
-  - [`FixedForcedOutage`](@ref)
-  - [`GeometricDistributionForcedOutage`](@ref)
-  - [`PlannedOutage`](@ref)
-
-#### Narrowing post-contingency monitoring
-
-Every concrete [`Outage`](@ref) carries a `monitored_components` field of type
-`Vector{Base.UUID}`. It identifies the [`Device`](@ref)s whose post-contingency
-state a downstream simulation package (e.g., PowerSimulations) should model when
-this outage occurs. Limiting the list reduces the number of post-outage variables
-and constraints in security-constrained models.
-
-PowerSystems itself does not attach meaning to the contents of the list. In
-particular, an empty `monitored_components` is left for the consumer to
-interpret — typical conventions are "monitor nothing" (skip post-contingency
-modeling) or "monitor everything" (preserve full N-1 behavior). Pick the policy
-that matches your downstream model.
-
-The constructor accepts any iterable whose elements are `Base.UUID` or
-`Device` — for example a `Vector`, a generator expression, or the iterator
-returned by [`get_components`](@ref). Devices are converted to UUIDs
-internally:
-
-```julia
-gen1 = get_component(ThermalStandard, system, "gen1")
-gen2 = get_component(ThermalStandard, system, "gen2")
-outage = FixedForcedOutage(;
-    outage_status = 0.0,
-    monitored_components = [gen1, gen2],
-)
-add_supplemental_attribute!(system, gen1, outage)
-
-# Equivalent — every ThermalStandard in the system:
-outage_all = FixedForcedOutage(;
-    outage_status = 0.0,
-    monitored_components = get_components(ThermalStandard, system),
-)
-```
-
-Use the dedicated accessors to inspect or update the list at any time. The
-singular `add_/remove_*!` methods take one `UUID` or `Device`; the plural
-`add_/remove_*s!` and `set_` methods take any iterable of either.
-`set_monitored_components!` requires the list to be empty — call
-`clear_monitored_components!` first to replace an existing list:
-
-```julia
-get_monitored_components(outage)                                  # → Vector{UUID}
-clear_monitored_components!(outage)                               # wipe
-set_monitored_components!(outage, get_components(Line, system))   # populate (must be empty)
-add_monitored_component!(outage, gen2)                            # append one (deduped)
-add_monitored_components!(outage, [gen1, gen2])                   # append many
-remove_monitored_component!(outage, gen1)                         # remove one
-remove_monitored_components!(outage, [gen1, gen2])                # remove many
-```
-
-When `system.runchecks == true`, `add_supplemental_attribute!` resolves each
-UUID against the parent system and raises an `ArgumentError` for any UUID that
-does not point to a `Device` in the system. With `runchecks = false`, UUIDs are
-accepted as-is and resolution is deferred to the consumer.
-
-### Plant Attributes
-
-Plant attributes are a specialized category of supplemental attributes for grouping individual
-generator units into logical plant structures. See [Plant Attributes](@ref plant_attributes)
-for detailed documentation.
-
-  - [`ThermalPowerPlant`](@ref) - Thermal plants with shared shafts
-  - [`CombinedCycleBlock`](@ref) - Combined cycle plants with HRSG configurations
-  - [`CombinedCycleFractional`](@ref) - Combined cycle plants with aggregate heat rate and exclusion groups
-  - [`HydroPowerPlant`](@ref) - Hydro plants with shared penstocks
-  - [`RenewablePowerPlant`](@ref) - Renewable plants with shared PCCs
+  - [Attach supplemental data to components](@ref attach_contextual_data) — attach any supplemental attribute to a component
+  - [Query contextual data on a system](@ref query_contextual_data) — retrieve attributes and their associations
+  - [Hydro reservoir topology](@ref hydro_reservoir_topology) — linking reservoirs to turbines (component relationships, not supplemental attributes)
+  - [Type Structure](@ref type_structure) — where supplemental attributes sit in the type hierarchy

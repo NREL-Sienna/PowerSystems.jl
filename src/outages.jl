@@ -13,22 +13,28 @@ accessors via multiple dispatch:
   post-contingency state should be modeled. The default
   [`get_monitored_components`](@ref) reads `value.monitored_components`; override
   it if your subtype does not carry the field directly.
-- `internal::InfrastructureSystemsInternal` — accessed via `get_internal`.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): accessed via
+  [`get_internal`](@ref).
 
 The default [`supports_time_series`](@ref) returns `true`; override for custom
 outage types that do not support time series.
 """
 abstract type Outage <: Contingency end
 
+"""
+Abstract supertype for unplanned (forced) outage events.
+
+See also: [`Outage`](@ref), [`GeometricDistributionForcedOutage`](@ref), [`FixedForcedOutage`](@ref)
+"""
 abstract type UnplannedOutage <: Outage end
 
 """
-All PowerSystems [Outage](@ref) types support time series. This can be overridden for custom
+All `PowerSystems.jl` [`Outage`](@ref) types support time series. This can be overridden for custom
 outage types that do not support time series.
 """
 supports_time_series(::Outage) = true
 
-"""Get `internal`."""
+"""Return the `internal` field of the [`Outage`](@ref)."""
 get_internal(x::Outage) = x.internal
 
 # Public API for monitored_components accepts UUIDs or Devices interchangeably.
@@ -110,15 +116,32 @@ function remove_monitored_components!(value::Outage, items)
 end
 
 """
-Attribute that contains information regarding forced outages where the transition probabilities
-are modeled with geometric distributions. The outage probabilities and recovery probabilities can be modeled as time
-series.
+    struct GeometricDistributionForcedOutage <: UnplannedOutage
+        mean_time_to_recovery::Float64
+        outage_transition_probability::Float64
+        monitored_components::Set{Base.UUID}
+        internal::InfrastructureSystemsInternal
+    end
+
+Supplemental attribute for unplanned forced outages with transition probabilities modeled
+by geometric distributions. Both the outage probability and the recovery probability can
+vary over time and be attached as time series data.
 
 # Arguments
-- `mean_time_to_recovery::Float64`: Time elapsed to recovery after a failure in Milliseconds.
-- `outage_transition_probability::Float64`: Characterizes the probability of failure (1 - p) in the geometric distribution.
-- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
+- `mean_time_to_recovery::Float64`: Expected time elapsed to recovery after a failure, in
+    milliseconds.
+- `outage_transition_probability::Float64`: Per-timestep probability of failure;
+    parameterizes the geometric distribution as `(1 - p)`.
+- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency
+    state should be modeled when this outage occurs. Empty by default; semantics of an
+    empty set are decided by the downstream consumer.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (**Do not
+    modify.**) PowerSystems.jl internal reference.
+
+# See Also
+- [`FixedForcedOutage`](@ref): Unplanned outage type with a fixed (deterministic) outage
+    status.
+- [`PlannedOutage`](@ref): Scheduled outage type driven by a time series.
 """
 struct GeometricDistributionForcedOutage <: UnplannedOutage
     mean_time_to_recovery::Float64
@@ -133,10 +156,15 @@ end
 Construct a [`GeometricDistributionForcedOutage`](@ref).
 
 # Arguments
-- `mean_time_to_recovery::Float64`: (default: `0.0`) Time elapsed to recovery after a failure in Milliseconds.
-- `outage_transition_probability::Float64`: (default: `0.0`) Characterizes the probability of failure (1 - p) in the geometric distribution.
-- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref). Devices are converted to their UUIDs internally; duplicates are collapsed.
-- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
+- `mean_time_to_recovery::Float64`: (default: `0.0`) Expected time elapsed to recovery
+    after a failure, in milliseconds.
+- `outage_transition_probability::Float64`: (default: `0.0`) Per-timestep probability of
+    failure; parameterizes the geometric distribution as `(1 - p)`.
+- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref).
+    Devices are converted to their UUIDs internally; duplicates are collapsed.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (default:
+    `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems.jl internal
+    reference.
 """
 function GeometricDistributionForcedOutage(;
     mean_time_to_recovery = 0.0,
@@ -152,20 +180,35 @@ function GeometricDistributionForcedOutage(;
     )
 end
 
-"""Get [`GeometricDistributionForcedOutage`](@ref) `time_to_recovery`."""
+"""Return the `mean_time_to_recovery` field of [`GeometricDistributionForcedOutage`](@ref)."""
 get_mean_time_to_recovery(value::GeometricDistributionForcedOutage) =
     value.mean_time_to_recovery
-"""Get [`GeometricDistributionForcedOutage`](@ref) `outage_transition_probability`."""
+"""Return the `outage_transition_probability` field of [`GeometricDistributionForcedOutage`](@ref)."""
 get_outage_transition_probability(value::GeometricDistributionForcedOutage) =
     value.outage_transition_probability
 
 """
-Attribute that contains information regarding planned outages.
+    struct PlannedOutage <: Outage
+        outage_schedule::String
+        monitored_components::Set{Base.UUID}
+        internal::InfrastructureSystemsInternal
+    end
+
+Supplemental attribute for planned (scheduled) outages. The outage schedule is stored as
+a time series identified by the `outage_schedule` name string.
 
 # Arguments
-- `outage_schedule::String`: String name of the time series used for the scheduled outages
-- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
+- `outage_schedule::String`: Name of the time series containing the outage schedule.
+- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency
+    state should be modeled when this outage occurs. Empty by default; semantics of an
+    empty set are decided by the downstream consumer.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (**Do not
+    modify.**) PowerSystems.jl internal reference.
+
+# See Also
+- [`GeometricDistributionForcedOutage`](@ref): Unplanned outage type with geometric
+    distribution transition probabilities.
+- [`FixedForcedOutage`](@ref): Unplanned outage type with a fixed outage status.
 """
 struct PlannedOutage <: Outage
     outage_schedule::String
@@ -179,9 +222,12 @@ end
 Construct a [`PlannedOutage`](@ref).
 
 # Arguments
-- `outage_schedule::String`: String name of the time series used for the scheduled outages
-- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref). Devices are converted to their UUIDs internally; duplicates are collapsed.
-- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
+- `outage_schedule::String`: Name of the time series containing the outage schedule.
+- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref).
+    Devices are converted to their UUIDs internally; duplicates are collapsed.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (default:
+    `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems.jl internal
+    reference.
 """
 function PlannedOutage(;
     outage_schedule,
@@ -195,17 +241,33 @@ function PlannedOutage(;
     )
 end
 
-"""Get [`PlannedOutage`](@ref) `outage_schedule`."""
+"""Return the `outage_schedule` field of [`PlannedOutage`](@ref)."""
 get_outage_schedule(value::PlannedOutage) = value.outage_schedule
 
 """
-Attribute that contains the representation of the status of the component forced outage.
-The time series data for fixed outages can be obtained from the simulation of a stochastic process or historical information.
+    struct FixedForcedOutage <: UnplannedOutage
+        outage_status::Float64
+        monitored_components::Set{Base.UUID}
+        internal::InfrastructureSystemsInternal
+    end
+
+Supplemental attribute for forced outages with a deterministic (fixed) outage status.
+The status value can be derived from stochastic process simulations or historical data,
+and may vary over time via attached time series data.
 
 # Arguments
-- `outage_status::Float64`: The forced outage status in the model. 1 represents outaged and 0 represents available.
-- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
+- `outage_status::Float64`: Forced outage status of the component: `1.0` indicates
+    outaged (unavailable), `0.0` indicates available.
+- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency
+    state should be modeled when this outage occurs. Empty by default; semantics of an
+    empty set are decided by the downstream consumer.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (**Do not
+    modify.**) PowerSystems.jl internal reference.
+
+# See Also
+- [`GeometricDistributionForcedOutage`](@ref): Unplanned outage type with geometric
+    distribution transition probabilities.
+- [`PlannedOutage`](@ref): Scheduled outage type driven by a time series.
 """
 struct FixedForcedOutage <: UnplannedOutage
     outage_status::Float64
@@ -219,9 +281,13 @@ end
 Construct a [`FixedForcedOutage`](@ref).
 
 # Arguments
-- `outage_status::Float64`: The forced outage status in the model. 1 represents outaged and 0 represents available.
-- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref). Devices are converted to their UUIDs internally; duplicates are collapsed.
-- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
+- `outage_status::Float64`: Forced outage status of the component: `1.0` indicates
+    outaged (unavailable), `0.0` indicates available.
+- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref).
+    Devices are converted to their UUIDs internally; duplicates are collapsed.
+- `internal::`[`InfrastructureSystems.InfrastructureSystemsInternal`](@extref): (default:
+    `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems.jl internal
+    reference.
 """
 function FixedForcedOutage(;
     outage_status,
@@ -235,5 +301,5 @@ function FixedForcedOutage(;
     )
 end
 
-"""Get [`FixedForcedOutage`](@ref) `outage_status`."""
+"""Return the `outage_status` field of [`FixedForcedOutage`](@ref)."""
 get_outage_status(value::FixedForcedOutage) = value.outage_status

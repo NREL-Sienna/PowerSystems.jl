@@ -40,7 +40,7 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld
 	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load
 - `n_states::Int`: (**Do not modify.**) GasTG has 3 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) GAST has 3 [differential](@ref states_list) [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) GAST has 3 [differential](@ref StateTypes) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct GasTG <: TurbineGov
@@ -71,7 +71,7 @@ mutable struct GasTG <: TurbineGov
     states::Vector{Symbol}
     "(**Do not modify.**) GasTG has 3 states"
     n_states::Int
-    "(**Do not modify.**) GAST has 3 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) GAST has 3 [differential](@ref StateTypes) [states](@ref S)"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
