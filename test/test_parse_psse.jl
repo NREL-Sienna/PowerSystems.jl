@@ -23,6 +23,12 @@
 end
 
 @testset "PSSE Component Parsing" begin
+    @info "Testing PSEE v31 .raw Parsing"
+    ENV["PTI_VERSION"] = "v31" # set for v31 version
+    sys11_v31 = System(joinpath(dirname(@__FILE__), "test_data", "11BUS_KUNDUR_v31.raw"))
+    @test length(get_components(x -> get_available(x), Branch, sys11_v31)) == 12
+    ENV["PTI_VERSION"] = "" # unset
+
     @info "Testing Load Parsing"
     mp_sys = build_system(MatpowerTestSystems, "matpower_case24_sys")
     @test get_active_power(get_component(PowerLoad, mp_sys, "bus14")) == 1.94
