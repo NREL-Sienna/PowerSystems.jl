@@ -2699,6 +2699,13 @@
                     "default": "(min=0.0, max=999.9)"
                 },
                 {
+                    "name": "dc_voltage_droop_from",
+                    "comment": "DC-voltage droop gain on the `from` converter, relating the DC voltage to the converter active power as `V_dc = dc_setpoint_from - dc_voltage_droop_from * P_c`. A value of 0.0 disables droop, in which case the `dc_voltage_control_from`/`ac_voltage_control_from` flags select the control mode.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
                     "name": "reactive_power_to",
                     "comment": "Initial condition of reactive power flowing into the to-bus.",
                     "null_value": "0.0",
@@ -2785,6 +2792,13 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=999.9)"
+                },
+                {
+                    "name": "dc_voltage_droop_to",
+                    "comment": "DC-voltage droop gain on the `to` converter, relating the DC voltage to the converter active power as `V_dc = dc_setpoint_to - dc_voltage_droop_to * P_c`. A value of 0.0 disables droop, in which case the `dc_voltage_control_to`/`ac_voltage_control_to` flags select the control mode.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
                 },
                 {
                     "name": "services",
@@ -5113,6 +5127,41 @@
                     "null_value": "LinearCurve(0.0)",
                     "data_type": "Union{LinearCurve, QuadraticCurve}",
                     "default": "LinearCurve(0.0)"
+                },
+                {
+                    "name": "dc_voltage_control",
+                    "comment": "Converter control type. Set true for DC-voltage control (the converter regulates the DC-bus voltage), false for active-power control.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "true"
+                },
+                {
+                    "name": "ac_voltage_control",
+                    "comment": "Set true for AC-voltage control (the converter regulates the AC-bus voltage magnitude), false for reactive-power control.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "false"
+                },
+                {
+                    "name": "dc_setpoint",
+                    "comment": "DC-voltage target (when dc_voltage_control is true) or active-power order (when false), in per unit.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "ac_setpoint",
+                    "comment": "AC-voltage magnitude target (when ac_voltage_control is true), in per unit.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "dc_voltage_droop",
+                    "comment": "DC-voltage droop gain relating DC voltage to converter active power as V_dc = dc_setpoint - dc_voltage_droop * P_c. A value of 0.0 disables droop.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
                 },
                 {
                     "name": "services",
