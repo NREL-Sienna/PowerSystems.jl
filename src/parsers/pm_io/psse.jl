@@ -992,6 +992,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "RMI1" => transformer["RMI1"],
                     "RMA1" => transformer["RMA1"],
                     "NTP1" => transformer["NTP1"],
+                    "VMA1" => transformer["VMA1"],
+                    "VMI1" => transformer["VMI1"],
                     "R1-2" => transformer["R1-2"],
                     "X1-2" => transformer["X1-2"],
                     "MAG1" => transformer["MAG1"],

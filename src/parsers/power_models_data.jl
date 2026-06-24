@@ -1608,6 +1608,18 @@ function make_tap_transformer(
         get(d, "COD1", -99)
     end
 
+    # PSS/e winding-1 tap-control record → first-class controllability fields (PSY #1684). RMI1/RMA1
+    # bound WINDV1; `tap = WINDV1/WINDV2`, so the tap-ratio band is RMI1/WINDV2 … RMA1/WINDV2. CONT1
+    # is the regulated-bus number (sign = control side; 0 = local). The controlled voltage band
+    # [VMI1, VMA1] sets the setpoint at its midpoint.
+    windv2 = Float64(get(ext, "WINDV2", 1.0))
+    rmi = Float64(get(ext, "RMI1", 0.9 * windv2))
+    rma = Float64(get(ext, "RMA1", 1.1 * windv2))
+    ntp = Int(get(ext, "NTP1", 33))
+    ntp < 2 && (ntp = 33)
+    vma = Float64(get(ext, "VMA1", 1.1))
+    vmi = Float64(get(ext, "VMI1", 0.9))
+
     return TapTransformer(;
         name = name,
         available = available_value,
@@ -1627,6 +1639,10 @@ function make_tap_transformer(
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
         control_objective = control_objective,
+        tap_limits = (min = rmi / windv2, max = rma / windv2),
+        number_of_tap_positions = ntp,
+        regulated_bus_number = abs(round(Int, Float64(get(ext, "CONT1", 0)))),
+        voltage_setpoint = (vma + vmi) / 2,
         ext = ext,
     )
 end
