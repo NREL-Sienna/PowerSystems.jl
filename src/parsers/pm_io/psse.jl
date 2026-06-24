@@ -1782,10 +1782,16 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
             sub_data["available"] = sub_data["br_status"] == 0 ? false : true
 
-            sub_data["dc_voltage_control_from"] = from_bus["TYPE"] == 1 ? true : false
-            sub_data["dc_voltage_control_to"] = to_bus["TYPE"] == 1 ? true : false
-            sub_data["ac_voltage_control_from"] = from_bus["MODE"] == 1 ? true : false
-            sub_data["ac_voltage_control_to"] = to_bus["MODE"] == 1 ? true : false
+            sub_data["dc_control_from"] =
+                from_bus["TYPE"] == 1 ? VSCDCControlModes.DC_VOLTAGE : VSCDCControlModes.DC_POWER
+            sub_data["dc_control_to"] =
+                to_bus["TYPE"] == 1 ? VSCDCControlModes.DC_VOLTAGE : VSCDCControlModes.DC_POWER
+            sub_data["ac_control_from"] =
+                from_bus["MODE"] == 1 ? VSCACControlModes.AC_VOLTAGE :
+                VSCACControlModes.AC_REACTIVE_POWER
+            sub_data["ac_control_to"] =
+                to_bus["MODE"] == 1 ? VSCACControlModes.AC_VOLTAGE :
+                VSCACControlModes.AC_REACTIVE_POWER
 
             sub_data["dc_setpoint_from"] = from_bus["DCSET"]
             sub_data["dc_setpoint_to"] = to_bus["DCSET"]
@@ -1832,10 +1838,12 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pminf"] = -sub_data["pmaxf"]
             sub_data["pmint"] = -sub_data["pmaxt"]
 
-            if sub_data["dc_voltage_control_from"] && !sub_data["dc_voltage_control_to"]
+            from_is_dc_voltage = sub_data["dc_control_from"] == VSCDCControlModes.DC_VOLTAGE
+            to_is_dc_voltage = sub_data["dc_control_to"] == VSCDCControlModes.DC_VOLTAGE
+            if from_is_dc_voltage && !to_is_dc_voltage
                 base_voltage = sub_data["dc_setpoint_from"]
                 flow_setpoint = sub_data["dc_setpoint_to"]
-            elseif !sub_data["dc_voltage_control_from"] && sub_data["dc_voltage_control_to"]
+            elseif !from_is_dc_voltage && to_is_dc_voltage
                 base_voltage = sub_data["dc_setpoint_to"]
                 flow_setpoint = -sub_data["dc_setpoint_from"]
             else
