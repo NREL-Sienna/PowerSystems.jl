@@ -184,3 +184,79 @@ function TwoTerminalHVDCLine(;
         internal,
     )
 end
+
+# BEGIN 5.x deprecations: TwoTerminalVSCLine Bool control accessors -> control-mode enums
+#
+# PSY <= 5.11 modeled VSC converter control with four `Bool` fields
+# (`dc_voltage_control_*`, `ac_voltage_control_*`). They were replaced by the richer
+# `dc_control_*::VSCDCControlModes` / `ac_control_*::VSCACControlModes` enums (the latter
+# adds the `DC_VOLTAGE_DROOP` mode). The accessor shims below map the pre-5.x `Bool`
+# getters onto the enums; a `Bool` only distinguishes the two voltage-control values and
+# cannot express `DC_VOLTAGE_DROOP`. The pre-5.x keyword constructor cannot be shimmed:
+# Julia forbids overwriting the generated keyword constructor during precompilation, so
+# callers must move to the `*_control_*` enum keywords.
+
+"""
+Deprecated. Use [`get_dc_control_from`](@ref); returns `true` when the `from` converter
+regulates DC voltage (`VSCDCControlModes.DC_VOLTAGE`).
+"""
+function get_dc_voltage_control_from(value::TwoTerminalVSCLine)
+    @warn "`get_dc_voltage_control_from` deprecated; use `get_dc_control_from`." maxlog = 1
+    return get_dc_control_from(value) == VSCDCControlModes.DC_VOLTAGE
+end
+
+"""
+Deprecated. Use [`get_dc_control_to`](@ref); returns `true` when the `to` converter
+regulates DC voltage (`VSCDCControlModes.DC_VOLTAGE`).
+"""
+function get_dc_voltage_control_to(value::TwoTerminalVSCLine)
+    @warn "`get_dc_voltage_control_to` deprecated; use `get_dc_control_to`." maxlog = 1
+    return get_dc_control_to(value) == VSCDCControlModes.DC_VOLTAGE
+end
+
+"""
+Deprecated. Use [`get_ac_control_from`](@ref); returns `true` when the `from` converter
+regulates AC voltage (`VSCACControlModes.AC_VOLTAGE`).
+"""
+function get_ac_voltage_control_from(value::TwoTerminalVSCLine)
+    @warn "`get_ac_voltage_control_from` deprecated; use `get_ac_control_from`." maxlog = 1
+    return get_ac_control_from(value) == VSCACControlModes.AC_VOLTAGE
+end
+
+"""
+Deprecated. Use [`get_ac_control_to`](@ref); returns `true` when the `to` converter
+regulates AC voltage (`VSCACControlModes.AC_VOLTAGE`).
+"""
+function get_ac_voltage_control_to(value::TwoTerminalVSCLine)
+    @warn "`get_ac_voltage_control_to` deprecated; use `get_ac_control_to`." maxlog = 1
+    return get_ac_control_to(value) == VSCACControlModes.AC_VOLTAGE
+end
+
+# Forward-compat STUBS (not deprecations) for PSY #1684 first-class `TapTransformer`
+# controllability accessors that this branch predates. They exist so the PowerFlows
+# discrete-control branch can run against this PSY branch during co-development. Remove once
+# #1684 lands (which adds these as real fields). `regulated_bus_number` and
+# `number_of_tap_positions` return values that make PowerFlows fall back to its `ext`/default
+# handling; `get_tap_limits` and `get_voltage_setpoint` have no such escape hatch, so they
+# return FABRICATED placeholders and warn — do not rely on them for systems whose `ext`
+# lacks the corresponding `RMI`/`RMA`/`VSET` keys.
+
+"""Stub: returns `0` (the "local" sentinel) so callers defer to legacy `ext` keys. See PSY #1684."""
+get_regulated_bus_number(::TapTransformer) = 0
+
+"""Stub: returns `0` so callers fall back to their default tap-position count. See PSY #1684."""
+get_number_of_tap_positions(::TapTransformer) = 0
+
+"""Stub: returns a FABRICATED `(min, max)` placeholder. See PSY #1684."""
+function get_tap_limits(::TapTransformer)
+    @warn "`get_tap_limits(::TapTransformer)` is a stub returning fabricated limits (PSY #1684 \
+           not in this branch)." maxlog = 1
+    return (min = 0.9, max = 1.1)
+end
+
+"""Stub: returns a FABRICATED `1.0` pu voltage setpoint. See PSY #1684."""
+function get_voltage_setpoint(::TapTransformer)
+    @warn "`get_voltage_setpoint(::TapTransformer)` is a stub returning a fabricated 1.0 pu \
+           setpoint (PSY #1684 not in this branch)." maxlog = 1
+    return 1.0
+end
