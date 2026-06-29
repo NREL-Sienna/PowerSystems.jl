@@ -1273,6 +1273,34 @@
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
+                    "name": "tap_limits",
+                    "comment": "Minimum and maximum tap ratio (per-unit turns ratio) over which the tap changer may regulate",
+                    "null_value": "(min=0.9, max=1.1)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.9, max=1.1)"
+                },
+                {
+                    "name": "number_of_tap_positions",
+                    "comment": "Number of discrete tap positions spanning `tap_limits` (NTP in PSS/e); used to snap the tap to a realizable step",
+                    "null_value": 33,
+                    "data_type": "Int",
+                    "default": "33"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "ACBus [`number`](@ref ACBus) whose voltage the tap changer regulates; `0` identifies the `to` bus of this transformer's arc (local control)",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "default": "0"
+                },
+                {
+                    "name": "voltage_setpoint",
+                    "comment": "Voltage setpoint at the regulated bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -2638,18 +2666,18 @@
                     "default": "0.0"
                 },
                 {
-                    "name": "dc_voltage_control_from",
-                    "comment": "Converter control type in the `from` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "true"
+                    "name": "dc_control_from",
+                    "comment": "DC-side control mode of the `from` converter; see [`VSCDCControlModes`](@ref).",
+                    "null_value": "VSCDCControlModes.DC_VOLTAGE",
+                    "data_type": "VSCDCControlModes",
+                    "default": "VSCDCControlModes.DC_VOLTAGE"
                 },
                 {
-                    "name": "ac_voltage_control_from",
-                    "comment": "Converter control type in the `from` bus converter. Set true for AC Voltage Control (set AC voltage on the AC side of the converter), and false for fixed power AC factor.",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "true"
+                    "name": "ac_control_from",
+                    "comment": "AC-side control mode of the `from` converter; see [`VSCACControlModes`](@ref).",
+                    "null_value": "VSCACControlModes.AC_VOLTAGE",
+                    "data_type": "VSCACControlModes",
+                    "default": "VSCACControlModes.AC_VOLTAGE"
                 },
                 {
                     "name": "dc_setpoint_from",
@@ -2717,6 +2745,13 @@
                     "default": "(min=0.0, max=999.9)"
                 },
                 {
+                    "name": "dc_voltage_droop_from",
+                    "comment": "DC-voltage droop gain on the `from` converter, used when `dc_control_from` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_from - dc_voltage_droop_from * P_c`.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
                     "name": "reactive_power_to",
                     "comment": "Initial condition of reactive power flowing into the to-bus.",
                     "null_value": "0.0",
@@ -2726,18 +2761,18 @@
                     "default": "0.0"
                 },
                 {
-                    "name": "dc_voltage_control_to",
-                    "comment": "Converter control type in the `to` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "true"
+                    "name": "dc_control_to",
+                    "comment": "DC-side control mode of the `to` converter; see [`VSCDCControlModes`](@ref).",
+                    "null_value": "VSCDCControlModes.DC_VOLTAGE",
+                    "data_type": "VSCDCControlModes",
+                    "default": "VSCDCControlModes.DC_VOLTAGE"
                 },
                 {
-                    "name": "ac_voltage_control_to",
-                    "comment": "Converter control type in the `to` bus converter. Set true for AC Voltage Control (set AC voltage on the AC side of the converter), and false for fixed power AC factor.",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "true"
+                    "name": "ac_control_to",
+                    "comment": "AC-side control mode of the `to` converter; see [`VSCACControlModes`](@ref).",
+                    "null_value": "VSCACControlModes.AC_VOLTAGE",
+                    "data_type": "VSCACControlModes",
+                    "default": "VSCACControlModes.AC_VOLTAGE"
                 },
                 {
                     "name": "dc_setpoint_to",
@@ -2803,6 +2838,13 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=999.9)"
+                },
+                {
+                    "name": "dc_voltage_droop_to",
+                    "comment": "DC-voltage droop gain on the `to` converter, used when `dc_control_to` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_to - dc_voltage_droop_to * P_c`.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
                 },
                 {
                     "name": "services",
@@ -5155,6 +5197,41 @@
                     "null_value": "LinearCurve(0.0)",
                     "data_type": "Union{LinearCurve, QuadraticCurve}",
                     "default": "LinearCurve(0.0)"
+                },
+                {
+                    "name": "dc_control",
+                    "comment": "DC-side control mode of the converter; see [`VSCDCControlModes`](@ref).",
+                    "null_value": "VSCDCControlModes.DC_VOLTAGE",
+                    "data_type": "VSCDCControlModes",
+                    "default": "VSCDCControlModes.DC_VOLTAGE"
+                },
+                {
+                    "name": "ac_control",
+                    "comment": "AC-side control mode of the converter; see [`VSCACControlModes`](@ref).",
+                    "null_value": "VSCACControlModes.AC_REACTIVE_POWER",
+                    "data_type": "VSCACControlModes",
+                    "default": "VSCACControlModes.AC_REACTIVE_POWER"
+                },
+                {
+                    "name": "dc_setpoint",
+                    "comment": "DC-voltage target (when dc_voltage_control is true) or active-power order (when false), in per unit.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "ac_setpoint",
+                    "comment": "AC-voltage magnitude target (when ac_voltage_control is true), in per unit.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "dc_voltage_droop",
+                    "comment": "DC-voltage droop gain relating DC voltage to converter active power as V_dc = dc_setpoint - dc_voltage_droop * P_c. A value of 0.0 disables droop.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
                 },
                 {
                     "name": "services",

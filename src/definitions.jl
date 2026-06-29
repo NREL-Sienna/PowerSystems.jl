@@ -121,6 +121,36 @@ Based on PSSE POM v33 Manual specifications.
 " FACTSOperationModes
 
 IS.@scoped_enum(
+    VSCDCControlModes,
+    DC_POWER = 0,           # converter controls active power transferred to the DC side
+    DC_VOLTAGE = 1,         # converter controls the DC-side voltage
+    DC_VOLTAGE_DROOP = 2,   # P–Vdc droop: V_dc = dc_setpoint − droop_gain · P_c
+)
+@doc"
+DC-side control mode of a voltage-source-converter (VSC) terminal.
+
+| Value              | Description                                                                  |
+|:------------------ |:---------------------------------------------------------------------------- |
+| `DC_POWER`         | The converter controls the active power transferred to the DC side           |
+| `DC_VOLTAGE`       | The converter controls (regulates) its DC-side voltage                       |
+| `DC_VOLTAGE_DROOP` | DC-voltage droop, `V_dc = dc_setpoint − droop_gain · P_c` (gain in a field)  |
+" VSCDCControlModes
+
+IS.@scoped_enum(
+    VSCACControlModes,
+    AC_REACTIVE_POWER = 0,  # converter controls reactive power / fixed power factor
+    AC_VOLTAGE = 1,         # converter controls the AC-side voltage magnitude
+)
+@doc"
+AC-side control mode of a voltage-source-converter (VSC) terminal.
+
+| Value               | Description                                                       |
+|:------------------- |:----------------------------------------------------------------- |
+| `AC_REACTIVE_POWER` | The converter controls reactive power (fixed power factor)        |
+| `AC_VOLTAGE`        | The converter controls (regulates) its AC-side voltage magnitude  |
+" VSCACControlModes
+
+IS.@scoped_enum(
     DiscreteControlledBranchType,
     SWITCH = 0,
     BREAKER = 1,

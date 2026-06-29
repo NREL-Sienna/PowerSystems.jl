@@ -184,3 +184,50 @@ function TwoTerminalHVDCLine(;
         internal,
     )
 end
+
+# BEGIN 5.x deprecations: TwoTerminalVSCLine Bool control accessors -> control-mode enums
+#
+# PSY <= 5.11 modeled VSC converter control with four `Bool` fields
+# (`dc_voltage_control_*`, `ac_voltage_control_*`). They were replaced by the richer
+# `dc_control_*::VSCDCControlModes` / `ac_control_*::VSCACControlModes` enums (the latter
+# adds the `DC_VOLTAGE_DROOP` mode). The accessor shims below map the pre-5.x `Bool`
+# getters onto the enums; a `Bool` only distinguishes the two voltage-control values and
+# cannot express `DC_VOLTAGE_DROOP`. The pre-5.x keyword constructor cannot be shimmed:
+# Julia forbids overwriting the generated keyword constructor during precompilation, so
+# callers must move to the `*_control_*` enum keywords.
+
+"""
+Deprecated. Use [`get_dc_control_from`](@ref); returns `true` when the `from` converter
+regulates DC voltage (`VSCDCControlModes.DC_VOLTAGE`).
+"""
+function get_dc_voltage_control_from(value::TwoTerminalVSCLine)
+    @warn "`get_dc_voltage_control_from` deprecated; use `get_dc_control_from`." maxlog = 1
+    return get_dc_control_from(value) == VSCDCControlModes.DC_VOLTAGE
+end
+
+"""
+Deprecated. Use [`get_dc_control_to`](@ref); returns `true` when the `to` converter
+regulates DC voltage (`VSCDCControlModes.DC_VOLTAGE`).
+"""
+function get_dc_voltage_control_to(value::TwoTerminalVSCLine)
+    @warn "`get_dc_voltage_control_to` deprecated; use `get_dc_control_to`." maxlog = 1
+    return get_dc_control_to(value) == VSCDCControlModes.DC_VOLTAGE
+end
+
+"""
+Deprecated. Use [`get_ac_control_from`](@ref); returns `true` when the `from` converter
+regulates AC voltage (`VSCACControlModes.AC_VOLTAGE`).
+"""
+function get_ac_voltage_control_from(value::TwoTerminalVSCLine)
+    @warn "`get_ac_voltage_control_from` deprecated; use `get_ac_control_from`." maxlog = 1
+    return get_ac_control_from(value) == VSCACControlModes.AC_VOLTAGE
+end
+
+"""
+Deprecated. Use [`get_ac_control_to`](@ref); returns `true` when the `to` converter
+regulates AC voltage (`VSCACControlModes.AC_VOLTAGE`).
+"""
+function get_ac_voltage_control_to(value::TwoTerminalVSCLine)
+    @warn "`get_ac_voltage_control_to` deprecated; use `get_ac_control_to`." maxlog = 1
+    return get_ac_control_to(value) == VSCACControlModes.AC_VOLTAGE
+end
