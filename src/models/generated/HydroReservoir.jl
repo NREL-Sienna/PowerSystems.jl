@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         outflow::Float64
         level_targets::Union{Nothing, Float64}
         intake_elevation::Float64
-        head_to_volume_factor::ValueCurve
+        head_to_volume_factor::FunctionData
         upstream_turbines::Vector{HydroUnit}
         downstream_turbines::Vector{HydroUnit}
         upstream_reservoirs::Vector{Device}
@@ -38,7 +38,7 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 - `outflow::Float64`: Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
 - `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
 - `intake_elevation::Float64`: Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.
-- `head_to_volume_factor::ValueCurve`: Head to volume relationship for the reservoir.
+- `head_to_volume_factor::FunctionData`: Head to volume relationship for the reservoir.
 - `upstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir.
 - `downstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units.
 - `upstream_reservoirs::Vector{Device}`: (default: `Device[]`) Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs.
@@ -67,7 +67,7 @@ mutable struct HydroReservoir <: Device
     "Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level."
     intake_elevation::Float64
     "Head to volume relationship for the reservoir."
-    head_to_volume_factor::ValueCurve
+    head_to_volume_factor::FunctionData
     "Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
     upstream_turbines::Vector{HydroUnit}
     "Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
@@ -104,7 +104,7 @@ function HydroReservoir(::Nothing)
         outflow=0.0,
         level_targets=nothing,
         intake_elevation=0.0,
-        head_to_volume_factor=LinearCurve(0.0),
+        head_to_volume_factor=LinearFunctionData(0.0),
         upstream_turbines=Device[],
         downstream_turbines=Device[],
         upstream_reservoirs=Device[],

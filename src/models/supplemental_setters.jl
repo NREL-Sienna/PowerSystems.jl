@@ -15,7 +15,7 @@ function set_downstream_turbine!(reservoir::HydroReservoir, turbine::HydroUnit)
 end
 
 function set_head_to_volume_factor!(reservoir::HydroReservoir, val::Float64)
-    return set_head_to_volume_factor!(reservoir, LinearCurve(val))
+    return set_head_to_volume_factor!(reservoir, LinearFunctionData(val))
 end
 
 function _raise_if_attached_to_system(hybrid::HybridSystem)
