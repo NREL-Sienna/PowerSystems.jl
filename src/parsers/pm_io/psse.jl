@@ -1856,6 +1856,22 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pf"] = flow_setpoint / baseMVA
             sub_data["if"] = 1000.0 * (flow_setpoint / base_voltage)
 
+            # DCSET is raw PSS/E units (kV for a dc-voltage-controlling converter, MW for a
+            # dc-power-controlling converter), not per-unit. Normalize each converter's own
+            # setpoint by its own quantity's base now that r/pf/if (which need the raw kV/MW
+            # values) have been computed, so downstream per-unit consumers aren't handed a
+            # setpoint off by ~base_voltage or ~baseMVA.
+            sub_data["dc_setpoint_from"] = if from_is_dc_voltage
+                1.0
+            else
+                sub_data["dc_setpoint_from"] / baseMVA
+            end
+            sub_data["dc_setpoint_to"] = if to_is_dc_voltage
+                1.0
+            else
+                sub_data["dc_setpoint_to"] / baseMVA
+            end
+
             sub_data["ext"] = Dict{String, Any}(
                 "REMOT_FROM" => from_bus["REMOT"],
                 "REMOT_TO" => to_bus["REMOT"],

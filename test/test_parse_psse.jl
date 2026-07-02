@@ -168,7 +168,8 @@ end
     @info "Testing VSC Parser"
     vsc = only(get_components(TwoTerminalVSCLine, sys4))
     @test get_active_power_flow(vsc) == -0.2
-    @test get_dc_setpoint_to(vsc) == -20.0
+    @test get_dc_setpoint_from(vsc) == 1.0
+    @test get_dc_setpoint_to(vsc) == -0.2
 
     @info "Testing Load Zone Formatter"
     PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
