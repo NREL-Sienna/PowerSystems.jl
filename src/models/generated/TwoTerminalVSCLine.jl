@@ -226,8 +226,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful),
 get_rating(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`TwoTerminalVSCLine`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{TwoTerminalVSCLine}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{TwoTerminalVSCLine}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{TwoTerminalVSCLine}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{TwoTerminalVSCLine}) = InfrastructureSystems.DU
 """Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_from` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_limits_from_unitful`](@ref)."""
 get_active_power_limits_from(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits_from), Val(:mva), units))
 """Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_from` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits_from`](@ref)."""

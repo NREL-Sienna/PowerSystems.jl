@@ -173,8 +173,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::
 get_rating(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`ThermalMultiStart`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ThermalMultiStart}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.DU
 """Get [`ThermalMultiStart`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::ThermalMultiStart) = value.prime_mover_type
 """Get [`ThermalMultiStart`](@ref) `fuel`."""

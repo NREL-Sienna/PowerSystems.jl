@@ -174,8 +174,8 @@ get_initial_storage_capacity_level(value::EnergyReservoirStorage) = value.initia
 get_rating(value::EnergyReservoirStorage, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`EnergyReservoirStorage`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::EnergyReservoirStorage, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{EnergyReservoirStorage}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{EnergyReservoirStorage}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{EnergyReservoirStorage}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{EnergyReservoirStorage}) = InfrastructureSystems.DU
 """Get [`EnergyReservoirStorage`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
 get_active_power(value::EnergyReservoirStorage, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
 """Get [`EnergyReservoirStorage`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""

@@ -499,7 +499,8 @@
                     "comment": "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "angle_limits",
@@ -714,7 +715,8 @@
                     "comment": "Thermal rating (MVA). Flow on the branch must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "discrete_branch_type",
@@ -839,7 +841,8 @@
                     "data_type": "Float64",
                     "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "angle_limits",
@@ -1010,7 +1013,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "base_power",
@@ -1201,7 +1205,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "base_power",
@@ -1409,7 +1414,8 @@
                     },
                     "validation_action": "error",
                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "base_power",
@@ -1675,7 +1681,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "null_value": "0.0",
@@ -1897,7 +1904,8 @@
                     "comment": "Rating (in MVA) for primary winding.",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "null_value": "0.0",
@@ -1906,7 +1914,8 @@
                     "comment": "Rating (in MVA) for secondary winding.",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "null_value": "0.0",
@@ -1915,7 +1924,8 @@
                     "comment": "Rating (in MVA) for tertiary winding.",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "primary_group_number",
@@ -2161,7 +2171,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "null_value": "0.0",
@@ -2416,7 +2427,8 @@
                     "comment": "Rating (in MVA) for primary winding.",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "null_value": "0.0",
@@ -2425,7 +2437,8 @@
                     "comment": "Rating (in MVA) for secondary winding.",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "null_value": "0.0",
@@ -2434,7 +2447,8 @@
                     "comment": "Rating (in MVA) for tertiary winding.",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "phase_angle_limits",
@@ -2624,7 +2638,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "active_power_limits_from",
@@ -4069,7 +4084,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "max_active_power",
@@ -5145,7 +5161,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "active_power_limits",
@@ -5483,7 +5500,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "prime_mover_type",
@@ -5655,7 +5673,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "active_power_limits",
@@ -5869,7 +5888,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "active_power_limits",
@@ -6240,7 +6260,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "display_units": "DU"
                 },
                 {
                     "name": "prime_mover_type",
@@ -6368,7 +6389,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "prime_mover_type",
@@ -6492,7 +6514,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "active_power_limits",
@@ -6663,7 +6686,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -6792,7 +6816,8 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "prime_mover_type",
@@ -7016,7 +7041,8 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
                 },
                 {
                     "name": "active_power",

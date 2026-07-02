@@ -119,8 +119,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::
 get_rating(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`RenewableNonDispatch`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{RenewableNonDispatch}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{RenewableNonDispatch}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{RenewableNonDispatch}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{RenewableNonDispatch}) = InfrastructureSystems.DU
 """Get [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableNonDispatch) = value.prime_mover_type
 """Get [`RenewableNonDispatch`](@ref) `power_factor`."""

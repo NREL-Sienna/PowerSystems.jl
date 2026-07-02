@@ -378,8 +378,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_x_tertiary_unitful), ::Type
 get_rating(value::PhaseShiftingTransformer3W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`PhaseShiftingTransformer3W`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
 """Get [`PhaseShiftingTransformer3W`](@ref) `r_12` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_r_12_unitful`](@ref)."""
 get_r_12(value::PhaseShiftingTransformer3W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:r_12), Val(:ohm), units))
 """Get [`PhaseShiftingTransformer3W`](@ref) `r_12` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_r_12`](@ref)."""
@@ -462,20 +462,20 @@ get_available_tertiary(value::PhaseShiftingTransformer3W) = value.available_tert
 get_rating_primary(value::PhaseShiftingTransformer3W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_primary), Val(:mva), units))
 """Get [`PhaseShiftingTransformer3W`](@ref) `rating_primary` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_primary`](@ref)."""
 get_rating_primary_unitful(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating_primary), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating_primary), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_primary_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_primary), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_primary_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
 """Get [`PhaseShiftingTransformer3W`](@ref) `rating_secondary` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_secondary_unitful`](@ref)."""
 get_rating_secondary(value::PhaseShiftingTransformer3W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_secondary), Val(:mva), units))
 """Get [`PhaseShiftingTransformer3W`](@ref) `rating_secondary` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_secondary`](@ref)."""
 get_rating_secondary_unitful(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating_secondary), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating_secondary), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_secondary_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_secondary), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_secondary_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
 """Get [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_tertiary_unitful`](@ref)."""
 get_rating_tertiary(value::PhaseShiftingTransformer3W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_tertiary), Val(:mva), units))
 """Get [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_tertiary`](@ref)."""
 get_rating_tertiary_unitful(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating_tertiary), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating_tertiary), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_tertiary_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_tertiary), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_tertiary_unitful), ::Type{PhaseShiftingTransformer3W}) = InfrastructureSystems.DU
 """Get [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer3W) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer3W`](@ref) `control_objective_primary`."""

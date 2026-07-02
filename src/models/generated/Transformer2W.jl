@@ -160,8 +160,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_primary_shunt_unitful), ::T
 get_rating(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`Transformer2W`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::Transformer2W, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{Transformer2W}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{Transformer2W}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{Transformer2W}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{Transformer2W}) = InfrastructureSystems.DU
 
 _get_base_power(value::Transformer2W) = value.base_power
 """Get [`Transformer2W`](@ref) `base_voltage_primary`."""
