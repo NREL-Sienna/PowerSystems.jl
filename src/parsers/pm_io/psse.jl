@@ -1783,28 +1783,65 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["available"] = sub_data["br_status"] == 0 ? false : true
 
             sub_data["dc_control_from"] =
-                from_bus["TYPE"] == 1 ? VSCDCControlModes.DC_VOLTAGE : VSCDCControlModes.DC_POWER
+                if from_bus["TYPE"] == 1
+                    VSCDCControlModes.DC_VOLTAGE
+                else
+                    VSCDCControlModes.DC_POWER
+                end
             sub_data["dc_control_to"] =
-                to_bus["TYPE"] == 1 ? VSCDCControlModes.DC_VOLTAGE : VSCDCControlModes.DC_POWER
+                if to_bus["TYPE"] == 1
+                    VSCDCControlModes.DC_VOLTAGE
+                else
+                    VSCDCControlModes.DC_POWER
+                end
             sub_data["ac_control_from"] =
-                from_bus["MODE"] == 1 ? VSCACControlModes.AC_VOLTAGE :
-                VSCACControlModes.AC_REACTIVE_POWER
+                if from_bus["MODE"] == 1
+                    VSCACControlModes.AC_VOLTAGE
+                else
+                    VSCACControlModes.AC_REACTIVE_POWER
+                end
             sub_data["ac_control_to"] =
-                to_bus["MODE"] == 1 ? VSCACControlModes.AC_VOLTAGE :
-                VSCACControlModes.AC_REACTIVE_POWER
+                if to_bus["MODE"] == 1
+                    VSCACControlModes.AC_VOLTAGE
+                else
+                    VSCACControlModes.AC_REACTIVE_POWER
+                end
 
-            sub_data["dc_setpoint_from"] = from_bus["DCSET"]
-            sub_data["dc_setpoint_to"] = to_bus["DCSET"]
             sub_data["ac_setpoint_from"] = from_bus["ACSET"]
             sub_data["ac_setpoint_to"] = to_bus["ACSET"]
 
-            # ALOSS, MINLOSS in kW, and BLOSS in kW/A. Divide by a 1000 to transform into MW, and divide by baseMVA to normalize to per-unit.
+            # DCSET is kV for a TYPE 1 (DC-voltage) converter and MW for TYPE 2 (MW control),
+            # where positive MW means the converter injects active power into the AC network at
+            # its bus. Normalize to system-base p.u.: the TYPE 1 terminal's DCSET is the DC base
+            # voltage (so it reads exactly 1.0), the TYPE 2 terminal's MW divides by baseMVA.
+            from_is_dc_voltage = sub_data["dc_control_from"] == VSCDCControlModes.DC_VOLTAGE
+            to_is_dc_voltage = sub_data["dc_control_to"] == VSCDCControlModes.DC_VOLTAGE
+            if from_is_dc_voltage && !to_is_dc_voltage
+                base_voltage = from_bus["DCSET"]
+                flow_setpoint = to_bus["DCSET"]
+                sub_data["dc_setpoint_from"] = 1.0
+                sub_data["dc_setpoint_to"] = to_bus["DCSET"] / baseMVA
+            elseif !from_is_dc_voltage && to_is_dc_voltage
+                base_voltage = to_bus["DCSET"]
+                flow_setpoint = -from_bus["DCSET"]
+                sub_data["dc_setpoint_from"] = from_bus["DCSET"] / baseMVA
+                sub_data["dc_setpoint_to"] = 1.0
+            else
+                error(
+                    "At least one converter in converter $(sub_data["name"]) must set a voltage control.",
+                )
+            end
+
+            # ALOSS and MINLOSS are constant losses in kW: /1000 -> MW, /baseMVA -> p.u.
+            # BLOSS is kW per DC ampere: P_loss[MW] = BLOSS * I_A / 1000 with
+            # I_A = I_pu * 1000 * baseMVA / base_kV, so P_loss[p.u.] = (BLOSS / base_kV) * I_pu
+            # (DC amps vs the loss model's AC p.u. current agree closely at |V_ac| ~ 1).
             sub_data["converter_loss_from"] = LinearCurve(
-                from_bus["BLOSS"] / (1000.0 * baseMVA),
+                from_bus["BLOSS"] / base_voltage,
                 (from_bus["ALOSS"] + from_bus["MINLOSS"]) / (1000.0 * baseMVA),
             )
             sub_data["converter_loss_to"] = LinearCurve(
-                to_bus["BLOSS"] / (1000.0 * baseMVA),
+                to_bus["BLOSS"] / base_voltage,
                 (to_bus["ALOSS"] + to_bus["MINLOSS"]) / (1000.0 * baseMVA),
             )
 
@@ -1838,19 +1875,6 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pminf"] = -sub_data["pmaxf"]
             sub_data["pmint"] = -sub_data["pmaxt"]
 
-            from_is_dc_voltage = sub_data["dc_control_from"] == VSCDCControlModes.DC_VOLTAGE
-            to_is_dc_voltage = sub_data["dc_control_to"] == VSCDCControlModes.DC_VOLTAGE
-            if from_is_dc_voltage && !to_is_dc_voltage
-                base_voltage = sub_data["dc_setpoint_from"]
-                flow_setpoint = sub_data["dc_setpoint_to"]
-            elseif !from_is_dc_voltage && to_is_dc_voltage
-                base_voltage = sub_data["dc_setpoint_to"]
-                flow_setpoint = -sub_data["dc_setpoint_from"]
-            else
-                error(
-                    "At least one converter in converter $(sub_data["name"]) must set a voltage control.",
-                )
-            end
             Zbase = base_voltage^2 / baseMVA
             sub_data["r"] = dcline["RDC"] / Zbase
             sub_data["pf"] = flow_setpoint / baseMVA
@@ -1870,6 +1894,9 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 "MODE_FROM" => from_bus["MODE"],
                 "MODE_TO" => to_bus["MODE"],
                 "RDC" => dcline["RDC"],
+                # DC base voltage (kV) the p.u. normalization above used; exporters need it to
+                # write DCSET/BLOSS back in PSS/E units.
+                "VDCBASE" => base_voltage,
             )
 
             sub_data["source_id"] =
