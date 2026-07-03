@@ -74,7 +74,7 @@ reservoir = HydroReservoir(;
     outflow = 50.0,  # m³/h
     level_targets = 0.7,
     intake_elevation = 600.0,  # meters above sea level
-    head_to_volume_factor = LinearCurve(1.0),
+    head_to_volume_factor = LinearFunctionData(1.0),
 )
 add_component!(sys, reservoir)
 
@@ -189,7 +189,7 @@ head_reservoir = HydroReservoir(;
     outflow = 100.0,
     level_targets = 0.5,
     intake_elevation = 800.0,
-    head_to_volume_factor = LinearCurve(1.0),
+    head_to_volume_factor = LinearFunctionData(1.0),
 )
 add_component!(sys, head_reservoir)
 
@@ -204,7 +204,7 @@ tail_reservoir = HydroReservoir(;
     outflow = 100.0,
     level_targets = 0.5,
     intake_elevation = 200.0,
-    head_to_volume_factor = LinearCurve(1.0),
+    head_to_volume_factor = LinearFunctionData(1.0),
 )
 add_component!(sys, tail_reservoir)
 
@@ -246,7 +246,7 @@ Key fields for [`HydroReservoir`](@ref):
   - `spillage_limits::Union{Nothing, MinMax}`: Water spillage limits
   - `level_targets::Union{Nothing, Float64}`: Target level at simulation end as fraction of max
   - `intake_elevation::Float64`: Height of intake in meters above sea level
-  - `head_to_volume_factor::ValueCurve`: Head to volume relationship
+  - `head_to_volume_factor::FunctionData`: Head to volume relationship
   - `upstream_turbines::Vector{HydroUnit}`: Turbines feeding into this reservoir (tail reservoir)
   - `downstream_turbines::Vector{HydroUnit}`: Turbines fed by this reservoir (head reservoir)
   - `upstream_reservoirs::Vector{Device}`: Reservoirs feeding spillage into this reservoir

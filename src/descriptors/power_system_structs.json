@@ -6135,8 +6135,8 @@
                 {
                     "name": "head_to_volume_factor",
                     "comment": "Head to volume relationship for the reservoir.",
-                    "null_value": "LinearCurve(0.0)",
-                    "data_type": "ValueCurve"
+                    "null_value": "LinearFunctionData(0.0)",
+                    "data_type": "FunctionData"
                 },
                 {
                     "name": "upstream_turbines",
