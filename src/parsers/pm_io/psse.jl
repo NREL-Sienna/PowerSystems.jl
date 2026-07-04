@@ -1810,22 +1810,19 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["ac_setpoint_from"] = from_bus["ACSET"]
             sub_data["ac_setpoint_to"] = to_bus["ACSET"]
 
-            # DCSET is kV for a TYPE 1 (DC-voltage) converter and MW for TYPE 2 (MW control),
-            # where positive MW means the converter injects active power into the AC network at
-            # its bus. Normalize to system-base p.u.: the TYPE 1 terminal's DCSET is the DC base
-            # voltage (so it reads exactly 1.0), the TYPE 2 terminal's MW divides by baseMVA.
+            # Store DCSET raw here (kV for a TYPE 1 / DC-voltage converter, MW for TYPE 2 / MW
+            # control, positive MW = injection into the AC network); r/pf/if below need the raw
+            # values, and the per-unit normalization happens once after them.
+            sub_data["dc_setpoint_from"] = from_bus["DCSET"]
+            sub_data["dc_setpoint_to"] = to_bus["DCSET"]
             from_is_dc_voltage = sub_data["dc_control_from"] == VSCDCControlModes.DC_VOLTAGE
             to_is_dc_voltage = sub_data["dc_control_to"] == VSCDCControlModes.DC_VOLTAGE
             if from_is_dc_voltage && !to_is_dc_voltage
                 base_voltage = from_bus["DCSET"]
                 flow_setpoint = to_bus["DCSET"]
-                sub_data["dc_setpoint_from"] = 1.0
-                sub_data["dc_setpoint_to"] = to_bus["DCSET"] / baseMVA
             elseif !from_is_dc_voltage && to_is_dc_voltage
                 base_voltage = to_bus["DCSET"]
                 flow_setpoint = -from_bus["DCSET"]
-                sub_data["dc_setpoint_from"] = from_bus["DCSET"] / baseMVA
-                sub_data["dc_setpoint_to"] = 1.0
             else
                 error(
                     "At least one converter in converter $(sub_data["name"]) must set a voltage control.",
@@ -1896,24 +1893,17 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["dc_setpoint_to"] / baseMVA
             end
 
-            sub_data["ext"] = Dict{String, Any}(
-                "REMOT_FROM" => from_bus["REMOT"],
-                "REMOT_TO" => to_bus["REMOT"],
-                "RMPCT_FROM" => from_bus["RMPCT"],
-                "RMPCT_TO" => to_bus["RMPCT"],
-                "ALOSS_FROM" => from_bus["ALOSS"],
-                "ALOSS_TO" => to_bus["ALOSS"],
-                "MINLOSS_FROM" => from_bus["MINLOSS"],
-                "MINLOSS_TO" => to_bus["MINLOSS"],
-                "TYPE_FROM" => from_bus["TYPE"],
-                "TYPE_TO" => to_bus["TYPE"],
-                "MODE_FROM" => from_bus["MODE"],
-                "MODE_TO" => to_bus["MODE"],
-                "RDC" => dcline["RDC"],
-                # DC base voltage (kV) the p.u. normalization above used; exporters need it to
-                # write DCSET/BLOSS back in PSS/E units.
-                "VDCBASE" => base_voltage,
-            )
+            # VSC control state is stored in first-class fields, not `ext`: the DC base voltage
+            # (kV) used for the per-unit normalization above, and the AC-voltage-control remote
+            # regulation (regulated bus + Mvar participation) per terminal. TYPE/MODE/RDC and the
+            # loss split are reconstructable on export from dc_control/ac_control/g and the loss
+            # curve, so they are not carried.
+            sub_data["rated_dc_voltage"] = base_voltage
+            sub_data["remote_bus_control_from"] = from_bus["REMOT"]
+            sub_data["remote_bus_control_to"] = to_bus["REMOT"]
+            sub_data["rmpct_from"] = from_bus["RMPCT"]
+            sub_data["rmpct_to"] = to_bus["RMPCT"]
+            sub_data["ext"] = Dict{String, Any}()
 
             sub_data["source_id"] =
                 ["vsc dc", sub_data["f_bus"], sub_data["t_bus"], dcline["NAME"]]

@@ -707,6 +707,7 @@ export get_r_secondary
 export get_r_tertiary
 export get_ramp_limits
 export get_rated_current
+export get_rated_dc_voltage
 export get_rated_voltage
 export get_rating
 export get_rating_b
@@ -743,10 +744,14 @@ export get_reg
 export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
+export get_remote_bus_control_from
+export get_remote_bus_control_to
 export get_requirement
 export get_reserves
 export get_rf
 export get_rg
+export get_rmpct_from
+export get_rmpct_to
 export get_rrpwr
 export get_rv
 export get_saturation_coeffs
@@ -1400,6 +1405,7 @@ export set_r_secondary!
 export set_r_tertiary!
 export set_ramp_limits!
 export set_rated_current!
+export set_rated_dc_voltage!
 export set_rated_voltage!
 export set_rating!
 export set_rating_b!
@@ -1436,10 +1442,14 @@ export set_reg!
 export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!
+export set_remote_bus_control_from!
+export set_remote_bus_control_to!
 export set_requirement!
 export set_reserves!
 export set_rf!
 export set_rg!
+export set_rmpct_from!
+export set_rmpct_to!
 export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!

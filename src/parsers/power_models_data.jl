@@ -1966,6 +1966,11 @@ function make_vscline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         rating_to = d["rating_to"],
         reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
         power_factor_weighting_fraction_to = d["power_factor_weighting_fraction_to"],
+        rated_dc_voltage = get(d, "rated_dc_voltage", 0.0),
+        remote_bus_control_from = get(d, "remote_bus_control_from", 0),
+        remote_bus_control_to = get(d, "remote_bus_control_to", 0),
+        rmpct_from = get(d, "rmpct_from", 100.0),
+        rmpct_to = get(d, "rmpct_to", 100.0),
         ext = get(d, "ext", Dict{String, Any}()),
     )
 end
