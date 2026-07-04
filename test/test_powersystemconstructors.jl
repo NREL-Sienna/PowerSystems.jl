@@ -150,11 +150,19 @@ end
             @test get_time_series(SingleTimeSeries, old_component, ts_name) isa
                   SingleTimeSeries
 
+            # Distinct P/Q maxima so a crossed field mapping cannot cancel out.
+            set_max_reactive_power!(old_component, 0.123 * DU)
+            old_max_p = get_max_active_power(old_component, DU)
+            old_max_q = get_max_reactive_power(old_component, DU)
+            @test old_max_p != old_max_q
+
             convert_component!(sys, old_component, StandardLoad)
             @test isnothing(get_component(typeof(old_component), sys, component_name))
             new_component = get_component(StandardLoad, sys, component_name)
             @test !isnothing(new_component)
             @test get_name(new_component) == component_name
+            @test get_max_constant_active_power(new_component, DU) == old_max_p
+            @test get_max_constant_reactive_power(new_component, DU) == old_max_q
             @test get_time_series(SingleTimeSeries, new_component, ts_name) isa
                   SingleTimeSeries
             # Conversion back is not implemented

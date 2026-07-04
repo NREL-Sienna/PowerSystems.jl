@@ -214,3 +214,182 @@ end
     @test sprint(show, 1.0Mvar) == "1.0 Mvar"
     @test sprint(show, 1.0MVA) == "1.0 MVA"
 end
+
+@testset "units_info lifecycle" begin
+    # sys_a: 100 MVA base; gen stored at device base (250 MVA default from _sys_with_thermal)
+    sys_a, gen = _sys_with_thermal()
+    p_a = get_active_power(gen, SU)
+
+    remove_component!(sys_a, gen)
+    @test_throws ErrorException get_active_power(gen, SU)
+
+    # Transfer to sys_b (50 MVA base). Same stored DU value ⇒ SU value doubles.
+    sys_b = System(50.0)
+    bus_b = ACBus(;
+        number = 1, name = "b1", available = true,
+        bustype = ACBusTypes.REF, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys_b, bus_b)
+    set_bus!(gen, bus_b)
+    add_component!(sys_b, gen)
+    @test get_active_power(gen, SU) ≈ 2.0 * p_a
+end
+
+@testset "deepcopy rebinds units_info to the copy" begin
+    sys, gen = _sys_with_thermal()
+
+    sys2 = deepcopy(sys)
+    gen2 = get_component(ThermalStandard, sys2, get_name(gen))
+    @test IS.get_units_info(IS.get_internal(gen2)) === sys2.units_settings
+    @test IS.get_units_info(IS.get_internal(gen2)) !== sys.units_settings
+end
+
+@testset "deserialized components share the system settings object" begin
+    sys, gen = _sys_with_thermal()
+    path = joinpath(mktempdir(), "sys.json")
+    to_json(sys, path)
+    sys2 = System(path)
+    gen2 = get_component(ThermalStandard, sys2, get_name(gen))
+    @test IS.get_units_info(IS.get_internal(gen2)) === sys2.units_settings
+    @test get_active_power(gen2, SU) ≈ get_active_power(gen, SU)
+end
+
+@testset "convert_units rejects marker/value mismatches" begin
+    sys, gen = _sys_with_thermal()
+
+    @test_throws ArgumentError convert_units(gen, 30.0 * MW, POWER, SU, DU)
+    @test_throws ArgumentError convert_units(gen, 30.0 * MW, POWER, DU, SU)
+    @test_throws ArgumentError convert_units(gen, 0.5 * DU, POWER, SU, NU)
+    @test_throws ArgumentError convert_units(gen, 0.5, POWER, MW, SU)
+end
+
+# ---- Task 5 helpers ----
+
+# Build a minimal System + Line (100 MVA base, 138 kV buses) for impedance/
+# admittance inference tests. rating_b is set to a non-nothing value so
+# get_rating_b returns Float64 (the small-union contract under test).
+function _sys_with_line()
+    sys = System(100.0)
+    bus_from = ACBus(;
+        number = 1, name = "f1", available = true,
+        bustype = ACBusTypes.REF, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    bus_to = ACBus(;
+        number = 2, name = "t1", available = true,
+        bustype = ACBusTypes.PQ, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    line = Line(;
+        name = "l1", available = true,
+        active_power_flow = 0.0, reactive_power_flow = 0.0,
+        arc = Arc(; from = bus_from, to = bus_to),
+        r = 0.01, x = 0.05,
+        b = (from = 0.01, to = 0.01),
+        rating = 1.0,
+        angle_limits = (min = -0.7, max = 0.7),
+        rating_b = 0.9,
+    )
+    add_component!(sys, line)
+    return sys, line
+end
+
+# Local copy of the Transformer3W fixture from test_base_power.jl, reproduced
+# here so test_units.jl remains self-contained when run in isolation
+# (test_base_power.jl is included first alphabetically in the full suite, but
+# the name-filter run — `julia --project=test test/runtests.jl test_units` —
+# only includes test_units.jl itself).
+function _local_make_test_3w_xfmr(; system_base = 100.0)
+    xfmr = Transformer3W(nothing)
+    IS.set_units_info!(
+        IS.get_internal(xfmr),
+        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE),
+    )
+    set_base_power_12!(xfmr, 15.0)
+    set_base_power_23!(xfmr, 20.0)
+    set_base_power_13!(xfmr, 25.0)
+    set_base_voltage_primary!(xfmr, 230.0)
+    set_base_voltage_secondary!(xfmr, 138.0)
+    set_base_voltage_tertiary!(xfmr, 69.0)
+    setproperty!(xfmr, :r_primary, 0.01)
+    setproperty!(xfmr, :r_secondary, 0.02)
+    return xfmr
+end
+
+@testset "getter chain is inferable per unit-system marker" begin
+    sys, gen = _sys_with_thermal()
+    sys_l, line = _sys_with_line()
+    xfmr3w = _local_make_test_3w_xfmr()
+
+    # power category (Val{:mva})
+    @inferred get_active_power(gen, SU)
+    @inferred get_active_power(gen, DU)
+    @inferred get_active_power(gen, NU)
+    @inferred get_active_power_unitful(gen, SU)
+    @test typeof(get_active_power_unitful(gen, SU)) ==
+          IS.RelativeQuantity{Float64, IS.RelativeUnits.SystemBaseUnit}
+
+    # impedance / admittance categories (Val{:ohm} / Val{:siemens})
+    @inferred get_r(line, SU)
+    @inferred get_x(line, DU)
+    @inferred get_b(line, SU)
+
+    # compound NamedTuple fields
+    @inferred get_active_power_limits(gen, SU)
+
+    # Union{Nothing, Float64} descriptor field: small-union return is the contract
+    # rating_b is set to 0.9 in _sys_with_line so the non-nothing branch executes
+    @inferred Union{Nothing, Float64} get_rating_b(line, SU)
+
+    # three-winding per-winding bases
+    @inferred get_r_primary(xfmr3w, SU)
+    @inferred get_r_secondary(xfmr3w, DU)
+
+    # setter chain: returns the stored DU Float64
+    @inferred set_active_power!(gen, 0.4 * SU)
+end
+
+@testset "conversions ignore the display unit_system" begin
+    sys, gen = _sys_with_thermal()
+
+    before = get_active_power(gen, SU)
+    set_units_base_system!(sys, "NATURAL_UNITS")
+    @test get_active_power(gen, SU) == before
+    set_units_base_system!(sys, "SYSTEM_BASE")
+end
+
+@testset "time series multiplier units default to SU" begin
+    sys, gen = _sys_with_thermal()
+
+    # Normalized scaling factors (0-1); SFM = get_max_active_power scales them.
+    t0 = Dates.DateTime("2024-01-01T00:00:00")
+    raw = [0.5, 0.7, 0.9]
+    ta = TimeSeries.TimeArray(
+        [t0 + Dates.Hour(i - 1) for i in 1:length(raw)],
+        raw,
+    )
+    ts = SingleTimeSeries(;
+        name = "max_active_power",
+        data = ta,
+        scaling_factor_multiplier = get_max_active_power,
+    )
+    add_time_series!(sys, gen, ts)
+
+    vals_default = get_time_series_values(SingleTimeSeries, gen, "max_active_power")
+    vals_su = get_time_series_values(SingleTimeSeries, gen, "max_active_power"; units = SU)
+    vals_nu = get_time_series_values(SingleTimeSeries, gen, "max_active_power"; units = NU)
+
+    @test vals_default == vals_su
+
+    base_nu = get_max_active_power(gen, NU) / get_max_active_power(gen, SU)
+    @test vals_nu ≈ vals_su .* base_nu
+end
+
+@testset "_set_units_base! errors on detached component" begin
+    sys, gen = _sys_with_thermal()
+    remove_component!(sys, gen)
+    @test_throws ErrorException with_units_base(() -> nothing, gen, "NATURAL_UNITS")
+end

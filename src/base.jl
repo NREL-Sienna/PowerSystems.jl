@@ -572,7 +572,8 @@ _set_units_base!(c::Component, settings::String) =
     _set_units_base!(c::Component, UNIT_SYSTEM_MAPPING[uppercase(settings)])
 
 function _set_units_base!(c::Component, settings::UnitSystem)
-    units_info = get_internal(c).units_info
+    units_info = IS.get_units_info(get_internal(c))
+    isnothing(units_info) && error("Component $(get_name(c)) is not attached to a system.")
     old_base_value = units_info.base_value
     set_units_setting!(
         c,
@@ -598,16 +599,16 @@ end
 """
 function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
     internal = get_internal(c)
-    old_units_info = internal.units_info  # Save reference to restore later
+    old_units_info = IS.get_units_info(internal)
     _set_units_base!(c, units)
-    temp_units_info = internal.units_info  # The temporary object we just created
+    temp_units_info = IS.get_units_info(internal)
     try
         f()
     finally
         # Only restore if units_info is still temp_units_info.
-        # The user may have changed it in the function body, by e.g. removing the component
-        # and then attaching it to a different system.
-        internal.units_info === temp_units_info || error(
+        # The user may have changed it in the function body, e.g. by removing the component
+        # and attaching it to a different system.
+        IS.get_units_info(internal) === temp_units_info || error(
             "Units info was modified during with_units_base.")
         IS.set_units_info!(internal, old_units_info)
     end
@@ -1232,7 +1233,7 @@ function set_name!(component::Component, name::AbstractString)
 end
 
 function clear_units!(component::Component)
-    get_internal(component).units_info = nothing
+    IS.set_units_info!(get_internal(component), nothing)
     return
 end
 
@@ -3287,7 +3288,7 @@ function convert_component!(
         constant_active_power = old_load.active_power,
         constant_reactive_power = old_load.reactive_power,
         max_constant_active_power = old_load.max_active_power,
-        max_constant_reactive_power = old_load.max_active_power,
+        max_constant_reactive_power = old_load.max_reactive_power,
         conformity = get_conformity(old_load),
         dynamic_injector = get_dynamic_injector(old_load),
         internal = _copy_internal_for_conversion(old_load),
@@ -3339,7 +3340,7 @@ function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
     return InfrastructureSystemsInternal(;
         uuid = deepcopy(internal.uuid),
-        units_info = deepcopy(internal.units_info),
+        units_info = deepcopy(IS.get_units_info(internal)),
         shared_system_references = nothing,
         ext = deepcopy(internal.ext),
     )
@@ -3425,7 +3426,7 @@ function fast_deepcopy_system(
         description = deepcopy(sys.metadata.description))
     # deepcopying sys.data separately from sys.units_settings broke the shared units references, so we have to fix them here
     for comp in iterate_components(new_sys)
-        comp.internal.units_info = new_sys.units_settings
+        IS.set_units_info!(get_internal(comp), new_sys.units_settings)
     end
     return new_sys
 end

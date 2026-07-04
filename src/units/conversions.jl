@@ -136,8 +136,22 @@ convert_units(gen, 0.6, POWER, DU, Float64)  # → 0.3 (raw SU value)
 function convert_units end
 
 # --- From DU ---
+# `Real`/`ComplexF64` are split so a Unitful/RelativeQuantity value (both <: Number)
+# falls through to the marker/value guards instead. ComplexF64 mirrors serve the
+# complex admittance getters (`primary_shunt`).
 
-function convert_units(c, value::Number, cat::UnitCategory, ::DeviceBaseUnit, units::Units)
+function convert_units(c, value::Real, cat::UnitCategory, ::DeviceBaseUnit, units::Units)
+    natural = value * base_value(c, cat) * natural_unit(cat)
+    return uconvert(units, natural)
+end
+
+function convert_units(
+    c,
+    value::ComplexF64,
+    cat::UnitCategory,
+    ::DeviceBaseUnit,
+    units::Units,
+)
     natural = value * base_value(c, cat) * natural_unit(cat)
     return uconvert(units, natural)
 end
@@ -147,7 +161,7 @@ end
 # be wasted work (and would wrongly require a base voltage to be defined).
 function convert_units(
     c,
-    value::Number,
+    value::Real,
     cat::UnitCategory,
     ::DeviceBaseUnit,
     ::SystemBaseUnit,
@@ -155,7 +169,26 @@ function convert_units(
     return (value * _du_to_su_ratio(c, cat)) * SU
 end
 
-convert_units(::Any, value::Number, ::UnitCategory, ::DeviceBaseUnit, ::DeviceBaseUnit) =
+function convert_units(
+    c,
+    value::ComplexF64,
+    cat::UnitCategory,
+    ::DeviceBaseUnit,
+    ::SystemBaseUnit,
+)
+    return (value * _du_to_su_ratio(c, cat)) * SU
+end
+
+convert_units(::Any, value::Real, ::UnitCategory, ::DeviceBaseUnit, ::DeviceBaseUnit) =
+    value * DU
+
+convert_units(
+    ::Any,
+    value::ComplexF64,
+    ::UnitCategory,
+    ::DeviceBaseUnit,
+    ::DeviceBaseUnit,
+) =
     value * DU
 
 function convert_units(
@@ -180,14 +213,25 @@ end
 
 # --- From SU ---
 
-function convert_units(c, value::Number, cat::UnitCategory, ::SystemBaseUnit, units::Units)
+function convert_units(c, value::Real, cat::UnitCategory, ::SystemBaseUnit, units::Units)
     natural = value * system_base_value(c, cat) * natural_unit(cat)
     return uconvert(units, natural)
 end
 
 function convert_units(
     c,
-    value::Number,
+    value::ComplexF64,
+    cat::UnitCategory,
+    ::SystemBaseUnit,
+    units::Units,
+)
+    natural = value * system_base_value(c, cat) * natural_unit(cat)
+    return uconvert(units, natural)
+end
+
+function convert_units(
+    c,
+    value::Real,
     cat::UnitCategory,
     ::SystemBaseUnit,
     ::DeviceBaseUnit,
@@ -195,7 +239,26 @@ function convert_units(
     return (value / _du_to_su_ratio(c, cat)) * DU
 end
 
-convert_units(::Any, value::Number, ::UnitCategory, ::SystemBaseUnit, ::SystemBaseUnit) =
+function convert_units(
+    c,
+    value::ComplexF64,
+    cat::UnitCategory,
+    ::SystemBaseUnit,
+    ::DeviceBaseUnit,
+)
+    return (value / _du_to_su_ratio(c, cat)) * DU
+end
+
+convert_units(::Any, value::Real, ::UnitCategory, ::SystemBaseUnit, ::SystemBaseUnit) =
+    value * SU
+
+convert_units(
+    ::Any,
+    value::ComplexF64,
+    ::UnitCategory,
+    ::SystemBaseUnit,
+    ::SystemBaseUnit,
+) =
     value * SU
 
 # --- From natural units ---
@@ -212,7 +275,11 @@ end
 
 # --- To NU (natural units) — delegate to the category's natural unit ---
 
-function convert_units(c, value::Number, cat::UnitCategory, from, ::NaturalUnit)
+function convert_units(c, value::Real, cat::UnitCategory, from, ::NaturalUnit)
+    return convert_units(c, value, cat, from, natural_unit(cat))
+end
+
+function convert_units(c, value::ComplexF64, cat::UnitCategory, from, ::NaturalUnit)
     return convert_units(c, value, cat, from, natural_unit(cat))
 end
 
@@ -229,6 +296,59 @@ end
 
 # --- nothing passthrough ---
 convert_units(::Any, ::Nothing, ::UnitCategory, ::Any, ::Any) = nothing
+
+# --- marker/value-type guards ---
+
+# A Unitful value's units are authoritative; a relative "from" marker contradicts them.
+function convert_units(
+    ::Any,
+    value::Quantity,
+    ::UnitCategory,
+    from::AbstractRelativeUnit,
+    ::Any,
+)
+    throw(
+        ArgumentError(
+            "value $value carries physical units but `from = $from` claims a relative " *
+            "base; pass the value's own units (or NU) as `from`",
+        ),
+    )
+end
+
+# A RelativeQuantity's marker is authoritative; it must match `from`.
+function convert_units(
+    c,
+    value::RelativeQuantity{<:Any, U},
+    cat::UnitCategory,
+    ::U,
+    to,
+) where {U <: AbstractRelativeUnit}
+    return convert_units(c, ustrip(value), cat, U(), to)
+end
+
+function convert_units(
+    ::Any,
+    value::RelativeQuantity{<:Any, V},
+    ::UnitCategory,
+    from::IS.AbstractUnitSystem,
+    ::Any,
+) where {V <: AbstractRelativeUnit}
+    throw(
+        ArgumentError(
+            "value is tagged $(IS.RelativeUnits.unit(value)) but `from = $from`; " *
+            "the tag and the `from` marker must agree",
+        ),
+    )
+end
+
+# Catch-all: any combination not defined above is unsupported — say so clearly.
+function convert_units(::Any, value, ::UnitCategory, from, to)
+    throw(
+        ArgumentError(
+            "unsupported unit conversion for $(typeof(value)) from $from to $to",
+        ),
+    )
+end
 
 # Multi-winding components (e.g. three-winding transformers) do not need a
 # separate conversion family: a per-winding *base provider* view (see

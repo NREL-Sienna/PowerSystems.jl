@@ -1,8 +1,7 @@
 @inline function _get_system_base_power(c::Component)
-    units_info = get_internal(c).units_info
+    units_info = IS.get_units_info(get_internal(c))
     isnothing(units_info) && error("Component $(get_name(c)) is not attached to a system.")
-    # Assert concrete type; units_info field is typed as abstract UnitsData.
-    return (units_info::IS.SystemUnitsSettings).base_value
+    return units_info.base_value
 end
 
 """

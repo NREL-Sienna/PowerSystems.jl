@@ -93,9 +93,13 @@ function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
     closest_v_level = voltage_levels[closestV_ix[2]]
     closest_rate_range = MVA_LIMITS_LINES[closest_v_level]
 
-    # Assuming that the rate is in pu
-    for field in [:rating, :rating_b, :rating_c]
-        rating_value = getfield(line, field)
+    getter_map = (
+        rating = get_rating,
+        rating_b = get_rating_b,
+        rating_c = get_rating_c,
+    )
+    for (field, getter) in pairs(getter_map)
+        rating_value = getter(line, SU)
         if isnothing(rating_value)
             @assert field ∈ [:rating_b, :rating_c]
             continue

@@ -82,6 +82,82 @@ By default, downstream optimization packages work in `SU` because many optimizat
 problems won't converge when using natural units (for example in
 [`PowerSimulations.jl`](https://sienna-platform.github.io/PowerSimulations.jl/stable/)).
 
+## Detachment
+
+Unit-aware getters require the component to be attached to a `System`. The system base power
+is resolved at call time through the component's internal `units_info` slot, which is
+populated by `add_component!` and cleared by `remove_component!`. Calling a unit-aware
+getter on a detached component raises an error:
+
+```julia
+gen = ThermalStandard(...)          # not yet in any system
+get_active_power(gen, SU)           # ERROR: Component gen_name is not attached to a system.
+
+remove_component!(sys, gen)
+get_active_power(gen, SU)           # same error — remove_component! clears the slot
+```
+
+The same check applies to the display path: printing a detached component issues a warning
+and falls back to natural units for display. The error is intentional — a per-unit value is
+meaningless without a known base.
+
+## The system base is immutable
+
+`SystemUnitsSettings.base_value` is a `const` field set at `System` construction from the
+`base_power` argument. It cannot be changed after construction. `set_units_base_system!`
+changes only the display label stored in `unit_system` — it has no effect on what any
+getter returns:
+
+```julia
+sys = System(100.0)                          # base_power = 100 MVA
+add_component!(sys, gen)
+
+before = get_active_power(gen, SU)
+set_units_base_system!(sys, "NATURAL_UNITS") # display label only
+@assert get_active_power(gen, SU) == before  # conversion result is unchanged
+```
+
+`get_units_base` and `with_units_base` read and temporarily set the same display label.
+None of them affect conversion results.
+
+## Conversion errors
+
+`convert_units` enforces consistency between the value type and the `from` marker. Three
+mismatch patterns raise `ArgumentError`:
+
+**Unitful value with a relative `from` marker.** A `Quantity` carries its own physical units;
+claiming a relative base as `from` contradicts them:
+
+```julia
+# gen.base_power = 50 MVA, system base = 100 MVA
+convert_units(gen, 30.0MW, POWER, SU, DU)
+# ArgumentError: value 30.0 MW carries physical units but `from = SU` claims a relative
+# base; pass the value's own units (or NU) as `from`
+```
+
+Pass `NU` (or the Unitful unit directly) as `from` instead:
+
+```julia
+convert_units(gen, 30.0MW, POWER, NU, DU)   # → 0.6 DU
+```
+
+**`RelativeQuantity` tag disagrees with `from`.** A `RelativeQuantity` encodes its base in
+its type; `from` must match:
+
+```julia
+val = 0.3 * SU                               # RelativeQuantity{Float64, SystemBaseUnit}
+convert_units(gen, val, POWER, DU, SU)
+# ArgumentError: value is tagged SU but `from = DU`; the tag and the `from` marker must agree
+```
+
+**Unsupported combination.** Any value/from/to triple not covered by the dispatch table hits
+a catch-all:
+
+```julia
+convert_units(gen, "0.5", POWER, SU, DU)
+# ArgumentError: unsupported unit conversion for String from SU to DU
+```
+
 !!! note
 
     Check the [`Transformers per unit explanation`](@ref transformers_pu) for details on how

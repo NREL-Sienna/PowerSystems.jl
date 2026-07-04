@@ -106,9 +106,10 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
         obj = getproperty(ist, name)
         getter_name = Symbol("get_$name")
         if obj isa InfrastructureSystemsInternal
-            if !isnothing(obj.units_info)
+            units_info = IS.get_units_info(obj)
+            if !isnothing(units_info)
                 print(io, "\n   ")
-                show(io, MIME"text/plain"(), obj.units_info)
+                show(io, MIME"text/plain"(), units_info)
             end
             continue
         elseif obj isa InfrastructureSystemsType ||
