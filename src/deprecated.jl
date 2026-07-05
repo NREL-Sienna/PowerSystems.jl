@@ -232,6 +232,36 @@ function get_ac_voltage_control_to(value::TwoTerminalVSCLine)
     return get_ac_control_to(value) == VSCACControlModes.AC_VOLTAGE
 end
 
+# Deserialization migration: a system serialized by PSY <= 5.11 stores the four pre-5.x `Bool`
+# control flags and none of the enum fields. Map the Bool flags onto the `*_control_*` enums so an
+# old system round-trips without silently defaulting every converter to `DC_VOLTAGE`. A `Bool`
+# cannot express `DC_VOLTAGE_DROOP`, but pre-5.x data never had droop, so the mapping is exact.
+# Enums serialize as their scoped-value string (e.g. "DC_VOLTAGE"), which is what the generic
+# component deserializer expects for these fields.
+function IS.deserialize(
+    ::Type{TwoTerminalVSCLine},
+    data::Dict,
+    component_cache::Dict,
+)
+    if haskey(data, "dc_voltage_control_from") && !haskey(data, "dc_control_from")
+        data = copy(data)
+        data["dc_control_from"] =
+            data["dc_voltage_control_from"] ? "DC_VOLTAGE" : "DC_POWER"
+        data["dc_control_to"] = data["dc_voltage_control_to"] ? "DC_VOLTAGE" : "DC_POWER"
+        data["ac_control_from"] =
+            data["ac_voltage_control_from"] ? "AC_VOLTAGE" : "AC_REACTIVE_POWER"
+        data["ac_control_to"] =
+            data["ac_voltage_control_to"] ? "AC_VOLTAGE" : "AC_REACTIVE_POWER"
+    end
+    return invoke(
+        IS.deserialize,
+        Tuple{Type{<:_CONTAINS_SHOULD_ENCODE}, Dict, Dict},
+        TwoTerminalVSCLine,
+        data,
+        component_cache,
+    )
+end
+
 # Forward-compat STUBS (not deprecations) for PSY #1684 first-class `TapTransformer`
 # controllability accessors that this branch predates. They exist so the PowerFlows
 # discrete-control branch can run against this PSY branch during co-development. Remove once
