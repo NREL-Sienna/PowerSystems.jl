@@ -2635,7 +2635,7 @@
                 },
                 {
                     "name": "dc_setpoint_from",
-                    "comment": "Converter DC setpoint in the `from` bus converter. If `voltage_control_from = true` this number is the DC voltage on the DC side of the converter, entered in kV. If `voltage_control_from = false`, this value is the power demand in MW, if positive the converter is supplying power to the AC network at the `from` bus; if negative, the converter is withdrawing power from the AC network at the `from` bus.",
+                    "comment": "Converter DC setpoint on the `from` bus converter, in per-unit. For a DC-voltage-controlling mode (`dc_control_from` is `DC_VOLTAGE` or `DC_VOLTAGE_DROOP`) this is the DC-side voltage in per-unit of `rated_dc_voltage`. For `DC_POWER` this is the active-power demand in per-unit ([`SYSTEM_BASE`](@ref per_unit)); positive means the converter supplies power to the AC network at the `from` bus, negative means it withdraws.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
@@ -2700,7 +2700,7 @@
                 },
                 {
                     "name": "dc_voltage_droop_from",
-                    "comment": "DC-voltage droop gain on the `from` converter, used when `dc_control_from` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_from - dc_voltage_droop_from * P_c`.",
+                    "comment": "DC-voltage droop gain on the `from` converter, used when `dc_control_from` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_from + dc_voltage_droop_from * P_c` (with `P_c` the converter's AC-side active-power injection).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
@@ -2730,7 +2730,7 @@
                 },
                 {
                     "name": "dc_setpoint_to",
-                    "comment": "Converter DC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the DC voltage on the DC side of the converter, entered in kV. If `voltage_control_to = false`, this value is the power demand in MW, if positive the converter is supplying power to the AC network at the `to` bus; if negative, the converter is withdrawing power from the AC network at the `to` bus.",
+                    "comment": "Converter DC setpoint on the `to` bus converter, in per-unit. For a DC-voltage-controlling mode (`dc_control_to` is `DC_VOLTAGE` or `DC_VOLTAGE_DROOP`) this is the DC-side voltage in per-unit of `rated_dc_voltage`. For `DC_POWER` this is the active-power demand in per-unit ([`SYSTEM_BASE`](@ref per_unit)); positive means the converter supplies power to the AC network at the `to` bus, negative means it withdraws.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
@@ -2795,10 +2795,45 @@
                 },
                 {
                     "name": "dc_voltage_droop_to",
-                    "comment": "DC-voltage droop gain on the `to` converter, used when `dc_control_to` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_to - dc_voltage_droop_to * P_c`.",
+                    "comment": "DC-voltage droop gain on the `to` converter, used when `dc_control_to` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_to + dc_voltage_droop_to * P_c` (with `P_c` the converter's AC-side active-power injection).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
+                },
+                {
+                    "name": "rated_dc_voltage",
+                    "comment": "Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints and for PSS/E export of DCSET/RDC/BLOSS; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "remote_bus_control_from",
+                    "comment": "Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE` (`0` regulates its own terminal bus).",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "default": 0
+                },
+                {
+                    "name": "remote_bus_control_to",
+                    "comment": "Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE` (`0` regulates its own terminal bus).",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "default": 0
+                },
+                {
+                    "name": "rmpct_from",
+                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0"
+                },
+                {
+                    "name": "rmpct_to",
+                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter.",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0"
                 },
                 {
                     "name": "services",
