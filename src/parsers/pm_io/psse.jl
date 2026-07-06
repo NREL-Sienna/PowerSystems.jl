@@ -2018,7 +2018,9 @@ function _build_switch_breaker_sub_data(
     end
 
     if pm_data["source_version"] == ("35")
-        sub_data["r"] = 0.0
+        # SWITCHING DEVICE records (v35 dedicated section) have no R field; legacy
+        # BRANCH records parsed as switches/breakers (CKT starts with '@' or '*') do.
+        sub_data["r"] = pop!(dict_object, "R", 0.0)
         sub_data["rating"] = pop!(dict_object, "RATE1")
         for i in 2:12
             rate_key = "RATE$i"
