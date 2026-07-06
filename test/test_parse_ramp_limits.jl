@@ -57,13 +57,6 @@ _fresh_case5_dict() = deepcopy(RAMP_TEST_PM.data)
         d = Dict{String, Any}("pmax" => 0.0)
         @test PowerSystems.calculate_ramp_limit(d, "gen", bc) === nothing
     end
-
-    @testset "default base_conversion = 1.0 preserves pre-fix behavior" begin
-        d = Dict{String, Any}("ramp_agc" => 0.5, "pmax" => 4.0)
-        r = PowerSystems.calculate_ramp_limit(d, "gen")
-        @test r.up ≈ 0.5
-        @test r.down ≈ 0.5
-    end
 end
 
 @testset "calculate_ramp_limit: parser forwards base_conversion at each call site" begin

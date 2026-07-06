@@ -127,7 +127,7 @@ end
 function calculate_ramp_limit(
     d::Dict{String, Any},
     gen_name::Union{SubString{String}, String},
-    base_conversion::Float64 = 1.0,
+    base_conversion::Float64,
 )
     if haskey(d, "ramp_agc")
         ramp = d["ramp_agc"] * base_conversion
