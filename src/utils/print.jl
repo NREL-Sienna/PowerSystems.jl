@@ -26,12 +26,16 @@ function _show_accessor_value(getter_func::Function, ist::Component; units = not
     try
         return unitful_func(ist, arg)
     catch err
+        # An explicit `units` request that fails is a caller error worth
+        # surfacing, not something display should paper over — only the
+        # trait's own automatic resolution gets the never-error fallback below.
         units !== nothing && rethrow()
         err isa ErrorException && occursin("not attached", err.msg) || rethrow()
         # NU can also fail (it may need the system base or a base voltage).
-        # Display must never error: fall back to the raw stored value, which
-        # the DU conversion returns without touching any base. Only swallow
-        # the engine's own ErrorExceptions — a MethodError here is a bug.
+        # Automatic resolution must never error: fall back to the raw stored
+        # value, which the DU conversion returns without touching any base.
+        # Only swallow the engine's own ErrorExceptions — a MethodError here
+        # is a bug.
         try
             return unitful_func(ist, NU)
         catch err2
@@ -163,7 +167,9 @@ show_component(ist::Component; units = nothing) = show_component(stdout, ist; un
 function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     if !has_units_setting(ist)
         @warn(
-            "Component is not attached to a System; displaying in natural units."
+            "Component is not attached to a System; each field displays in its own " *
+            "fallback units (natural units, or device base for fields like `rating` " *
+            "that default to device-base display)."
         )
     end
     show_component(io, ist)
@@ -259,10 +265,10 @@ function show_components(
     end
 
     # Build the table ourselves (rather than delegating the Vector case to
-    # `IS.show_components`) so unit-converted columns can go through
-    # `_show_accessor_value` for an explicit unit suffix while still
-    # preserving the caller's column order — `IS.show_components`'s Dict path
-    # alphabetically sorts columns, which would silently reorder them here.
+    # `IS.show_components`) because IS's Vector-column path always resolves
+    # each column's own `display_units_arg` trait and has no `units` kwarg to
+    # override it — there's no way to force every column into one unit system
+    # (e.g. `units = MW`) through the IS entry point.
     if !isconcretetype(component_type)
         error("$component_type must be a concrete type")
     end
