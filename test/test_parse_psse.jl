@@ -168,7 +168,13 @@ end
     @info "Testing VSC Parser"
     vsc = only(get_components(TwoTerminalVSCLine, sys4))
     @test get_active_power_flow(vsc) == -0.2
-    @test get_dc_setpoint_to(vsc) == -20.0
+    @test get_dc_setpoint_to(vsc) == -0.2
+    # VSC control state is stored in first-class fields (no `ext`): DC base voltage and the
+    # AC-voltage-control remote regulation per terminal.
+    @test isempty(get_ext(vsc))
+    @test get_rated_dc_voltage(vsc) > 0.0
+    @test get_remote_bus_control_from(vsc) isa Int
+    @test get_rmpct_from(vsc) >= 0.0
 
     @info "Testing Load Zone Formatter"
     PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
