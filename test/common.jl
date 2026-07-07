@@ -354,7 +354,7 @@ function validate_serialization(
     sys::System;
     time_series_read_only = false,
     runchecks = nothing,
-    assign_new_uuids = false,
+    assign_new_ids = false,
 )
     if runchecks === nothing
         runchecks = PSY.get_runchecks(sys)
@@ -384,7 +384,7 @@ function validate_serialization(
             path;
             time_series_read_only = time_series_read_only,
             runchecks = runchecks,
-            assign_new_uuids = assign_new_uuids,
+            assign_new_ids = assign_new_ids,
         )
         isempty(get_bus_numbers(sys2)) && return false
         sys_ext2 = get_ext(sys2)
@@ -392,7 +392,7 @@ function validate_serialization(
         bus = PSY.get_component(PSY.ACBus, sys2, ext_test_bus_name)
         ext = PSY.get_ext(bus)
         ext["test_field"] != 1 && return false
-        return sys2, PSY.compare_values(sys, sys2; compare_uuids = !assign_new_uuids)
+        return sys2, PSY.compare_values(sys, sys2; compare_uuids = !assign_new_ids)
     finally
         cd(orig_dir)
     end

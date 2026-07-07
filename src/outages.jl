@@ -9,7 +9,7 @@ Concrete subtypes include [`GeometricDistributionForcedOutage`](@ref),
 Subtypes are expected to provide the following fields, or override the matching
 accessors via multiple dispatch:
 
-- `monitored_components::Set{Base.UUID}` — UUIDs of devices whose
+- `monitored_components::Set{Int}` — UUIDs of devices whose
   post-contingency state should be modeled. The default
   [`get_monitored_components`](@ref) reads `value.monitored_components`; override
   it if your subtype does not carry the field directly.
@@ -31,12 +31,10 @@ supports_time_series(::Outage) = true
 """Get `internal`."""
 get_internal(x::Outage) = x.internal
 
-# Public API for monitored_components accepts UUIDs or Devices interchangeably.
-_as_uuid(uuid::Base.UUID) = uuid
-_as_uuid(device::Device) = IS.get_uuid(device)
-# During JSON deserialization a UUID arrives as its serialized form
-# (`Dict("value" => "...")`); reconstruct it via the IS deserializer.
-_as_uuid(data::AbstractDict) = IS.deserialize(Base.UUID, data)
+# Public API for monitored_components accepts integer ids or Devices interchangeably.
+# During JSON deserialization an id arrives as a plain integer.
+_as_id(id::Integer) = Int(id)
+_as_id(device::Device) = IS.get_id(device)
 
 """
 Get the set of [`Device`](@ref) UUIDs whose post-contingency state should be modeled
@@ -57,7 +55,7 @@ clear the set.
 function set_monitored_components!(value::Outage, items)
     empty!(value.monitored_components)
     for x in items
-        push!(value.monitored_components, _as_uuid(x))
+        push!(value.monitored_components, _as_id(x))
     end
     return value.monitored_components
 end
@@ -75,8 +73,8 @@ end
 Add a `Base.UUID` or [`Device`](@ref) to the monitored-components set of
 an [`Outage`](@ref). Adding an existing UUID is a no-op.
 """
-function add_monitored_component!(value::Outage, x::Union{Base.UUID, Device})
-    push!(value.monitored_components, _as_uuid(x))
+function add_monitored_component!(value::Outage, x::Union{Int, Device})
+    push!(value.monitored_components, _as_id(x))
     return value.monitored_components
 end
 
@@ -96,8 +94,8 @@ end
 Remove a `Base.UUID` or [`Device`](@ref) from the monitored-components set
 of an [`Outage`](@ref). No-op when the entry is not present.
 """
-function remove_monitored_component!(value::Outage, x::Union{Base.UUID, Device})
-    delete!(value.monitored_components, _as_uuid(x))
+function remove_monitored_component!(value::Outage, x::Union{Int, Device})
+    delete!(value.monitored_components, _as_id(x))
     return
 end
 
@@ -120,13 +118,13 @@ series.
 # Arguments
 - `mean_time_to_recovery::Float64`: Time elapsed to recovery after a failure in Milliseconds.
 - `outage_transition_probability::Float64`: Characterizes the probability of failure (1 - p) in the geometric distribution.
-- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
+- `monitored_components::Set{Int}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct GeometricDistributionForcedOutage <: UnplannedOutage
     mean_time_to_recovery::Float64
     outage_transition_probability::Float64
-    monitored_components::Set{Base.UUID}
+    monitored_components::Set{Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -144,13 +142,13 @@ Construct a [`GeometricDistributionForcedOutage`](@ref).
 function GeometricDistributionForcedOutage(;
     mean_time_to_recovery = 0.0,
     outage_transition_probability = 0.0,
-    monitored_components = Base.UUID[],
+    monitored_components = Int[],
     internal = InfrastructureSystemsInternal(),
 )
     return GeometricDistributionForcedOutage(
         mean_time_to_recovery,
         outage_transition_probability,
-        Set{Base.UUID}(_as_uuid(x) for x in monitored_components),
+        Set{Int}(_as_id(x) for x in monitored_components),
         internal,
     )
 end
@@ -167,12 +165,12 @@ Attribute that contains information regarding planned outages.
 
 # Arguments
 - `outage_schedule::String`: String name of the time series used for the scheduled outages
-- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
+- `monitored_components::Set{Int}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct PlannedOutage <: Outage
     outage_schedule::String
-    monitored_components::Set{Base.UUID}
+    monitored_components::Set{Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -188,12 +186,12 @@ Construct a [`PlannedOutage`](@ref).
 """
 function PlannedOutage(;
     outage_schedule,
-    monitored_components = Base.UUID[],
+    monitored_components = Int[],
     internal = InfrastructureSystemsInternal(),
 )
     return PlannedOutage(
         outage_schedule,
-        Set{Base.UUID}(_as_uuid(x) for x in monitored_components),
+        Set{Int}(_as_id(x) for x in monitored_components),
         internal,
     )
 end
@@ -207,12 +205,12 @@ The time series data for fixed outages can be obtained from the simulation of a 
 
 # Arguments
 - `outage_status::Float64`: The forced outage status in the model. 1 represents outaged and 0 represents available.
-- `monitored_components::Set{Base.UUID}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
+- `monitored_components::Set{Int}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct FixedForcedOutage <: UnplannedOutage
     outage_status::Float64
-    monitored_components::Set{Base.UUID}
+    monitored_components::Set{Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -228,12 +226,12 @@ Construct a [`FixedForcedOutage`](@ref).
 """
 function FixedForcedOutage(;
     outage_status,
-    monitored_components = Base.UUID[],
+    monitored_components = Int[],
     internal = InfrastructureSystemsInternal(),
 )
     return FixedForcedOutage(
         outage_status,
-        Set{Base.UUID}(_as_uuid(x) for x in monitored_components),
+        Set{Int}(_as_id(x) for x in monitored_components),
         internal,
     )
 end

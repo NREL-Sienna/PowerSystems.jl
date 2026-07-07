@@ -66,16 +66,16 @@ function IS.serialize(component::T) where {T <: _CONTAINS_SHOULD_ENCODE}
 end
 
 """
-Serialize the value, encoding as UUIDs where necessary.
+Serialize the value, encoding referenced components by their integer id where necessary.
 """
 function serialize_uuid_handling(val)
     if should_encode_as_uuid(val)
         if val isa Array
-            value = IS.get_uuid.(val)
+            value = IS.get_id.(val)
         elseif val === nothing
             value = nothing
         else
-            value = IS.get_uuid(val)
+            value = IS.get_id(val)
         end
     else
         value = val
@@ -118,11 +118,11 @@ function IS.deserialize(::Type{Device}, data::Dict)
     return
 end
 
-function _check_uuid_in_component_cache(uuid::Base.UUID, component_cache)
-    if !haskey(component_cache, uuid)
+function _check_id_in_component_cache(id::Int, component_cache)
+    if !haskey(component_cache, id)
         error(
-            "UUID $uuid not found in component cache while deserializing system. \
-             This may indicate that a component was removed improperly leaving a UUID \
+            "id $id not found in component cache while deserializing system. \
+             This may indicate that a component was removed improperly leaving an id \
              reference inside the top level component. This can happen when removing Arc, Area, ACBus or LoadZone \
              components for example. \
              Check the documentation for the `remove_component!` function and review your workflow. \
@@ -133,7 +133,7 @@ function _check_uuid_in_component_cache(uuid::Base.UUID, component_cache)
 end
 
 """
-Deserialize the value, converting UUIDs to components where necessary.
+Deserialize the value, converting referenced integer ids back to components where necessary.
 """
 function deserialize_uuid_handling(field_type, val, component_cache)
     @debug "deserialize_uuid_handling" _group = IS.LOG_GROUP_SERIALIZATION field_type val
@@ -143,16 +143,16 @@ function deserialize_uuid_handling(field_type, val, component_cache)
         if field_type <: Vector
             _vals = field_type()
             for _val in val
-                uuid = deserialize(Base.UUID, _val)
-                _check_uuid_in_component_cache(uuid, component_cache)
-                component = component_cache[uuid]
+                id = Int(_val)
+                _check_id_in_component_cache(id, component_cache)
+                component = component_cache[id]
                 push!(_vals, component)
             end
             value = _vals
         else
-            uuid = deserialize(Base.UUID, val)
-            _check_uuid_in_component_cache(uuid, component_cache)
-            component = component_cache[uuid]
+            id = Int(val)
+            _check_id_in_component_cache(id, component_cache)
+            component = component_cache[id]
             value = component
         end
     elseif field_type <: _CONTAINS_SHOULD_ENCODE

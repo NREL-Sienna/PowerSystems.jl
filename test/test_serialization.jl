@@ -174,20 +174,21 @@ end
     ) !== nothing
 end
 
-@testset "Test deserialization with new UUIDs" begin
+@testset "Test deserialization with new ids" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    sys2, result = validate_serialization(sys; assign_new_uuids = true)
+    sys2, result = validate_serialization(sys; assign_new_ids = true)
     @test result
-    @test IS.get_uuid(sys) != IS.get_uuid(sys2)
+    # The System retains a UUID, reassigned when deserialized with assign_new_ids.
+    @test get_uuid(sys) != get_uuid(sys2)
     for component1 in get_components(Component, sys)
         component2 = get_component(typeof(component1), sys2, get_name(component1))
-        @test IS.get_uuid(component1) != IS.get_uuid(component2)
+        @test IS.get_id(component1) != IS.get_id(component2)
     end
 end
 
 @testset "Test serialization of supplemental attributes" begin
     sys = create_system_with_outages()
-    sys2, result = validate_serialization(sys; assign_new_uuids = true)
+    sys2, result = validate_serialization(sys; assign_new_ids = true)
     @test result
 end
 

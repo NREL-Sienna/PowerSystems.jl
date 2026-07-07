@@ -400,7 +400,7 @@
             @test get_start_up_adder(attrs1[1]) == 3.5
             @test get_pollutant(attrs1[1]) == PollutantType.CO2
             # Same attribute instance (by UUID)
-            @test IS.get_uuid(attrs1[1]) == IS.get_uuid(attrs2[1])
+            @test IS.get_id(attrs1[1]) == IS.get_id(attrs2[1])
         end
     end
 
@@ -482,7 +482,7 @@
             # Verify shared NOX attribute on t2
             attrs_t2 = collect(get_supplemental_attributes(EmissionsData, t2_2))
             nox_t2 = first(a for a in attrs_t2 if get_pollutant(a) == PollutantType.NOX)
-            @test IS.get_uuid(nox_attr) == IS.get_uuid(nox_t2)
+            @test IS.get_id(nox_attr) == IS.get_id(nox_t2)
             @test get_emission_rate(nox_t2) == linear_rate
         end
     end

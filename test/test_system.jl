@@ -5,7 +5,7 @@
 
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
-    @test IS.get_uuid(generator) == IS.get_uuid(generators[1])
+    @test IS.get_id(generator) == IS.get_id(generators[1])
     @test_throws(IS.ArgumentError, add_component!(sys, generator))
     @test get_available_component(ThermalStandard, sys, get_name(generators[1])) ===
           generator
@@ -15,7 +15,7 @@
 
     generators2 = get_components_by_name(ThermalGen, sys, get_name(generators[1]))
     @test length(generators2) == 1
-    @test IS.get_uuid(generators2[1]) == IS.get_uuid(generators[1])
+    @test IS.get_id(generators2[1]) == IS.get_id(generators[1])
     @test !has_time_series(generators2[1])
 
     @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
@@ -155,9 +155,8 @@ end
 
     # Test debugging functions.
     component = first(components)
-    uuid = IS.get_uuid(component)
-    @test get_name(get_component(sys, uuid)) == get_name(component)
-    @test get_name(get_component(sys, string(uuid))) == get_name(component)
+    id = IS.get_id(component)
+    @test get_name(get_component(sys, id)) == get_name(component)
 end
 
 @testset "Test remove_component" begin
@@ -573,9 +572,9 @@ end
         time_series_in_memory = true,
         force_build = true,
     )
-    @test sys.data.time_series_manager.data_store isa IS.InMemoryTimeSeriesStorage
+    @test sys.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_manager.data_store isa IS.InMemoryTimeSeriesStorage
+    @test sys2.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
     @test IS.compare_values(sys, sys2)
     # Ensure that the storage references got updated correctly.
     for component in get_components(x -> has_time_series(x), Component, sys2)
@@ -589,11 +588,9 @@ end
         time_series_in_memory = false,
         force_build = true,
     )
-    @test sys.data.time_series_manager.data_store isa IS.Hdf5TimeSeriesStorage
+    @test sys.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_manager.data_store isa IS.Hdf5TimeSeriesStorage
-    @test sys.data.time_series_manager.data_store.file_path !=
-          sys2.data.time_series_manager.data_store.file_path
+    @test sys2.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
     @test IS.compare_values(sys, sys2)
     for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.internal.shared_system_references.time_series_manager ===

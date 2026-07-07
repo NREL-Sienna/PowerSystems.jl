@@ -22,6 +22,37 @@ const DATA_FORMAT_VERSION = "5.0.0"
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
     description::Union{Nothing, String}
+    # The System retains a UUID for identity (components/attributes are identified by
+    # integer id instead). Serialized with the system and reassigned when a system is
+    # deserialized with `assign_new_ids = true`.
+    uuid::Base.UUID
+end
+
+SystemMetadata(name, description) = SystemMetadata(name, description, IS.make_uuid())
+
+# Treat the System UUID like an identity: only compare it when compare_uuids is requested,
+# so that a system deserialized with assign_new_ids (which reassigns the UUID) still
+# compares equal to the original.
+function IS.compare_values(
+    match_fn::Union{Function, Nothing},
+    x::SystemMetadata,
+    y::SystemMetadata;
+    compare_uuids = false,
+    exclude = Set{Symbol}(),
+)
+    match = true
+    for name in fieldnames(SystemMetadata)
+        name in exclude && continue
+        name == :uuid && !compare_uuids && continue
+        if getfield(x, name) != getfield(y, name)
+            @error "SystemMetadata field=$name does not match" getfield(x, name) getfield(
+                y,
+                name,
+            )
+            match = false
+        end
+    end
+    return match
 end
 
 """
@@ -114,6 +145,7 @@ struct System <: IS.ComponentContainer
         time_series_directory = nothing,
         name = nothing,
         description = nothing,
+        uuid = IS.make_uuid(),
         kwargs...,
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
@@ -137,7 +169,7 @@ struct System <: IS.ComponentContainer
             Base.RefValue{Bool}(runchecks),
             units_settings,
             time_series_directory,
-            SystemMetadata(name, description),
+            SystemMetadata(name, description, uuid),
             internal,
         )
     end
@@ -299,7 +331,7 @@ end
 function _post_deserialize_handling(sys::System; runchecks = true, assign_new_ids = false)
     runchecks && check(sys)
     if assign_new_ids
-        IS.assign_new_id!(sys)
+        sys.metadata.uuid = IS.make_uuid()
         for component in get_components(Component, sys)
             IS.assign_new_id!(sys, component)
         end
@@ -420,6 +452,7 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
+        "uuid" => string(get_uuid(sys)),
         "frequency" => sys.frequency,
         "time_series_resolutions_milliseconds" => resolutions,
         "component_counts" => IS.get_component_counts_by_type(sys.data),
@@ -435,8 +468,6 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
 
     @info "Serialized System metadata to $filename"
 end
-
-IS.assign_new_id!(sys::System) = IS.assign_new_uuid_internal!(sys)
 
 """
 Return the internal of the system
@@ -631,6 +662,12 @@ set_name!(sys::System, name::AbstractString) = sys.metadata.name = name
 Get the name of the system.
 """
 get_name(sys::System) = sys.metadata.name
+
+"""
+Get the UUID of the system. Unlike components and supplemental attributes (which are
+identified by an integer id), the `System` retains a UUID for identity.
+"""
+get_uuid(sys::System) = sys.metadata.uuid
 
 """
 Set the description of the system.
@@ -1272,10 +1309,9 @@ function IS.get_components(
 end
 
 """
-Get the component by UUID.
+Get the component by integer id.
 """
-IS.get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
-IS.get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+IS.get_component(sys::System, id::Int) = IS.get_component(sys.data, id)
 
 """
 Change the UUID of a component.
@@ -1372,12 +1408,12 @@ const AGCContributingReservesMapping =
 Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, service::T) where {T <: Service}
-    uuid = IS.get_uuid(service)
+    uuid = IS.get_id(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Device, sys)
         if supports_services(device)
             for _service in get_services(device)
-                if IS.get_uuid(_service) == uuid
+                if IS.get_id(_service) == uuid
                     push!(devices.contributing_devices, device)
                     break
                 end
@@ -1391,12 +1427,12 @@ end
 Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, service::TransmissionInterface)
-    uuid = IS.get_uuid(service)
+    uuid = IS.get_id(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Branch, sys)
         if supports_services(device)
             for _service in get_services(device)
-                if IS.get_uuid(_service) == uuid
+                if IS.get_id(_service) == uuid
                     push!(devices.contributing_devices, device)
                     break
                 end
@@ -1468,13 +1504,13 @@ const TurbineConnectedDevicesMapping =
 Returns a TurbineConnectedDevices object.
 """
 function _get_connected_head_devices(sys::System, turbine::T) where {T <: HydroUnit}
-    uuid = IS.get_uuid(turbine)
+    uuid = IS.get_id(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
         # Only add reservoirs that have the turbine in their downstream_turbines field
         # That is, those reservoirs are a head reservoir to that turbine
         for _turbine in get_downstream_turbines(device)
-            if IS.get_uuid(_turbine) == uuid
+            if IS.get_id(_turbine) == uuid
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1487,13 +1523,13 @@ end
 Returns a TurbineConnectedDevices object.
 """
 function _get_connected_tail_devices(sys::System, turbine::T) where {T <: HydroUnit}
-    uuid = IS.get_uuid(turbine)
+    uuid = IS.get_id(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
         # Only add reservoirs that have the turbine in their upstream_turbines field
         # That is, those reservoirs are a tail reservoir to that turbine
         for _turbine in get_upstream_turbines(device)
-            if IS.get_uuid(_turbine) == uuid
+            if IS.get_id(_turbine) == uuid
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1555,7 +1591,7 @@ function is_component_in_aggregation_topology(
     aggregator::T,
 ) where {T <: AggregationTopology}
     accessor = get_aggregation_topology_accessor(T)
-    return IS.get_uuid(accessor(get_bus(comp))) == IS.get_uuid(aggregator)
+    return IS.get_id(accessor(get_bus(comp))) == IS.get_id(aggregator)
 end
 
 """
@@ -1599,7 +1635,7 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
     buses = Vector{ACBus}()
     for bus in IS.get_components(ACBus, data)
         _aggregator = accessor_func(bus)
-        if !isnothing(_aggregator) && IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
+        if !isnothing(_aggregator) && IS.get_id(_aggregator) == IS.get_id(aggregator)
             push!(buses, bus)
         end
     end
@@ -2086,12 +2122,12 @@ function get_associated_supplemental_attributes(
 end
 
 """
-Return the supplemental attribute with the given uuid.
+Return the supplemental attribute with the given integer id.
 
 Throws ArgumentError if the attribute is not stored.
 """
-function get_supplemental_attribute(sys::System, uuid::Base.UUID)
-    return IS.get_supplemental_attribute(sys.data, uuid)
+function get_supplemental_attribute(sys::System, id::Int)
+    return IS.get_supplemental_attribute(sys.data, id)
 end
 
 """
@@ -2406,6 +2442,9 @@ function from_dict(
     metadata = get(raw, "metadata", Dict())
     name = get(metadata, "name", nothing)
     description = get(metadata, "description", nothing)
+    uuid_data = get(metadata, "uuid", nothing)
+    # Older systems serialized before the System carried a UUID get a fresh one.
+    uuid = isnothing(uuid_data) ? IS.make_uuid() : IS.deserialize(Base.UUID, uuid_data)
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
     sys = System(
         data,
@@ -2413,6 +2452,7 @@ function from_dict(
         internal;
         name = name,
         description = description,
+        uuid = uuid,
         parsed_kwargs...,
     )
 
@@ -2457,7 +2497,7 @@ function deserialize_components!(sys::System, raw)
 
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
-    component_cache = Dict{Base.UUID, Component}()
+    component_cache = Dict{Int, Component}()
 
     # Add each type to this as we parse.
     parsed_types = Set()
@@ -2485,7 +2525,7 @@ function deserialize_components!(sys::System, raw)
                 handle_deserialization_special_cases!(component, type)
                 comp = deserialize(type, component, component_cache)
                 add_component!(sys, comp)
-                component_cache[IS.get_uuid(comp)] = comp
+                component_cache[IS.get_id(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
                 end
@@ -2545,14 +2585,14 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     # Build a mapping from UUID to component for quick lookup
     uuid_to_component = Dict{String, Dict}()
     for component in components
-        uuid_str = string(component["internal"]["uuid"])
+        uuid_str = string(component["internal"]["id"])
         uuid_to_component[uuid_str] = component
     end
 
     # Build parent mapping for union-find (each reservoir points to its upstream reservoir)
     parent = Dict{String, String}()
     for component in components
-        uuid_str = string(component["internal"]["uuid"])
+        uuid_str = string(component["internal"]["id"])
         upstream_uuids = component["upstream_reservoirs"]
 
         if isempty(upstream_uuids)
@@ -2575,7 +2615,7 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     # Group components by their chain root
     chains = Dict{String, Vector{Dict}}()
     for component in components
-        uuid_str = string(component["internal"]["uuid"])
+        uuid_str = string(component["internal"]["id"])
         root = find_root(uuid_str)
 
         if !haskey(chains, root)
@@ -2599,7 +2639,7 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
                     isempty(upstream_uuids) ||
                     all(
                         string(uuid) in
-                        [string(c["internal"]["uuid"]) for c in chain_ordered] for
+                        [string(c["internal"]["id"]) for c in chain_ordered] for
                         uuid in upstream_uuids
                     )
 
@@ -3040,8 +3080,8 @@ function IS.compare_values(
                     match = false
                 end
             else
-                uuid1 = IS.get_uuid(val1)
-                uuid2 = IS.get_uuid(val2)
+                uuid1 = IS.get_id(val1)
+                uuid2 = IS.get_id(val2)
                 if uuid1 != uuid2
                     @error "values do not match" T name uuid1 uuid2
                     match = false
@@ -3254,7 +3294,7 @@ end
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
     return InfrastructureSystemsInternal(;
-        uuid = deepcopy(internal.uuid),
+        id = internal.id,
         units_info = deepcopy(IS.get_units_info(internal)),
         shared_system_references = nothing,
         ext = deepcopy(internal.ext),
