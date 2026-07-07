@@ -238,9 +238,11 @@ end
     end
 end
 
-@testset "_unitful_getter resolves the _unitful companion" begin
-    @test PowerSystems._unitful_getter(get_rating) === get_rating_unitful
-    @test PowerSystems._unitful_getter(get_name) === nothing
+@testset "IS.unitful_variant resolves the _unitful companion" begin
+    @test IS.unitful_variant(get_rating) === get_rating_unitful
+    # No `_unitful` companion registered for `get_name`: falls back to the
+    # getter itself rather than erroring.
+    @test IS.unitful_variant(get_name) === get_name
 end
 
 @testset "_show_accessor_value returns unit-tagged values" begin

@@ -1,20 +1,15 @@
 # "smart" summary and REPL printing
 
-# The `_unitful` companion of a generated getter returns a unit-tagged value
-# (a `RelativeQuantity` printing as "1.0 DU"/"0.3 SU", or a `Unitful.Quantity`
-# printing as "30.0 MW") instead of a bare number, so display can show the
-# unit system explicitly without any extra formatting code here.
-function _unitful_getter(getter_func::Function)
-    name = Symbol(string(nameof(getter_func)), "_unitful")
-    return hasproperty(PowerSystems, name) ? getproperty(PowerSystems, name) : nothing
-end
-
 # Getters for unit-bearing fields declare their display-units choice via the
 # `IS.display_units_arg` trait (set by the struct-generator template, default
 # `SU` for converted fields unless overridden per field in the descriptor,
 # e.g. `rating` fields default to `DU`). Pass `units` to force a specific
 # display unit system (e.g. `MW`, `SU`, `DU`, `NU`) instead of resolving the
 # trait; an explicit request that fails is an error, not a silent fallback.
+# `IS.unitful_variant` resolves the getter's `_unitful` companion (a
+# `RelativeQuantity` printing as "1.0 DU"/"0.3 SU", or a `Unitful.Quantity`
+# printing as "30.0 MW") instead of a bare number, so display can show the
+# unit system explicitly without any extra formatting code here.
 function _show_accessor_value(getter_func::Function, ist::Component; units = nothing)
     trait_arg = IS.display_units_arg(getter_func, typeof(ist))
     # Fields without a units trait (e.g. `get_name`) aren't unit-convertible at
@@ -22,7 +17,7 @@ function _show_accessor_value(getter_func::Function, ist::Component; units = not
     # a getter that doesn't accept one.
     ismissing(trait_arg) && return getter_func(ist)
     arg = units === nothing ? trait_arg : units
-    unitful_func = something(_unitful_getter(getter_func), getter_func)
+    unitful_func = IS.unitful_variant(getter_func)
     try
         return unitful_func(ist, arg)
     catch err
@@ -176,30 +171,6 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     return
 end
 
-# Resolve a Vector-form `additional_columns` entry into a column accessor
-# function, mirroring IS's own field-value resolution (nested components and
-# component vectors are summarized; unit-converted fields go through
-# `_show_accessor_value` so they print with an explicit unit suffix).
-function _column_accessor(component_type::Type{<:Component}, column, units)
-    getter_name = Symbol("get_$column")
-    getter_func =
-        if hasproperty(PowerSystems, getter_name)
-            getproperty(PowerSystems, getter_name)
-        else
-            nothing
-        end
-    return function (component)
-        val = getproperty(component, column)
-        if val isa InfrastructureSystemsType ||
-           val isa Vector{<:InfrastructureSystemsComponent}
-            return summary(val)
-        elseif getter_func !== nothing
-            return _show_accessor_value(getter_func, component; units = units)
-        end
-        return val
-    end
-end
-
 """
 Show all components of the given type in a table.
 
@@ -253,55 +224,12 @@ function show_components(
     units = nothing,
     kwargs...,
 )
-    if additional_columns isa Dict
-        IS.show_components(
-            io,
-            sys.data.components,
-            component_type,
-            additional_columns;
-            kwargs...,
-        )
-        return
-    end
-
-    # Build the table ourselves (rather than delegating the Vector case to
-    # `IS.show_components`) because IS's Vector-column path always resolves
-    # each column's own `display_units_arg` trait and has no `units` kwarg to
-    # override it — there's no way to force every column into one unit system
-    # (e.g. `units = MW`) through the IS entry point.
-    if !isconcretetype(component_type)
-        error("$component_type must be a concrete type")
-    end
-    column_labels = ["name"]
-    has_available = :available in fieldnames(component_type)
-    has_available && push!(column_labels, "available")
-    for column in additional_columns
-        push!(column_labels, string(column))
-    end
-
-    comps = get_components(component_type, sys)
-    data = Array{Any, 2}(undef, length(comps), length(column_labels))
-    accessors =
-        [_column_accessor(component_type, column, units) for column in additional_columns]
-    for (i, component) in enumerate(comps)
-        data[i, 1] = get_name(component)
-        j = 2
-        if has_available
-            data[i, 2] = getproperty(component, :available)
-            j += 1
-        end
-        for accessor in accessors
-            data[i, j] = accessor(component)
-            j += 1
-        end
-    end
-
-    PrettyTables.pretty_table(
+    IS.show_components(
         io,
-        data;
-        column_labels = column_labels,
-        title = IS.strip_module_name(component_type),
-        alignment = :l,
+        sys.data.components,
+        component_type,
+        additional_columns;
+        units = units,
         kwargs...,
     )
     return
