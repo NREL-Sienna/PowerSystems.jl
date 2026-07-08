@@ -3880,6 +3880,20 @@
                     "default": "(min=1.0, max=1.0)"
                 },
                 {
+                    "name": "control_mode",
+                    "comment": "Switched-shunt control mode (PSS/E MODSW).",
+                    "data_type": "SwitchedAdmittanceControlMode",
+                    "null_value": "SwitchedAdmittanceControlMode.FIXED",
+                    "default": "SwitchedAdmittanceControlMode.FIXED"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG).",
+                    "data_type": "Int",
+                    "null_value": "0",
+                    "default": "0"
+                },
+                {
                     "name": "dynamic_injector",
                     "data_type": "Union{Nothing, DynamicInjection}",
                     "comment": "corresponding dynamic injection model for admittance",

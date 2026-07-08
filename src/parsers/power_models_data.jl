@@ -2200,7 +2200,27 @@ function read_vscline!(
     end
 end
 
+function get_switched_admittance_control_mode(modsw::Int)
+    if modsw == 0
+        return SwitchedAdmittanceControlMode.FIXED
+    elseif modsw == 1
+        return SwitchedAdmittanceControlMode.DISCRETE_VOLTAGE
+    elseif modsw == 2
+        return SwitchedAdmittanceControlMode.CONTINUOUS_VOLTAGE
+    elseif modsw == 3
+        return SwitchedAdmittanceControlMode.DISCRETE_REACTIVE_PLANT
+    elseif modsw == 4
+        return SwitchedAdmittanceControlMode.DISCRETE_REACTIVE_VSC
+    elseif modsw == 5
+        return SwitchedAdmittanceControlMode.DISCRETE_ADMITTANCE_REMOTE
+    else
+        return SwitchedAdmittanceControlMode.UNDEFINED
+    end
+end
+
 function make_switched_shunt(name::String, d::Dict, bus::ACBus)
+    modsw = get(d["ext"], "MODSW", 0)
+    regulated_bus_number = Int(get(d["ext"], "NREG", get(d["ext"], "SWREM", 0)))
     params = Dict(
         :name => name,
         :available => Bool(d["status"]),
@@ -2209,6 +2229,8 @@ function make_switched_shunt(name::String, d::Dict, bus::ACBus)
         :number_of_steps => d["step_number"],
         :Y_increase => d["y_increment"],
         :admittance_limits => d["admittance_limits"],
+        :control_mode => get_switched_admittance_control_mode(modsw),
+        :regulated_bus_number => regulated_bus_number,
         :ext => d["ext"],
     )
 
