@@ -535,10 +535,10 @@ end
         "psse_14_zero_impedance_branch_test_system";
         force_build = true,
     )
-    @test length(get_components(DiscreteControlledACBranch, sys)) == 6
+    @test length(get_components(DiscreteControlledACBranch, sys)) == 3
     @test length(
         get_components(x -> get_r(x) == get_x(x) == 0.0, DiscreteControlledACBranch, sys),
-    ) == 4
+    ) == 1
 end
 
 @testset "Test threshold setting for zero impedance 3WT winding" begin
@@ -598,4 +598,91 @@ end
     # Verify old format is NOT present
     @test !haskey(geo_json, "x")
     @test !haskey(geo_json, "y")
+end
+
+# Minimal branch dict for get_branch_type_psse unit tests.
+function _psse_branch_dict(;
+    br_r = 0.01, br_x = 0.1, transformer = true, tap = 1.0,
+    shift = 0.0, COD1 = 0,
+)
+    return Dict{String, Any}(
+        "br_r" => br_r,
+        "br_x" => br_x,
+        "transformer" => transformer,
+        "tap" => tap,
+        "shift" => shift,
+        "COD1" => COD1,
+    )
+end
+
+@testset "Branch-type tolerance normalizations" begin
+    # Non-transformer → Line
+    d = _psse_branch_dict(; transformer = false, tap = 0.0, shift = 0.0)
+    @test PowerSystems.get_branch_type_psse(d) == Line
+
+    # Exact-zero impedance, non-transformer → DiscreteControlledACBranch
+    d = _psse_branch_dict(; br_r = 0.0, br_x = 0.0, transformer = false, tap = 0.0)
+    @test PowerSystems.get_branch_type_psse(d) == DiscreteControlledACBranch
+
+    # Transformer with zero impedance must NOT become DiscreteControlledACBranch
+    d = _psse_branch_dict(; br_r = 0.0, br_x = 0.0, transformer = true, tap = 0.0)
+    @test PowerSystems.get_branch_type_psse(d) != DiscreteControlledACBranch
+
+    # Non-controllable (COD1=0) TapTransformer with tap well away from 1.0 → TapTransformer
+    d = _psse_branch_dict(; tap = 1.05, COD1 = 0)
+    @test PowerSystems.get_branch_type_psse(d) == TapTransformer
+
+    # Non-controllable TapTransformer with tap inside IDENTITY_TAP_TOL → Transformer2W
+    d = _psse_branch_dict(; tap = 1.0 + PowerSystems.IDENTITY_TAP_TOL / 2, COD1 = 0)
+    @test PowerSystems.get_branch_type_psse(d) == Transformer2W
+
+    # Controllable (COD1=1) TapTransformer whose current tap is near 1.0 must NOT be demoted
+    d = _psse_branch_dict(; tap = 1.0 + PowerSystems.IDENTITY_TAP_TOL / 2, COD1 = 1)
+    @test PowerSystems.get_branch_type_psse(d) == TapTransformer
+
+    # Tap == 0.0 (identity alias) with no control → Transformer2W
+    d = _psse_branch_dict(; tap = 0.0, COD1 = 0)
+    @test PowerSystems.get_branch_type_psse(d) == Transformer2W
+
+    # PST with shift well outside zero tolerance → PhaseShiftingTransformer
+    d = _psse_branch_dict(; tap = 1.0, shift = 0.5, COD1 = 3)
+    @test PowerSystems.get_branch_type_psse(d) == PhaseShiftingTransformer
+
+    # Non-alpha-controllable (COD1=0) PST with near-zero shift and identity tap → Transformer2W
+    d = _psse_branch_dict(;
+        tap = 1.0,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 0,
+    )
+    @test PowerSystems.get_branch_type_psse(d) == Transformer2W
+
+    # Non-alpha-controllable PST with near-zero shift but non-identity tap → TapTransformer
+    d = _psse_branch_dict(;
+        tap = 1.05,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 0,
+    )
+    @test PowerSystems.get_branch_type_psse(d) == TapTransformer
+
+    # Alpha-controllable (COD1=3) PST with near-zero shift must NOT be demoted
+    d = _psse_branch_dict(;
+        tap = 1.0,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 3,
+    )
+    @test PowerSystems.get_branch_type_psse(d) == PhaseShiftingTransformer
+
+    # Explicit UNDEFINED winding-group path
+    d = _psse_branch_dict(; tap = 1.0, shift = π / 12, COD1 = 0)
+    @test PowerSystems.get_branch_type_psse(d) == PhaseShiftingTransformer
+
+    # UNDEFINED group + near-zero shift + tap-controllable (COD1=1) + identity tap →
+    # must NOT be demoted to Transformer2W; the tap-control capability keeps it as
+    # TapTransformer.
+    d = _psse_branch_dict(;
+        tap = 1.0,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 1,
+    )
+    @test PowerSystems.get_branch_type_psse(d) == TapTransformer
 end

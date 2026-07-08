@@ -1205,9 +1205,23 @@ function get_branch_type_matpower(
 
     _add_vector_control_group(d, "shift", "group_number")
 
+    is_identity_tap = abs(tap - 1.0) <= IDENTITY_TAP_TOL || tap == 0.0
+    is_zero_shift = abs(shift) <= ZERO_ANGLE_SHIFT_TOL
+
     if d["group_number"] == WindingGroupNumber.UNDEFINED
+        # Degenerate PST: no recognisable shift → demote
+        if is_zero_shift
+            @warn "PhaseShiftingTransformer with near-zero shift ($(rad2deg(shift))°) normalised to $(is_identity_tap ? "Transformer2W" : "TapTransformer")" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return is_identity_tap ? Transformer2W : TapTransformer
+        end
         return PhaseShiftingTransformer
     elseif tap != 1.0
+        if is_identity_tap
+            @warn "TapTransformer with near-identity tap ($(tap)) normalised to Transformer2W" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return Transformer2W
+        end
         return TapTransformer
     else
         return Transformer2W
@@ -1217,12 +1231,13 @@ end
 function get_branch_type_psse(
     d::Dict,
 )
-    if d["br_r"] == 0.0 && d["br_x"] == 0.0
+    if !d["transformer"] && d["br_r"] == 0.0 && d["br_x"] == 0.0
         return DiscreteControlledACBranch
     end
 
     is_transformer = d["transformer"]
     tap = d["tap"]
+    shift = get(d, "shift", 0.0)
 
     if !is_transformer
         if (tap != 0.0) && (tap != 1.0)
@@ -1236,10 +1251,28 @@ function get_branch_type_psse(
 
     _add_vector_control_group(d, "shift", "group_number")
     is_tap_controllable, is_alpha_controllable = _determine_control_modes(d, "COD1", "tap")
+
+    is_identity_tap = abs(tap - 1.0) <= IDENTITY_TAP_TOL || tap == 0.0
+    is_zero_shift = abs(shift) <= ZERO_ANGLE_SHIFT_TOL
+
     if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
+        # Degenerate PST: controllable but shift is effectively zero → demote
+        if is_zero_shift && !is_alpha_controllable
+            demoted_type =
+                (is_identity_tap && !is_tap_controllable) ? Transformer2W : TapTransformer
+            @warn "PhaseShiftingTransformer with near-zero shift ($(rad2deg(shift))°) normalised to $demoted_type" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return demoted_type
+        end
         return PhaseShiftingTransformer
     elseif (is_tap_controllable || (tap != 1.0)) &&
            d["group_number"] != WindingGroupNumber.UNDEFINED
+        # Consider tap control capability when converting component
+        if is_identity_tap && !is_tap_controllable
+            @warn "TapTransformer with near-identity tap ($(tap)) normalised to Transformer2W" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return Transformer2W
+        end
         return TapTransformer
     elseif !is_tap_controllable && d["group_number"] != WindingGroupNumber.UNDEFINED
         return Transformer2W
@@ -1248,15 +1281,108 @@ function get_branch_type_psse(
     end
 end
 
+function _normalized_arc_key(f_bus::Int, t_bus::Int)
+    return f_bus <= t_bus ? (f_bus, t_bus) : (t_bus, f_bus)
+end
+
+function _is_near_zero_impedance_line(d::Dict)
+    return iszero(d["br_r"]) && abs(d["br_x"]) <= ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+end
+
+function _is_active_pti_branch(d::Dict)
+    return get(d, "br_status", 0) == 1
+end
+
+function _expected_discrete_state(d::Dict, bus_f::ACBus, bus_t::ACBus)
+    available =
+        _is_active_pti_branch(d) &&
+        get_bustype(bus_f) != ACBusTypes.ISOLATED &&
+        get_bustype(bus_t) != ACBusTypes.ISOLATED
+    status = if available
+        DiscreteControlledBranchStatus.CLOSED
+    else
+        DiscreteControlledBranchStatus.OPEN
+    end
+    return available, status
+end
+
+function _is_active_discrete_branch(br::DiscreteControlledACBranch)
+    return get_available(br) &&
+           get_branch_status(br) == DiscreteControlledBranchStatus.CLOSED
+end
+
+function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
+    overrides = Dict{Tuple{Int, Int}, DataType}()
+    if !haskey(data, "branch") || get(data, "source_type", "") != "pti"
+        return overrides
+    end
+
+    branch_types_by_arc = Dict{Tuple{Int, Int}, Set{DataType}}()
+    has_line_by_arc = Dict{Tuple{Int, Int}, Bool}()
+    line_near_zero_by_arc = Dict{Tuple{Int, Int}, Bool}()
+    for d in values(data["branch"])
+        _is_active_pti_branch(d) || continue
+        arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
+        branch_type = get_branch_type_psse(d)
+        push!(get!(branch_types_by_arc, arc_key, Set{DataType}()), branch_type)
+
+        if branch_type == Line
+            has_line_by_arc[arc_key] = true
+            is_near_zero = _is_near_zero_impedance_line(d)
+            line_near_zero_by_arc[arc_key] =
+                get(line_near_zero_by_arc, arc_key, true) && is_near_zero
+        end
+    end
+
+    for (arc_key, branch_types) in branch_types_by_arc
+        if length(branch_types) > 1 &&
+           all(t -> t in (Transformer2W, TapTransformer), branch_types)
+            overrides[arc_key] = TapTransformer
+            @warn "Normalizing mixed parallel transformer types on arc $(arc_key[1])-$(arc_key[2]) to TapTransformer for parser consistency." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+        elseif length(branch_types) > 1 &&
+               all(t -> t in (Line, DiscreteControlledACBranch), branch_types)
+            all_lines_near_zero =
+                get(has_line_by_arc, arc_key, false) &&
+                get(line_near_zero_by_arc, arc_key, false)
+            if all_lines_near_zero
+                overrides[arc_key] = DiscreteControlledACBranch
+                @warn "Normalizing mixed parallel $(join(branch_types, "/")) on near-zero-impedance arc $(arc_key[1])-$(arc_key[2]) to DiscreteControlledACBranch." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            else
+                @warn "Keeping mixed parallel $(join(branch_types, "/")) on arc $(arc_key[1])-$(arc_key[2]) because at least one Line has non-negligible impedance." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            end
+        end
+    end
+
+    return overrides
+end
+
+function _collect_existing_discrete_arc_keys(sys::System)
+    arc_keys = Set{Tuple{Int, Int}}()
+    for br in get_components(DiscreteControlledACBranch, sys)
+        _is_active_discrete_branch(br) || continue
+        arc = get_arc(br)
+        from_num = get_number(get_from(arc))
+        to_num = get_number(get_to(arc))
+        push!(arc_keys, _normalized_arc_key(from_num, to_num))
+    end
+    return arc_keys
+end
+
 function make_branch(
     name::String,
     d::Dict,
     bus_f::ACBus,
     bus_t::ACBus,
     source_type::String;
+    branch_type_override::Union{DataType, Nothing} = nothing,
     kwargs...,
 )
-    if source_type == "matpower"
+    if !isnothing(branch_type_override)
+        branch_type = branch_type_override
+    elseif source_type == "matpower"
         branch_type = get_branch_type_matpower(d)
     elseif source_type == "pti"
         branch_type = get_branch_type_psse(d)
@@ -1304,7 +1430,7 @@ function _make_switch_from_zero_impedance_line(
     else
         status_value = DiscreteControlledBranchStatus.OPEN
     end
-    @warn "Branch $name has zero impedance and available = $available_value; converting to a DiscreteControlledACBranch of type SWITCH with available = $available_value and branch_status = $status_value"
+    @warn "Branch $name has zero or near-zero impedance and available = $available_value; converting to a DiscreteControlledACBranch of type SWITCH with available = $available_value and branch_status = $status_value"
     return DiscreteControlledACBranch(;
         name = name,
         available = Bool(available_value),
@@ -1693,11 +1819,36 @@ function read_branch!(
     _get_name = get(kwargs, :branch_name_formatter, nothing)
     ict_instances = _impedance_correction_table_lookup(data)
     branch_pair_counts = Dict{Tuple{String, String}, Int}()
+    branch_type_overrides = _collect_parallel_branch_type_overrides(data)
+    existing_discrete_arc_keys = _collect_existing_discrete_arc_keys(sys)
 
     source_type = data["source_type"]
     for d in values(data["branch"])
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
+        arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
+        branch_type_override = get(branch_type_overrides, arc_key, nothing)
+        # The arc-level DiscreteControlledACBranch override was determined from active,
+        # near-zero Lines only.  Do not apply it to inactive or non-near-zero Lines:
+        # converting them would lose their impedance data and silently turn a real line
+        # into an ideal switch if it were ever re-activated.
+        if !isnothing(branch_type_override) &&
+           branch_type_override == DiscreteControlledACBranch &&
+           source_type == "pti" &&
+           !(_is_active_pti_branch(d) && _is_near_zero_impedance_line(d))
+            branch_type_override = nothing
+        end
+        if isnothing(branch_type_override) &&
+           source_type == "pti" &&
+           _is_active_pti_branch(d) &&
+           (arc_key in existing_discrete_arc_keys)
+            inferred_branch_type = get_branch_type_psse(d)
+            if inferred_branch_type == Line && _is_near_zero_impedance_line(d)
+                branch_type_override = DiscreteControlledACBranch
+                @warn "Normalizing near-zero-impedance Line on arc $(arc_key[1])-$(arc_key[2]) to DiscreteControlledACBranch because a parallel switch/breaker arc already exists." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            end
+        end
         name = if isnothing(_get_name)
             if source_type == "pti"
                 _get_pm_branch_name_with_counter!(d, bus_f, bus_t, branch_pair_counts)
@@ -1707,7 +1858,41 @@ function read_branch!(
         else
             _get_name(d, bus_f, bus_t)
         end
-        value = make_branch(name, d, bus_f, bus_t, source_type; kwargs...)
+
+        if branch_type_override == DiscreteControlledACBranch &&
+           has_component(DiscreteControlledACBranch, sys, name)
+            existing = get_component(DiscreteControlledACBranch, sys, name)
+            existing_arc = get_arc(existing)
+            existing_arc_key = _normalized_arc_key(
+                get_number(get_from(existing_arc)),
+                get_number(get_to(existing_arc)),
+            )
+            expected_available, expected_status = _expected_discrete_state(d, bus_f, bus_t)
+
+            if existing_arc_key == arc_key &&
+               get_available(existing) == expected_available &&
+               get_branch_status(existing) == expected_status
+                @warn "Skipping near-zero-impedance Line normalization on arc $(arc_key[1])-$(arc_key[2]) because equivalent DiscreteControlledACBranch '$name' already exists (same arc and operating state)." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+                continue
+            else
+                throw(
+                    DataFormatError(
+                        "Name collision for DiscreteControlledACBranch '$name' on arc $(arc_key[1])-$(arc_key[2]) with non-equivalent operating state. Existing available=$(get_available(existing)), status=$(get_branch_status(existing)); expected available=$expected_available, status=$expected_status.",
+                    ),
+                )
+            end
+        end
+
+        value = make_branch(
+            name,
+            d,
+            bus_f,
+            bus_t,
+            source_type;
+            branch_type_override = branch_type_override,
+            kwargs...,
+        )
 
         if !isnothing(value)
             add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)

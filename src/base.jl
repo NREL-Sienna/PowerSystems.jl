@@ -2325,6 +2325,7 @@ function check(sys::System)
     critical_components_check(sys)
     adequacy_check(sys)
     check_subsystems(sys)
+    check_parallel_branch_type_consistency(sys)
     return
 end
 

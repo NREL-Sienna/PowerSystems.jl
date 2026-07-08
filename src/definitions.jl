@@ -698,6 +698,14 @@ const PARSER_TAP_RATIO_CORRECTION_TOL = 1e-5
 
 const ZERO_IMPEDANCE_REACTANCE_THRESHOLD = 1e-4
 
+# Tap-ratio tolerance below which a TapTransformer
+# can be considered electrically equivalent to a Transformer2W
+const IDENTITY_TAP_TOL = 1e-4
+
+# Phase-angle shift tolerance (radians) below which a PhaseShiftingTransformer can be
+# considered to have no real shift and is equivalent to TapTransformer/Transformer2W.
+const ZERO_ANGLE_SHIFT_TOL = 1e-6
+
 # Absolute threshold below which a shunt admittance component (conductance or
 # susceptance) is treated as zero for capability detection, so negligible
 # admittances do not force their host bus to be kept during network reduction.
