@@ -337,3 +337,72 @@ end
     _, result = validate_serialization(sys)
     @test result
 end
+
+@testset "Test deserialization of a pre-5.x TwoTerminalVSCLine (Bool control flags)" begin
+    # PSY <= 5.11 stored VSC converter control as four `Bool` fields; 5.12 replaced them with the
+    # `*_control_*` enums. A system serialized under the old schema must still deserialize, mapping
+    # the Bool flags onto the enums instead of silently defaulting every converter to DC_VOLTAGE.
+    sys = PSB.build_system(PSB.PSITestSystems, "c_sys5"; add_forecasts = false)
+    arc = first(sort!(collect(get_components(Arc, sys)); by = a -> get_number(get_from(a))))
+    add_component!(
+        sys,
+        TwoTerminalVSCLine(;
+            name = "vsc_legacy",
+            available = true,
+            arc = arc,
+            active_power_flow = 0.1,
+            rating = 2.0,
+            active_power_limits_from = (min = -2.0, max = 2.0),
+            active_power_limits_to = (min = -2.0, max = 2.0),
+            g = 50.0,
+            dc_control_from = VSCDCControlModes.DC_VOLTAGE,
+            ac_control_from = VSCACControlModes.AC_REACTIVE_POWER,
+            dc_setpoint_from = 1.0,
+            dc_control_to = VSCDCControlModes.DC_POWER,
+            ac_control_to = VSCACControlModes.AC_REACTIVE_POWER,
+            dc_setpoint_to = 0.2,
+        ),
+    )
+    dir = mktempdir()
+    path = joinpath(dir, "sys.json")
+    to_json(sys, path)
+
+    # Rewrite the VSC component to the pre-5.x Bool schema: drop the enum/new fields, add the flags.
+    raw = JSON3.read(read(path, String), Dict{String, Any})
+    rewritten = Ref(0)
+    rewrite!(x) =
+        if x isa Dict
+            md = get(x, "__metadata__", nothing)
+            if md isa Dict && occursin("TwoTerminalVSCLine", string(get(md, "type", "")))
+                for k in (
+                    "dc_control_from", "ac_control_from", "dc_control_to", "ac_control_to",
+                    "dc_voltage_droop_from", "dc_voltage_droop_to", "rated_dc_voltage",
+                    "remote_bus_control_from", "remote_bus_control_to", "rmpct_from",
+                    "rmpct_to",
+                )
+                    delete!(x, k)
+                end
+                x["dc_voltage_control_from"] = true
+                x["ac_voltage_control_from"] = false
+                x["dc_voltage_control_to"] = false
+                x["ac_voltage_control_to"] = false
+                rewritten[] += 1
+            end
+            foreach(rewrite!, values(x))
+        elseif x isa AbstractVector
+            foreach(rewrite!, x)
+        end
+    rewrite!(raw)
+    @test rewritten[] == 1
+    open(io -> JSON3.write(io, raw), path, "w")
+
+    sys2 = System(path)
+    vsc = only(get_components(TwoTerminalVSCLine, sys2))
+    # Bool flags mapped onto the enums (true->DC_VOLTAGE/AC_VOLTAGE, false->DC_POWER/AC_REACTIVE_POWER)
+    @test get_dc_control_from(vsc) == VSCDCControlModes.DC_VOLTAGE
+    @test get_dc_control_to(vsc) == VSCDCControlModes.DC_POWER
+    @test get_ac_control_from(vsc) == VSCACControlModes.AC_REACTIVE_POWER
+    @test get_ac_control_to(vsc) == VSCACControlModes.AC_REACTIVE_POWER
+    # fields absent in the old schema fall back to their defaults
+    @test get_rated_dc_voltage(vsc) == 0.0
+end

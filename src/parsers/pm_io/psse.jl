@@ -1782,23 +1782,63 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
             sub_data["available"] = sub_data["br_status"] == 0 ? false : true
 
-            sub_data["dc_voltage_control_from"] = from_bus["TYPE"] == 1 ? true : false
-            sub_data["dc_voltage_control_to"] = to_bus["TYPE"] == 1 ? true : false
-            sub_data["ac_voltage_control_from"] = from_bus["MODE"] == 1 ? true : false
-            sub_data["ac_voltage_control_to"] = to_bus["MODE"] == 1 ? true : false
+            sub_data["dc_control_from"] =
+                if from_bus["TYPE"] == 1
+                    VSCDCControlModes.DC_VOLTAGE
+                else
+                    VSCDCControlModes.DC_POWER
+                end
+            sub_data["dc_control_to"] =
+                if to_bus["TYPE"] == 1
+                    VSCDCControlModes.DC_VOLTAGE
+                else
+                    VSCDCControlModes.DC_POWER
+                end
+            sub_data["ac_control_from"] =
+                if from_bus["MODE"] == 1
+                    VSCACControlModes.AC_VOLTAGE
+                else
+                    VSCACControlModes.AC_REACTIVE_POWER
+                end
+            sub_data["ac_control_to"] =
+                if to_bus["MODE"] == 1
+                    VSCACControlModes.AC_VOLTAGE
+                else
+                    VSCACControlModes.AC_REACTIVE_POWER
+                end
 
-            sub_data["dc_setpoint_from"] = from_bus["DCSET"]
-            sub_data["dc_setpoint_to"] = to_bus["DCSET"]
             sub_data["ac_setpoint_from"] = from_bus["ACSET"]
             sub_data["ac_setpoint_to"] = to_bus["ACSET"]
 
-            # ALOSS, MINLOSS in kW, and BLOSS in kW/A. Divide by a 1000 to transform into MW, and divide by baseMVA to normalize to per-unit.
+            # Store DCSET raw here (kV for a TYPE 1 / DC-voltage converter, MW for TYPE 2 / MW
+            # control, positive MW = injection into the AC network); r/pf/if below need the raw
+            # values, and the per-unit normalization happens once after them.
+            sub_data["dc_setpoint_from"] = from_bus["DCSET"]
+            sub_data["dc_setpoint_to"] = to_bus["DCSET"]
+            from_is_dc_voltage = sub_data["dc_control_from"] == VSCDCControlModes.DC_VOLTAGE
+            to_is_dc_voltage = sub_data["dc_control_to"] == VSCDCControlModes.DC_VOLTAGE
+            if from_is_dc_voltage && !to_is_dc_voltage
+                base_voltage = from_bus["DCSET"]
+                flow_setpoint = to_bus["DCSET"]
+            elseif !from_is_dc_voltage && to_is_dc_voltage
+                base_voltage = to_bus["DCSET"]
+                flow_setpoint = -from_bus["DCSET"]
+            else
+                error(
+                    "At least one converter in converter $(sub_data["name"]) must set a voltage control.",
+                )
+            end
+
+            # ALOSS and MINLOSS are constant losses in kW: /1000 -> MW, /baseMVA -> p.u.
+            # BLOSS is kW per DC ampere: P_loss[MW] = BLOSS * I_A / 1000 with
+            # I_A = I_pu * 1000 * baseMVA / base_kV, so P_loss[p.u.] = (BLOSS / base_kV) * I_pu
+            # (DC amps vs the loss model's AC p.u. current agree closely at |V_ac| ~ 1).
             sub_data["converter_loss_from"] = LinearCurve(
-                from_bus["BLOSS"] / (1000.0 * baseMVA),
+                from_bus["BLOSS"] / base_voltage,
                 (from_bus["ALOSS"] + from_bus["MINLOSS"]) / (1000.0 * baseMVA),
             )
             sub_data["converter_loss_to"] = LinearCurve(
-                to_bus["BLOSS"] / (1000.0 * baseMVA),
+                to_bus["BLOSS"] / base_voltage,
                 (to_bus["ALOSS"] + to_bus["MINLOSS"]) / (1000.0 * baseMVA),
             )
 
@@ -1832,37 +1872,38 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pminf"] = -sub_data["pmaxf"]
             sub_data["pmint"] = -sub_data["pmaxt"]
 
-            if sub_data["dc_voltage_control_from"] && !sub_data["dc_voltage_control_to"]
-                base_voltage = sub_data["dc_setpoint_from"]
-                flow_setpoint = sub_data["dc_setpoint_to"]
-            elseif !sub_data["dc_voltage_control_from"] && sub_data["dc_voltage_control_to"]
-                base_voltage = sub_data["dc_setpoint_to"]
-                flow_setpoint = -sub_data["dc_setpoint_from"]
-            else
-                error(
-                    "At least one converter in converter $(sub_data["name"]) must set a voltage control.",
-                )
-            end
             Zbase = base_voltage^2 / baseMVA
             sub_data["r"] = dcline["RDC"] / Zbase
             sub_data["pf"] = flow_setpoint / baseMVA
             sub_data["if"] = 1000.0 * (flow_setpoint / base_voltage)
 
-            sub_data["ext"] = Dict{String, Any}(
-                "REMOT_FROM" => from_bus["REMOT"],
-                "REMOT_TO" => to_bus["REMOT"],
-                "RMPCT_FROM" => from_bus["RMPCT"],
-                "RMPCT_TO" => to_bus["RMPCT"],
-                "ALOSS_FROM" => from_bus["ALOSS"],
-                "ALOSS_TO" => to_bus["ALOSS"],
-                "MINLOSS_FROM" => from_bus["MINLOSS"],
-                "MINLOSS_TO" => to_bus["MINLOSS"],
-                "TYPE_FROM" => from_bus["TYPE"],
-                "TYPE_TO" => to_bus["TYPE"],
-                "MODE_FROM" => from_bus["MODE"],
-                "MODE_TO" => to_bus["MODE"],
-                "RDC" => dcline["RDC"],
-            )
+            # DCSET is raw PSS/E units (kV for a dc-voltage-controlling converter, MW for a
+            # dc-power-controlling converter), not per-unit. Normalize each converter's own
+            # setpoint by its own quantity's base now that r/pf/if (which need the raw kV/MW
+            # values) have been computed, so downstream per-unit consumers aren't handed a
+            # setpoint off by ~base_voltage or ~baseMVA.
+            sub_data["dc_setpoint_from"] = if from_is_dc_voltage
+                1.0
+            else
+                sub_data["dc_setpoint_from"] / baseMVA
+            end
+            sub_data["dc_setpoint_to"] = if to_is_dc_voltage
+                1.0
+            else
+                sub_data["dc_setpoint_to"] / baseMVA
+            end
+
+            # VSC control state is stored in first-class fields, not `ext`: the DC base voltage
+            # (kV) used for the per-unit normalization above, and the AC-voltage-control remote
+            # regulation (regulated bus + Mvar participation) per terminal. TYPE/MODE/RDC and the
+            # loss split are reconstructable on export from dc_control/ac_control/g and the loss
+            # curve, so they are not carried.
+            sub_data["rated_dc_voltage"] = base_voltage
+            sub_data["remote_bus_control_from"] = from_bus["REMOT"]
+            sub_data["remote_bus_control_to"] = to_bus["REMOT"]
+            sub_data["rmpct_from"] = from_bus["RMPCT"]
+            sub_data["rmpct_to"] = to_bus["RMPCT"]
+            sub_data["ext"] = Dict{String, Any}()
 
             sub_data["source_id"] =
                 ["vsc dc", sub_data["f_bus"], sub_data["t_bus"], dcline["NAME"]]
@@ -1977,7 +2018,9 @@ function _build_switch_breaker_sub_data(
     end
 
     if pm_data["source_version"] == ("35")
-        sub_data["r"] = 0.0
+        # SWITCHING DEVICE records (v35 dedicated section) have no R field; legacy
+        # BRANCH records parsed as switches/breakers (CKT starts with '@' or '*') do.
+        sub_data["r"] = pop!(dict_object, "R", 0.0)
         sub_data["rating"] = pop!(dict_object, "RATE1")
         for i in 2:12
             rate_key = "RATE$i"
