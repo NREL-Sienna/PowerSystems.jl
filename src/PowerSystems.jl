@@ -325,6 +325,7 @@ export ImpedanceCorrectionData
 export WindingCategory
 export WindingGroupNumber
 export ImpedanceCorrectionTransformerControlMode
+export TransformerControlObjective
 
 export get_table_number
 export get_impedance_correction_curve
