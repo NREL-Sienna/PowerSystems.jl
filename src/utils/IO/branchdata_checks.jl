@@ -181,12 +181,11 @@ end
 
 const TYPICAL_XFRM_REACTANCE = (min = 0.05, max = 0.2) # per-unit
 
-# Pre-refactor descriptor `valid_range`s for `tap`/`α`/`base_voltage` on the old
-# TapTransformer/PhaseShiftingTransformer/Transformer3W structs. Those fields now
-# live on `TransformerWinding`, which is not a `Component` added to the system's
-# `Components` container, so IS's generic `validate_fields` (which only recurses
-# into `Union{Nothing, InfrastructureSystemsType}`-typed fields, not sub-structs
-# stored directly) never reaches them. Re-implemented here, on the
+# `valid_range`s for `tap`/`α`/`base_voltage`. These fields live on
+# `TransformerWinding`, which is not a `Component` added to the system's `Components`
+# container, so IS's generic `validate_fields` (which only recurses into
+# `Union{Nothing, InfrastructureSystemsType}`-typed fields, not sub-structs stored
+# directly) never reaches them. They are validated here, on the
 # `validate_component_with_system` path for the owning transformer(s).
 const WINDING_TAP_LIMITS = (min = 0.0, max = 2.0)
 const WINDING_ANGLE_LIMITS = (min = -1.571, max = 1.571)

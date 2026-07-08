@@ -31,10 +31,9 @@ Generic method to calculate the susceptance of [`ACTransmission`](@ref) devices.
 The tap ratio and phase-shift angle are **not** applied: this returns `1/x` from the
 stored series reactance alone. [`TwoWindingTransformer`](@ref) has a more specific
 override (below) that additionally divides by the winding tap ratio
-(`get_tap(get_winding(t))`), restoring the pre-refactor `TapTransformer`/
-`PhaseShiftingTransformer` convention. This is a deliberate asymmetry with
-[`get_series_admittance`](@ref), which never divides by tap for any type — the pre-refactor
-code only tap-divided the susceptance form. Consumers that need α applied must read
+(`get_tap(get_winding(t))`). This is a deliberate asymmetry with
+[`get_series_admittance`](@ref), which never divides by tap for any type: only the
+susceptance form is tap-divided. Consumers that need α applied must read
 `get_α(get_winding(t))` (2-winding) or the per-winding equivalents (3-winding) and apply
 it explicitly.
 """
@@ -45,12 +44,10 @@ get_series_susceptance(b::ACTransmission, units::IS.AbstractUnitSystem) =
     get_series_susceptance(t::TwoWindingTransformer, units::IS.AbstractUnitSystem)
 
 Series susceptance of a [`TwoWindingTransformer`](@ref): the generic `ACTransmission`
-value (`1/x`) divided by the winding tap ratio `get_tap(get_winding(t))`. This restores
-the pre-refactor `TapTransformer`/`PhaseShiftingTransformer` convention, under which
-`get_series_susceptance` divided by `tap`; a fixed-ratio transformer has `tap = 1.0`, so
-this is a no-op for it and matches the plain `ACTransmission` value. `get_series_admittance`
-does **not** apply this division for any type — the asymmetry is deliberate, mirroring the
-pre-refactor code, which only tap-divided the susceptance form.
+value (`1/x`) divided by the winding tap ratio `get_tap(get_winding(t))`. A fixed-ratio
+transformer has `tap = 1.0`, so this is a no-op for it and matches the plain
+`ACTransmission` value. `get_series_admittance` does **not** apply this division for any
+type — the asymmetry is deliberate: only the susceptance form is tap-divided.
 """
 get_series_susceptance(t::TwoWindingTransformer, units::IS.AbstractUnitSystem) =
     (1 / get_x(t, units)) / get_tap(get_winding(t))

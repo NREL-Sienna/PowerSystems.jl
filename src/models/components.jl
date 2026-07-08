@@ -250,8 +250,7 @@ set_value(::UnitsBearer, _, ::Nothing, ::Val) = nothing
 # Per-winding base powers for the three-winding transformer. The generator emits
 # the private `_get_base_power_XX` field accessors (`base_power_*` are
 # exclude_getter fields); these plain public accessors expose them. Winding-aware
-# unit conversion is handled through the per-winding `TransformerWinding` objects
-# (see Tasks 5-6).
+# unit conversion is handled through the per-winding `TransformerWinding` objects.
 get_base_power_12(t::ThreeWindingTransformer) = t.base_power_12
 get_base_power_23(t::ThreeWindingTransformer) = t.base_power_23
 get_base_power_13(t::ThreeWindingTransformer) = t.base_power_13

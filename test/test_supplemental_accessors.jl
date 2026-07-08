@@ -99,8 +99,7 @@
     end
 
     @testset "get_high_voltage and get_low_voltage for TwoWindingTransformer" begin
-        # Raw-constructor fixture (formerly a PSB-built `c_sys14` system; `TapTransformer`
-        # and `Transformer2W` are now both just `TwoWindingTransformer`).
+        # Raw-constructor fixture (not PSB-built).
         bus_hi = ACBus(nothing)
         bus_hi.name = "hi"
         bus_hi.number = 101

@@ -230,8 +230,7 @@ end
     @test get_tap(get_winding(t)) == 1.0
     @test get_series_susceptance(t, SU) ≈ 1 / 0.1
 
-    # tap != 1.0: get_series_susceptance divides by the winding tap (restoring the
-    # pre-refactor TapTransformer/PhaseShiftingTransformer convention), while
+    # tap != 1.0: get_series_susceptance divides by the winding tap, while
     # get_series_admittance remains tap-free.
     set_tap!(get_winding(t), 1.05)
     @test get_series_susceptance(t, SU) ≈ (1 / 0.1) / 1.05
