@@ -225,7 +225,18 @@ end
     set_x!(t, 0.1 * DU)
     # parent base_power (100.0 default) == system base, so DU == SU here
     @test get_series_admittance(t, SU) ≈ 1 / (0.01 + 0.1im)
+    # tap == 1.0 (default): get_series_susceptance's tap division is a no-op, matching
+    # the plain ACTransmission value.
+    @test get_tap(get_winding(t)) == 1.0
     @test get_series_susceptance(t, SU) ≈ 1 / 0.1
+
+    # tap != 1.0: get_series_susceptance divides by the winding tap (restoring the
+    # pre-refactor TapTransformer/PhaseShiftingTransformer convention), while
+    # get_series_admittance remains tap-free.
+    set_tap!(get_winding(t), 1.05)
+    @test get_series_susceptance(t, SU) ≈ (1 / 0.1) / 1.05
+    @test get_series_susceptance(t, SU) ≈ 9.523809523809524
+    @test get_series_admittance(t, SU) ≈ 1 / (0.01 + 0.1im)
 end
 
 @testset "hand-written winding setters propagate units_info" begin

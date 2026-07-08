@@ -29,13 +29,31 @@ _remove_aggregration_topology!(bus::ACBus, ::Area) = bus.area = nothing
 Generic method to calculate the susceptance of [`ACTransmission`](@ref) devices.
 
 The tap ratio and phase-shift angle are **not** applied: this returns `1/x` from the
-stored series reactance alone. This differs from the pre-refactor `TapTransformer`/
-`PhaseShiftingTransformer` behavior, which divided by `tap`. Consumers that need the
-tapped model must read `get_tap(get_winding(t))`/`get_α(get_winding(t))` (2-winding) or
-the per-winding equivalents (3-winding) and apply them explicitly.
+stored series reactance alone. [`TwoWindingTransformer`](@ref) has a more specific
+override (below) that additionally divides by the winding tap ratio
+(`get_tap(get_winding(t))`), restoring the pre-refactor `TapTransformer`/
+`PhaseShiftingTransformer` convention. This is a deliberate asymmetry with
+[`get_series_admittance`](@ref), which never divides by tap for any type — the pre-refactor
+code only tap-divided the susceptance form. Consumers that need α applied must read
+`get_α(get_winding(t))` (2-winding) or the per-winding equivalents (3-winding) and apply
+it explicitly.
 """
 get_series_susceptance(b::ACTransmission, units::IS.AbstractUnitSystem) =
     1 / get_x(b, units)
+
+"""
+    get_series_susceptance(t::TwoWindingTransformer, units::IS.AbstractUnitSystem)
+
+Series susceptance of a [`TwoWindingTransformer`](@ref): the generic `ACTransmission`
+value (`1/x`) divided by the winding tap ratio `get_tap(get_winding(t))`. This restores
+the pre-refactor `TapTransformer`/`PhaseShiftingTransformer` convention, under which
+`get_series_susceptance` divided by `tap`; a fixed-ratio transformer has `tap = 1.0`, so
+this is a no-op for it and matches the plain `ACTransmission` value. `get_series_admittance`
+does **not** apply this division for any type — the asymmetry is deliberate, mirroring the
+pre-refactor code, which only tap-divided the susceptance form.
+"""
+get_series_susceptance(t::TwoWindingTransformer, units::IS.AbstractUnitSystem) =
+    (1 / get_x(t, units)) / get_tap(get_winding(t))
 
 get_series_susceptance(::ThreeWindingTransformer, ::IS.AbstractUnitSystem) =
     throw(
@@ -122,11 +140,13 @@ end
 Calculate the series admittance of a [`ACTransmission`](@ref) as the inverse of the complex impedance.
 Returns 1/(R + jX) where R is resistance and X is reactance.
 
-The tap ratio and phase-shift angle are **not** applied: this returns the admittance from
-the stored series impedance alone. This differs from the pre-refactor `TapTransformer`/
-`PhaseShiftingTransformer` behavior, which divided by `tap`. Consumers that need the
-tapped model must read `get_tap(get_winding(t))`/`get_α(get_winding(t))` (2-winding) or
-the per-winding equivalents (3-winding) and apply them explicitly.
+The tap ratio and phase-shift angle are **not** applied for any [`ACTransmission`](@ref)
+type, including [`TwoWindingTransformer`](@ref) — unlike [`get_series_susceptance`](@ref),
+which has a [`TwoWindingTransformer`](@ref)-specific override that divides by tap. That
+asymmetry is deliberate, mirroring the pre-refactor `TapTransformer`/
+`PhaseShiftingTransformer` code, which only tap-divided the susceptance form. Consumers
+that need the tapped model must read `get_tap(get_winding(t))`/`get_α(get_winding(t))`
+(2-winding) or the per-winding equivalents (3-winding) and apply them explicitly.
 """
 get_series_admittance(b::ACTransmission, units::IS.AbstractUnitSystem) =
     1 / (get_r(b, units) + get_x(b, units) * 1im)
@@ -150,6 +170,15 @@ The tap ratio and phase-shift angle of each winding are **not** applied: these a
 star-leg admittances from the stored pairwise impedances alone. Consumers that need the
 tapped model must read `get_tap(w)`/`get_α(w)` for each winding `w` in
 `get_windings(t)` and apply them explicitly.
+
+!!! warning "Unfloored — not the value matrix consumers should use"
+    This convenience derivation is **unfloored**: a measured-zero star leg (a pairwise
+    impedance combination whose derived reactance is exactly, or near, zero) yields an
+    infinite admittance here. PowerNetworkMatrices derives the same star legs with
+    zero-reactance flooring applied (`STAR_LEG_REACTANCE_FLOOR = 1e-4`), so its values
+    differ from this function's for any such winding. Matrix-consistency consumers (Ybus,
+    PTDF/LODF, network reductions, ...) must use PowerNetworkMatrices' derived values —
+    never re-derive star-leg admittances here and expect them to agree.
 """
 function get_series_admittances(t::ThreeWindingTransformer, units::UnitArg)
     units isa IS.DeviceBaseUnit && throw(
