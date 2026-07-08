@@ -324,22 +324,26 @@ function _sys_with_line()
     return sys, line
 end
 
-# Local copy of the Transformer3W fixture from test_base_power.jl, reproduced
-# here so test_units.jl remains self-contained when run in isolation
-# (test_base_power.jl is included first alphabetically in the full suite, but
-# the name-filter run — `julia --project=test test/runtests.jl test_units` —
-# only includes test_units.jl itself).
+# Local copy of the ThreeWindingTransformer fixture from test_base_power.jl
+# (`_make_test_3w_xfmr` / `_test_t3w`), reproduced here so test_units.jl remains
+# self-contained when run in isolation (test_base_power.jl is included first
+# alphabetically in the full suite, but the name-filter run — `julia
+# --project=test test/runtests.jl test_units` — only includes test_units.jl
+# itself).
 function _local_make_test_3w_xfmr(; system_base = 100.0)
-    xfmr = Transformer3W(nothing)
+    xfmr = ThreeWindingTransformer(nothing)
     IS.set_base_value!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
     set_base_power_13!(xfmr, 25.0)
-    set_base_voltage_primary!(xfmr, 230.0)
-    set_base_voltage_secondary!(xfmr, 138.0)
-    set_base_voltage_tertiary!(xfmr, 69.0)
-    setproperty!(xfmr, :r_primary, 0.01)
-    setproperty!(xfmr, :r_secondary, 0.02)
+    set_base_power!(get_primary_winding(xfmr), 15.0)
+    set_base_power!(get_secondary_winding(xfmr), 20.0)
+    set_base_power!(get_tertiary_winding(xfmr), 25.0)
+    set_base_voltage!(get_primary_winding(xfmr), 230.0)
+    set_base_voltage!(get_secondary_winding(xfmr), 138.0)
+    set_base_voltage!(get_tertiary_winding(xfmr), 69.0)
+    set_r_12!(xfmr, 0.01 * DU)
+    set_r_23!(xfmr, 0.02 * DU)
     return xfmr
 end
 
@@ -368,9 +372,9 @@ end
     # rating_b is set to 0.9 in _sys_with_line so the non-nothing branch executes
     @inferred Union{Nothing, Float64} get_rating_b(line, SU)
 
-    # three-winding per-winding bases
-    @inferred get_r_primary(xfmr3w, SU)
-    @inferred get_r_secondary(xfmr3w, DU)
+    # three-winding pairwise bases (PairBase engine)
+    @inferred get_r_12(xfmr3w, SU)
+    @inferred get_r_23(xfmr3w, DU)
 
     # setter chain: returns the stored DU Float64
     @inferred set_active_power!(gen, 0.4 * SU)

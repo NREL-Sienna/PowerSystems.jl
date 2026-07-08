@@ -2692,9 +2692,9 @@ function check_attached_buses(
     sys::System,
     component::ThreeWindingTransformer,
 )
-    bus_primary = get_from(get_primary_star_arc(component))
-    bus_secondary = get_from(get_secondary_star_arc(component))
-    bus_tertiary = get_from(get_tertiary_star_arc(component))
+    bus_primary = get_from(get_arc(get_primary_winding(component)))
+    bus_secondary = get_from(get_arc(get_secondary_winding(component)))
+    bus_tertiary = get_from(get_arc(get_tertiary_winding(component)))
     star_bus = get_star_bus(component)
     throw_if_not_attached(bus_primary, sys)
     throw_if_not_attached(bus_secondary, sys)
@@ -2767,9 +2767,9 @@ function check_component_addition(
     component::ThreeWindingTransformer;
     kwargs...,
 )
-    bus_primary = get_from(get_primary_star_arc(component))
-    bus_secondary = get_from(get_secondary_star_arc(component))
-    bus_tertiary = get_from(get_tertiary_star_arc(component))
+    bus_primary = get_from(get_arc(get_primary_winding(component)))
+    bus_secondary = get_from(get_arc(get_secondary_winding(component)))
+    bus_tertiary = get_from(get_arc(get_tertiary_winding(component)))
     star_bus = get_star_bus(component)
     throw_if_not_attached(bus_primary, sys)
     throw_if_not_attached(bus_secondary, sys)
@@ -2876,22 +2876,18 @@ function _handle_branch_addition_common!(
 )
     # If this arc is already attached to the system, assign it to the 3W XFRM.
     # Else, add it to the system.
-    arcs = [
-        get_primary_star_arc(component),
-        get_secondary_star_arc(component),
-        get_tertiary_star_arc(component),
+    windings = [
+        get_primary_winding(component),
+        get_secondary_winding(component),
+        get_tertiary_winding(component),
     ]
-    set_arc_methods = [
-        set_primary_star_arc!,
-        set_secondary_star_arc!,
-        set_tertiary_star_arc!,
-    ]
-    for (ix, arc) in enumerate(arcs)
+    for winding in windings
+        arc = get_arc(winding)
         _arc = get_component(Arc, sys, get_name(arc))
         if isnothing(_arc)
             add_component!(sys, arc)
         else
-            set_arc_methods[ix](component, _arc)
+            set_arc!(winding, _arc)
         end
     end
     return

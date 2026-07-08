@@ -269,18 +269,22 @@ end
     add_component!(sys, bus_to)
     # rating_b has no descriptor valid_range, so only the PSY-level guard can
     # reject a negative secondary rating.
-    xfrm = Transformer2W(;
-        name = "negxfrm",
+    winding = TransformerWinding(;
+        arc = Arc(; from = bus_from, to = bus_to),
         available = true,
         active_power_flow = 0.0,
         reactive_power_flow = 0.0,
-        arc = Arc(; from = bus_from, to = bus_to),
+        rating = 1.0,
+        rating_b = -1.0,            # negative secondary rating
+        base_power = 100.0,
+    )
+    xfrm = TwoWindingTransformer(;
+        name = "negxfrm",
+        winding = winding,
         r = 0.01,
         x = 0.1,
-        primary_shunt = 0.0,
-        rating = 1.0,
+        magnetizing_shunt = 0.0,
         base_power = 100.0,
-        rating_b = -1.0,            # negative secondary rating
     )
     add_component!(sys, xfrm)
 
@@ -288,4 +292,68 @@ end
     Logging.with_logger(test_logger) do
         @test_throws IS.InvalidValue PowerSystems.check_component(sys, xfrm)
     end
+end
+
+function _winding_check_buses()
+    bus_from = ACBus(
+        1, "wcfrom", true, ACBusTypes.REF, 0, 1.0, (min = 0.9, max = 1.05), 230,
+        nothing, nothing,
+    )
+    bus_to = ACBus(
+        2, "wcto", true, ACBusTypes.PQ, 0, 1.0, (min = 0.9, max = 1.05), 138,
+        nothing, nothing,
+    )
+    return bus_from, bus_to
+end
+
+function _winding_check_xfrm(name, bus_from, bus_to)
+    xfrm = TwoWindingTransformer(nothing)
+    set_name!(xfrm, name)
+    w = get_winding(xfrm)
+    set_arc!(w, Arc(; from = bus_from, to = bus_to))
+    set_rating!(w, 1.0 * DU)
+    set_x!(xfrm, 0.1 * DU)
+    return xfrm
+end
+
+@testset "Winding tap outside [0, 2] throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _winding_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _winding_check_xfrm("badtap", bus_from, bus_to)
+    set_tap!(get_winding(xfrm), 2.5)   # outside [0, 2]
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badtap") === nothing
+end
+
+@testset "Winding α outside typical range warns but adds" begin
+    sys = System(100.0)
+    bus_from, bus_to = _winding_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _winding_check_xfrm("badalpha", bus_from, bus_to)
+    set_α!(get_winding(xfrm), 2.0)   # outside [-1.571, 1.571]
+
+    @test_logs (:warn, r"phase shift") match_mode = :any add_component!(sys, xfrm)
+    @test get_component(TwoWindingTransformer, sys, "badalpha") !== nothing
+end
+
+@testset "Winding base_voltage <= 0 throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _winding_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _winding_check_xfrm("badbasevoltage", bus_from, bus_to)
+    set_base_voltage!(get_winding(xfrm), -10.0)
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badbasevoltage") === nothing
 end

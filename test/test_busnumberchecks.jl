@@ -10,12 +10,17 @@ base_dir = dirname(dirname(pathof(PowerSystems)))
                   [1, 2, 3, 4, 10]
             @test sort(
                 collect(
-                    Set([b.arc.from.number for b in collect(get_components(Branch, sys))]),
+                    Set([
+                        get_arc(b).from.number for
+                        b in collect(get_components(Branch, sys))
+                    ]),
                 ),
             ) == [1, 2, 3, 4]
             @test sort(
                 collect(
-                    Set([b.arc.to.number for b in collect(get_components(Branch, sys))]),
+                    Set([
+                        get_arc(b).to.number for b in collect(get_components(Branch, sys))
+                    ]),
                 ),
             ) == [2, 3, 4, 10]
 

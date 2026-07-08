@@ -98,31 +98,38 @@
         @test_throws ErrorException get_base_voltage(line)
     end
 
-    @testset "get_high_voltage and get_low_voltage for TapTransformer" begin
-        sys = PSB.build_system(PSB.PSITestSystems, "c_sys14")
-        taps = collect(get_components(TapTransformer, sys))
-        @test !isempty(taps)
-        for t in taps
-            v_primary = get_base_voltage_primary(t)
-            v_secondary = get_base_voltage_secondary(t)
-            @test get_high_voltage(t) == max(v_primary, v_secondary)
-            @test get_low_voltage(t) == min(v_primary, v_secondary)
-            @test get_high_voltage(t) >= get_low_voltage(t)
-            @test get_high_voltage(t) isa Float64
-            @test get_low_voltage(t) isa Float64
-        end
-    end
+    @testset "get_high_voltage and get_low_voltage for TwoWindingTransformer" begin
+        # Raw-constructor fixture (formerly a PSB-built `c_sys14` system; `TapTransformer`
+        # and `Transformer2W` are now both just `TwoWindingTransformer`).
+        bus_hi = ACBus(nothing)
+        bus_hi.name = "hi"
+        bus_hi.number = 101
+        bus_hi.bustype = ACBusTypes.REF
+        bus_hi.base_voltage = 230.0
 
-    @testset "get_high_voltage and get_low_voltage for Transformer2W" begin
-        sys = PSB.build_system(PSB.PSITestSystems, "c_sys14")
-        t2ws = collect(get_components(Transformer2W, sys))
-        @test !isempty(t2ws)
-        for t in t2ws
-            v_primary = get_base_voltage_primary(t)
-            v_secondary = get_base_voltage_secondary(t)
-            @test get_high_voltage(t) == max(v_primary, v_secondary)
-            @test get_low_voltage(t) == min(v_primary, v_secondary)
-            @test get_high_voltage(t) >= get_low_voltage(t)
-        end
+        bus_lo = ACBus(nothing)
+        bus_lo.name = "lo"
+        bus_lo.number = 102
+        bus_lo.bustype = ACBusTypes.PQ
+        bus_lo.base_voltage = 138.0
+
+        winding = TransformerWinding(;
+            arc = Arc(; from = bus_hi, to = bus_lo),
+            base_voltage = 230.0,
+        )
+        t = TwoWindingTransformer(;
+            name = "t2w_hv",
+            winding = winding,
+            r = 0.01,
+            x = 0.1,
+            magnetizing_shunt = 0.0,
+            base_power = 100.0,
+            base_voltage_secondary = 138.0,
+        )
+        @test get_high_voltage(t) == 230.0
+        @test get_low_voltage(t) == 138.0
+        @test get_high_voltage(t) >= get_low_voltage(t)
+        @test get_high_voltage(t) isa Float64
+        @test get_low_voltage(t) isa Float64
     end
 end

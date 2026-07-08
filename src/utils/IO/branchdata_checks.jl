@@ -181,13 +181,63 @@ end
 
 const TYPICAL_XFRM_REACTANCE = (min = 0.05, max = 0.2) # per-unit
 
+# Pre-refactor descriptor `valid_range`s for `tap`/`α`/`base_voltage` on the old
+# TapTransformer/PhaseShiftingTransformer/Transformer3W structs. Those fields now
+# live on `TransformerWinding`, which is not a `Component` added to the system's
+# `Components` container, so IS's generic `validate_fields` (which only recurses
+# into `Union{Nothing, InfrastructureSystemsType}`-typed fields, not sub-structs
+# stored directly) never reaches them. Re-implemented here, on the
+# `validate_component_with_system` path for the owning transformer(s).
+const WINDING_TAP_LIMITS = (min = 0.0, max = 2.0)
+const WINDING_ANGLE_LIMITS = (min = -1.571, max = 1.571)
+
+function check_winding_values(winding::TransformerWinding, xfrm_name::AbstractString)
+    is_valid = true
+
+    tap = get_tap(winding)
+    if tap < WINDING_TAP_LIMITS.min || tap > WINDING_TAP_LIMITS.max
+        @error "Winding tap $(tap) for transformer $(xfrm_name) is outside the valid range $(WINDING_TAP_LIMITS)." _group =
+            IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+        is_valid = false
+    end
+
+    α = get_α(winding)
+    if α < WINDING_ANGLE_LIMITS.min || α > WINDING_ANGLE_LIMITS.max
+        @warn "Winding phase shift α $(α) (radians) for transformer $(xfrm_name) is outside the typical range $(WINDING_ANGLE_LIMITS)." _group =
+            IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+    end
+
+    base_voltage = get_base_voltage(winding)
+    if base_voltage !== nothing && base_voltage <= 0
+        @error "Winding base_voltage $(base_voltage) for transformer $(xfrm_name) must be positive." _group =
+            IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+        is_valid = false
+    end
+
+    return is_valid
+end
+
 function validate_component_with_system(
     xfrm::TwoWindingTransformer,
     sys::System,
 )
     is_valid_reactance = check_transformer_reactance(xfrm)
     is_valid_rating = check_rating_values(xfrm, _get_base_power(sys))
-    return is_valid_reactance && is_valid_rating
+    is_valid_winding = check_winding_values(get_winding(xfrm), get_name(xfrm))
+    return is_valid_reactance && is_valid_rating && is_valid_winding
+end
+
+function validate_component_with_system(
+    xfrm::ThreeWindingTransformer,
+    sys::System,
+)
+    is_valid = true
+    for winding in get_windings(xfrm)
+        if !check_winding_values(winding, get_name(xfrm))
+            is_valid = false
+        end
+    end
+    return is_valid
 end
 
 function check_rating_values(
@@ -203,9 +253,10 @@ function check_rating_values(
     closest_v_level = voltage_levels[closestV_ix[2]]
     closest_rate_range = MVA_LIMITS_TRANSFORMERS[closest_v_level]
     device_base_power = _get_base_power(xfrm)
-    # The rate is in device pu
+    # The rate is in device pu; rating fields are stored on the winding.
+    winding = get_winding(xfrm)
     for field in [:rating, :rating_b, :rating_c]
-        rating_value = getproperty(xfrm, field)
+        rating_value = getfield(winding, field)
         if isnothing(rating_value)
             @assert field ∈ [:rating_b, :rating_c]
             continue

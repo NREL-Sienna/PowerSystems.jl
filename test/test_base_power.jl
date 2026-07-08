@@ -183,211 +183,172 @@ end
     @test_throws Unitful.DimensionError set_base_power!(gen, 1.0 * kV)
 end
 
-@testset "Unit-aware set_base_power_{12,23,13}! on ThreeWindingTransformer" begin
-    system_base = 100.0
-    xfmr = Transformer3W(nothing)
-    # Stand in for system attachment: set base_value so SU dispatch can read the
-    # system base without building a full three-bus star-topology system.
-    IS.set_base_value!(xfmr, system_base)
-
-    for (setter, getter, internal) in (
-        (set_base_power_12!, get_base_power_12, PSY._get_base_power_12),
-        (set_base_power_23!, get_base_power_23, PSY._get_base_power_23),
-        (set_base_power_13!, get_base_power_13, PSY._get_base_power_13),
+@testset "Plain get/set for ThreeWindingTransformer base_power_{12,23,13}" begin
+    # base_power_12/23/13 are plain MVA `Float64` fields with no unit-conversion
+    # path: a three-winding transformer has three independent per-pair bases, so
+    # there is no single `base_power` to route through the MW/SU/DU-aware
+    # component-level wrapper (contrast with `get_base_power`/`set_base_power!`
+    # on ordinary components, and with the per-winding `base_power` accessed via
+    # `TransformerWinding`, which is likewise plain).
+    xfmr = ThreeWindingTransformer(nothing)
+    for (setter, getter) in (
+        (set_base_power_12!, get_base_power_12),
+        (set_base_power_23!, get_base_power_23),
+        (set_base_power_13!, get_base_power_13),
     )
-        setter(xfmr, 75.0);
-        @test internal(xfmr) ≈ 75.0
-        setter(xfmr, 80.0 * MW);
-        @test internal(xfmr) ≈ 80.0
-        setter(xfmr, 90.0 * MVA);
-        @test internal(xfmr) ≈ 90.0
-        setter(xfmr, 0.5 * SU);
-        @test internal(xfmr) ≈ 0.5 * system_base
-        setter(xfmr, 1.25 * SU);
-        @test getter(xfmr, SU) ≈ 1.25
-        @test_throws ErrorException setter(xfmr, 1.0 * DU)
-        @test_throws Unitful.DimensionError setter(xfmr, 1.0 * kV)
+        setter(xfmr, 75.0)
+        @test getter(xfmr) isa Float64
+        @test getter(xfmr) ≈ 75.0
+        setter(xfmr, 15.0)
+        @test getter(xfmr) ≈ 15.0
     end
 end
 
-@testset "Unit-aware get_base_power_{12,23,13} on ThreeWindingTransformer" begin
-    system_base = 100.0
-    device_base = 250.0
-    xfmr = Transformer3W(nothing)
-    IS.set_base_value!(xfmr, system_base)
-
-    for (setter, getter, getter_unitful) in (
-        (set_base_power_12!, get_base_power_12, get_base_power_12_unitful),
-        (set_base_power_23!, get_base_power_23, get_base_power_23_unitful),
-        (set_base_power_13!, get_base_power_13, get_base_power_13_unitful),
-    )
-        setter(xfmr, device_base)
-
-        # Bare getter returns Float64 in the requested unit.
-        @test getter(xfmr, NU) isa Float64
-        @test getter(xfmr, NU) ≈ device_base
-        @test getter(xfmr, MW) ≈ device_base
-        @test getter(xfmr, MVA) ≈ device_base
-        @test getter(xfmr, SU) isa Float64
-        @test getter(xfmr, SU) ≈ device_base / system_base
-        # DU is self-referential: per-winding base in its own device base is 1.
-        @test getter(xfmr, DU) == 1.0
-
-        # `_unitful` companions keep the wrapper.
-        bp_nu = getter_unitful(xfmr, NU)
-        @test bp_nu isa Unitful.Quantity
-        @test Unitful.unit(bp_nu) == Unitful.unit(1.0 * MVA)
-        @test Unitful.ustrip(bp_nu) ≈ device_base
-
-        @test getter_unitful(xfmr, MW) isa Unitful.Quantity
-        @test Unitful.ustrip(MW, getter_unitful(xfmr, MW)) ≈ device_base
-
-        bp_su = getter_unitful(xfmr, SU)
-        @test bp_su isa RelativeQuantity
-        @test ustrip(bp_su) ≈ device_base / system_base
-
-        bp_du = getter_unitful(xfmr, DU)
-        @test bp_du isa RelativeQuantity
-        @test ustrip(bp_du) == 1.0
-    end
-end
-
-# Detached Transformer3W with seeded base_value (system base 100), distinct
-# per-winding base powers (15/20/25 MVA), and base voltages (230/138/69 kV) —
-# deliberately all different so a wrong-base selection is caught.
+# Detached ThreeWindingTransformer with seeded base_value (system base 100), distinct
+# per-winding/per-pair base powers (15/20/25 MVA), and base voltages (230/138/69 kV) —
+# deliberately all different so a wrong-base selection is caught. Mirrors `_test_t3w`
+# in test_transformer_windings.jl.
 function _make_test_3w_xfmr(; system_base = 100.0)
-    xfmr = Transformer3W(nothing)
+    xfmr = ThreeWindingTransformer(nothing)
     IS.set_base_value!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
     set_base_power_13!(xfmr, 25.0)
-    set_base_voltage_primary!(xfmr, 230.0)
-    set_base_voltage_secondary!(xfmr, 138.0)
-    set_base_voltage_tertiary!(xfmr, 69.0)
+    set_base_power!(get_primary_winding(xfmr), 15.0)
+    set_base_power!(get_secondary_winding(xfmr), 20.0)
+    set_base_power!(get_tertiary_winding(xfmr), 25.0)
+    set_base_voltage!(get_primary_winding(xfmr), 230.0)
+    set_base_voltage!(get_secondary_winding(xfmr), 138.0)
+    set_base_voltage!(get_tertiary_winding(xfmr), 69.0)
     return xfmr
 end
 
-@testset "Unit-aware winding impedance/admittance getters on ThreeWindingTransformer" begin
-    # Regression guard for a silent units bug. The winding getters must honor the
-    # explicit `units` argument. Previously `get_r_primary(c, SU)` fell through to
-    # the generic `Branch` conversion, which divides by the component-wide
-    # `_get_base_power`; a 3W transformer has no single `base_power`, so that fell
-    # back to the *system* base, collapsing the SU multiplier to 1.0. The getter
-    # then returned device-base values for every unit system, and Ybus came out
-    # scaled by system_base/winding_base. The bug is invisible unless the winding
-    # base differs from the system base, so we set them deliberately apart — and
-    # use distinct per-winding bases to also catch a wrong-winding base selection.
+@testset "Pairwise impedance getters on ThreeWindingTransformer use the pair base" begin
+    # Regression guard for a silent units bug. The getters must honor the explicit
+    # `units` argument and resolve the CORRECT pair base. Each pairwise impedance
+    # has its own `base_power_XX` and is referenced to a specific winding's base
+    # voltage (12/13 -> primary, 23 -> secondary; see the descriptor docstring).
+    # Distinct per-pair bases catch a wrong-pair-base selection.
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
 
-    # (device-base field, getter, stored DU value, winding base power, base voltage)
+    # (setter, getter, stored DU value, pair base power, reference base voltage)
     cases = (
-        (:r_primary, get_r_primary, 0.01, 15.0, 230.0),
-        (:x_primary, get_x_primary, 0.10, 15.0, 230.0),
-        (:r_secondary, get_r_secondary, 0.02, 20.0, 138.0),
-        (:x_secondary, get_x_secondary, 0.20, 20.0, 138.0),
-        (:r_tertiary, get_r_tertiary, 0.03, 25.0, 69.0),
-        (:x_tertiary, get_x_tertiary, 0.30, 25.0, 69.0),
+        (set_r_12!, get_r_12, 0.01, 15.0, 230.0),
+        (set_x_12!, get_x_12, 0.10, 15.0, 230.0),
+        (set_r_23!, get_r_23, 0.02, 20.0, 138.0),
+        (set_x_23!, get_x_23, 0.20, 20.0, 138.0),
+        (set_r_13!, get_r_13, 0.03, 25.0, 230.0),
+        (set_x_13!, get_x_13, 0.30, 25.0, 230.0),
     )
-    for (field, getter, dev_val, base_power, base_voltage) in cases
-        setproperty!(xfmr, field, dev_val)  # seed device-base storage directly
+    for (setter, getter, dev_val, base_power, base_voltage) in cases
+        setter(xfmr, dev_val * DU)  # seed device-base storage directly
 
         @test getter(xfmr, DU) ≈ dev_val
-        # System base: Z_su = Z_du * (system_base / winding_base).
+        # System base: Z_su = Z_du * (system_base / pair_base).
         @test getter(xfmr, SU) ≈ dev_val * (system_base / base_power)
         # The units argument must change the result (the bug made SU == DU).
         @test getter(xfmr, SU) != getter(xfmr, DU)
-        # Natural units (Ω): Z_nu = Z_du * (V² / winding_base).
+        # Natural units (Ω): Z_nu = Z_du * (V² / pair_base).
         @test getter(xfmr, NU) ≈ dev_val * (base_voltage^2 / base_power)
         # Cross-unit invariant: the physical Ω value is independent of which unit
         # system it is read through (this fails outright if `units` is ignored).
         @test getter(xfmr, NU) ≈ getter(xfmr, SU) * (base_voltage^2 / system_base)
     end
 
-    # Shunt susceptance (primary winding, Siemens): Y_su = Y_du * (winding_base / system_base).
-    setproperty!(xfmr, :b, 0.05)
-    @test get_b(xfmr, DU) ≈ 0.05
-    @test get_b(xfmr, SU) ≈ 0.05 * (15.0 / system_base)
-    @test get_b(xfmr, SU) != get_b(xfmr, DU)
-    @test get_b(xfmr, NU) ≈ 0.05 * (15.0 / 230.0^2)
+    # Magnetizing shunt (device base on base_power_12, referenced to the primary
+    # winding's base voltage): Y_su = Y_du * (pair_base / system_base).
+    set_magnetizing_shunt!(xfmr, 0.05 * DU)
+    @test get_magnetizing_shunt(xfmr, DU) ≈ 0.05
+    @test get_magnetizing_shunt(xfmr, SU) ≈ 0.05 * (15.0 / system_base)
+    @test get_magnetizing_shunt(xfmr, SU) != get_magnetizing_shunt(xfmr, DU)
+    @test get_magnetizing_shunt(xfmr, NU) ≈ 0.05 * (15.0 / 230.0^2)
 end
 
-@testset "ThreeWindingTransformer Unitful-target getters use winding bases" begin
+@testset "ThreeWindingTransformer Unitful-target getters use the correct bases" begin
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
+    primary = get_primary_winding(xfmr)
 
-    setproperty!(xfmr, :rating_primary, 2.0)
-    # MW must scale by the winding base (15), not the system base (100)
-    @test get_rating_primary(xfmr, MW) ≈ 2.0 * 15.0
-    @test get_rating_primary(xfmr, MW) ≈ get_rating_primary(xfmr, NU)
-    @test get_rating_primary_unitful(xfmr, MW) isa Unitful.Quantity
+    set_rating!(primary, 2.0 * DU)
+    # MW must scale by the PRIMARY WINDING base (15), not the system base (100).
+    @test get_rating(primary, MW) ≈ 2.0 * 15.0
+    @test get_rating(primary, MW) ≈ get_rating(primary, NU)
+    @test get_rating_unitful(primary, MW) isa Unitful.Quantity
 
-    setproperty!(xfmr, :r_primary, 0.01)
-    # Ω target must agree with the NU path (and not crash looking for an arc)
-    @test get_r_primary(xfmr, OHMS) ≈ 0.01 * (230.0^2 / 15.0)
-    @test get_r_primary(xfmr, OHMS) ≈ get_r_primary(xfmr, NU)
+    set_r_12!(xfmr, 0.01 * DU)
+    # Ω target must agree with the NU path and use base_power_12 / primary voltage
+    # (and must not crash looking for a single transformer-wide arc/base voltage).
+    @test get_r_12(xfmr, OHMS) ≈ 0.01 * (230.0^2 / 15.0)
+    @test get_r_12(xfmr, OHMS) ≈ get_r_12(xfmr, NU)
 
-    setproperty!(xfmr, :b, 0.05)
-    @test get_b(xfmr, SIEMENS) ≈ 0.05 * (15.0 / 230.0^2)
-    @test get_b(xfmr, SIEMENS) ≈ get_b(xfmr, NU)
+    set_magnetizing_shunt!(xfmr, 0.05 * DU)
+    @test get_magnetizing_shunt(xfmr, SIEMENS) ≈ 0.05 * (15.0 / 230.0^2)
+    @test get_magnetizing_shunt(xfmr, SIEMENS) ≈ get_magnetizing_shunt(xfmr, NU)
 end
 
-@testset "ThreeWindingTransformer winding-aware setters round-trip" begin
+@testset "ThreeWindingTransformer/TransformerWinding setters round-trip against the correct base" begin
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
+    primary = get_primary_winding(xfmr)
+    secondary = get_secondary_winding(xfmr)
+    tertiary = get_tertiary_winding(xfmr)
 
-    # Power: MW input divides by the winding base, not the system base
-    set_rating_primary!(xfmr, 30.0 * MW)
-    @test xfmr.rating_primary ≈ 2.0
-    @test get_rating_primary(xfmr, MW) ≈ 30.0
-    # SU: 0.4 SU = 40 MW on the system base = 2.0 DU on the 20 MVA winding
-    set_rating_secondary!(xfmr, 0.4 * SU)
-    @test xfmr.rating_secondary ≈ 2.0
-    @test get_rating_secondary(xfmr, SU) ≈ 0.4
-    # DU input is identity
-    set_rating_tertiary!(xfmr, 1.5 * DU)
-    @test xfmr.rating_tertiary ≈ 1.5
+    # Power: MW input divides by the WINDING base, not the system base.
+    set_rating!(primary, 30.0 * MW)
+    @test get_rating(primary, DU) ≈ 2.0    # 30 MW / 15 MVA winding base
+    @test get_rating(primary, MW) ≈ 30.0
+    # SU: 0.4 SU = 40 MW on the system base = 2.0 DU on the 20 MVA winding.
+    set_rating!(secondary, 0.4 * SU)
+    @test get_rating(secondary, DU) ≈ 2.0
+    @test get_rating(secondary, SU) ≈ 0.4
+    # DU input is identity.
+    set_rating!(tertiary, 1.5 * DU)
+    @test get_rating(tertiary, DU) ≈ 1.5
 
-    # Impedance: Ω divides by the winding impedance base V²/S
+    # Impedance: Ω divides by the pair impedance base V²/S (pair 12: primary base
+    # voltage, base_power_12 = 15).
     z_base_12 = 230.0^2 / 15.0
     set_r_12!(xfmr, 0.01 * z_base_12 * OHMS)
-    @test xfmr.r_12 ≈ 0.01
+    @test get_r_12(xfmr, DU) ≈ 0.01
     @test get_r_12(xfmr, OHMS) ≈ 0.01 * z_base_12
-    # SU impedance: Z_du = Z_su * (winding_base / system_base)
+    # SU impedance on pair 23 (base_power_23 = 20): Z_du = Z_su * (pair_base / system_base).
     set_x_23!(xfmr, 0.6 * SU)
-    @test xfmr.x_23 ≈ 0.6 * (20.0 / system_base)
+    @test get_x_23(xfmr, DU) ≈ 0.6 * (20.0 / system_base)
     @test get_x_23(xfmr, SU) ≈ 0.6
 
-    # Admittance (primary winding): S divides by the winding base S/V²
+    # Admittance (magnetizing shunt, device base on base_power_12): S divides by
+    # the pair admittance base S/V².
     y_base_12 = 15.0 / 230.0^2
-    set_b!(xfmr, 2.0 * y_base_12 * SIEMENS)
-    @test xfmr.b ≈ 2.0
-    @test get_b(xfmr, SIEMENS) ≈ 2.0 * y_base_12
-    # SU admittance round-trip
-    set_g!(xfmr, 0.3 * SU)
-    @test xfmr.g ≈ 0.3 * (system_base / 15.0)
-    @test get_g(xfmr, SU) ≈ 0.3
+    set_magnetizing_shunt!(xfmr, 2.0 * y_base_12 * SIEMENS)
+    @test get_magnetizing_shunt(xfmr, DU) ≈ 2.0
+    @test get_magnetizing_shunt(xfmr, SIEMENS) ≈ 2.0 * y_base_12
+    # SU admittance round-trip.
+    set_magnetizing_shunt!(xfmr, 0.3 * SU)
+    @test get_magnetizing_shunt(xfmr, DU) ≈ 0.3 * (system_base / 15.0)
+    @test get_magnetizing_shunt(xfmr, SU) ≈ 0.3
 
-    # Bare floats remain rejected
-    @test_throws ArgumentError set_rating_primary!(xfmr, 1.0)
+    # Bare floats remain rejected.
+    @test_throws ArgumentError set_rating!(primary, 1.0)
 end
 
 @testset "TwoWindingTransformer Ω/S set→get round-trip uses one base voltage" begin
-    t2w = Transformer2W(nothing)  # base_power = 100.0
-    set_base_voltage_primary!(t2w, 230.0)
-    # Arc endpoint voltage deliberately different from the primary base voltage:
+    t2w = TwoWindingTransformer(nothing)  # base_power = 100.0
+    winding = get_winding(t2w)
+    set_base_voltage!(winding, 230.0)
+    # Arc endpoint voltage deliberately different from the winding's base voltage:
     # both conversion directions must resolve the same voltage or the round-trip
     # drifts by (230/115)².
     set_base_voltage!(get_arc(t2w).from, 115.0)
 
     set_x!(t2w, 105.8 * OHMS)
-    @test t2w.x ≈ 105.8 / (230.0^2 / 100.0)
+    @test get_x(t2w, DU) ≈ 105.8 / (230.0^2 / 100.0)
     @test get_x(t2w, OHMS) ≈ 105.8
 
     y_nat = 3.0 * (100.0 / 230.0^2)
-    set_primary_shunt!(t2w, y_nat * SIEMENS)
-    @test t2w.primary_shunt ≈ 3.0
-    @test get_primary_shunt(t2w, SIEMENS) ≈ y_nat
+    set_magnetizing_shunt!(t2w, y_nat * SIEMENS)
+    @test get_magnetizing_shunt(t2w, DU) ≈ 3.0
+    @test get_magnetizing_shunt(t2w, SIEMENS) ≈ y_nat
 end
 
 @testset "Test adding component with zero base power" begin

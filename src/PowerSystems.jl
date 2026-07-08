@@ -57,6 +57,10 @@ export get_max_active_power
 export get_max_reactive_power
 export get_high_voltage
 export get_low_voltage
+export get_series_susceptance
+export get_series_susceptances
+export get_series_admittance
+export get_series_admittances
 export Branch
 export StaticInjection
 export StaticInjectionSubsystem
@@ -74,12 +78,7 @@ export TwoTerminalGenericHVDCLine
 export TwoTerminalVSCLine
 export TwoTerminalLCCLine
 export TModelHVDCLine
-export Transformer2W
-export TapTransformer
-export PhaseShiftingTransformer
 export FACTSControlDevice
-export Transformer3W
-export PhaseShiftingTransformer3W
 export SynchronousCondenser
 
 # from IS function_data.jl
@@ -628,10 +627,12 @@ export UnitCategory,
     VoltageCategory, CurrentCategory
 export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
 export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
-# Hand-written unit-bearing companions for `exclude_getter` descriptor entries
-# (their bare-number counterparts get exported via generated/includes.jl).
+# Hand-written unit-bearing companion for the `exclude_getter` `base_power`
+# descriptor entry (its bare-number counterpart gets exported via
+# generated/includes.jl). `base_power_12`/`_23`/`_13` on `ThreeWindingTransformer`
+# are plain (non-unit-converting) fields with no `_unitful` companion; their bare
+# getters/setters are exported via generated/includes.jl.
 export get_base_power_unitful
-export get_base_power_12_unitful, get_base_power_23_unitful, get_base_power_13_unitful
 
 # ComponentSelector
 export ComponentSelector
@@ -649,6 +650,18 @@ export get_available_groups
 export MinMax
 export GeneratorCostModels
 export TransformerControlObjective
+export TransformerControl
+export get_objective
+export get_regulated_bus_number
+export get_limits
+export get_controlled_quantity_limits
+export get_number_of_tap_positions
+export TransformerWinding
+export get_control
+export set_control!
+export is_phase_shifting
+export get_windings
+export has_control
 export supports_services
 
 #################################################################################
@@ -883,6 +896,7 @@ include("units/conversions.jl")
 include("units/serialization.jl")
 
 include("definitions.jl")
+include("models/transformer_control.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
 include("models/injection.jl")
@@ -919,6 +933,11 @@ include("models/cost_functions/HydroReservoirCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
+
+# Hand-written methods on the generated `TransformerWinding` type; included after
+# generated/includes.jl so the type is defined.
+include("models/transformer_windings.jl")
+
 include("models/cost_functions/ReserveDemandCurve.jl")
 include("models/cost_functions/ReserveDemandTimeSeriesCurve.jl")
 

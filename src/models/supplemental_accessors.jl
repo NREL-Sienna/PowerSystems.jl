@@ -27,77 +27,23 @@ _remove_aggregration_topology!(bus::ACBus, ::Area) = bus.area = nothing
 
 """
 Generic method to calculate the susceptance of [`ACTransmission`](@ref) devices.
+
+The tap ratio and phase-shift angle are **not** applied: this returns `1/x` from the
+stored series reactance alone. This differs from the pre-refactor `TapTransformer`/
+`PhaseShiftingTransformer` behavior, which divided by `tap`. Consumers that need the
+tapped model must read `get_tap(get_winding(t))`/`get_α(get_winding(t))` (2-winding) or
+the per-winding equivalents (3-winding) and apply them explicitly.
 """
 get_series_susceptance(b::ACTransmission, units::IS.AbstractUnitSystem) =
     1 / get_x(b, units)
 
-"""
-Returns the series susceptance of a controllable 2-winding transformer (e.g., [`TapTransformer`](@ref), [`PhaseShiftingTransformer`](@ref)) following the convention
-in power systems to define susceptance as the inverse of the imaginary part of the impedance.
-In the case of phase shifter transformers the angle is ignored.
-
-See also: [`get_series_susceptances`](@ref) for 3-winding transformers
-"""
-function get_series_susceptance(
-    b::Union{TapTransformer, PhaseShiftingTransformer},
-    units::IS.AbstractUnitSystem,
-)
-    y = 1 / get_x(b, units)
-    y_a = y / (get_tap(b))
-    return y_a
-end
-
-function get_series_susceptance(
-    ::Union{PhaseShiftingTransformer3W, Transformer3W},
-    ::IS.AbstractUnitSystem,
-)
+get_series_susceptance(::ThreeWindingTransformer, ::IS.AbstractUnitSystem) =
     throw(
         ArgumentError(
-            "get_series_susceptance not implemented for multi-winding transformers, use get_series_susceptances instead",
+            "get_series_susceptance is not defined for three-winding transformers; " *
+            "use get_series_susceptances for three-winding transformers",
         ),
     )
-end
-
-"""
-Returns the series susceptance of a [`PhaseShiftingTransformer3W`](@ref) as three values
-(for each of the 3 branches) following the convention in power systems to define susceptance as the inverse of the imaginary part of the impedance.
-The phase shift angles are ignored in the susceptance calculation.
-
-See also: [`get_series_susceptance`](@ref) for 2-winding transformers and [`get_series_susceptances`](@ref get_series_susceptances(b::Transformer3W)) for [`Transformer3W`](@ref)
-"""
-function get_series_susceptances(
-    b::PhaseShiftingTransformer3W,
-    units::IS.AbstractUnitSystem,
-)
-    y1 = 1 / get_x_primary(b, units)
-    y2 = 1 / get_x_secondary(b, units)
-    y3 = 1 / get_x_tertiary(b, units)
-
-    y1_a = y1 / get_primary_turns_ratio(b)
-    y2_a = y2 / get_secondary_turns_ratio(b)
-    y3_a = y3 / get_tertiary_turns_ratio(b)
-
-    return (y1_a, y2_a, y3_a)
-end
-
-"""
-Returns the series susceptance of a [`Transformer3W`](@ref) as three values
-(for each of the 3 branches) following the convention
-in power systems to define susceptance as the inverse of the imaginary part of the impedance.
-
-See also: [`get_series_susceptance`](@ref) for 2-winding transformers and [`get_series_susceptances`](@ref get_series_susceptances(b::PhaseShiftingTransformer3W)) for [`PhaseShiftingTransformer3W`](@ref)
-"""
-function get_series_susceptances(b::Transformer3W, units::IS.AbstractUnitSystem)
-    Z1s = get_r_primary(b, units) + get_x_primary(b, units) * 1im
-    Z2s = get_r_secondary(b, units) + get_x_secondary(b, units) * 1im
-    Z3s = get_r_tertiary(b, units) + get_x_tertiary(b, units) * 1im
-
-    b1s = imag(1 / Z1s)
-    b2s = imag(1 / Z2s)
-    b3s = imag(1 / Z3s)
-
-    return (b1s, b2s, b3s)
-end
 
 """
     get_base_voltage(line::Union{Line, MonitoredLine})
@@ -152,10 +98,10 @@ end
     get_high_voltage(t::TwoWindingTransformer)
 
 Return the high-side base voltage (kV) of a [`TwoWindingTransformer`](@ref) as the
-maximum of `base_voltage_primary` and `base_voltage_secondary`.
+maximum of the primary winding's base voltage and `base_voltage_secondary`.
 """
 function get_high_voltage(t::TwoWindingTransformer)
-    v_primary = get_base_voltage_primary(t)
+    v_primary = get_base_voltage(get_winding(t))
     v_secondary = get_base_voltage_secondary(t)
     return max(v_primary, v_secondary)
 end
@@ -164,10 +110,10 @@ end
     get_low_voltage(t::TwoWindingTransformer)
 
 Return the low-side base voltage (kV) of a [`TwoWindingTransformer`](@ref) as the
-minimum of `base_voltage_primary` and `base_voltage_secondary`.
+minimum of the primary winding's base voltage and `base_voltage_secondary`.
 """
 function get_low_voltage(t::TwoWindingTransformer)
-    v_primary = get_base_voltage_primary(t)
+    v_primary = get_base_voltage(get_winding(t))
     v_secondary = get_base_voltage_secondary(t)
     return min(v_primary, v_secondary)
 end
@@ -175,89 +121,72 @@ end
 """
 Calculate the series admittance of a [`ACTransmission`](@ref) as the inverse of the complex impedance.
 Returns 1/(R + jX) where R is resistance and X is reactance.
+
+The tap ratio and phase-shift angle are **not** applied: this returns the admittance from
+the stored series impedance alone. This differs from the pre-refactor `TapTransformer`/
+`PhaseShiftingTransformer` behavior, which divided by `tap`. Consumers that need the
+tapped model must read `get_tap(get_winding(t))`/`get_α(get_winding(t))` (2-winding) or
+the per-winding equivalents (3-winding) and apply them explicitly.
 """
 get_series_admittance(b::ACTransmission, units::IS.AbstractUnitSystem) =
     1 / (get_r(b, units) + get_x(b, units) * 1im)
 
-"""
-Calculate the series admittance of a [`PhaseShiftingTransformer`](@ref) accounting for the tap ratio.
-For a phase-shifting transformer, the series admittance is calculated as the inverse of the
-complex impedance modified by the tap ratio, following the same pattern as the susceptance calculation:
-Y = 1/(tap * (R + jX)).
-The phase angle α affects the admittance matrix construction but not the series impedance magnitude directly.
-
-See also: [`get_series_susceptance`](@ref)
-"""
-function get_series_admittance(b::PhaseShiftingTransformer, units::IS.AbstractUnitSystem)
-    tap = get_tap(b)
-    Z_series = get_r(b, units) + get_x(b, units) * 1im
-    return 1 / (tap * Z_series)
-end
-
-"""
-Calculate the series admittance of a [`TapTransformer`](@ref) accounting for the tap ratio.
-For a tap transformer, the series admittance is calculated as the inverse of the
-complex impedance modified by the tap ratio, following the same pattern as the susceptance calculation:
-Y = 1/(tap * (R + jX)).
-
-See also: [`get_series_susceptance`](@ref)
-"""
-function get_series_admittance(b::TapTransformer, units::IS.AbstractUnitSystem)
-    tap = get_tap(b)
-    Z_series = get_r(b, units) + get_x(b, units) * 1im
-    return 1 / (tap * Z_series)
-end
-
-"""
-Calculate the series admittances of a [`PhaseShiftingTransformer3W`](@ref) as three complex values
-(for each of the 3 branches) accounting for turns ratios.
-For each winding, the series admittance is calculated following the same pattern as the susceptance calculation:
-Yi = 1/(turns_ratio_i * (Ri + jXi)).
-The phase shift angles affect the admittance matrix construction but not the series impedance magnitudes directly.
-
-See also: [`get_series_admittance`](@ref) for 2-winding transformers
-"""
-function get_series_admittances(b::PhaseShiftingTransformer3W, units::IS.AbstractUnitSystem)
-    # Get the turns ratios for each winding
-    tap_primary = get_primary_turns_ratio(b)
-    tap_secondary = get_secondary_turns_ratio(b)
-    tap_tertiary = get_tertiary_turns_ratio(b)
-
-    # Calculate series impedances
-    Z1 = get_r_primary(b, units) + get_x_primary(b, units) * 1im
-    Z2 = get_r_secondary(b, units) + get_x_secondary(b, units) * 1im
-    Z3 = get_r_tertiary(b, units) + get_x_tertiary(b, units) * 1im
-
-    # Calculate admittances accounting for turns ratios (consistent with susceptance pattern)
-    Y1 = 1 / (tap_primary * Z1)
-    Y2 = 1 / (tap_secondary * Z2)
-    Y3 = 1 / (tap_tertiary * Z3)
-
-    return (Y1, Y2, Y3)
-end
-
-function get_series_admittance(
-    ::Union{PhaseShiftingTransformer3W, Transformer3W},
-    ::IS.AbstractUnitSystem,
-)
+get_series_admittance(::ThreeWindingTransformer, ::IS.AbstractUnitSystem) =
     throw(
         ArgumentError(
-            "get_series_admittance not implemented for multi-winding transformers, use get_series_admittances instead.",
+            "get_series_admittance is not defined for three-winding transformers; " *
+            "use get_series_admittances for three-winding transformers",
         ),
     )
+
+"""
+    get_series_admittances(t::ThreeWindingTransformer, units)
+
+Star-leg series admittances `(primary, secondary, tertiary)`, derived on call from
+the stored pairwise impedances. Convenience only — repeated impedance math should go
+through PowerNetworkMatrices, which owns the cached star derivation.
+
+The tap ratio and phase-shift angle of each winding are **not** applied: these are the
+star-leg admittances from the stored pairwise impedances alone. Consumers that need the
+tapped model must read `get_tap(w)`/`get_α(w)` for each winding `w` in
+`get_windings(t)` and apply them explicitly.
+"""
+function get_series_admittances(t::ThreeWindingTransformer, units::UnitArg)
+    units isa IS.DeviceBaseUnit && throw(
+        ArgumentError(
+            "star-leg admittances are undefined for DU: the three pairwise impedances have different device bases; request SU or NU",
+        ),
+    )
+    z12 = get_r_12(t, units) + im * get_x_12(t, units)
+    z23 = get_r_23(t, units) + im * get_x_23(t, units)
+    z13 = get_r_13(t, units) + im * get_x_13(t, units)
+    z1 = (z12 + z13 - z23) / 2
+    z2 = (z12 + z23 - z13) / 2
+    z3 = (z13 + z23 - z12) / 2
+    return (1 / z1, 1 / z2, 1 / z3)
 end
+
+"""
+Returns the series susceptance of a [`ThreeWindingTransformer`](@ref) as three values
+(for each of the 3 star legs) following the convention in power systems to define
+susceptance as the inverse of the imaginary part of the impedance.
+
+See also: [`get_series_susceptance`](@ref) for 2-winding transformers.
+"""
+get_series_susceptances(t::ThreeWindingTransformer, units::UnitArg) =
+    map(imag, get_series_admittances(t, units))
 
 """
 Return the max active power for a device with explicit units specified.
 """
-function get_max_active_power(d::T, units) where {T <: StaticInjection}
+function get_max_active_power(d::T, units) where {T <: StaticInjection}   # units untyped deliberately: typed UnitArg is dispatch-ambiguous vs generated per-type methods (untyped units); fix belongs in the IS codegen template
     return get_active_power_limits(d, units).max
 end
 
 """
 Return the max reactive power for a device with explicit units specified.
 """
-function get_max_reactive_power(d::T, units) where {T <: StaticInjection}
+function get_max_reactive_power(d::T, units) where {T <: StaticInjection}   # units untyped deliberately: see get_max_active_power note above
     limits = get_reactive_power_limits(d, units)
     isnothing(limits) && return Inf
     return limits.max
@@ -267,7 +196,7 @@ end
 Return the max reactive power for a [`RenewableDispatch`](@ref) generator calculated as the `rating` * `power_factor` if
 the field `reactive_power_limits` is `nothing`
 """
-function get_max_reactive_power(d::RenewableDispatch, units)
+function get_max_reactive_power(d::RenewableDispatch, units::UnitArg)
     limits = get_reactive_power_limits(d, units)
     if isnothing(limits)
         return get_rating(d, units) * sin(acos(get_power_factor(d)))
@@ -304,7 +233,10 @@ get_power_factor(::T) where {T <: Device} =
 Calculate the maximum active power for a [`StandardLoad`](@ref) or [`InterruptibleStandardLoad`](@ref)
     with explicit units specified.
 """
-function get_max_active_power(d::Union{InterruptibleStandardLoad, StandardLoad}, units)
+function get_max_active_power(
+    d::Union{InterruptibleStandardLoad, StandardLoad},
+    units::UnitArg,
+)
     total_load = get_max_constant_active_power(d, units)
     total_load += get_max_impedance_active_power(d, units)
     total_load += get_max_current_active_power(d, units)
@@ -321,82 +253,28 @@ end
 """
 Get the flow limits from source [`Area`](@ref) to destination [`Area`](@ref) for an [`AreaInterchange`](@ref), in the specified `units`.
 """
-function get_from_to_flow_limit(a::AreaInterchange, units)
+function get_from_to_flow_limit(a::AreaInterchange, units::UnitArg)
     return get_flow_limits(a, units).from_to
 end
 """
 Get the flow limits from destination [`Area`](@ref) to source [`Area`](@ref) for an [`AreaInterchange`](@ref), in the specified `units`.
 """
-function get_to_from_flow_limit(a::AreaInterchange, units)
+function get_to_from_flow_limit(a::AreaInterchange, units::UnitArg)
     return get_flow_limits(a, units).to_from
 end
 
 """
 Get the minimum active power flow limit for a [`TransmissionInterface`](@ref), in the specified `units`.
 """
-function get_min_active_power_flow_limit(tx::TransmissionInterface, units)
+function get_min_active_power_flow_limit(tx::TransmissionInterface, units::UnitArg)
     return get_active_power_flow_limits(tx, units).min
 end
 
 """
 Get the maximum active power flow limit for a [`TransmissionInterface`](@ref), in the specified `units`.
 """
-function get_max_active_power_flow_limit(tx::TransmissionInterface, units)
+function get_max_active_power_flow_limit(tx::TransmissionInterface, units::UnitArg)
     return get_active_power_flow_limits(tx, units).max
-end
-
-"""
-Calculate the phase shift angle α for a [`TapTransformer`](@ref) or [`Transformer2W`](@ref) based on its winding group number.
-Returns the angle in radians, calculated as -(π/6) * `winding_group_number`.
-If the `winding_group_number` is `WindingGroupNumber.UNDEFINED`, returns 0.0 and issues a warning.
-"""
-function get_α(t::Union{TapTransformer, Transformer2W})
-    if get_winding_group_number(t) == WindingGroupNumber.UNDEFINED
-        @debug "winding group number for $(summary(t)) is undefined, assuming zero phase shift"
-        return 0.0
-    else
-        return get_winding_group_number(t).value * -(π / 6)
-    end
-end
-
-"""
-Calculate the phase shift angle α for the primary winding of a [`Transformer3W`](@ref)
-based on its primary winding group number. Returns the angle in radians, calculated
-as -(π/6) * `primary_group_number`. If `primary_group_number` is `WindingGroupNumber.UNDEFINED`, returns 0.0 and issues a warning.
-"""
-function get_α_primary(t::Transformer3W)
-    if get_primary_group_number(t) == WindingGroupNumber.UNDEFINED
-        @warn "primary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
-        return 0.0
-    else
-        return get_primary_group_number(t).value * -(π / 6)
-    end
-end
-"""
-Calculate the phase shift angle α for the secondary winding of a [`Transformer3W`](@ref)
-based on its secondary winding group number. Returns the angle in radians, calculated
-as -(π/6) * `secondary_group_number`. If `secondary_group_number` is `WindingGroupNumber.UNDEFINED`, returns 0.0 and issues a warning.
-"""
-function get_α_secondary(t::Transformer3W)
-    if get_secondary_group_number(t) == WindingGroupNumber.UNDEFINED
-        @warn "secondary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
-        return 0.0
-    else
-        return get_secondary_group_number(t).value * -(π / 6)
-    end
-end
-"""
-Calculate the phase shift angle α for the tertiary winding of a [`Transformer3W`](@ref)
-based on its tertiary winding group number. Returns the angle in radians, calculated
-as -(π/6) * `tertiary_group_number`. If `tertiary_group_number` is `WindingGroupNumber.UNDEFINED`, returns 0.0 and issues a warning.
-"""
-function get_α_tertiary(t::Transformer3W)
-    if get_tertiary_group_number(t) == WindingGroupNumber.UNDEFINED
-        @warn "tertiary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
-        return 0.0
-    else
-        return get_tertiary_group_number(t).value * -(π / 6)
-    end
 end
 
 function supports_services(::AreaInterchange)
@@ -479,6 +357,17 @@ function set_units_setting!(
     IS.set_base_value!(value, settings)
     for component in _get_components(value)
         IS.set_base_value!(component, settings)
+    end
+    return
+end
+
+function set_units_setting!(
+    t::Union{TwoWindingTransformer, ThreeWindingTransformer},
+    settings::Union{SystemUnitsSettings, Nothing},
+)
+    set_units_info!(get_internal(t), settings)
+    for w in get_windings(t)
+        w.units_info = settings
     end
     return
 end

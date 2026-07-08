@@ -138,7 +138,7 @@ function convert_units end
 # --- From DU ---
 # `Real`/`ComplexF64` are split so a Unitful/RelativeQuantity value (both <: Number)
 # falls through to the marker/value guards instead. ComplexF64 mirrors serve the
-# complex admittance getters (`primary_shunt`).
+# complex admittance getters (`magnetizing_shunt`).
 
 function convert_units(c, value::Real, cat::UnitCategory, ::DeviceBaseUnit, units::Units)
     natural = value * base_value(c, cat) * natural_unit(cat)
