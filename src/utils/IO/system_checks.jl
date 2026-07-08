@@ -127,3 +127,52 @@ function total_capacity_rating(sys::System)
     @debug "Total System capacity: $total" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     return total
 end
+
+"""
+    check_parallel_branch_type_consistency(sys::System) -> Int
+
+Scan all two-terminal AC branches for arcs that carry multiple branches of **different**
+PSY types (e.g. a `Transformer2W` in parallel with a `TapTransformer`). Such mixed-type parallel
+groups can introduce issues in the network reduction.
+
+# Example
+```julia
+n = check_parallel_branch_type_consistency(sys)
+n == 0 || @warn "System has \$n arcs with mixed-type parallel branches"
+```
+"""
+function check_parallel_branch_type_consistency(sys::System)
+    # Arc key → [(branch_name, type_string)]
+    arc_entries = Dict{Tuple{Int, Int}, Vector{Tuple{String, String}}}()
+    for branch in get_components(ACBranch, sys)
+        hasmethod(get_arc, Tuple{typeof(branch)}) || continue
+        arc = get_arc(branch)
+        from_num = get_number(get_from(arc))
+        to_num = get_number(get_to(arc))
+        # Normalise orientation so (A,B) and (B,A) resolve to the same key
+        key = from_num <= to_num ? (from_num, to_num) : (to_num, from_num)
+        push!(
+            get!(arc_entries, key, Tuple{String, String}[]),
+            (get_name(branch), string(typeof(branch))),
+        )
+    end
+
+    n_mixed = 0
+    for (arc_key, entries) in arc_entries
+        length(entries) < 2 && continue
+        types = unique(e[2] for e in entries)
+        length(types) == 1 && continue
+        n_mixed += 1
+        names = join((e[1] for e in entries), ", ")
+        type_str = join(types, ", ")
+        @warn "Mixed-type parallel branches on arc $(arc_key[1])-$(arc_key[2]): [$names] " *
+              "with types [$type_str]. This may indicate incomplete or incorrect source data." _group =
+            IS.LOG_GROUP_SYSTEM_CHECKS maxlog = PS_MAX_LOG
+    end
+    if n_mixed > 0
+        @warn "Found $n_mixed arc(s) with mixed-type parallel branches. " *
+              "Consider re-parsing with corrected source data or using `get_components` to inspect." _group =
+            IS.LOG_GROUP_SYSTEM_CHECKS
+    end
+    return n_mixed
+end

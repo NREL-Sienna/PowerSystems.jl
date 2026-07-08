@@ -617,6 +617,7 @@ export check
 export check_component
 export check_components
 export check_ac_transmission_rate_values
+export check_parallel_branch_type_consistency
 
 # From IS logging.jl, generate_struct_files.jl
 export configure_logging

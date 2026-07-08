@@ -123,22 +123,28 @@ function calculate_gen_rating(
     return rating * base_conversion
 end
 
+"""Return `(up, down)` ramp limits scaled into the device per-unit base by `base_conversion = sys_mbase / mbase`. Returns `nothing` when no ramp data is available."""
 function calculate_ramp_limit(
     d::Dict{String, Any},
     gen_name::Union{SubString{String}, String},
+    base_conversion::Float64,
 )
     if haskey(d, "ramp_agc")
-        return (up = d["ramp_agc"], down = d["ramp_agc"])
+        ramp = d["ramp_agc"] * base_conversion
+        return (up = ramp, down = ramp)
     end
     if haskey(d, "ramp_10")
-        return (up = d["ramp_10"], down = d["ramp_10"])
+        ramp = d["ramp_10"] * base_conversion
+        return (up = ramp, down = ramp)
     end
     if haskey(d, "ramp_30")
-        return (up = d["ramp_30"], down = d["ramp_30"])
+        ramp = d["ramp_30"] * base_conversion
+        return (up = ramp, down = ramp)
     end
     if abs(d["pmax"]) > 0.0
         @debug "No ramp limits found for generator $(gen_name). Using pmax as ramp limit."
-        return (up = abs(d["pmax"]), down = abs(d["pmax"]))
+        ramp = abs(d["pmax"]) * base_conversion
+        return (up = ramp, down = ramp)
     end
     @warn "Not enough information to determine ramp limit for generator $(gen_name). Returning nothing"
     return nothing
