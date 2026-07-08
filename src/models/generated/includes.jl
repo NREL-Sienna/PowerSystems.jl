@@ -588,6 +588,7 @@ export get_e_lim
 export get_efficiency
 export get_electric_load
 export get_eq_p
+export get_evaporative_loss
 export get_ext
 export get_f
 export get_fdbd_pnts
@@ -725,6 +726,7 @@ export get_peak_reactive_power
 export get_peak_reactive_power_unitful
 export get_phase_angle_limits
 export get_power_factor
+export get_power_factor_weighting_fraction
 export get_power_factor_weighting_fraction_from
 export get_power_factor_weighting_fraction_to
 export get_power_gate_openings
@@ -821,6 +823,7 @@ export get_requirement_unitful
 export get_reserves
 export get_rf
 export get_rg
+export get_rmpct
 export get_rmpct_from
 export get_rmpct_to
 export get_rrpwr
@@ -830,6 +833,7 @@ export get_scheduled_dc_voltage
 export get_secondary_group_number
 export get_secondary_star_arc
 export get_secondary_turns_ratio
+export get_self_discharge
 export get_services
 export get_speed_error_signal
 export get_spillage_limits
@@ -1350,6 +1354,7 @@ export set_e_lim!
 export set_efficiency!
 export set_electric_load!
 export set_eq_p!
+export set_evaporative_loss!
 export set_ext!
 export set_f!
 export set_fdbd_pnts!
@@ -1469,6 +1474,7 @@ export set_peak_active_power!
 export set_peak_reactive_power!
 export set_phase_angle_limits!
 export set_power_factor!
+export set_power_factor_weighting_fraction!
 export set_power_factor_weighting_fraction_from!
 export set_power_factor_weighting_fraction_to!
 export set_power_gate_openings!
@@ -1536,6 +1542,7 @@ export set_requirement!
 export set_reserves!
 export set_rf!
 export set_rg!
+export set_rmpct!
 export set_rmpct_from!
 export set_rmpct_to!
 export set_rrpwr!
@@ -1545,6 +1552,7 @@ export set_scheduled_dc_voltage!
 export set_secondary_group_number!
 export set_secondary_star_arc!
 export set_secondary_turns_ratio!
+export set_self_discharge!
 export set_services!
 export set_speed_error_signal!
 export set_spillage_limits!

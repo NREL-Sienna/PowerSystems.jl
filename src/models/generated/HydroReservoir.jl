@@ -16,6 +16,7 @@ This file is auto-generated. Do not edit.
         level_targets::Union{Nothing, Float64}
         intake_elevation::Float64
         head_to_volume_factor::FunctionData
+        evaporative_loss::Float64
         upstream_turbines::Vector{HydroUnit}
         downstream_turbines::Vector{HydroUnit}
         upstream_reservoirs::Vector{Device}
@@ -39,6 +40,7 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 - `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
 - `intake_elevation::Float64`: Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.
 - `head_to_volume_factor::FunctionData`: Head to volume relationship for the reservoir.
+- `evaporative_loss::Float64`: (default: `0.0`) Standing loss from evaporation as a fraction of the reservoir's stored volume/energy lost per hour (pu/hr), validation range: `(0, nothing)`
 - `upstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir.
 - `downstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units.
 - `upstream_reservoirs::Vector{Device}`: (default: `Device[]`) Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs.
@@ -68,6 +70,8 @@ mutable struct HydroReservoir <: Device
     intake_elevation::Float64
     "Head to volume relationship for the reservoir."
     head_to_volume_factor::FunctionData
+    "Standing loss from evaporation as a fraction of the reservoir's stored volume/energy lost per hour (pu/hr)"
+    evaporative_loss::Float64
     "Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
     upstream_turbines::Vector{HydroUnit}
     "Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
@@ -84,12 +88,12 @@ mutable struct HydroReservoir <: Device
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, upstream_reservoirs, operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, evaporative_loss=0.0, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, evaporative_loss, upstream_turbines, downstream_turbines, upstream_reservoirs, operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, upstream_reservoirs, operation_cost, level_data_type, ext, internal, )
+function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, evaporative_loss=0.0, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, evaporative_loss, upstream_turbines, downstream_turbines, upstream_reservoirs, operation_cost, level_data_type, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -105,6 +109,7 @@ function HydroReservoir(::Nothing)
         level_targets=nothing,
         intake_elevation=0.0,
         head_to_volume_factor=LinearFunctionData(0.0),
+        evaporative_loss=0.0,
         upstream_turbines=Device[],
         downstream_turbines=Device[],
         upstream_reservoirs=Device[],
@@ -134,6 +139,8 @@ get_level_targets(value::HydroReservoir) = value.level_targets
 get_intake_elevation(value::HydroReservoir) = value.intake_elevation
 """Get [`HydroReservoir`](@ref) `head_to_volume_factor`."""
 get_head_to_volume_factor(value::HydroReservoir) = value.head_to_volume_factor
+"""Get [`HydroReservoir`](@ref) `evaporative_loss`."""
+get_evaporative_loss(value::HydroReservoir) = value.evaporative_loss
 """Get [`HydroReservoir`](@ref) `upstream_turbines`."""
 get_upstream_turbines(value::HydroReservoir) = value.upstream_turbines
 """Get [`HydroReservoir`](@ref) `downstream_turbines`."""
@@ -167,6 +174,8 @@ set_level_targets!(value::HydroReservoir, val) = value.level_targets = val
 set_intake_elevation!(value::HydroReservoir, val) = value.intake_elevation = val
 """Set [`HydroReservoir`](@ref) `head_to_volume_factor`."""
 set_head_to_volume_factor!(value::HydroReservoir, val) = value.head_to_volume_factor = val
+"""Set [`HydroReservoir`](@ref) `evaporative_loss`."""
+set_evaporative_loss!(value::HydroReservoir, val) = value.evaporative_loss = val
 """Set [`HydroReservoir`](@ref) `upstream_turbines`."""
 set_upstream_turbines!(value::HydroReservoir, val) = value.upstream_turbines = val
 """Set [`HydroReservoir`](@ref) `downstream_turbines`."""

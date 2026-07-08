@@ -2855,17 +2855,27 @@
                 },
                 {
                     "name": "remote_bus_control_from",
-                    "comment": "Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE` (`0` regulates its own terminal bus).",
-                    "null_value": 0,
-                    "data_type": "Int",
-                    "default": 0
+                    "comment": "Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Int}",
+                    "default": "nothing",
+                    "valid_range": {
+                        "min": 1,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "remote_bus_control_to",
-                    "comment": "Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE` (`0` regulates its own terminal bus).",
-                    "null_value": 0,
-                    "data_type": "Int",
-                    "default": 0
+                    "comment": "Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Int}",
+                    "default": "nothing",
+                    "valid_range": {
+                        "min": 1,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "rmpct_from",
@@ -5269,6 +5279,44 @@
                     "default": "0.0"
                 },
                 {
+                    "name": "remote_bus_control",
+                    "comment": "Number of the AC bus whose voltage the converter regulates when `ac_control` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Int}",
+                    "default": "nothing",
+                    "valid_range": {
+                        "min": 1,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "rmpct",
+                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by this converter that is contributed by this converter.",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0"
+                },
+                {
+                    "name": "power_factor_weighting_fraction",
+                    "comment": "Power weighting factor fraction used in reducing the active power order and either the reactive power order when the converter rating is violated. When is 0.0, only the active power is reduced; when is 1.0, only the reactive power is reduced; otherwise, a weighted reduction of both active and reactive power is applied.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "voltage_limits",
+                    "comment": "Limits on the voltage at the DC bus in [per unit](@ref per_unit).",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=999.9)"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -6172,6 +6220,18 @@
                     "comment": "Head to volume relationship for the reservoir.",
                     "null_value": "LinearFunctionData(0.0)",
                     "data_type": "FunctionData"
+                },
+                {
+                    "name": "evaporative_loss",
+                    "comment": "Standing loss from evaporation as a fraction of the reservoir's stored volume/energy lost per hour (pu/hr)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn",
+                    "default": "0.0"
                 },
                 {
                     "name": "upstream_turbines",
@@ -7156,6 +7216,32 @@
                     "null_value": "0",
                     "data_type": "Int",
                     "default": "1e4"
+                },
+                {
+                    "name": "ramp_limits",
+                    "comment": "ramp up and ramp down limits in MW/min",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, UpDown}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
+                    "default": "nothing"
+                },
+                {
+                    "name": "self_discharge",
+                    "comment": "Self-discharge (standing loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn",
+                    "default": "0.0"
                 },
                 {
                     "name": "services",
