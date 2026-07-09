@@ -2283,10 +2283,6 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         throw(DataFormatError("Operation mode not supported."))
     end
 
-    if d["reactive_power_required"] < 0
-        throw(DataFormatError("% MVAr required must me positive."))
-    end
-
     return FACTSControlDevice(;
         name = name,
         available = Bool(d["available"]),
@@ -2294,7 +2290,7 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         control_mode = d["control_mode"],
         voltage_setpoint = d["voltage_setpoint"],
         max_shunt_current = d["max_shunt_current"],
-        reactive_power_required = d["reactive_power_required"],
+        regulated_bus_number = d["regulated_bus_number"],
         ext = get(d, "ext", Dict{String, Any}()),
     )
 end

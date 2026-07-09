@@ -338,6 +338,18 @@ end
     @test result
 end
 
+@testset "Serialization round-trip of HVDC 14-bus casebuilder systems" begin
+    # HVDC system-level coverage sourced from PowerSystemCaseBuilder (no raw checked into PSY):
+    # each case is a full 14-bus AC system with one converter line replacing the bus 2-3 AC line.
+    for (name, converter) in
+        (("c_sys14_hvdc_vsc", TwoTerminalVSCLine), ("c_sys14_hvdc_lcc", TwoTerminalLCCLine))
+        sys = PSB.build_system(PSB.PSITestSystems, name; add_forecasts = false)
+        @test length(collect(get_components(converter, sys))) == 1
+        _, result = validate_serialization(sys)
+        @test result
+    end
+end
+
 @testset "Test deserialization of a pre-5.x TwoTerminalVSCLine (Bool control flags)" begin
     # PSY <= 5.11 stored VSC converter control as four `Bool` fields; 5.12 replaced them with the
     # `*_control_*` enums. A system serialized under the old schema must still deserialize, mapping

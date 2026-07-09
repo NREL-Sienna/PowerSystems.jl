@@ -31,9 +31,9 @@ Most often used in AC power flow studies as a control of voltage and, active and
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: The sending-end [`ACBus`](@ref)
 - `control_mode::Union{Nothing, FACTSOperationModes}`: Control mode. Used to describe the behavior of the control device. See [`FACTSOperationModes`](@ref).
-- `voltage_setpoint::Float64`: Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).
-- `max_shunt_current::Float64`: (default: `0.0`) Maximum shunt current limit (PSS/E IMX), pu-MVA at unity voltage; drives the STATCOM |Q| ≤ V·IMX limit
-- `max_reactive_power::Float64`: (default: `9999.0`) Maximum shunt reactive power at unity voltage (PSS/E SHMX), pu; the SVC susceptance cap
+- `voltage_setpoint::Float64`: (default: `1.0`) Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).
+- `max_shunt_current::Float64`: (default: `9999.0`) Maximum shunt current at unity voltage (PSS/E SHMX), MVA; the STATCOM current limit and SVC susceptance base.
+- `max_reactive_power::Float64`: (default: `9999.0`) Independent maximum reactive power ceiling (MVA); the device reactive limit is min(the current/susceptance law on max_shunt_current, this value). Non-binding at the 9999.0 default.
 - `shunt_control_type::FACTSShuntControlType`: (default: `FACTSShuntControlType.STATCOM`) Device class selecting the reactive-limit law (SVC vs STATCOM)
 - `regulated_bus_number::Int`: (default: `0`) Bus whose voltage this device regulates; 0 ⇒ local (sending) bus (PSS/E FCREG)
 - `reactive_power_required::Float64`: (default: `0.0`) Solver-populated: delivered reactive power after solve (output; not parsed from input)
@@ -53,9 +53,9 @@ mutable struct FACTSControlDevice <: StaticInjection
     control_mode::Union{Nothing, FACTSOperationModes}
     "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))."
     voltage_setpoint::Float64
-    "Maximum shunt current limit (PSS/E IMX), pu-MVA at unity voltage; drives the STATCOM |Q| ≤ V·IMX limit"
+    "Maximum shunt current at unity voltage (PSS/E SHMX), MVA; the STATCOM current limit and SVC susceptance base."
     max_shunt_current::Float64
-    "Maximum shunt reactive power at unity voltage (PSS/E SHMX), pu; the SVC susceptance cap"
+    "Independent maximum reactive power ceiling (MVA); the device reactive limit is min(the current/susceptance law on max_shunt_current, this value). Non-binding at the 9999.0 default."
     max_reactive_power::Float64
     "Device class selecting the reactive-limit law (SVC vs STATCOM)"
     shunt_control_type::FACTSShuntControlType
@@ -73,11 +73,11 @@ mutable struct FACTSControlDevice <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function FACTSControlDevice(name, available, bus, control_mode, max_shunt_current=0.0, max_reactive_power=9999.0, shunt_control_type=FACTSShuntControlType.STATCOM, regulated_bus_number=0, reactive_power_required=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    FACTSControlDevice(name, available, bus, control_mode, max_shunt_current, max_reactive_power, shunt_control_type, regulated_bus_number, reactive_power_required, services, dynamic_injector, ext, 1.0, InfrastructureSystemsInternal(), )
+function FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=9999.0, max_reactive_power=9999.0, shunt_control_type=FACTSShuntControlType.STATCOM, regulated_bus_number=0, reactive_power_required=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, max_shunt_current, max_reactive_power, shunt_control_type, regulated_bus_number, reactive_power_required, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function FACTSControlDevice(; name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=0.0, max_reactive_power=9999.0, shunt_control_type=FACTSShuntControlType.STATCOM, regulated_bus_number=0, reactive_power_required=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function FACTSControlDevice(; name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=9999.0, max_reactive_power=9999.0, shunt_control_type=FACTSShuntControlType.STATCOM, regulated_bus_number=0, reactive_power_required=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, max_shunt_current, max_reactive_power, shunt_control_type, regulated_bus_number, reactive_power_required, services, dynamic_injector, ext, internal, )
 end
 
@@ -88,6 +88,7 @@ function FACTSControlDevice(::Nothing)
         available=false,
         bus=ACBus(nothing),
         control_mode=nothing,
+        voltage_setpoint=1.0,
         max_shunt_current=0.0,
         max_reactive_power=0.0,
         shunt_control_type=FACTSShuntControlType.STATCOM,

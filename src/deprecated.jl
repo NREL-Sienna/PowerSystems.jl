@@ -261,3 +261,54 @@ function IS.deserialize(
         component_cache,
     )
 end
+
+# BEGIN 5.x deprecations: FACTSControlDevice pre-first-class shunt-control fields
+#
+# Before FACTSControlDevice became first-class, `max_shunt_current` already held the
+# PSS/E SHMX value (shunt current capability, MVA) — that field's meaning is unchanged,
+# so no migration is needed for it. The device simply had no `max_reactive_power`,
+# `shunt_control_type`, or `regulated_bus_number` fields. A system serialized under that
+# schema must still deserialize: default the missing fields to the struct's own defaults
+# (`max_reactive_power` = 9999.0, non-binding; `shunt_control_type` = STATCOM;
+# `regulated_bus_number` = 0, local bus). Scoped enums serialize/deserialize as their bare
+# value name (e.g. "STATCOM"), matching the convention used elsewhere for this enum family.
+
+"""
+Data fixup for a `FACTSControlDevice` dict serialized before the shunt-control fields were
+added: leaves `max_shunt_current` untouched (it already held SHMX under the old schema)
+and fills in any of `max_reactive_power`, `shunt_control_type`, `regulated_bus_number` that
+are absent with their struct defaults. No-op if all three are already present.
+"""
+function _deserialize_facts_compat(dict::Dict)
+    if haskey(dict, "max_reactive_power") &&
+       haskey(dict, "shunt_control_type") &&
+       haskey(dict, "regulated_bus_number")
+        return dict
+    end
+    fixed = copy(dict)
+    if !haskey(fixed, "max_reactive_power")
+        fixed["max_reactive_power"] = 9999.0
+    end
+    if !haskey(fixed, "shunt_control_type")
+        fixed["shunt_control_type"] = string(FACTSShuntControlType.STATCOM)
+    end
+    if !haskey(fixed, "regulated_bus_number")
+        fixed["regulated_bus_number"] = 0
+    end
+    return fixed
+end
+
+function IS.deserialize(
+    ::Type{FACTSControlDevice},
+    data::Dict,
+    component_cache::Dict,
+)
+    data = _deserialize_facts_compat(data)
+    return invoke(
+        IS.deserialize,
+        Tuple{Type{<:_CONTAINS_SHOULD_ENCODE}, Dict, Dict},
+        FACTSControlDevice,
+        data,
+        component_cache,
+    )
+end

@@ -3715,18 +3715,19 @@
                 {
                     "name": "voltage_setpoint",
                     "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
-                    "internal_default": "1.0",
+                    "null_value": "1.0",
+                    "default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "max_shunt_current",
-                    "comment": "Maximum shunt current limit (PSS/E IMX), pu-MVA at unity voltage; drives the STATCOM |Q| ≤ V·IMX limit",
-                    "default": "0.0",
+                    "comment": "Maximum shunt current at unity voltage (PSS/E SHMX), MVA; the STATCOM current limit and SVC susceptance base.",
+                    "default": "9999.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "max_reactive_power",
-                    "comment": "Maximum shunt reactive power at unity voltage (PSS/E SHMX), pu; the SVC susceptance cap",
+                    "comment": "Independent maximum reactive power ceiling (MVA); the device reactive limit is min(the current/susceptance law on max_shunt_current, this value). Non-binding at the 9999.0 default.",
                     "default": "9999.0",
                     "data_type": "Float64"
                 },

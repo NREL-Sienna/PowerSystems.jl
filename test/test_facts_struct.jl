@@ -15,8 +15,8 @@
         name = "F1", available = true, bus = b,
         control_mode = FACTSOperationModes.NML,
         voltage_setpoint = 1.0,
-        max_shunt_current = 0.5,          # IMX (pu-MVA at unity)
-        max_reactive_power = 0.6,         # SHMX
+        max_shunt_current = 0.5,          # PSS/E SHMX
+        max_reactive_power = 0.6,         # independent MVA ceiling
         shunt_control_type = FACTSShuntControlType.STATCOM,
         regulated_bus_number = 13,
         reactive_power_required = 0.0,
@@ -29,4 +29,12 @@
     @test get_max_shunt_current(g) == 0.5
     set_reactive_power_required!(g, 0.42)
     @test get_reactive_power_required(g) == 0.42
+
+    # Locks the positional-constructor fix: voltage_setpoint must occupy its own slot
+    # (after control_mode) rather than being shifted out by a field with an
+    # internal_default, which previously misaligned every field after it.
+    fd_pos = FACTSControlDevice("F2", true, b, FACTSOperationModes.NML, 1.05)
+    @test get_voltage_setpoint(fd_pos) == 1.05
+    @test get_max_shunt_current(fd_pos) == 9999.0
+    @test get_max_reactive_power(fd_pos) == 9999.0
 end
