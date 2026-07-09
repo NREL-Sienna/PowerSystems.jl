@@ -3720,14 +3720,34 @@
                 },
                 {
                     "name": "max_shunt_current",
-                    "comment": "Maximum shunt current at the sending end bus; entered in MVA at unity voltage.",
-                    "internal_default": "9999.0",
+                    "comment": "Maximum shunt current limit (PSS/E IMX), pu-MVA at unity voltage; drives the STATCOM |Q| ≤ V·IMX limit",
+                    "default": "0.0",
                     "data_type": "Float64"
                 },
                 {
+                    "name": "max_reactive_power",
+                    "comment": "Maximum shunt reactive power at unity voltage (PSS/E SHMX), pu; the SVC susceptance cap",
+                    "default": "9999.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "shunt_control_type",
+                    "comment": "Device class selecting the reactive-limit law (SVC vs STATCOM)",
+                    "null_value": "FACTSShuntControlType.STATCOM",
+                    "default": "FACTSShuntControlType.STATCOM",
+                    "data_type": "FACTSShuntControlType"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Bus whose voltage this device regulates; 0 ⇒ local (sending) bus (PSS/E FCREG)",
+                    "null_value": "0",
+                    "default": "0",
+                    "data_type": "Int"
+                },
+                {
                     "name": "reactive_power_required",
-                    "comment": "Total MVAr required to hold voltage at sending bus, in %.",
-                    "internal_default": "100.0",
+                    "comment": "Solver-populated: delivered reactive power after solve (output; not parsed from input)",
+                    "default": "0.0",
                     "data_type": "Float64"
                 },
                 {

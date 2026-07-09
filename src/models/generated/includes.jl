@@ -762,6 +762,7 @@ export get_secondary_group_number
 export get_secondary_star_arc
 export get_secondary_turns_ratio
 export get_services
+export get_shunt_control_type
 export get_speed_error_signal
 export get_spillage_limits
 export get_star_bus
@@ -1463,6 +1464,7 @@ export set_secondary_group_number!
 export set_secondary_star_arc!
 export set_secondary_turns_ratio!
 export set_services!
+export set_shunt_control_type!
 export set_speed_error_signal!
 export set_spillage_limits!
 export set_star_bus!

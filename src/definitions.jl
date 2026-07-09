@@ -119,6 +119,14 @@ as defined in the PSS/E POM v33 Manual.
 " FACTSOperationModes
 
 IS.@scoped_enum(
+    FACTSShuntControlType,
+    SVC = 0,        # variable-susceptance SVC: Q = b·V² bounded by SHMX
+    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·IMX
+)
+@doc "Shunt-FACTS device class selecting the reactive-limit law: `SVC` bounds susceptance \
+(`Q=b·V²`, cap `SHMX`); `STATCOM` is current-limited (`|Q| ≤ V·IMX`)." FACTSShuntControlType
+
+IS.@scoped_enum(
     VSCDCControlModes,
     DC_POWER = 0,           # converter controls active power transferred to the DC side
     DC_VOLTAGE = 1,         # converter controls the DC-side voltage

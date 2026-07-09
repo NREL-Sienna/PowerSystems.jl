@@ -375,6 +375,7 @@ export TransmissionInterface
 export AngleUnits
 export ACBusTypes
 export FACTSOperationModes
+export FACTSShuntControlType
 export VSCDCControlModes
 export VSCACControlModes
 export DiscreteControlledBranchStatus
