@@ -55,14 +55,13 @@ function get_series_susceptance(::Union{PhaseShiftingTransformer3W, Transformer3
 end
 
 """
-Return the series susceptances of a [`PhaseShiftingTransformer3W`](@ref) as a 3-tuple of
+Return the series susceptances of a [`ThreeWindingTransformer`](@ref) as a 3-tuple of
 values (one per winding), each computed as the inverse of the imaginary part of the
 impedance accounting for turns ratios. Phase shift angles are ignored.
 
 See also: [`get_series_susceptance`](@ref) for 2-winding transformers,
-[`get_series_susceptances`](@ref get_series_susceptances(b::Transformer3W)) for [`Transformer3W`](@ref)
 """
-function get_series_susceptances(b::PhaseShiftingTransformer3W)
+function get_series_susceptances(b::ThreeWindingTransformer)
     y1 = 1 / get_x_primary(b)
     y2 = 1 / get_x_secondary(b)
     y3 = 1 / get_x_tertiary(b)
@@ -72,25 +71,6 @@ function get_series_susceptances(b::PhaseShiftingTransformer3W)
     y3_a = y3 / get_tertiary_turns_ratio(b)
 
     return (y1_a, y2_a, y3_a)
-end
-
-"""
-Return the series susceptances of a [`Transformer3W`](@ref) as a 3-tuple of values (one
-per winding), each computed as the imaginary part of the inverse of the complex impedance.
-
-See also: [`get_series_susceptance`](@ref) for 2-winding transformers,
-[`get_series_susceptances`](@ref get_series_susceptances(b::PhaseShiftingTransformer3W)) for [`PhaseShiftingTransformer3W`](@ref)
-"""
-function get_series_susceptances(b::Transformer3W)
-    Z1s = get_r_primary(b) + get_x_primary(b) * 1im
-    Z2s = get_r_secondary(b) + get_x_secondary(b) * 1im
-    Z3s = get_r_tertiary(b) + get_x_tertiary(b) * 1im
-
-    b1s = imag(1 / Z1s)
-    b2s = imag(1 / Z2s)
-    b3s = imag(1 / Z3s)
-
-    return (b1s, b2s, b3s)
 end
 
 """
