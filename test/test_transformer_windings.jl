@@ -186,30 +186,6 @@ end
     @test isnothing(get_primary_winding(t).units_info)
 end
 
-@testset "series admittance convenience functions" begin
-    t = _test_t3w()
-    set_r_12!(t, 0.01 * DU);
-    set_x_12!(t, 0.1 * DU)
-    set_r_23!(t, 0.02 * DU);
-    set_x_23!(t, 0.2 * DU)
-    set_r_13!(t, 0.03 * DU);
-    set_x_13!(t, 0.3 * DU)
-    ys = get_series_admittances(t, SU)
-    @test length(ys) == 3
-    # star-leg impedances (SU): Z1 = (Z12 + Z13 - Z23)/2, etc., from SU pairwise values
-    z12 = get_r_12(t, SU) + im * get_x_12(t, SU)
-    z23 = get_r_23(t, SU) + im * get_x_23(t, SU)
-    z13 = get_r_13(t, SU) + im * get_x_13(t, SU)
-    @test ys[1] ≈ 1 / ((z12 + z13 - z23) / 2)
-    @test ys[2] ≈ 1 / ((z12 + z23 - z13) / 2)
-    @test ys[3] ≈ 1 / ((z13 + z23 - z12) / 2)
-    # DU is rejected: the three pairwise impedances live on different device bases
-    @test_throws ArgumentError get_series_admittances(t, DU)
-    # singular forms are 2W-only; 3W gets an actionable error
-    @test_throws ArgumentError get_series_admittance(t, SU)
-    @test_throws ArgumentError get_series_susceptance(t, SU)
-end
-
 function _test_t2w(; system_base = 100.0)
     t = TwoWindingTransformer(nothing)
     IS.get_internal(t).units_info =
@@ -217,25 +193,6 @@ function _test_t2w(; system_base = 100.0)
     PowerSystems.set_units_setting!(t, IS.get_internal(t).units_info)
     set_base_voltage!(get_winding(t), 138.0)
     return t
-end
-
-@testset "2W series admittance/susceptance via the generic ACTransmission path" begin
-    t = _test_t2w()
-    set_r!(t, 0.01 * DU)
-    set_x!(t, 0.1 * DU)
-    # parent base_power (100.0 default) == system base, so DU == SU here
-    @test get_series_admittance(t, SU) ≈ 1 / (0.01 + 0.1im)
-    # tap == 1.0 (default): get_series_susceptance's tap division is a no-op, matching
-    # the plain ACTransmission value.
-    @test get_tap(get_winding(t)) == 1.0
-    @test get_series_susceptance(t, SU) ≈ 1 / 0.1
-
-    # tap != 1.0: get_series_susceptance divides by the winding tap, while
-    # get_series_admittance remains tap-free.
-    set_tap!(get_winding(t), 1.05)
-    @test get_series_susceptance(t, SU) ≈ (1 / 0.1) / 1.05
-    @test get_series_susceptance(t, SU) ≈ 9.523809523809524
-    @test get_series_admittance(t, SU) ≈ 1 / (0.01 + 0.1im)
 end
 
 @testset "hand-written winding setters propagate units_info" begin

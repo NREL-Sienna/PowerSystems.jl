@@ -26,41 +26,6 @@ _remove_aggregration_topology!(bus::ACBus, ::LoadZone) = bus.load_zone = nothing
 _remove_aggregration_topology!(bus::ACBus, ::Area) = bus.area = nothing
 
 """
-Generic method to calculate the susceptance of [`ACTransmission`](@ref) devices.
-
-The tap ratio and phase-shift angle are **not** applied: this returns `1/x` from the
-stored series reactance alone. [`TwoWindingTransformer`](@ref) has a more specific
-override (below) that additionally divides by the winding tap ratio
-(`get_tap(get_winding(t))`). This is a deliberate asymmetry with
-[`get_series_admittance`](@ref), which never divides by tap for any type: only the
-susceptance form is tap-divided. Consumers that need α applied must read
-`get_α(get_winding(t))` (2-winding) or the per-winding equivalents (3-winding) and apply
-it explicitly.
-"""
-get_series_susceptance(b::ACTransmission, units::IS.AbstractUnitSystem) =
-    1 / get_x(b, units)
-
-"""
-    get_series_susceptance(t::TwoWindingTransformer, units::IS.AbstractUnitSystem)
-
-Series susceptance of a [`TwoWindingTransformer`](@ref): the generic `ACTransmission`
-value (`1/x`) divided by the winding tap ratio `get_tap(get_winding(t))`. A fixed-ratio
-transformer has `tap = 1.0`, so this is a no-op for it and matches the plain
-`ACTransmission` value. `get_series_admittance` does **not** apply this division for any
-type — the asymmetry is deliberate: only the susceptance form is tap-divided.
-"""
-get_series_susceptance(t::TwoWindingTransformer, units::IS.AbstractUnitSystem) =
-    (1 / get_x(t, units)) / get_tap(get_winding(t))
-
-get_series_susceptance(::ThreeWindingTransformer, ::IS.AbstractUnitSystem) =
-    throw(
-        ArgumentError(
-            "get_series_susceptance is not defined for three-winding transformers; " *
-            "use get_series_susceptances for three-winding transformers",
-        ),
-    )
-
-"""
     get_base_voltage(line::Union{Line, MonitoredLine})
 
 Return the base voltage (kV) of a [`Line`](@ref) or [`MonitoredLine`](@ref) by reading the
@@ -132,75 +97,6 @@ function get_low_voltage(t::TwoWindingTransformer)
     v_secondary = get_base_voltage_secondary(t)
     return min(v_primary, v_secondary)
 end
-
-"""
-Calculate the series admittance of a [`ACTransmission`](@ref) as the inverse of the complex impedance.
-Returns 1/(R + jX) where R is resistance and X is reactance.
-
-The tap ratio and phase-shift angle are **not** applied for any [`ACTransmission`](@ref)
-type, including [`TwoWindingTransformer`](@ref) — unlike [`get_series_susceptance`](@ref),
-which has a [`TwoWindingTransformer`](@ref)-specific override that divides by tap. That
-asymmetry is deliberate, mirroring the pre-refactor `TapTransformer`/
-`PhaseShiftingTransformer` code, which only tap-divided the susceptance form. Consumers
-that need the tapped model must read `get_tap(get_winding(t))`/`get_α(get_winding(t))`
-(2-winding) or the per-winding equivalents (3-winding) and apply them explicitly.
-"""
-get_series_admittance(b::ACTransmission, units::IS.AbstractUnitSystem) =
-    1 / (get_r(b, units) + get_x(b, units) * 1im)
-
-get_series_admittance(::ThreeWindingTransformer, ::IS.AbstractUnitSystem) =
-    throw(
-        ArgumentError(
-            "get_series_admittance is not defined for three-winding transformers; " *
-            "use get_series_admittances for three-winding transformers",
-        ),
-    )
-
-"""
-    get_series_admittances(t::ThreeWindingTransformer, units)
-
-Star-leg series admittances `(primary, secondary, tertiary)`, derived on call from
-the stored pairwise impedances. Convenience only — repeated impedance math should go
-through PowerNetworkMatrices, which owns the cached star derivation.
-
-The tap ratio and phase-shift angle of each winding are **not** applied: these are the
-star-leg admittances from the stored pairwise impedances alone. Consumers that need the
-tapped model must read `get_tap(w)`/`get_α(w)` for each winding `w` in
-`get_windings(t)` and apply them explicitly.
-
-!!! warning "Unfloored — not the value matrix consumers should use"
-    This convenience derivation is **unfloored**: a measured-zero star leg (a pairwise
-    impedance combination whose derived reactance is exactly, or near, zero) yields an
-    infinite admittance here. PowerNetworkMatrices derives the same star legs with
-    zero-reactance flooring applied (`STAR_LEG_REACTANCE_FLOOR = 1e-4`), so its values
-    differ from this function's for any such winding. Matrix-consistency consumers (Ybus,
-    PTDF/LODF, network reductions, ...) must use PowerNetworkMatrices' derived values —
-    never re-derive star-leg admittances here and expect them to agree.
-"""
-function get_series_admittances(t::ThreeWindingTransformer, units::UnitArg)
-    units isa IS.DeviceBaseUnit && throw(
-        ArgumentError(
-            "star-leg admittances are undefined for DU: the three pairwise impedances have different device bases; request SU or NU",
-        ),
-    )
-    z12 = get_r_12(t, units) + im * get_x_12(t, units)
-    z23 = get_r_23(t, units) + im * get_x_23(t, units)
-    z13 = get_r_13(t, units) + im * get_x_13(t, units)
-    z1 = (z12 + z13 - z23) / 2
-    z2 = (z12 + z23 - z13) / 2
-    z3 = (z13 + z23 - z12) / 2
-    return (1 / z1, 1 / z2, 1 / z3)
-end
-
-"""
-Returns the series susceptance of a [`ThreeWindingTransformer`](@ref) as three values
-(for each of the 3 star legs) following the convention in power systems to define
-susceptance as the inverse of the imaginary part of the impedance.
-
-See also: [`get_series_susceptance`](@ref) for 2-winding transformers.
-"""
-get_series_susceptances(t::ThreeWindingTransformer, units::UnitArg) =
-    map(imag, get_series_admittances(t, units))
 
 """
 Return the max active power for a device with explicit units specified.

@@ -63,7 +63,7 @@ For transformers with on-load tap changers (OLTCs) or phase shifters, additional
 
 ## Deriving the Equivalent Star Impedances from PSSe
 
-In `PowerSystems.jl`, the [`ThreeWindingTransformer`](@ref) stores only the measured (delta) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_13`/`x_13` (accessed with [`get_r_12`](@ref) etc.) on their respective `base_power_12`/`base_power_23`/`base_power_13` bases, plus the star bus ([`get_star_bus`](@ref)). The equivalent star (wye) series impedance for each winding ($Z_1, Z_2, Z_3$) is *not* stored directly; it is derived on demand — for example by [`get_series_admittances`](@ref) — from the PSS®E Positive Sequence Impedance data (e.g., R1-2, X1-2, etc.) using the following formulas:
+In `PowerSystems.jl`, the [`ThreeWindingTransformer`](@ref) stores only the measured (delta) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_13`/`x_13` (accessed with [`get_r_12`](@ref) etc.) on their respective `base_power_12`/`base_power_23`/`base_power_13` bases, plus the star bus ([`get_star_bus`](@ref)). The equivalent star (wye) series impedance for each winding ($Z_1, Z_2, Z_3$) is *not* stored directly; it is derived on demand — for example by PowerNetworkMatrices — from the PSS®E Positive Sequence Impedance data (e.g., R1-2, X1-2, etc.) using the following formulas:
 
 $$\begin{aligned}
 Z_1 &= \frac{1}{2} (Z_{12} + Z_{13} - Z_{23}) \\
