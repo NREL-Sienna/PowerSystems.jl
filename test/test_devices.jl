@@ -247,3 +247,49 @@ end
     )
     @test supports_voltage_control(sc_pq) == false
 end
+
+@testset "Test FACTS/SwitchedShunt interop fields (psy5 sync)" begin
+    # FACTSControlDevice: new shunt-control fields ported from main
+    fd = FACTSControlDevice(nothing)
+    @test get_max_reactive_power(fd) == 0.0        # demo constructor (no null_value) => 0.0
+    @test get_shunt_control_type(fd) == FACTSShuntControlType.STATCOM
+    @test get_regulated_bus_number(fd) == 0
+    @test get_reactive_power_required(fd) == 0.0
+
+    fd_kw = FACTSControlDevice(;
+        name = "F1", available = true, bus = ACBus(nothing),
+        control_mode = FACTSOperationModes.NML,
+    )
+    @test get_max_reactive_power(fd_kw) == 9999.0  # kwarg default
+    @test get_max_shunt_current(fd_kw) == 9999.0
+    @test get_voltage_setpoint(fd_kw) == 1.0
+    @test get_shunt_control_type(fd_kw) == FACTSShuntControlType.STATCOM
+
+    set_shunt_control_type!(fd_kw, FACTSShuntControlType.SVC)
+    set_regulated_bus_number!(fd_kw, 42)
+    set_max_reactive_power!(fd_kw, 150.0)
+    @test get_shunt_control_type(fd_kw) == FACTSShuntControlType.SVC
+    @test get_regulated_bus_number(fd_kw) == 42
+    @test get_max_reactive_power(fd_kw) == 150.0
+
+    # Positional constructor now threads the reworked scalar fields
+    fd_pos = FACTSControlDevice("F2", true, ACBus(nothing), FACTSOperationModes.NML, 1.05)
+    @test get_voltage_setpoint(fd_pos) == 1.05
+    @test get_max_shunt_current(fd_pos) == 9999.0
+    @test get_max_reactive_power(fd_pos) == 9999.0
+
+    # SwitchedAdmittance: new control_mode + regulated_bus_number
+    sa = SwitchedAdmittance(nothing)
+    @test get_control_mode(sa) == SwitchedAdmittanceControlMode.FIXED
+    @test get_regulated_bus_number(sa) == 0
+
+    sa_kw = SwitchedAdmittance(;
+        name = "sa1", available = true, bus = ACBus(nothing), Y = 1.0 + 0.0im,
+        control_mode = SwitchedAdmittanceControlMode.DISCRETE_VOLTAGE,
+        regulated_bus_number = 7,
+    )
+    @test get_control_mode(sa_kw) == SwitchedAdmittanceControlMode.DISCRETE_VOLTAGE
+    @test get_regulated_bus_number(sa_kw) == 7
+    set_control_mode!(sa_kw, SwitchedAdmittanceControlMode.CONTINUOUS_VOLTAGE)
+    @test get_control_mode(sa_kw) == SwitchedAdmittanceControlMode.CONTINUOUS_VOLTAGE
+end

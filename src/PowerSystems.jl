@@ -379,6 +379,8 @@ export ACBusTypes
 export FACTSOperationModes
 export VSCDCControlModes
 export VSCACControlModes
+export FACTSShuntControlType
+export SwitchedAdmittanceControlMode
 export DiscreteControlledBranchStatus
 export DiscreteControlledBranchType
 export PrimeMovers

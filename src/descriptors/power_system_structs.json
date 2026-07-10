@@ -3748,20 +3748,41 @@
                 },
                 {
                     "name": "voltage_setpoint",
-                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
-                    "internal_default": "1.0",
+                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "null_value": "1.0",
+                    "default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "max_shunt_current",
-                    "comment": "Maximum shunt current at the sending end bus; entered in MVA at unity voltage.",
-                    "internal_default": "9999.0",
+                    "comment": "Maximum shunt current at unity voltage (PSS/E SHMX), MVA; the STATCOM current limit and SVC susceptance base.",
+                    "default": "9999.0",
                     "data_type": "Float64"
                 },
                 {
+                    "name": "max_reactive_power",
+                    "comment": "Independent maximum reactive power ceiling (MVA); the device reactive limit is min(the current/susceptance law on max_shunt_current, this value). Non-binding at the 9999.0 default.",
+                    "default": "9999.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "shunt_control_type",
+                    "comment": "Device class selecting the reactive-limit law (SVC vs STATCOM)",
+                    "null_value": "FACTSShuntControlType.STATCOM",
+                    "default": "FACTSShuntControlType.STATCOM",
+                    "data_type": "FACTSShuntControlType"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Bus whose voltage this device regulates; 0 ⇒ local (sending) bus (PSS/E FCREG)",
+                    "null_value": "0",
+                    "default": "0",
+                    "data_type": "Int"
+                },
+                {
                     "name": "reactive_power_required",
-                    "comment": "Total MVAr required to hold voltage at sending bus, in %.",
-                    "internal_default": "100.0",
+                    "comment": "Solver-populated: delivered reactive power after solve (output; not parsed from input)",
+                    "default": "0.0",
                     "data_type": "Float64"
                 },
                 {
@@ -3912,6 +3933,20 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=1.0, max=1.0)"
+                },
+                {
+                    "name": "control_mode",
+                    "comment": "Switched-shunt control mode (PSS/E MODSW).",
+                    "data_type": "SwitchedAdmittanceControlMode",
+                    "null_value": "SwitchedAdmittanceControlMode.FIXED",
+                    "default": "SwitchedAdmittanceControlMode.FIXED"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG).",
+                    "data_type": "Int",
+                    "null_value": "0",
+                    "default": "0"
                 },
                 {
                     "name": "dynamic_injector",
