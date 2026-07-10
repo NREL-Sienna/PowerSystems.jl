@@ -7268,7 +7268,7 @@
                 },
                 {
                     "name": "self_discharge",
-                    "comment": "Self-discharge (standing loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`)",
+                    "comment": "Self-discharge (leakage loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -7276,6 +7276,20 @@
                         "max": null
                     },
                     "validation_action": "warn",
+                    "default": "0.0"
+                },
+                {
+                    "name": "standing_loss",
+                    "comment": "Constant standing-loss power drawn by the storage system, in per unit of the device `base_power`. Reduces the effective charging power (`p_in - standing_loss`) and increases the power drawn from the storage when discharging (`p_out + standing_loss`). For the fractional energy leakage see `self_discharge`",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "0.0"
                 },
                 {

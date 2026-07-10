@@ -838,6 +838,8 @@ export get_services
 export get_shunt_control_type
 export get_speed_error_signal
 export get_spillage_limits
+export get_standing_loss
+export get_standing_loss_unitful
 export get_star_bus
 export get_start_time_limits
 export get_start_types
@@ -1558,6 +1560,7 @@ export set_services!
 export set_shunt_control_type!
 export set_speed_error_signal!
 export set_spillage_limits!
+export set_standing_loss!
 export set_star_bus!
 export set_start_time_limits!
 export set_start_types!

@@ -28,6 +28,7 @@ This file is auto-generated. Do not edit.
         cycle_limits::Int
         ramp_limits::Union{Nothing, UpDown}
         self_discharge::Float64
+        standing_loss::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -60,7 +61,8 @@ This is suitable for modeling storage charging and discharging with average effi
 - `storage_target::Float64`: (default: `0.0`) Storage target at the end of simulation as ratio of storage capacity
 - `cycle_limits::Int`: (default: `1e4`) Storage Maximum number of cycles per year
 - `ramp_limits::Union{Nothing, UpDown}`: (default: `nothing`) ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
-- `self_discharge::Float64`: (default: `0.0`) Self-discharge (standing loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), validation range: `(0, nothing)`
+- `self_discharge::Float64`: (default: `0.0`) Self-discharge (leakage loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`, validation range: `(0, nothing)`
+- `standing_loss::Float64`: (default: `0.0`) Constant standing-loss power drawn by the storage system, in per unit of the device `base_power`. Reduces the effective charging power (`p_in - standing_loss`) and increases the power drawn from the storage when discharging (`p_out + standing_loss`). For the fractional energy leakage see `self_discharge`, validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -109,8 +111,10 @@ mutable struct EnergyReservoirStorage <: Storage
     cycle_limits::Int
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
-    "Self-discharge (standing loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`)"
+    "Self-discharge (leakage loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`"
     self_discharge::Float64
+    "Constant standing-loss power drawn by the storage system, in per unit of the device `base_power`. Reduces the effective charging power (`p_in - standing_loss`) and increases the power drawn from the storage when discharging (`p_out + standing_loss`). For the fractional energy leakage see `self_discharge`"
+    standing_loss::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -121,12 +125,12 @@ mutable struct EnergyReservoirStorage <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), conversion_factor=1.0, storage_target=0.0, cycle_limits=1e4, ramp_limits=nothing, self_discharge=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, conversion_factor, storage_target, cycle_limits, ramp_limits, self_discharge, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), conversion_factor=1.0, storage_target=0.0, cycle_limits=1e4, ramp_limits=nothing, self_discharge=0.0, standing_loss=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, conversion_factor, storage_target, cycle_limits, ramp_limits, self_discharge, standing_loss, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function EnergyReservoirStorage(; name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), conversion_factor=1.0, storage_target=0.0, cycle_limits=1e4, ramp_limits=nothing, self_discharge=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, conversion_factor, storage_target, cycle_limits, ramp_limits, self_discharge, services, dynamic_injector, ext, internal, )
+function EnergyReservoirStorage(; name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), conversion_factor=1.0, storage_target=0.0, cycle_limits=1e4, ramp_limits=nothing, self_discharge=0.0, standing_loss=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, conversion_factor, storage_target, cycle_limits, ramp_limits, self_discharge, standing_loss, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -154,6 +158,7 @@ function EnergyReservoirStorage(::Nothing)
         cycle_limits=0,
         ramp_limits=nothing,
         self_discharge=0.0,
+        standing_loss=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -236,6 +241,12 @@ InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits), ::Type{Energy
 InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits_unitful), ::Type{EnergyReservoirStorage}) = InfrastructureSystems.SU
 """Get [`EnergyReservoirStorage`](@ref) `self_discharge`."""
 get_self_discharge(value::EnergyReservoirStorage) = value.self_discharge
+"""Get [`EnergyReservoirStorage`](@ref) `standing_loss` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_standing_loss_unitful`](@ref)."""
+get_standing_loss(value::EnergyReservoirStorage, units) = InfrastructureSystems._strip_units(get_value(value, Val(:standing_loss), Val(:mva), units))
+"""Get [`EnergyReservoirStorage`](@ref) `standing_loss` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_standing_loss`](@ref)."""
+get_standing_loss_unitful(value::EnergyReservoirStorage, units) = get_value(value, Val(:standing_loss), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_standing_loss), ::Type{EnergyReservoirStorage}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_standing_loss_unitful), ::Type{EnergyReservoirStorage}) = InfrastructureSystems.SU
 """Get [`EnergyReservoirStorage`](@ref) `services`."""
 get_services(value::EnergyReservoirStorage) = value.services
 """Get [`EnergyReservoirStorage`](@ref) `dynamic_injector`."""
@@ -285,6 +296,8 @@ set_cycle_limits!(value::EnergyReservoirStorage, val) = value.cycle_limits = val
 set_ramp_limits!(value::EnergyReservoirStorage, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `self_discharge`."""
 set_self_discharge!(value::EnergyReservoirStorage, val) = value.self_discharge = val
+"""Set [`EnergyReservoirStorage`](@ref) `standing_loss`."""
+set_standing_loss!(value::EnergyReservoirStorage, val) = value.standing_loss = set_value(value, Val(:standing_loss), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `services`."""
 set_services!(value::EnergyReservoirStorage, val) = value.services = val
 """Set [`EnergyReservoirStorage`](@ref) `ext`."""
