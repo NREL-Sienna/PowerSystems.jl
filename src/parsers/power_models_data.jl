@@ -147,7 +147,11 @@ function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
     elseif (
         device_dict["source_id"][1] == "switch" || device_dict["source_id"][1] == "breaker"
     ) && length(device_dict["source_id"]) > 2
-        index = string(device_dict["source_id"][4][2])
+        # CKT is either a plain circuit id (v35 SWITCHING DEVICE, e.g. "1 ") or carries a
+        # legacy branch-embedded marker (@ = breaker, * = switch, e.g. "@1"). Strip the
+        # marker and padding and keep the full remaining id, so distinct circuits on the
+        # same bus pair produce distinct names.
+        index = strip(string(device_dict["source_id"][4]), ['@', '*', ' '])
     elseif device_dict["source_id"][1] == "transformer" &&
            length(device_dict["source_id"]) > 3
         index = strip(device_dict["source_id"][5])
