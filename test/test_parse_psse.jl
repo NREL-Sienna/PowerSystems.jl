@@ -210,6 +210,18 @@ end
     @test get_control_mode(facts) == FACTSOperationModes.NML
 end
 
+@testset "PSSE FACTS Shunt Round-Trip Parsing" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_facts_shunt_sys")
+    fd = only(get_components(FACTSControlDevice, sys))
+    @test get_max_shunt_current(fd) == 60.0
+    @test get(get_ext(fd), "IMX", nothing) == 50.0
+    @test get_regulated_bus_number(fd) == 3
+    @test get_voltage_setpoint(fd) == 1.02
+    @test get_reactive_power_required(fd) == 0.0
+    @test get(get_ext(fd), "RMPCT", nothing) == 95.0
+    @test get_shunt_control_type(fd) == FACTSShuntControlType.STATCOM
+end
+
 @testset "PSSE Generators as Synchronous Condensers" begin
     sys = build_system(PSSEParsingTestSystems, "pti_case11_with_synchronous_condensers_sys")
     sc_gen1 = collect(get_components(SynchronousCondenser, sys))[1]
@@ -491,6 +503,26 @@ end
     @test isapprox(tap1, 1.0250; atol = 1e-6)
     @test isapprox(tap2, 0.9256; atol = 1e-6)
     @test isapprox(tap3, 0.9150; atol = 1e-6)
+end
+
+@testset "PSSE TapTransformer controllability fields (#1684)" begin
+    # Voltage-controlling LTC on winding 1: COD1=1, CONT1=2, RMA1/RMI1=1.1/0.9,
+    # VMA1/VMI1=1.04/1.02, NTP1=17. The same fields must parse identically from v33 and v35.
+    for sys_name in (
+        "psse_controlled_tap_v33_test_system",
+        "psse_controlled_tap_v35_test_system",
+    )
+        sys = build_system(PSSEParsingTestSystems, sys_name; force_build = true)
+        trf = only(get_components(TapTransformer, sys))
+        @test get_control_objective(trf) == TransformerControlObjective.VOLTAGE
+        # RMI1/RMA1 bound winding 1; WINDV2 = 1.0 ⇒ tap-ratio band is (0.9, 1.1).
+        @test get_tap_limits(trf) == (min = 0.9, max = 1.1)
+        @test get_number_of_tap_positions(trf) == 17
+        # CONT1 = 2 ⇒ regulates bus 2.
+        @test get_regulated_bus_number(trf) == 2
+        # Setpoint is the midpoint of the [VMI1, VMA1] band.
+        @test get_voltage_setpoint(trf) ≈ (1.04 + 1.02) / 2
+    end
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin

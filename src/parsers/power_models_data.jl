@@ -1734,6 +1734,18 @@ function make_tap_transformer(
         get(d, "COD1", -99)
     end
 
+    # PSS/e winding-1 tap-control record → first-class controllability fields (PSY #1684). RMI1/RMA1
+    # bound WINDV1; `tap = WINDV1/WINDV2`, so the tap-ratio band is RMI1/WINDV2 … RMA1/WINDV2. CONT1
+    # is the regulated-bus number (sign = control side; 0 = local). The controlled voltage band
+    # [VMI1, VMA1] sets the setpoint at its midpoint.
+    windv2 = Float64(get(ext, "WINDV2", 1.0))
+    rmi = Float64(get(ext, "RMI1", 0.9 * windv2))
+    rma = Float64(get(ext, "RMA1", 1.1 * windv2))
+    ntp = Int(get(ext, "NTP1", 33))
+    ntp < 2 && (ntp = 33)
+    vma = Float64(get(ext, "VMA1", 1.1))
+    vmi = Float64(get(ext, "VMI1", 0.9))
+
     return TapTransformer(;
         name = name,
         available = available_value,
@@ -1753,6 +1765,10 @@ function make_tap_transformer(
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
         control_objective = control_objective,
+        tap_limits = (min = rmi / windv2, max = rma / windv2),
+        number_of_tap_positions = ntp,
+        regulated_bus_number = abs(round(Int, Float64(get(ext, "CONT1", 0)))),
+        voltage_setpoint = (vma + vmi) / 2,
         ext = ext,
     )
 end
@@ -2184,7 +2200,27 @@ function read_vscline!(
     end
 end
 
+function get_switched_admittance_control_mode(modsw::Int)
+    if modsw == 0
+        return SwitchedAdmittanceControlMode.FIXED
+    elseif modsw == 1
+        return SwitchedAdmittanceControlMode.DISCRETE_VOLTAGE
+    elseif modsw == 2
+        return SwitchedAdmittanceControlMode.CONTINUOUS_VOLTAGE
+    elseif modsw == 3
+        return SwitchedAdmittanceControlMode.DISCRETE_REACTIVE_PLANT
+    elseif modsw == 4
+        return SwitchedAdmittanceControlMode.DISCRETE_REACTIVE_VSC
+    elseif modsw == 5
+        return SwitchedAdmittanceControlMode.DISCRETE_ADMITTANCE_REMOTE
+    else
+        return SwitchedAdmittanceControlMode.UNDEFINED
+    end
+end
+
 function make_switched_shunt(name::String, d::Dict, bus::ACBus)
+    modsw = get(d["ext"], "MODSW", 0)
+    regulated_bus_number = Int(get(d["ext"], "NREG", get(d["ext"], "SWREM", 0)))
     params = Dict(
         :name => name,
         :available => Bool(d["status"]),
@@ -2193,6 +2229,8 @@ function make_switched_shunt(name::String, d::Dict, bus::ACBus)
         :number_of_steps => d["step_number"],
         :Y_increase => d["y_increment"],
         :admittance_limits => d["admittance_limits"],
+        :control_mode => get_switched_admittance_control_mode(modsw),
+        :regulated_bus_number => regulated_bus_number,
         :ext => d["ext"],
     )
 
@@ -2245,10 +2283,6 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         throw(DataFormatError("Operation mode not supported."))
     end
 
-    if d["reactive_power_required"] < 0
-        throw(DataFormatError("% MVAr required must me positive."))
-    end
-
     return FACTSControlDevice(;
         name = name,
         available = Bool(d["available"]),
@@ -2256,7 +2290,7 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         control_mode = d["control_mode"],
         voltage_setpoint = d["voltage_setpoint"],
         max_shunt_current = d["max_shunt_current"],
-        reactive_power_required = d["reactive_power_required"],
+        regulated_bus_number = d["regulated_bus_number"],
         ext = get(d, "ext", Dict{String, Any}()),
     )
 end

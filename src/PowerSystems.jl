@@ -325,6 +325,8 @@ export ImpedanceCorrectionData
 export WindingCategory
 export WindingGroupNumber
 export ImpedanceCorrectionTransformerControlMode
+export TransformerControlObjective
+export SwitchedAdmittanceControlMode
 
 export get_table_number
 export get_impedance_correction_curve
@@ -373,6 +375,7 @@ export TransmissionInterface
 export AngleUnits
 export ACBusTypes
 export FACTSOperationModes
+export FACTSShuntControlType
 export VSCDCControlModes
 export VSCACControlModes
 export DiscreteControlledBranchStatus

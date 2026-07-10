@@ -1489,27 +1489,27 @@ const _pti_defaults = Dict(
 )
 
 const _pti_defaults_v35 = Dict(
-    "BUS" => _default_bus,
-    "LOAD" => _default_load,
-    "FIXED SHUNT" => _default_fixed_shunt,
-    "GENERATOR" => _default_generator,
-    "BRANCH" => _default_branch,
+    "BUS" => _default_bus_v35,
+    "LOAD" => _default_load_v35,
+    "FIXED SHUNT" => _default_fixed_shunt_v35,
+    "GENERATOR" => _default_generator_v35,
+    "BRANCH" => _default_branch_v35,
     "SWITCHING DEVICE" => _default_switching_device_v35,
-    "TRANSFORMER" => _default_transformer,
-    "AREA INTERCHANGE" => _default_area_interchange,
-    "TWO-TERMINAL DC" => _default_two_terminal_dc,
-    "VOLTAGE SOURCE CONVERTER" => _default_vsc_dc,
-    "IMPEDANCE CORRECTION" => _default_impedance_correction,
-    "MULTI-TERMINAL DC" => _default_multi_term_dc,
-    "MULTI-SECTION LINE" => _default_multi_section,
-    "ZONE" => _default_zone,
-    "INTER-AREA TRANSFER" => _default_interarea,
-    "OWNER" => _default_owner,
-    "FACTS CONTROL DEVICE" => _default_facts,
-    "SWITCHED SHUNT" => _default_switched_shunt,
-    "CASE IDENTIFICATION" => _default_case_identification,
-    "GNE DEVICE" => _default_gne_device,
-    "INDUCTION MACHINE" => _default_induction_machine,
+    "TRANSFORMER" => _default_transformer_v35,
+    "AREA INTERCHANGE" => _default_area_interchange_v35,
+    "TWO-TERMINAL DC" => _default_two_terminal_dc_v35,
+    "VOLTAGE SOURCE CONVERTER" => _default_vsc_dc_v35,
+    "IMPEDANCE CORRECTION" => _default_impedance_correction_v35,
+    "MULTI-TERMINAL DC" => _default_multi_term_dc_v35,
+    "MULTI-SECTION LINE" => _default_multi_section_v35,
+    "ZONE" => _default_zone_v35,
+    "INTER-AREA TRANSFER" => _default_interarea_v35,
+    "OWNER" => _default_owner_v35,
+    "FACTS CONTROL DEVICE" => _default_facts_v35,
+    "SWITCHED SHUNT" => _default_switched_shunt_v35,
+    "CASE IDENTIFICATION" => _default_case_identification_v35,
+    "GNE DEVICE" => _default_gne_device_v35,
+    "INDUCTION MACHINE" => _default_induction_machine_v35,
     "SUBSTATION DATA" => _default_substation_data_v35,
 )
 
@@ -2629,12 +2629,20 @@ end
 """
     _populate_defaults!(pti_data)
 
-Internal function. Populates empty fields with PSS(R)E PTI v33 default values
+Internal function. Populates empty fields with PSS(R)E PTI default values, selecting the
+version-specific default set (v35 adds fields — e.g. load DGENP/DGENQ/DGENM, generator
+NREG/BASLOD — that have no v33 default; using the v33 set there leaves them as `""` and breaks
+the downstream numeric conversions).
 """
 function _populate_defaults!(data::Dict)
-    for section in _pti_sections
+    is_v35 =
+        haskey(data, "CASE IDENTIFICATION") &&
+        data["CASE IDENTIFICATION"][1]["REV"] == 35
+    sections = is_v35 ? _pti_sections_v35 : _pti_sections
+    defaults = is_v35 ? _pti_defaults_v35 : _pti_defaults
+    for section in sections
         if haskey(data, section)
-            component_defaults = _pti_defaults[section]
+            component_defaults = defaults[section]
             for component in data[section]
                 for (field, field_value) in component
                     if isa(field_value, Array)

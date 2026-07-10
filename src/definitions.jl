@@ -119,6 +119,14 @@ as defined in the PSS/E POM v33 Manual.
 " FACTSOperationModes
 
 IS.@scoped_enum(
+    FACTSShuntControlType,
+    SVC = 0,        # variable-susceptance SVC: Q = b·V² bounded by SHMX
+    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·IMX
+)
+@doc "Shunt-FACTS device class selecting the reactive-limit law: `SVC` bounds susceptance \
+(`Q=b·V²`, cap `SHMX`); `STATCOM` is current-limited (`|Q| ≤ V·IMX`)." FACTSShuntControlType
+
+IS.@scoped_enum(
     VSCDCControlModes,
     DC_POWER = 0,           # converter controls active power transferred to the DC side
     DC_VOLTAGE = 1,         # converter controls the DC-side voltage
@@ -313,6 +321,24 @@ Negative values indicate disabled control modes, while positive values represent
 control objectives. The `FIXED` mode (0) indicates manual tap position control without
 automatic adjustment.
 " TransformerControlObjective
+
+IS.@scoped_enum(
+    SwitchedAdmittanceControlMode,  # MODSW in PSS/E switched-shunt records
+    UNDEFINED = -99,
+    FIXED = 0,
+    DISCRETE_VOLTAGE = 1,
+    CONTINUOUS_VOLTAGE = 2,
+    DISCRETE_REACTIVE_PLANT = 3,
+    DISCRETE_REACTIVE_VSC = 4,
+    DISCRETE_ADMITTANCE_REMOTE = 5,
+)
+@doc"
+Control mode of a switched shunt. The enumerator maps the integer MODSW control-mode field
+of a switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
+`CONTINUOUS_VOLTAGE` = 2, `DISCRETE_REACTIVE_PLANT` = 3, `DISCRETE_REACTIVE_VSC` = 4,
+`DISCRETE_ADMITTANCE_REMOTE` = 5; `UNDEFINED` = -99 when unset. The names describe each mode;
+consult your source data's own documentation for the precise definition of each control mode.
+" SwitchedAdmittanceControlMode
 
 IS.@scoped_enum(
     MotorLoadTechnology,

@@ -23,6 +23,10 @@ This file is auto-generated. Do not edit.
         rating_c::Union{Nothing, Float64}
         winding_group_number::WindingGroupNumber
         control_objective::TransformerControlObjective
+        tap_limits::MinMax
+        number_of_tap_positions::Int
+        regulated_bus_number::Int
+        voltage_setpoint::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -50,6 +54,10 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `winding_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration
 - `control_objective::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref)
+- `tap_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Minimum and maximum tap ratio (per-unit turns ratio) over which the tap changer may regulate
+- `number_of_tap_positions::Int`: (default: `33`) Number of discrete tap positions spanning `tap_limits` (NTP in PSS/e); used to snap the tap to a realizable step
+- `regulated_bus_number::Int`: (default: `0`) ACBus [`number`](@ref ACBus) whose voltage the tap changer regulates; `0` identifies the `to` bus of this transformer's arc (local control)
+- `voltage_setpoint::Float64`: (default: `1.0`) Voltage setpoint at the regulated bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -89,6 +97,14 @@ mutable struct TapTransformer <: TwoWindingTransformer
     winding_group_number::WindingGroupNumber
     "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref)"
     control_objective::TransformerControlObjective
+    "Minimum and maximum tap ratio (per-unit turns ratio) over which the tap changer may regulate"
+    tap_limits::MinMax
+    "Number of discrete tap positions spanning `tap_limits` (NTP in PSS/e); used to snap the tap to a realizable step"
+    number_of_tap_positions::Int
+    "ACBus [`number`](@ref ACBus) whose voltage the tap changer regulates; `0` identifies the `to` bus of this transformer's arc (local control)"
+    regulated_bus_number::Int
+    "Voltage setpoint at the regulated bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
+    voltage_setpoint::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -97,12 +113,12 @@ mutable struct TapTransformer <: TwoWindingTransformer
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, control_objective=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, control_objective, services, ext, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, control_objective=TransformerControlObjective.UNDEFINED, tap_limits=(min=0.9, max=1.1), number_of_tap_positions=33, regulated_bus_number=0, voltage_setpoint=1.0, services=Device[], ext=Dict{String, Any}(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, control_objective, tap_limits, number_of_tap_positions, regulated_bus_number, voltage_setpoint, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, control_objective=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, control_objective, services, ext, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, control_objective=TransformerControlObjective.UNDEFINED, tap_limits=(min=0.9, max=1.1), number_of_tap_positions=33, regulated_bus_number=0, voltage_setpoint=1.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, control_objective, tap_limits, number_of_tap_positions, regulated_bus_number, voltage_setpoint, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -125,6 +141,10 @@ function TapTransformer(::Nothing)
         rating_c=0.0,
         winding_group_number=WindingGroupNumber.UNDEFINED,
         control_objective=TransformerControlObjective.UNDEFINED,
+        tap_limits=(min=0.9, max=1.1),
+        number_of_tap_positions=33,
+        regulated_bus_number=0,
+        voltage_setpoint=1.0,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -164,6 +184,14 @@ get_rating_c(value::TapTransformer) = get_value(value, Val(:rating_c), Val(:mva)
 get_winding_group_number(value::TapTransformer) = value.winding_group_number
 """Get [`TapTransformer`](@ref) `control_objective`."""
 get_control_objective(value::TapTransformer) = value.control_objective
+"""Get [`TapTransformer`](@ref) `tap_limits`."""
+get_tap_limits(value::TapTransformer) = value.tap_limits
+"""Get [`TapTransformer`](@ref) `number_of_tap_positions`."""
+get_number_of_tap_positions(value::TapTransformer) = value.number_of_tap_positions
+"""Get [`TapTransformer`](@ref) `regulated_bus_number`."""
+get_regulated_bus_number(value::TapTransformer) = value.regulated_bus_number
+"""Get [`TapTransformer`](@ref) `voltage_setpoint`."""
+get_voltage_setpoint(value::TapTransformer) = value.voltage_setpoint
 """Get [`TapTransformer`](@ref) `services`."""
 get_services(value::TapTransformer) = value.services
 """Get [`TapTransformer`](@ref) `ext`."""
@@ -203,6 +231,14 @@ set_rating_c!(value::TapTransformer, val) = value.rating_c = set_value(value, Va
 set_winding_group_number!(value::TapTransformer, val) = value.winding_group_number = val
 """Set [`TapTransformer`](@ref) `control_objective`."""
 set_control_objective!(value::TapTransformer, val) = value.control_objective = val
+"""Set [`TapTransformer`](@ref) `tap_limits`."""
+set_tap_limits!(value::TapTransformer, val) = value.tap_limits = val
+"""Set [`TapTransformer`](@ref) `number_of_tap_positions`."""
+set_number_of_tap_positions!(value::TapTransformer, val) = value.number_of_tap_positions = val
+"""Set [`TapTransformer`](@ref) `regulated_bus_number`."""
+set_regulated_bus_number!(value::TapTransformer, val) = value.regulated_bus_number = val
+"""Set [`TapTransformer`](@ref) `voltage_setpoint`."""
+set_voltage_setpoint!(value::TapTransformer, val) = value.voltage_setpoint = val
 """Set [`TapTransformer`](@ref) `services`."""
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""

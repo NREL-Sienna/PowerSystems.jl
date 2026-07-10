@@ -677,6 +677,7 @@ export get_n_states
 export get_name
 export get_number
 export get_number_of_steps
+export get_number_of_tap_positions
 export get_operation_cost
 export get_outflow
 export get_outflow_limits
@@ -741,6 +742,7 @@ export get_rectifier_tap_step
 export get_rectifier_transformer_ratio
 export get_rectifier_xc
 export get_reg
+export get_regulated_bus_number
 export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
@@ -760,6 +762,7 @@ export get_secondary_group_number
 export get_secondary_star_arc
 export get_secondary_turns_ratio
 export get_services
+export get_shunt_control_type
 export get_speed_error_signal
 export get_spillage_limits
 export get_star_bus
@@ -778,6 +781,7 @@ export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
 export get_tap
+export get_tap_limits
 export get_tertiary_group_number
 export get_tertiary_star_arc
 export get_tertiary_turns_ratio
@@ -1375,6 +1379,7 @@ export set_n_states!
 export set_name!
 export set_number!
 export set_number_of_steps!
+export set_number_of_tap_positions!
 export set_operation_cost!
 export set_outflow!
 export set_outflow_limits!
@@ -1439,6 +1444,7 @@ export set_rectifier_tap_step!
 export set_rectifier_transformer_ratio!
 export set_rectifier_xc!
 export set_reg!
+export set_regulated_bus_number!
 export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!
@@ -1458,6 +1464,7 @@ export set_secondary_group_number!
 export set_secondary_star_arc!
 export set_secondary_turns_ratio!
 export set_services!
+export set_shunt_control_type!
 export set_speed_error_signal!
 export set_spillage_limits!
 export set_star_bus!
@@ -1476,6 +1483,7 @@ export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
+export set_tap_limits!
 export set_tertiary_group_number!
 export set_tertiary_star_arc!
 export set_tertiary_turns_ratio!

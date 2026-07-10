@@ -992,6 +992,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "RMI1" => transformer["RMI1"],
                     "RMA1" => transformer["RMA1"],
                     "NTP1" => transformer["NTP1"],
+                    "VMA1" => transformer["VMA1"],
+                    "VMI1" => transformer["VMI1"],
                     "R1-2" => transformer["R1-2"],
                     "X1-2" => transformer["X1-2"],
                     "MAG1" => transformer["MAG1"],
@@ -1952,21 +1954,22 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["voltage_setpoint"] = facts["VSET"]
             sub_data["max_shunt_current"] = facts["SHMX"]
 
-            # % of MVAr required to hold voltage at sending bus
-            if facts["RMPCT"] < 0
-                @warn "% MVAr required must me positive."
-            end
-
-            sub_data["reactive_power_required"] = facts["RMPCT"]
-            sub_data["ext"] = Dict{String, Any}()
+            # IMX is the series current limit (out of scope for the shunt model) and
+            # RMPCT is a share percent, not a power quantity; both are preserved in ext
+            # for the PowerFlows exporter round-trip rather than mapped to a first-class field.
+            sub_data["ext"] = Dict{String, Any}(
+                "J" => facts["J"],
+                "IMX" => facts["IMX"],
+                "RMPCT" => facts["RMPCT"],
+            )
 
             if pm_data["source_version"] == "35"
+                sub_data["regulated_bus_number"] = facts["FCREG"]
                 sub_data["ext"]["NREG"] = facts["NREG"]
                 sub_data["ext"]["MNAME"] = facts["MNAME"]
             elseif pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}(
-                    "J" => facts["J"],
-                )
+                # REMOT is the v32/33 name for the field renamed FCREG in v35.
+                sub_data["regulated_bus_number"] = facts["REMOT"]
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end

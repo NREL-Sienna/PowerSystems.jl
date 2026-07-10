@@ -262,31 +262,53 @@ function IS.deserialize(
     )
 end
 
-# Forward-compat STUBS (not deprecations) for PSY #1684 first-class `TapTransformer`
-# controllability accessors that this branch predates. They exist so the PowerFlows
-# discrete-control branch can run against this PSY branch during co-development. Remove once
-# #1684 lands (which adds these as real fields). `regulated_bus_number` and
-# `number_of_tap_positions` return values that make PowerFlows fall back to its `ext`/default
-# handling; `get_tap_limits` and `get_voltage_setpoint` have no such escape hatch, so they
-# return FABRICATED placeholders and warn — do not rely on them for systems whose `ext`
-# lacks the corresponding `RMI`/`RMA`/`VSET` keys.
+# BEGIN 5.x deprecations: FACTSControlDevice pre-first-class shunt-control fields
+#
+# Before FACTSControlDevice became first-class, `max_shunt_current` already held the
+# PSS/E SHMX value (shunt current capability, MVA) — that field's meaning is unchanged,
+# so no migration is needed for it. The device simply had no `max_reactive_power`,
+# `shunt_control_type`, or `regulated_bus_number` fields. A system serialized under that
+# schema must still deserialize: default the missing fields to the struct's own defaults
+# (`max_reactive_power` = 9999.0, non-binding; `shunt_control_type` = STATCOM;
+# `regulated_bus_number` = 0, local bus). Scoped enums serialize/deserialize as their bare
+# value name (e.g. "STATCOM"), matching the convention used elsewhere for this enum family.
 
-"""Stub: returns `0` (the "local" sentinel) so callers defer to legacy `ext` keys. See PSY #1684."""
-get_regulated_bus_number(::TapTransformer) = 0
-
-"""Stub: returns `0` so callers fall back to their default tap-position count. See PSY #1684."""
-get_number_of_tap_positions(::TapTransformer) = 0
-
-"""Stub: returns a FABRICATED `(min, max)` placeholder. See PSY #1684."""
-function get_tap_limits(::TapTransformer)
-    @warn "`get_tap_limits(::TapTransformer)` is a stub returning fabricated limits (PSY #1684 \
-           not in this branch)." maxlog = 1
-    return (min = 0.9, max = 1.1)
+"""
+Data fixup for a `FACTSControlDevice` dict serialized before the shunt-control fields were
+added: leaves `max_shunt_current` untouched (it already held SHMX under the old schema)
+and fills in any of `max_reactive_power`, `shunt_control_type`, `regulated_bus_number` that
+are absent with their struct defaults. No-op if all three are already present.
+"""
+function _deserialize_facts_compat(dict::Dict)
+    if haskey(dict, "max_reactive_power") &&
+       haskey(dict, "shunt_control_type") &&
+       haskey(dict, "regulated_bus_number")
+        return dict
+    end
+    fixed = copy(dict)
+    if !haskey(fixed, "max_reactive_power")
+        fixed["max_reactive_power"] = 9999.0
+    end
+    if !haskey(fixed, "shunt_control_type")
+        fixed["shunt_control_type"] = string(FACTSShuntControlType.STATCOM)
+    end
+    if !haskey(fixed, "regulated_bus_number")
+        fixed["regulated_bus_number"] = 0
+    end
+    return fixed
 end
 
-"""Stub: returns a FABRICATED `1.0` pu voltage setpoint. See PSY #1684."""
-function get_voltage_setpoint(::TapTransformer)
-    @warn "`get_voltage_setpoint(::TapTransformer)` is a stub returning a fabricated 1.0 pu \
-           setpoint (PSY #1684 not in this branch)." maxlog = 1
-    return 1.0
+function IS.deserialize(
+    ::Type{FACTSControlDevice},
+    data::Dict,
+    component_cache::Dict,
+)
+    data = _deserialize_facts_compat(data)
+    return invoke(
+        IS.deserialize,
+        Tuple{Type{<:_CONTAINS_SHOULD_ENCODE}, Dict, Dict},
+        FACTSControlDevice,
+        data,
+        component_cache,
+    )
 end
