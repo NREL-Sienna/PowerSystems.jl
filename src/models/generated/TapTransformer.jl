@@ -192,8 +192,8 @@ get_tap(value::TapTransformer) = value.tap
 get_rating(value::TapTransformer, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`TapTransformer`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::TapTransformer, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{TapTransformer}) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{TapTransformer}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{TapTransformer}) = InfrastructureSystems.DU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{TapTransformer}) = InfrastructureSystems.DU
 
 _get_base_power(value::TapTransformer) = value.base_power
 """Get [`TapTransformer`](@ref) `base_voltage_primary`."""

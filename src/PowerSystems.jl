@@ -466,6 +466,7 @@ export get_components
 export get_num_components
 export get_associated_components
 export show_components
+export show_component
 export get_subcomponents
 export get_components_by_name
 export get_available
