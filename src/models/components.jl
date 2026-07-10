@@ -258,6 +258,21 @@ set_base_power_12!(t::ThreeWindingTransformer, v::Float64) = t.base_power_12 = v
 set_base_power_23!(t::ThreeWindingTransformer, v::Float64) = t.base_power_23 = v
 set_base_power_13!(t::ThreeWindingTransformer, v::Float64) = t.base_power_13 = v
 
+# A TwoWindingTransformer has no `base_power` field of its own: the winding's
+# base_power is the transformer's device base. Forward the base-power accessors
+# to the winding so the units engine's device-base resolution (for the parent's
+# r/x/magnetizing_shunt) and downstream base-power reads/writes keep working.
+# The value-typed setter variants mirror the generic Component ones (natural
+# units only) so no ambiguity arises with `set_base_power!(::Component, ...)`.
+_get_base_power(t::TwoWindingTransformer) = get_base_power(get_winding(t))
+get_base_power(t::TwoWindingTransformer) = get_base_power(get_winding(t))
+set_base_power!(t::TwoWindingTransformer, val::Float64) =
+    set_base_power!(get_winding(t), val)
+set_base_power!(t::TwoWindingTransformer, val::Unitful.Quantity) =
+    set_base_power!(get_winding(t), Unitful.ustrip(MVA, val))
+set_base_power!(::TwoWindingTransformer, ::RelativeQuantity{<:Any, U}) where {U} =
+    _base_power_units_error(U())
+
 # Physical category implied by a field's conversion unit.
 _unit_category(::Val{:mva}) = POWER
 _unit_category(::Val{:ohm}) = IMPEDANCE

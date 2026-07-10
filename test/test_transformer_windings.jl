@@ -204,6 +204,7 @@ end
     # current units_info onto the incoming winding.
     t2 = _test_t2w()
     fresh_2w = TransformerWinding(;
+        available = true,
         arc = Arc(ACBus(nothing), ACBus(nothing)),
         rating = 0.5,
         base_power = 100.0,
@@ -216,6 +217,7 @@ end
 
     t3 = _test_t3w()
     fresh_3w = TransformerWinding(;
+        available = true,
         arc = Arc(ACBus(nothing), ACBus(nothing)),
         rating = 0.5,
         base_power = 15.0,

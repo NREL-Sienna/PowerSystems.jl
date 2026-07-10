@@ -6,12 +6,12 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct TransformerWinding <: DeviceParameter
+        available::Bool
         arc::Arc
         tap::Float64
         α::Float64
         winding_group_number::WindingGroupNumber
         control::Union{Nothing, TransformerControl}
-        available::Bool
         rating::Union{Nothing, Float64}
         rating_b::Union{Nothing, Float64}
         rating_c::Union{Nothing, Float64}
@@ -24,15 +24,15 @@ This file is auto-generated. Do not edit.
 
 The data defining one modeled arc of a transformer.
 
-A [`TwoWindingTransformer`](@ref) has one winding; a [`ThreeWindingTransformer`](@ref) has three, each connecting a terminal bus to the star bus. Winding `available` is the single source of truth for availability; the owning transformer derives its availability from its windings. `rating`/`rating_b`/`rating_c` and the flow fields are stored in device base per unit on `base_power` (MVA). `base_voltage` is the terminal-side base in kV. For a [`TwoWindingTransformer`](@ref)'s single winding, this `base_power` and the parent's `base_power` are expected to be equal; parsers are responsible for maintaining this invariant, and `check_rating_values` assumes it holds.
+A [`TwoWindingTransformer`](@ref) has one winding; a [`ThreeWindingTransformer`](@ref) has three, each connecting a terminal bus to the star bus. Winding `available` is the single source of truth for availability; the owning transformer derives its availability from its windings. `rating`/`rating_b`/`rating_c` and the flow fields are stored in device base per unit on `base_power` (MVA). `base_voltage` is the terminal-side base in kV. For a [`TwoWindingTransformer`](@ref), the single winding's `base_power` is the transformer's device base.
 
 # Arguments
+- `available::Bool`: Indicator of whether this winding is connected and online. Winding availability is the single source of truth; the owning transformer derives its availability from its windings
 - `arc::Arc`: An [`Arc`](@ref) defining this winding `from` a terminal bus `to` the transformer's other terminal or star bus
 - `tap::Float64`: (default: `1.0`) Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage
 - `α::Float64`: (default: `0.0`) Initial condition of phase shift (radians) across this winding
 - `winding_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating fixed phase shift (radians) due to the connection group configuration
 - `control::Union{Nothing, TransformerControl}`: (default: `nothing`) Tap-changer / phase-shifter control specification, or `nothing` for an uncontrolled winding. See [`TransformerControl`](@ref)
-- `available::Bool`: (default: `true`) Indicator of whether this winding is connected and online. Winding availability is the single source of truth; the owning transformer derives its availability from its windings
 - `rating::Union{Nothing, Float64}`: (default: `nothing`) Thermal rating (MVA) stored in device base per unit on `base_power`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
@@ -43,6 +43,8 @@ A [`TwoWindingTransformer`](@ref) has one winding; a [`ThreeWindingTransformer`]
 - `units_info::Union{Nothing, SystemUnitsSettings}`: (**Do not modify.**) Internal units settings for explicit-units conversion; populated when the owning transformer is attached to a System
 """
 mutable struct TransformerWinding <: DeviceParameter
+    "Indicator of whether this winding is connected and online. Winding availability is the single source of truth; the owning transformer derives its availability from its windings"
+    available::Bool
     "An [`Arc`](@ref) defining this winding `from` a terminal bus `to` the transformer's other terminal or star bus"
     arc::Arc
     "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
@@ -53,8 +55,6 @@ mutable struct TransformerWinding <: DeviceParameter
     winding_group_number::WindingGroupNumber
     "Tap-changer / phase-shifter control specification, or `nothing` for an uncontrolled winding. See [`TransformerControl`](@ref)"
     control::Union{Nothing, TransformerControl}
-    "Indicator of whether this winding is connected and online. Winding availability is the single source of truth; the owning transformer derives its availability from its windings"
-    available::Bool
     "Thermal rating (MVA) stored in device base per unit on `base_power`"
     rating::Union{Nothing, Float64}
     "Second current rating; entered in MVA."
@@ -73,23 +73,23 @@ mutable struct TransformerWinding <: DeviceParameter
     units_info::Union{Nothing, SystemUnitsSettings}
 end
 
-function TransformerWinding(arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, control=nothing, available=true, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage=nothing, )
-    TransformerWinding(arc, tap, α, winding_group_number, control, available, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage, nothing, )
+function TransformerWinding(available, arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, control=nothing, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage=nothing, )
+    TransformerWinding(available, arc, tap, α, winding_group_number, control, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage, nothing, )
 end
 
-function TransformerWinding(; arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, control=nothing, available=true, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage=nothing, units_info=nothing, )
-    TransformerWinding(arc, tap, α, winding_group_number, control, available, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage, units_info, )
+function TransformerWinding(; available, arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, control=nothing, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage=nothing, units_info=nothing, )
+    TransformerWinding(available, arc, tap, α, winding_group_number, control, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage, units_info, )
 end
 
 # Constructor for demo purposes; non-functional.
 function TransformerWinding(::Nothing)
     TransformerWinding(;
+        available=false,
         arc=Arc(ACBus(nothing), ACBus(nothing)),
         tap=1.0,
         α=0.0,
         winding_group_number=WindingGroupNumber.UNDEFINED,
         control=nothing,
-        available=false,
         rating=nothing,
         rating_b=nothing,
         rating_c=nothing,
@@ -100,6 +100,8 @@ function TransformerWinding(::Nothing)
     )
 end
 
+"""Get [`TransformerWinding`](@ref) `available`."""
+get_available(value::TransformerWinding) = value.available
 """Get [`TransformerWinding`](@ref) `arc`."""
 get_arc(value::TransformerWinding) = value.arc
 """Get [`TransformerWinding`](@ref) `tap`."""
@@ -110,8 +112,6 @@ get_α(value::TransformerWinding) = value.α
 get_winding_group_number(value::TransformerWinding) = value.winding_group_number
 """Get [`TransformerWinding`](@ref) `control`."""
 get_control(value::TransformerWinding) = value.control
-"""Get [`TransformerWinding`](@ref) `available`."""
-get_available(value::TransformerWinding) = value.available
 """Get [`TransformerWinding`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_unitful`](@ref)."""
 get_rating(value::TransformerWinding, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`TransformerWinding`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
@@ -149,6 +149,8 @@ get_base_voltage(value::TransformerWinding) = value.base_voltage
 
 _get_units_info(value::TransformerWinding) = value.units_info
 
+"""Set [`TransformerWinding`](@ref) `available`."""
+set_available!(value::TransformerWinding, val) = value.available = val
 """Set [`TransformerWinding`](@ref) `arc`."""
 set_arc!(value::TransformerWinding, val) = value.arc = val
 """Set [`TransformerWinding`](@ref) `tap`."""
@@ -159,8 +161,6 @@ set_α!(value::TransformerWinding, val) = value.α = val
 set_winding_group_number!(value::TransformerWinding, val) = value.winding_group_number = val
 """Set [`TransformerWinding`](@ref) `control`."""
 set_control!(value::TransformerWinding, val) = value.control = val
-"""Set [`TransformerWinding`](@ref) `available`."""
-set_available!(value::TransformerWinding, val) = value.available = val
 """Set [`TransformerWinding`](@ref) `rating`."""
 set_rating!(value::TransformerWinding, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`TransformerWinding`](@ref) `rating_b`."""

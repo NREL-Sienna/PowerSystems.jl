@@ -85,15 +85,8 @@ get_limits(c::TransformerControl) = c.limits
 get_controlled_quantity_limits(c::TransformerControl) = c.controlled_quantity_limits
 get_number_of_tap_positions(c::TransformerControl) = c.number_of_tap_positions
 
-# `TransformerControl` is a plain struct (not an `IS.InfrastructureSystemsType`) and has no
-# Component-valued fields, so it needs neither UUID handling nor a `component_cache`.
-# Mirror the `OperationalCost` precedent (`cost_functions/operational_cost.jl`) of
-# forwarding to IS's generic field-iterating (de)serializers rather than hand-listing
-# fields: the scoped-enum `objective` and `MinMax`-typed `limits`/`controlled_quantity_limits`
-# fields already round-trip through IS's own generic mechanisms
-# (`@scoped_enum`-generated `serialize`/`deserialize`, and the `NamedTuple` `deserialize`
-# method in `IS.serialization`), and going through the kwarg constructor re-runs
-# `TransformerControl`'s validation (e.g. rejecting `objective == UNDEFINED`) on load.
+# No Component-valued fields, so the generic field-iterating (de)serializers suffice;
+# deserializing through the kwarg constructor re-runs the validation.
 IS.serialize(c::TransformerControl) = IS.serialize_struct(c)
 IS.deserialize(::Type{TransformerControl}, data::Dict) =
     IS.deserialize_struct(TransformerControl, data)

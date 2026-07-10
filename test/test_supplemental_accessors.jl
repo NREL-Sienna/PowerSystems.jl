@@ -113,6 +113,7 @@
         bus_lo.base_voltage = 138.0
 
         winding = TransformerWinding(;
+            available = true,
             arc = Arc(; from = bus_hi, to = bus_lo),
             base_voltage = 230.0,
         )
@@ -122,7 +123,6 @@
             r = 0.01,
             x = 0.1,
             magnetizing_shunt = 0.0,
-            base_power = 100.0,
             base_voltage_secondary = 138.0,
         )
         @test get_high_voltage(t) == 230.0

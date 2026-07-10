@@ -333,7 +333,7 @@ end
 end
 
 @testset "TwoWindingTransformer Ω/S set→get round-trip uses one base voltage" begin
-    t2w = TwoWindingTransformer(nothing)  # base_power = 100.0
+    t2w = TwoWindingTransformer(nothing)  # winding base_power = 100.0
     winding = get_winding(t2w)
     set_base_voltage!(winding, 230.0)
     # Arc endpoint voltage deliberately different from the winding's base voltage:

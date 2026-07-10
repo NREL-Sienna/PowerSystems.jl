@@ -47,6 +47,13 @@ Public = true
 Private = false
 ```
 
+<!--
+Documenter applies a block's `Filter` to every documented binding in `Modules`
+before narrowing by `Pages`, so every `Modules = [IS]` filter below sees IS's
+`const … = Union{…}` aliases (e.g. `TimeSeriesValueCurve`). `nameof` has no
+method for a `Union`, so the `!(t isa Union)` guard is required on each of these
+filters that calls `nameof`.
+-->
 ```@autodocs
 Modules = [IS]
 Pages   = ["geographic_supplemental_attribute.jl"

@@ -11,7 +11,6 @@ This file is auto-generated. Do not edit.
         r::Float64
         x::Float64
         magnetizing_shunt::Complex{Float64}
-        base_power::Float64
         base_voltage_secondary::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -20,15 +19,14 @@ This file is auto-generated. Do not edit.
 
 A two-winding transformer connecting two buses.
 
-The modeled arc, tap, phase shift, ratings, per-winding base power, base voltage, and control all live on the single [`TransformerWinding`](@ref) obtained with [`get_winding`](@ref); availability is winding-level (see [`get_available`](@ref)). `r`/`x` are the series impedance and `magnetizing_shunt` the magnetizing shunt admittance, both in pu on `base_power` referenced to the primary (winding) base voltage. The model uses an equivalent circuit assuming the impedance is on the high-voltage side and allocates iron losses and magnetizing susceptance to the primary side. The parent `base_power` and the winding's `base_power` are expected to be equal; parsers are responsible for maintaining this invariant, and `check_rating_values` assumes it holds.
+The modeled arc, tap, phase shift, ratings, per-winding base power, base voltage, and control all live on the single [`TransformerWinding`](@ref) obtained with [`get_winding`](@ref); availability is winding-level (see [`get_available`](@ref)). `r`/`x` are the series impedance and `magnetizing_shunt` the magnetizing shunt admittance, both in pu on `base_power` referenced to the primary (winding) base voltage. The model uses an equivalent circuit assuming the impedance is on the high-voltage side and allocates iron losses and magnetizing susceptance to the primary side. The transformer's device base is the winding's `base_power`.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `winding::TransformerWinding`: The [`TransformerWinding`](@ref) carrying this transformer's arc, tap, phase shift, ratings, per-winding base power/voltage, availability, and control
-- `r::Float64`: Resistance in pu (device base on `base_power`), referenced to the primary (winding) base voltage, validation range: `(-2, 4)`
+- `r::Float64`: Resistance in pu (device base on `base_power`), referenced to the primary (winding) base voltage, validation range: `(0, 4)`
 - `x::Float64`: Reactance in pu (device base on `base_power`), referenced to the primary (winding) base voltage, validation range: `(-2, 4)`
 - `magnetizing_shunt::Complex{Float64}`: Magnetizing shunt admittance in pu (device base on `base_power`), referenced to the primary (winding) base voltage
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `base_voltage_secondary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_to(get_arc(winding)))`) Secondary base voltage in kV, validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -45,8 +43,6 @@ mutable struct TwoWindingTransformer <: ACTransmission
     x::Float64
     "Magnetizing shunt admittance in pu (device base on `base_power`), referenced to the primary (winding) base voltage"
     magnetizing_shunt::Complex{Float64}
-    "Base power (MVA) for [per unitization](@ref per_unit)"
-    base_power::Float64
     "Secondary base voltage in kV"
     base_voltage_secondary::Union{Nothing, Float64}
     "Services that this device contributes to"
@@ -57,12 +53,12 @@ mutable struct TwoWindingTransformer <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function TwoWindingTransformer(name, winding, r, x, magnetizing_shunt, base_power, base_voltage_secondary=get_base_voltage(get_to(get_arc(winding))), services=Device[], ext=Dict{String, Any}(), )
-    TwoWindingTransformer(name, winding, r, x, magnetizing_shunt, base_power, base_voltage_secondary, services, ext, InfrastructureSystemsInternal(), )
+function TwoWindingTransformer(name, winding, r, x, magnetizing_shunt, base_voltage_secondary=get_base_voltage(get_to(get_arc(winding))), services=Device[], ext=Dict{String, Any}(), )
+    TwoWindingTransformer(name, winding, r, x, magnetizing_shunt, base_voltage_secondary, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoWindingTransformer(; name, winding, r, x, magnetizing_shunt, base_power, base_voltage_secondary=get_base_voltage(get_to(get_arc(winding))), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoWindingTransformer(name, winding, r, x, magnetizing_shunt, base_power, base_voltage_secondary, services, ext, internal, )
+function TwoWindingTransformer(; name, winding, r, x, magnetizing_shunt, base_voltage_secondary=get_base_voltage(get_to(get_arc(winding))), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoWindingTransformer(name, winding, r, x, magnetizing_shunt, base_voltage_secondary, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -73,7 +69,6 @@ function TwoWindingTransformer(::Nothing)
         r=0.0,
         x=0.0,
         magnetizing_shunt=0.0,
-        base_power=100.0,
         base_voltage_secondary=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -102,8 +97,6 @@ get_magnetizing_shunt(value::TwoWindingTransformer, units) = InfrastructureSyste
 get_magnetizing_shunt_unitful(value::TwoWindingTransformer, units) = get_value(value, Val(:magnetizing_shunt), Val(:siemens), units)
 InfrastructureSystems.display_units_arg(::typeof(get_magnetizing_shunt), ::Type{TwoWindingTransformer}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_magnetizing_shunt_unitful), ::Type{TwoWindingTransformer}) = InfrastructureSystems.SU
-
-_get_base_power(value::TwoWindingTransformer) = value.base_power
 """Get [`TwoWindingTransformer`](@ref) `base_voltage_secondary`."""
 get_base_voltage_secondary(value::TwoWindingTransformer) = value.base_voltage_secondary
 """Get [`TwoWindingTransformer`](@ref) `services`."""

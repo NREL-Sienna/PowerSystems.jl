@@ -284,7 +284,6 @@ end
         r = 0.01,
         x = 0.1,
         magnetizing_shunt = 0.0,
-        base_power = 100.0,
     )
     add_component!(sys, xfrm)
 

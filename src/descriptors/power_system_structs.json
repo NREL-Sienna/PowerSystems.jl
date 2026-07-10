@@ -417,8 +417,14 @@
         },
         {
             "struct_name": "TransformerWinding",
-            "docstring": "The data defining one modeled arc of a transformer.\n\nA [`TwoWindingTransformer`](@ref) has one winding; a [`ThreeWindingTransformer`](@ref) has three, each connecting a terminal bus to the star bus. Winding `available` is the single source of truth for availability; the owning transformer derives its availability from its windings. `rating`/`rating_b`/`rating_c` and the flow fields are stored in device base per unit on `base_power` (MVA). `base_voltage` is the terminal-side base in kV. For a [`TwoWindingTransformer`](@ref)'s single winding, this `base_power` and the parent's `base_power` are expected to be equal; parsers are responsible for maintaining this invariant, and `check_rating_values` assumes it holds.",
+            "docstring": "The data defining one modeled arc of a transformer.\n\nA [`TwoWindingTransformer`](@ref) has one winding; a [`ThreeWindingTransformer`](@ref) has three, each connecting a terminal bus to the star bus. Winding `available` is the single source of truth for availability; the owning transformer derives its availability from its windings. `rating`/`rating_b`/`rating_c` and the flow fields are stored in device base per unit on `base_power` (MVA). `base_voltage` is the terminal-side base in kV. For a [`TwoWindingTransformer`](@ref), the single winding's `base_power` is the transformer's device base.",
             "fields": [
+                {
+                    "name": "available",
+                    "comment": "Indicator of whether this winding is connected and online. Winding availability is the single source of truth; the owning transformer derives its availability from its windings",
+                    "null_value": "false",
+                    "data_type": "Bool"
+                },
                 {
                     "name": "arc",
                     "comment": "An [`Arc`](@ref) defining this winding `from` a terminal bus `to` the transformer's other terminal or star bus",
@@ -452,13 +458,6 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, TransformerControl}",
                     "default": "nothing"
-                },
-                {
-                    "name": "available",
-                    "comment": "Indicator of whether this winding is connected and online. Winding availability is the single source of truth; the owning transformer derives its availability from its windings",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "true"
                 },
                 {
                     "name": "rating",
@@ -1033,7 +1032,7 @@
         },
         {
             "struct_name": "TwoWindingTransformer",
-            "docstring": "A two-winding transformer connecting two buses.\n\nThe modeled arc, tap, phase shift, ratings, per-winding base power, base voltage, and control all live on the single [`TransformerWinding`](@ref) obtained with [`get_winding`](@ref); availability is winding-level (see [`get_available`](@ref)). `r`/`x` are the series impedance and `magnetizing_shunt` the magnetizing shunt admittance, both in pu on `base_power` referenced to the primary (winding) base voltage. The model uses an equivalent circuit assuming the impedance is on the high-voltage side and allocates iron losses and magnetizing susceptance to the primary side. The parent `base_power` and the winding's `base_power` are expected to be equal; parsers are responsible for maintaining this invariant, and `check_rating_values` assumes it holds.",
+            "docstring": "A two-winding transformer connecting two buses.\n\nThe modeled arc, tap, phase shift, ratings, per-winding base power, base voltage, and control all live on the single [`TransformerWinding`](@ref) obtained with [`get_winding`](@ref); availability is winding-level (see [`get_available`](@ref)). `r`/`x` are the series impedance and `magnetizing_shunt` the magnetizing shunt admittance, both in pu on `base_power` referenced to the primary (winding) base voltage. The model uses an equivalent circuit assuming the impedance is on the high-voltage side and allocates iron losses and magnetizing susceptance to the primary side. The transformer's device base is the winding's `base_power`.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1055,7 +1054,7 @@
                     "data_type": "Float64",
                     "comment": "Resistance in pu (device base on `base_power`), referenced to the primary (winding) base voltage",
                     "valid_range": {
-                        "min": -2,
+                        "min": 0,
                         "max": 4
                     },
                     "validation_action": "warn",
@@ -1083,19 +1082,6 @@
                     "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
-                },
-                {
-                    "name": "base_power",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "100.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 1e-4,
-                        "max": null
-                    },
-                    "validation_action": "warn"
                 },
                 {
                     "name": "base_voltage_secondary",
