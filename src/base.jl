@@ -235,11 +235,11 @@ end
 
 """Constructs a System from a JSON file path ending with .json.
 
-`assign_new_uuids = true` will generate new UUIDs for the system and all components.
+`assign_new_ids = true` will generate new integer IDs for all components.
 """
 function System(
     file_path::AbstractString;
-    assign_new_uuids = false,
+    assign_new_ids = false,
     kwargs...,
 )
     ext = lowercase(splitext(file_path)[2])
@@ -267,13 +267,13 @@ function System(
     _post_deserialize_handling(
         sys;
         runchecks = runchecks,
-        assign_new_uuids = assign_new_uuids,
+        assign_new_ids = assign_new_ids,
     )
     return sys
 end
 
 """
-If assign_new_uuids = true, generate new UUIDs for the system and all components.
+If assign_new_ids = true, generate new integer IDs for all components.
 
 Warning: time series data is not restored by this method. If that is needed, use the normal
 process to construct the system from a serialized JSON file instead, such as with
@@ -283,7 +283,7 @@ function IS.from_json(
     io::Union{IO, String},
     ::Type{System};
     runchecks = true,
-    assign_new_uuids = false,
+    assign_new_ids = false,
     kwargs...,
 )
     data = JSON.parse(io; dicttype = Dict{String, Any})
@@ -291,21 +291,21 @@ function IS.from_json(
     _post_deserialize_handling(
         sys;
         runchecks = runchecks,
-        assign_new_uuids = assign_new_uuids,
+        assign_new_ids = assign_new_ids,
     )
     return sys
 end
 
-function _post_deserialize_handling(sys::System; runchecks = true, assign_new_uuids = false)
+function _post_deserialize_handling(sys::System; runchecks = true, assign_new_ids = false)
     runchecks && check(sys)
-    if assign_new_uuids
-        IS.assign_new_uuid!(sys)
+    if assign_new_ids
+        IS.assign_new_id!(sys)
         for component in get_components(Component, sys)
-            IS.assign_new_uuid!(sys, component)
+            IS.assign_new_id!(sys, component)
         end
         for component in
             IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-            IS.assign_new_uuid!(sys, component)
+            IS.assign_new_id!(sys, component)
         end
         # Note: this does not change UUIDs for time series data because they are
         # shared with components.
@@ -338,9 +338,9 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
     new_sys = deepcopy(sys)
     filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
 
-    IS.assign_new_uuid!(new_sys)
+    IS.assign_new_id!(new_sys)
     for component in get_components(Component, new_sys)
-        IS.assign_new_uuid!(new_sys, component)
+        IS.assign_new_id!(new_sys, component)
     end
 
     return new_sys
@@ -354,15 +354,15 @@ function filter_components_by_subsystem!(
     subsystem::AbstractString;
     runchecks = true,
 )
-    component_uuids = get_component_uuids(sys, subsystem)
+    component_ids = get_component_ids(sys, subsystem)
     for component in get_components(Component, sys)
-        if !in(IS.get_uuid(component), component_uuids)
+        if !in(IS.get_id(component), component_ids)
             remove_component!(sys, component)
         end
     end
 
     for component in IS.get_masked_components(Component, sys.data)
-        if !in(IS.get_uuid(component), component_uuids)
+        if !in(IS.get_id(component), component_ids)
             IS.remove_masked_component!(sys.data, component)
         end
     end
@@ -436,7 +436,7 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     @info "Serialized System metadata to $filename"
 end
 
-IS.assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
+IS.assign_new_id!(sys::System) = IS.assign_new_uuid_internal!(sys)
 
 """
 Return the internal of the system
@@ -1060,91 +1060,6 @@ end
 begin_time_series_update(func::Function, sys::System) =
     IS.begin_time_series_update(func, sys.data.time_series_manager)
 
-"""
-Add time series data from a metadata file or metadata descriptors.
-
-# Arguments
-- `sys::System`: system
-- `metadata_file::AbstractString`: metadata file for timeseries
-  that includes an array of IS.TimeSeriesFileMetadata instances or a vector.
-- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
-"""
-function add_time_series!(sys::System, metadata_file::AbstractString; resolution = nothing)
-    return IS.add_time_series_from_file_metadata!(
-        sys.data,
-        Component,
-        metadata_file;
-        resolution = resolution,
-    )
-end
-
-"""
-Add time series data from a metadata file or metadata descriptors.
-
-# Arguments
-- `sys::System`: system
-- `timeseries_metadata::Vector{IS.TimeSeriesFileMetadata}`: metadata for timeseries
-- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
-"""
-function add_time_series!(
-    sys::System,
-    file_metadata::Vector{IS.TimeSeriesFileMetadata};
-    resolution = nothing,
-)
-    return IS.add_time_series_from_file_metadata!(
-        sys.data,
-        Component,
-        file_metadata;
-        resolution = resolution,
-    )
-end
-
-function IS.add_time_series_from_file_metadata_internal!(
-    data::IS.SystemData,
-    ::Type{<:Component},
-    cache::IS.TimeSeriesParsingCache,
-    file_metadata::IS.TimeSeriesFileMetadata,
-)
-    associations = TimeSeriesAssociation[]
-    IS.set_component!(file_metadata, data, PowerSystems)
-    component = file_metadata.component
-    if isnothing(component)
-        return associations
-    end
-
-    ts = IS.make_time_series!(cache, file_metadata)
-    if component isa AggregationTopology && file_metadata.scaling_factor_multiplier in
-       ["get_max_active_power", "get_max_reactive_power"]
-        uuids = Set{Base.UUID}()
-        for bus in _get_buses(data, component)
-            push!(uuids, IS.get_uuid(bus))
-        end
-        for _component in (
-            load for load in IS.get_components(ElectricLoad, data) if
-            IS.get_uuid(get_bus(load)) in uuids
-        )
-            file_metadata.component = _component
-            if !IS.has_assignment(cache, file_metadata)
-                IS.add_assignment!(cache, file_metadata)
-                push!(associations, TimeSeriesAssociation(_component, ts))
-            end
-        end
-        file_metadata.component = component
-        orig_sf = file_metadata.scaling_factor_multiplier
-        try
-            file_metadata.scaling_factor_multiplier = replace(orig_sf, "max" => "peak")
-            area_ts = IS.make_time_series!(cache, file_metadata)
-            IS.add_assignment!(cache, file_metadata)
-            push!(associations, TimeSeriesAssociation(component, area_ts))
-        finally
-            file_metadata.scaling_factor_multiplier = orig_sf
-        end
-    else
-        push!(associations, TimeSeriesAssociation(component, ts))
-        IS.add_assignment!(cache, file_metadata)
-    end
-    return associations
-end
 
 """
 Iterates over all components.
@@ -1365,7 +1280,7 @@ IS.get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UU
 """
 Change the UUID of a component.
 """
-IS.assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
+IS.assign_new_id!(sys::System, x::Component) = IS.assign_new_id!(sys.data, x)
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
@@ -3213,7 +3128,7 @@ function convert_component!(
         line.ext,
         _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(sys, line)
+    IS.assign_new_id!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -3259,7 +3174,7 @@ function convert_component!(
         line.ext,
         _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(sys, line)
+    IS.assign_new_id!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -3294,7 +3209,7 @@ function convert_component!(
         internal = _copy_internal_for_conversion(old_load),
         services = Device[],
     )
-    IS.assign_new_uuid!(sys, old_load)
+    IS.assign_new_id!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
     # TODO: PSY4
