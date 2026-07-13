@@ -37,7 +37,8 @@ Pages   = ["outages.jl",
            "contingencies.jl",
            "impedance_correction.jl",
            "plant_attribute.jl",
-           "emissions_data.jl"
+           "emissions_data.jl",
+           "substation.jl"
            ]
 Public = true
 Private = false
