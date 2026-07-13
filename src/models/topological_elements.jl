@@ -59,15 +59,6 @@ function check_bus_params(
     ext,
     internal,
 )
-    if !isnothing(bustype)
-        if bustype == ACBusTypes.SLACK
-            bustype = ACBusTypes.REF
-            @debug "Changed bus type from SLACK to" _group = IS.LOG_GROUP_SYSTEM bustype
-            #elseif bustype == BusTypes.ISOLATED
-            #    throw(DataFormatError("isolated buses are not supported; name=$name"))
-        end
-    end
-
     return number,
     name,
     available,

@@ -1632,6 +1632,17 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["br_status"] = sub_data["available"]
 
             sub_data["scheduled_dc_voltage"] = dcline["VSCHD"]
+            # RDC is a DC-circuit resistance in ohms; its per-unit base is the DC voltage
+            # (VSCHD), not the AC commutating base (EBASR) used for the converter branches.
+            dc_base_voltage = dcline["VSCHD"]
+            if iszero(dc_base_voltage)
+                throw(
+                    ArgumentError(
+                        "DC line $(sub_data["name"]): Scheduled DC voltage VSCHD cannot be 0",
+                    ),
+                )
+            end
+            Zbase_dc = dc_base_voltage^2 / baseMVA
             rectifier_base_voltage = dcline["EBASR"]
             if rectifier_base_voltage == 0
                 throw(
@@ -1725,7 +1736,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["rectifier_capacitor_reactance"] = dcline["XCAPR"] / ZbaseR
             sub_data["inverter_capacitor_reactance"] = dcline["XCAPI"] / ZbaseI
-            sub_data["r"] = dcline["RDC"] / ZbaseR
+            sub_data["r"] = dcline["RDC"] / Zbase_dc
 
             if pm_data["source_version"] ∈ ("32", "33")
                 sub_data["ext"] = Dict{String, Any}(

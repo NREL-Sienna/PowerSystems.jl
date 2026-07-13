@@ -511,6 +511,33 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
 
+    # ISW is the PSS(R)E area-slack bus number (AREA INTERCHANGE record); mark it SLACK
+    # so it is distinguishable from the system-wide REF bus. Bus numbers here are raw
+    # PSS(R)E "I" values; this parsing path never renumbers buses.
+    if data["source_type"] == "pti" && haskey(data, "area_interchange")
+        for (_, area_data) in data["area_interchange"]
+            isw = get(area_data, "bus_number", 0)
+            iszero(isw) && continue
+            area_name = string(get(area_data, "area_number", ""))
+            if !haskey(bus_number_to_bus, isw)
+                @warn "Area $area_name interchange-control bus (ISW=$isw) was not found among parsed buses; skipping SLACK assignment." _group =
+                    IS.LOG_GROUP_PARSING
+                continue
+            end
+            isw_bus = bus_number_to_bus[isw]
+            isw_bustype = get_bustype(isw_bus)
+            if isw_bustype == ACBusTypes.PV
+                set_bustype!(isw_bus, ACBusTypes.SLACK)
+            elseif isw_bustype == ACBusTypes.REF
+                @debug "Area $area_name interchange-control bus (ISW=$isw) is the system REF bus" _group =
+                    IS.LOG_GROUP_PARSING
+            else
+                @warn "Area $area_name interchange-control bus (ISW=$isw) has bustype $isw_bustype; expected PV or REF. Skipping SLACK assignment." _group =
+                    IS.LOG_GROUP_PARSING
+            end
+        end
+    end
+
     if data["source_type"] == "pti" && haskey(data, "interarea_transfer")
         # get Inter-area Transfers as AreaInterchange
         for (k, d) in data["interarea_transfer"]

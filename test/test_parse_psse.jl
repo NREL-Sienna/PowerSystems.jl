@@ -718,3 +718,76 @@ end
     )
     @test PowerSystems.get_branch_type_psse(d) == TapTransformer
 end
+
+@testset "PSSE ISW area-slack bus assignment" begin
+    base_dir = string(dirname(@__FILE__))
+
+    # Benchmark_4ger_33_2015.RAW AREA DATA: area 1 (LEFT) ISW=1 -> bus 1 (raw IDE=2,
+    # PV) is promoted to SLACK; area 2 (RIGHT) ISW=3 -> bus 3 (raw IDE=3, REF) is left
+    # as REF since it is already the area's own swing bus.
+    sys = System(joinpath(PSSE_RAW_DIR, "Benchmark_4ger_33_2015.RAW"))
+    bus1 = only(get_components(x -> get_number(x) == 1, ACBus, sys))
+    bus3 = only(get_components(x -> get_number(x) == 3, ACBus, sys))
+    @test get_bustype(bus1) == ACBusTypes.SLACK
+    @test get_bustype(bus3) == ACBusTypes.REF
+
+    # Crafted fixture (copy of Benchmark_4ger_33_2015.RAW with edited AREA DATA and an
+    # added INTER-AREA TRANSFER record): area 1 ISW=7 targets a PQ bus (malformed,
+    # warn, no SLACK); area 2 ISW=0 (untouched, no SLACK, no warning); area 3 ISW=999
+    # targets a bus number that doesn't exist (malformed, warn).
+    file_dir = joinpath(base_dir, "test_data", "area_slack_variants.raw")
+    sys2 = @test_logs(
+        (:warn, r"ISW=7"),
+        (:warn, r"ISW=999"),
+        match_mode = :any,
+        System(file_dir),
+    )
+    bus7 = only(get_components(x -> get_number(x) == 7, ACBus, sys2))
+    @test get_bustype(bus7) == ACBusTypes.PQ
+    @test isempty(get_components(x -> get_bustype(x) == ACBusTypes.SLACK, ACBus, sys2))
+
+    # Inter-area Transfer records become first-class AreaInterchange components.
+    transfer = only(get_components(AreaInterchange, sys2))
+    @test get_name(get_from_area(transfer)) == "1"
+    @test get_name(get_to_area(transfer)) == "2"
+    @test get_active_power_flow(transfer) == 50.0
+
+    # End-to-end persistence: SLACK survives a to_json/System round trip.
+    tmpdir = mktempdir()
+    path = joinpath(tmpdir, "benchmark_4ger_slack_roundtrip.json")
+    to_json(sys, path; force = true)
+    sys_reloaded = System(path)
+    bus1_reloaded = only(get_components(x -> get_number(x) == 1, ACBus, sys_reloaded))
+    @test get_bustype(bus1_reloaded) == ACBusTypes.SLACK
+end
+
+@testset "PSSE v35 populated SUBSTATION section parses" begin
+    # A v35 raw whose SUBSTATION section carries a node sub-block used to abort with
+    # `KeyError: "NODES"` in _populate_defaults!; the node-breaker section must be inert
+    # for the AC bus-branch model.
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_substation.raw")
+    sys = System(file_dir; runchecks = false)
+    @test length(get_components(ACBus, sys)) == 3
+    @test length(get_components(Generator, sys)) == 2
+    @test length(get_components(ElectricLoad, sys)) == 1
+    @test length(get_components(ACBranch, sys)) == 2
+end
+
+@testset "PSSE two-terminal DC resistance per-unit base" begin
+    # RDC is a DC-circuit resistance in ohms; its per-unit base is the DC voltage VSCHD,
+    # not the AC commutating base EBASR. Fixture: RDC=5 ohm, VSCHD=400 kV, EBASR=200 kV,
+    # SBASE=100 MVA -> r = 5 / (400^2 / 100) = 0.003125 pu (the AC base would give 0.0125).
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_two_terminal_dc.raw")
+    sys = System(file_dir; runchecks = false)
+    lcc = only(get_components(TwoTerminalLCCLine, sys))
+    rdc_ohms = 5.0
+    vschd_kv = 400.0
+    ebasr_kv = 200.0
+    sbase = get_base_power(sys)
+    @test isapprox(get_r(lcc), rdc_ohms / (vschd_kv^2 / sbase))
+    @test isapprox(get_r(lcc), 0.003125)
+    @test !isapprox(get_r(lcc), rdc_ohms / (ebasr_kv^2 / sbase))
+    @test get_scheduled_dc_voltage(lcc) == vschd_kv
+end

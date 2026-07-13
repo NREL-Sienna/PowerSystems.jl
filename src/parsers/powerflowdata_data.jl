@@ -3,6 +3,11 @@ struct PowerFlowDataNetwork
     data::PowerFlowData.Network
 end
 
+# NOTE: this file is not reachable from `System(::AbstractString)` for .raw input (that
+# goes through pm_io/psse.jl + power_models_data.jl). Its `read_bus!` methods below do not
+# apply the ISW area-slack -> ACBusTypes.SLACK mapping that power_models_data.jl's
+# `read_bus!` does; keep that in mind if this path is ever wired up to an entry point.
+
 """
 Constructs PowerFlowDataNetwork from a raw file.
 Currently Supports PSSE data files v30, v32 and v33

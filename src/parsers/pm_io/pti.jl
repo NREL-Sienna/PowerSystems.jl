@@ -2646,13 +2646,16 @@ function _populate_defaults!(data::Dict)
             for component in data[section]
                 for (field, field_value) in component
                     if isa(field_value, Array)
-                        sub_component_defaults = component_defaults[field]
+                        # Array-valued fields (e.g. substation NODES) are parsed with
+                        # concrete values, so the defaults table need not carry an entry
+                        # for them; look it up only when a sub-field is actually empty so
+                        # a missing entry warns instead of aborting the whole parse.
                         for sub_component in field_value
                             for (sub_field, sub_field_value) in sub_component
                                 if sub_field_value == ""
                                     try
                                         sub_component[sub_field] =
-                                            sub_component_defaults[sub_field]
+                                            component_defaults[field][sub_field]
                                     catch msg
                                         if isa(msg, KeyError)
                                             @warn(
