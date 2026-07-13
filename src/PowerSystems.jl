@@ -27,6 +27,8 @@ export ThermalPowerPlant
 export CombinedCycleBlock
 export CombinedCycleFractional
 export CombinedCycleConfiguration
+export Substation
+export get_grounding_resistance
 export HydroPowerPlant
 export RenewablePowerPlant
 export get_shaft_map
@@ -950,6 +952,7 @@ include("emissions_data.jl")
 # Definitions of PowerSystem
 include("base.jl")
 include("plant_attribute.jl")
+include("substation.jl")
 include("subsystems.jl")
 include("component_selector.jl")
 include("data_format_conversions.jl")

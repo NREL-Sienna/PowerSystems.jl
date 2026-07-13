@@ -712,6 +712,7 @@ export get_motor_technology
 export get_must_run
 export get_n_states
 export get_name
+export get_normal_branch_status
 export get_number
 export get_number_of_steps
 export get_number_of_tap_positions
@@ -1466,6 +1467,7 @@ export set_motor_technology!
 export set_must_run!
 export set_n_states!
 export set_name!
+export set_normal_branch_status!
 export set_number!
 export set_number_of_steps!
 export set_number_of_tap_positions!
