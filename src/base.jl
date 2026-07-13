@@ -370,7 +370,10 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
     new_sys = deepcopy(sys)
     filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
 
-    IS.assign_new_id!(new_sys)
+    # The System's own identity is its metadata UUID; components are identified by
+    # integer ids. Both must be regenerated so the derived system does not alias the
+    # one it was filtered from.
+    new_sys.metadata.uuid = IS.make_uuid()
     for component in get_components(Component, new_sys)
         IS.assign_new_id!(new_sys, component)
     end
@@ -1096,7 +1099,6 @@ end
 """
 begin_time_series_update(func::Function, sys::System) =
     IS.begin_time_series_update(func, sys.data.time_series_manager)
-
 
 """
 Iterates over all components.

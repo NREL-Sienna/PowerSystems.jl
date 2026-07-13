@@ -258,7 +258,7 @@ end
 end
 
 @testset "Test serialization of component with shared time series" begin
-    for use_scaling_factor in (true, false)
+    begin
         for in_memory in (true, false)
             sys = System(100.0)
             bus = ACBus(nothing)
@@ -278,19 +278,11 @@ end
             dates = collect(initial_time:Dates.Hour(1):end_time)
             data = rand(length(dates))
             ta = TimeSeries.TimeArray(dates, data, ["1"])
-            sfm1 = use_scaling_factor ? get_max_active_power : nothing
-            sfm2 = use_scaling_factor ? get_max_reactive_power : nothing
-            ts1a = SingleTimeSeries(;
-                name = "max_active_power",
-                data = ta,
-                scaling_factor_multiplier = sfm1,
-            )
+            ts1a = SingleTimeSeries(; name = "max_active_power", data = ta)
             add_time_series!(sys, gen, ts1a)
-            ts2a = SingleTimeSeries(
-                ts1a,
-                "max_reactive_power";
-                scaling_factor_multiplier = sfm2,
-            )
+            # The same array under a second name. The store is content-addressed, so the
+            # two associations share one underlying array (asserted below).
+            ts2a = SingleTimeSeries(ts1a, "max_reactive_power")
             add_time_series!(sys, gen, ts2a)
 
             sys2, result = validate_serialization(sys)
@@ -301,22 +293,18 @@ end
             ts1b = get_time_series(SingleTimeSeries, gen2, "max_active_power")
             ts2b = get_time_series(SingleTimeSeries, gen2, "max_reactive_power")
             @test ts1b.data == ts2b.data
+            # Values are stored as-is: there is no scaling-factor multiplier to apply.
             ta_vals = TimeSeries.values(ta)
-            expected1 =
-                use_scaling_factor ? ta_vals * get_max_active_power(gen, SU) :
-                ta_vals
-            expected2 =
-                use_scaling_factor ? ta_vals * get_max_reactive_power(gen, SU) : ta_vals
             @test get_time_series_values(
                 gen2,
                 ts1b,
                 start_time = initial_time;
-            ) == expected1
+            ) == ta_vals
             @test get_time_series_values(
                 gen2,
                 ts2b,
                 start_time = initial_time,
-            ) == expected2
+            ) == ta_vals
         end
     end
 end

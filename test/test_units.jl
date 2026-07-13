@@ -361,32 +361,10 @@ end
     set_units_base_system!(sys, "SYSTEM_BASE")
 end
 
-@testset "time series multiplier units default to SU" begin
-    sys, gen = _sys_with_thermal()
-
-    # Normalized scaling factors (0-1); SFM = get_max_active_power scales them.
-    t0 = Dates.DateTime("2024-01-01T00:00:00")
-    raw = [0.5, 0.7, 0.9]
-    ta = TimeSeries.TimeArray(
-        [t0 + Dates.Hour(i - 1) for i in 1:length(raw)],
-        raw,
-    )
-    ts = SingleTimeSeries(;
-        name = "max_active_power",
-        data = ta,
-        scaling_factor_multiplier = get_max_active_power,
-    )
-    add_time_series!(sys, gen, ts)
-
-    vals_default = get_time_series_values(SingleTimeSeries, gen, "max_active_power")
-    vals_su = get_time_series_values(SingleTimeSeries, gen, "max_active_power"; units = SU)
-    vals_nu = get_time_series_values(SingleTimeSeries, gen, "max_active_power"; units = NU)
-
-    @test vals_default == vals_su
-
-    base_nu = get_max_active_power(gen, NU) / get_max_active_power(gen, SU)
-    @test vals_nu ≈ vals_su .* base_nu
-end
+# NOTE: the "time series multiplier units default to SU" testset was removed along with
+# the `scaling_factor_multiplier` mechanism itself. Time series now store actual
+# per-device quantities, so there is no multiplier to resolve and
+# `get_time_series_values` no longer takes a `units` argument.
 
 @testset "_set_units_base! errors on detached component" begin
     sys, gen = _sys_with_thermal()

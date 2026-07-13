@@ -314,8 +314,10 @@ end
 
     open_time_series_store!(sys, "r") do
         for (i, expected_array) in enumerate(arrays)
-            ts = IS.get_time_series(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
-            @test ts.data == expected_array
+            # `SingleTimeSeries.data` is a raw Array now; go through
+            # `get_time_series_array` to compare timestamps as well as values.
+            ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+            @test ta == expected_array
         end
     end
 end
@@ -347,8 +349,8 @@ end
 
     open_time_series_store!(sys, "r") do
         for (i, expected_array) in enumerate(arrays)
-            ts = IS.get_time_series(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
-            @test ts.data == expected_array
+            ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+            @test ta == expected_array
         end
     end
 end
@@ -457,7 +459,9 @@ end
         sts_name;
         interval = interval1,
     )
-    @test ts1 isa DeterministicSingleTimeSeries
+    # Stored as a DeterministicSingleTimeSeries; a read materializes it into a regular
+    # Deterministic (the DST form is a storage-side optimization only).
+    @test ts1 isa Deterministic
     @test IS.get_interval(ts1) == interval1
 
     ts2 = get_time_series(
@@ -466,7 +470,7 @@ end
         sts_name;
         interval = interval2,
     )
-    @test ts2 isa DeterministicSingleTimeSeries
+    @test ts2 isa Deterministic
     @test IS.get_interval(ts2) == interval2
 
     @test_throws ArgumentError get_time_series(
@@ -538,7 +542,7 @@ end
     ts_dir = mktempdir()
     sys = System(100.0; time_series_directory = ts_dir)
     sys2 = deepcopy(sys)
-    @test dirname(sys2.data.time_series_manager.data_store.file_path) == ts_dir
+    @test dirname(sys2.data.time_series_manager.data_store.path) == ts_dir
 end
 
 @testset "Test time series counts" begin
@@ -630,7 +634,8 @@ end
 @testset "Test with compression enabled" begin
     @test get_compression_settings(System(100.0)) == CompressionSettings(; enabled = false)
 
-    settings = CompressionSettings(; enabled = true, type = CompressionTypes.BLOSC)
+    # The Rust/NetCDF time-series backend supports DEFLATE only; BLOSC was an HDF5-ism.
+    settings = CompressionSettings(; enabled = true, type = CompressionTypes.DEFLATE)
     @test get_compression_settings(System(100.0; compression = settings)) == settings
     @test get_compression_settings(System(100.0; enable_compression = true)) ==
           CompressionSettings(; enabled = true)

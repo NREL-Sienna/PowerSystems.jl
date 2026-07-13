@@ -87,9 +87,13 @@ IS.display_units_arg(::typeof(set_base_power!), ::Type{<:Component}) = NU
 # Make `_strip_units` work for Unitful quantities; IS doesn't depend on Unitful.
 IS._strip_units(q::Unitful.Quantity) = Unitful.ustrip(q)
 
-# Units passed to 2-arg scaling-factor multipliers during time-series retrieval
-# when the caller does not specify them: system base, matching what
-# simulation/optimization consumers expect.
+# DEAD CODE — no callers. This existed to supply the units for 2-arg scaling-factor
+# multipliers during time-series retrieval, but `scaling_factor_multiplier` was removed
+# from IS: time series now store actual per-device quantities, so there is no multiplier
+# left to resolve and `get_time_series_values` takes no `units` argument. Kept
+# deliberately: `IS.default_units` is still the sanctioned hook for a domain package to
+# declare its default unit system, and system base remains the right answer for PSY if a
+# consumer needs it again. Delete this if the hook itself goes away.
 IS.default_units(::Component) = SU
 
 #######################################################

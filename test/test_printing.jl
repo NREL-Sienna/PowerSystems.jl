@@ -36,7 +36,17 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
             getter_func = getproperty(PowerSystems, getter_name)
             arg = IS.display_units_arg(getter_func, typeof(obj))
             try
-                ismissing(arg) ? getter_func(obj) : getter_func(obj, arg)
+                # Resolve the same way `show` does — through the getter's `_unitful`
+                # companion — so that unit-bearing fields compare against the tagged
+                # rendering. This matters for NamedTuple-valued fields such as
+                # `active_power_limits`, which print as `(min = 0.22 SU, max = 0.55 SU)`:
+                # the untagged getter would yield `(min = 0.22, max = 0.55)` and never
+                # match.
+                if ismissing(arg)
+                    getter_func(obj)
+                else
+                    IS.unitful_variant(getter_func)(obj, arg)
+                end
             catch
                 val
             end
