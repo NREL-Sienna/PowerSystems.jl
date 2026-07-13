@@ -731,6 +731,13 @@
                     "default": "DiscreteControlledBranchStatus.CLOSED"
                 },
                 {
+                    "name": "normal_branch_status",
+                    "comment": "Normal (as-designed) open or close status of the device",
+                    "null_value": "DiscreteControlledBranchStatus.CLOSED",
+                    "data_type": "DiscreteControlledBranchStatus",
+                    "default": "DiscreteControlledBranchStatus.CLOSED"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
