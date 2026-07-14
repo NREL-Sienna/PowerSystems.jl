@@ -8,6 +8,13 @@ on:
     tags: '*'
   pull_request:
 
+# Prevent simultaneous gh-pages deployments (tag + branch race condition).
+# PR previews each get their own group and cancel on new pushes.
+# All other deploys (main, tags) share one group and queue instead of cancel.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('docs-pr-{0}', github.event.pull_request.number) || 'docs-deploy' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
