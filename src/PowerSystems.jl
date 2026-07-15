@@ -625,7 +625,7 @@ export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
 export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
 # Hand-written unit-bearing companion for the `exclude_getter` `base_power`
 # descriptor entry (its bare-number counterpart gets exported via
-# generated/includes.jl). `base_power_12`/`_23`/`_13` on `ThreeWindingTransformer`
+# generated/includes.jl). `base_power_12`/`_23`/`_31` on `ThreeWindingTransformer`
 # are plain (non-unit-converting) fields with no `_unitful` companion; their bare
 # getters/setters are exported via generated/includes.jl.
 export get_base_power_unitful
@@ -646,17 +646,12 @@ export get_available_groups
 export MinMax
 export GeneratorCostModels
 export TransformerControlObjective
-export TransformerControl
-export get_objective
-export get_regulated_bus_number
+export TwoWindingTransformerShuntLocation
+export ThreeWindingTransformerShuntLocation
 export get_limits
-export get_controlled_quantity_limits
-export get_number_of_tap_positions
-export TransformerWinding
-export get_control
-export set_control!
+export TransformerCircuit
 export is_phase_shifting
-export get_windings
+export get_circuits
 export has_control
 export supports_services
 
@@ -729,6 +724,7 @@ import InfrastructureSystems:
     copy_time_series!,
     get_available,
     set_available!,
+    get_limits,
     get_count,
     get_data,
     get_horizon,
@@ -892,7 +888,6 @@ include("units/conversions.jl")
 include("units/serialization.jl")
 
 include("definitions.jl")
-include("models/transformer_control.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
 include("models/injection.jl")
@@ -930,9 +925,9 @@ include("models/cost_functions/HydroReservoirCost.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 
-# Hand-written methods on the generated `TransformerWinding` type; included after
+# Hand-written methods on the generated `TransformerCircuit` type; included after
 # generated/includes.jl so the type is defined.
-include("models/transformer_windings.jl")
+include("models/transformer_circuits.jl")
 
 include("models/cost_functions/ReserveDemandCurve.jl")
 include("models/cost_functions/ReserveDemandTimeSeriesCurve.jl")

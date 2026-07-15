@@ -350,7 +350,7 @@ function convert_units(::Any, value, ::UnitCategory, from, to)
     )
 end
 
-# Multi-winding components (e.g. three-winding transformers) do not need a
-# separate conversion family: a per-winding *base provider* view (see
-# `WindingBase` in `src/models/components.jl`) implements the same three
-# interface functions, so the full engine above works per-winding.
+# Multi-circuit components (e.g. three-winding transformers) do not need a
+# separate conversion family: a per-pair *base provider* view (see
+# `PairBase` in `src/models/components.jl`) implements the same three
+# interface functions, so the full engine above works per pair.

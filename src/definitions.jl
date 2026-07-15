@@ -332,6 +332,38 @@ automatic adjustment.
 " TransformerControlObjective
 
 IS.@scoped_enum(
+    TwoWindingTransformerShuntLocation,
+    PRIMARY = 1,
+    SECONDARY = 2,
+    SPLIT = 3,
+)
+@doc"
+    TwoWindingTransformerShuntLocation
+
+Placement of a [`TwoWindingTransformer`](@ref)'s magnetizing shunt admittance on the two sides of its single circuit arc.
+
+# Values
+- `PRIMARY = 1`: the full magnetizing shunt is applied on the primary (from) side
+- `SECONDARY = 2`: the full magnetizing shunt is applied on the secondary (to) side
+- `SPLIT = 3`: the full complex magnetizing shunt value is applied on BOTH sides
+" TwoWindingTransformerShuntLocation
+
+IS.@scoped_enum(
+    ThreeWindingTransformerShuntLocation,
+    PRIMARY = 1,
+    STAR = 2,
+)
+@doc"
+    ThreeWindingTransformerShuntLocation
+
+Placement of a [`ThreeWindingTransformer`](@ref)'s magnetizing shunt admittance in the equivalent star model.
+
+# Values
+- `PRIMARY = 1`: the full magnetizing shunt is applied on the winding-1 (primary) terminal side
+- `STAR = 2`: the full magnetizing shunt is applied at the star node
+" ThreeWindingTransformerShuntLocation
+
+IS.@scoped_enum(
     MotorLoadTechnology,
     INDUCTION = 1,
     SYNCHRONOUS = 2,

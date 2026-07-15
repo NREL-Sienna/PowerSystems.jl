@@ -183,18 +183,18 @@ end
     @test_throws Unitful.DimensionError set_base_power!(gen, 1.0 * kV)
 end
 
-@testset "Plain get/set for ThreeWindingTransformer base_power_{12,23,13}" begin
-    # base_power_12/23/13 are plain MVA `Float64` fields with no unit-conversion
+@testset "Plain get/set for ThreeWindingTransformer base_power_{12,23,31}" begin
+    # base_power_12/23/31 are plain MVA `Float64` fields with no unit-conversion
     # path: a three-winding transformer has three independent per-pair bases, so
     # there is no single `base_power` to route through the MW/SU/DU-aware
     # component-level wrapper (contrast with `get_base_power`/`set_base_power!`
-    # on ordinary components, and with the per-winding `base_power` accessed via
-    # `TransformerWinding`, which is likewise plain).
+    # on ordinary components, and with the per-circuit `base_power` accessed via
+    # `TransformerCircuit`, which is likewise plain).
     xfmr = ThreeWindingTransformer(nothing)
     for (setter, getter) in (
         (set_base_power_12!, get_base_power_12),
         (set_base_power_23!, get_base_power_23),
-        (set_base_power_13!, get_base_power_13),
+        (set_base_power_31!, get_base_power_31),
     )
         setter(xfmr, 75.0)
         @test getter(xfmr) isa Float64
@@ -205,29 +205,29 @@ end
 end
 
 # Detached ThreeWindingTransformer with seeded base_value (system base 100), distinct
-# per-winding/per-pair base powers (15/20/25 MVA), and base voltages (230/138/69 kV) —
+# per-circuit/per-pair base powers (15/20/25 MVA), and base voltages (230/138/69 kV) —
 # deliberately all different so a wrong-base selection is caught. Mirrors `_test_t3w`
-# in test_transformer_windings.jl.
+# in test_transformer_circuits.jl.
 function _make_test_3w_xfmr(; system_base = 100.0)
     xfmr = ThreeWindingTransformer(nothing)
     IS.set_base_value!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
-    set_base_power_13!(xfmr, 25.0)
-    set_base_power!(get_primary_winding(xfmr), 15.0)
-    set_base_power!(get_secondary_winding(xfmr), 20.0)
-    set_base_power!(get_tertiary_winding(xfmr), 25.0)
-    set_base_voltage!(get_primary_winding(xfmr), 230.0)
-    set_base_voltage!(get_secondary_winding(xfmr), 138.0)
-    set_base_voltage!(get_tertiary_winding(xfmr), 69.0)
+    set_base_power_31!(xfmr, 25.0)
+    set_base_power!(get_primary_circuit(xfmr), 15.0)
+    set_base_power!(get_secondary_circuit(xfmr), 20.0)
+    set_base_power!(get_tertiary_circuit(xfmr), 25.0)
+    set_base_voltage_primary!(get_primary_circuit(xfmr), 230.0)
+    set_base_voltage_primary!(get_secondary_circuit(xfmr), 138.0)
+    set_base_voltage_primary!(get_tertiary_circuit(xfmr), 69.0)
     return xfmr
 end
 
 @testset "Pairwise impedance getters on ThreeWindingTransformer use the pair base" begin
     # Regression guard for a silent units bug. The getters must honor the explicit
     # `units` argument and resolve the CORRECT pair base. Each pairwise impedance
-    # has its own `base_power_XX` and is referenced to a specific winding's base
-    # voltage (12/13 -> primary, 23 -> secondary; see the descriptor docstring).
+    # has its own `base_power_XX` and is referenced to the FIRST-INDEX circuit's
+    # base voltage (12 -> primary, 23 -> secondary, 31 -> tertiary; PSS/E CZ = 1).
     # Distinct per-pair bases catch a wrong-pair-base selection.
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
@@ -238,8 +238,8 @@ end
         (set_x_12!, get_x_12, 0.10, 15.0, 230.0),
         (set_r_23!, get_r_23, 0.02, 20.0, 138.0),
         (set_x_23!, get_x_23, 0.20, 20.0, 138.0),
-        (set_r_13!, get_r_13, 0.03, 25.0, 230.0),
-        (set_x_13!, get_x_13, 0.30, 25.0, 230.0),
+        (set_r_31!, get_r_31, 0.03, 25.0, 69.0),
+        (set_x_31!, get_x_31, 0.30, 25.0, 69.0),
     )
     for (setter, getter, dev_val, base_power, base_voltage) in cases
         setter(xfmr, dev_val * DU)  # seed device-base storage directly
@@ -255,20 +255,12 @@ end
         # system it is read through (this fails outright if `units` is ignored).
         @test getter(xfmr, NU) ≈ getter(xfmr, SU) * (base_voltage^2 / system_base)
     end
-
-    # Magnetizing shunt (device base on base_power_12, referenced to the primary
-    # winding's base voltage): Y_su = Y_du * (pair_base / system_base).
-    set_magnetizing_shunt!(xfmr, 0.05 * DU)
-    @test get_magnetizing_shunt(xfmr, DU) ≈ 0.05
-    @test get_magnetizing_shunt(xfmr, SU) ≈ 0.05 * (15.0 / system_base)
-    @test get_magnetizing_shunt(xfmr, SU) != get_magnetizing_shunt(xfmr, DU)
-    @test get_magnetizing_shunt(xfmr, NU) ≈ 0.05 * (15.0 / 230.0^2)
 end
 
 @testset "ThreeWindingTransformer Unitful-target getters use the correct bases" begin
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
-    primary = get_primary_winding(xfmr)
+    primary = get_primary_circuit(xfmr)
 
     set_rating!(primary, 2.0 * DU)
     # MW must scale by the PRIMARY WINDING base (15), not the system base (100).
@@ -282,23 +274,24 @@ end
     @test get_r_12(xfmr, OHMS) ≈ 0.01 * (230.0^2 / 15.0)
     @test get_r_12(xfmr, OHMS) ≈ get_r_12(xfmr, NU)
 
-    set_magnetizing_shunt!(xfmr, 0.05 * DU)
-    @test get_magnetizing_shunt(xfmr, SIEMENS) ≈ 0.05 * (15.0 / 230.0^2)
-    @test get_magnetizing_shunt(xfmr, SIEMENS) ≈ get_magnetizing_shunt(xfmr, NU)
+    # r_31/x_31 are referenced to the TERTIARY circuit voltage (69 kV), base_power_31 = 25.
+    set_r_31!(xfmr, 0.02 * DU)
+    @test get_r_31(xfmr, OHMS) ≈ 0.02 * (69.0^2 / 25.0)
+    @test get_r_31(xfmr, OHMS) ≈ get_r_31(xfmr, NU)
 end
 
-@testset "ThreeWindingTransformer/TransformerWinding setters round-trip against the correct base" begin
+@testset "ThreeWindingTransformer/TransformerCircuit setters round-trip against the correct base" begin
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
-    primary = get_primary_winding(xfmr)
-    secondary = get_secondary_winding(xfmr)
-    tertiary = get_tertiary_winding(xfmr)
+    primary = get_primary_circuit(xfmr)
+    secondary = get_secondary_circuit(xfmr)
+    tertiary = get_tertiary_circuit(xfmr)
 
     # Power: MW input divides by the WINDING base, not the system base.
     set_rating!(primary, 30.0 * MW)
-    @test get_rating(primary, DU) ≈ 2.0    # 30 MW / 15 MVA winding base
+    @test get_rating(primary, DU) ≈ 2.0    # 30 MW / 15 MVA circuit base
     @test get_rating(primary, MW) ≈ 30.0
-    # SU: 0.4 SU = 40 MW on the system base = 2.0 DU on the 20 MVA winding.
+    # SU: 0.4 SU = 40 MW on the system base = 2.0 DU on the 20 MVA circuit.
     set_rating!(secondary, 0.4 * SU)
     @test get_rating(secondary, DU) ≈ 2.0
     @test get_rating(secondary, SU) ≈ 0.4
@@ -317,26 +310,21 @@ end
     @test get_x_23(xfmr, DU) ≈ 0.6 * (20.0 / system_base)
     @test get_x_23(xfmr, SU) ≈ 0.6
 
-    # Admittance (magnetizing shunt, device base on base_power_12): S divides by
-    # the pair admittance base S/V².
-    y_base_12 = 15.0 / 230.0^2
-    set_magnetizing_shunt!(xfmr, 2.0 * y_base_12 * SIEMENS)
-    @test get_magnetizing_shunt(xfmr, DU) ≈ 2.0
-    @test get_magnetizing_shunt(xfmr, SIEMENS) ≈ 2.0 * y_base_12
-    # SU admittance round-trip.
-    set_magnetizing_shunt!(xfmr, 0.3 * SU)
-    @test get_magnetizing_shunt(xfmr, DU) ≈ 0.3 * (system_base / 15.0)
-    @test get_magnetizing_shunt(xfmr, SU) ≈ 0.3
+    # Ω impedance round-trip on pair 31 (tertiary voltage 69 kV, base_power_31 = 25).
+    z_base_31 = 69.0^2 / 25.0
+    set_x_31!(xfmr, 0.05 * z_base_31 * OHMS)
+    @test get_x_31(xfmr, DU) ≈ 0.05
+    @test get_x_31(xfmr, OHMS) ≈ 0.05 * z_base_31
 
     # Bare floats remain rejected.
     @test_throws ArgumentError set_rating!(primary, 1.0)
 end
 
 @testset "TwoWindingTransformer Ω/S set→get round-trip uses one base voltage" begin
-    t2w = TwoWindingTransformer(nothing)  # winding base_power = 100.0
-    winding = get_winding(t2w)
-    set_base_voltage!(winding, 230.0)
-    # Arc endpoint voltage deliberately different from the winding's base voltage:
+    t2w = TwoWindingTransformer(nothing)  # circuit base_power = 100.0
+    circuit = get_circuit(t2w)
+    set_base_voltage_primary!(circuit, 230.0)
+    # Arc endpoint voltage deliberately different from the circuit's base voltage:
     # both conversion directions must resolve the same voltage or the round-trip
     # drifts by (230/115)².
     set_base_voltage!(get_arc(t2w).from, 115.0)

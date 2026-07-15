@@ -112,18 +112,17 @@
         bus_lo.bustype = ACBusTypes.PQ
         bus_lo.base_voltage = 138.0
 
-        winding = TransformerWinding(;
+        circuit = TransformerCircuit(;
             available = true,
             arc = Arc(; from = bus_hi, to = bus_lo),
-            base_voltage = 230.0,
+            r = 0.01,
+            x = 0.1,
+            base_voltage_primary = 230.0,
+            base_voltage_secondary = 138.0,
         )
         t = TwoWindingTransformer(;
             name = "t2w_hv",
-            winding = winding,
-            r = 0.01,
-            x = 0.1,
-            magnetizing_shunt = 0.0,
-            base_voltage_secondary = 138.0,
+            circuit = circuit,
         )
         @test get_high_voltage(t) == 230.0
         @test get_low_voltage(t) == 138.0

@@ -5,7 +5,7 @@ include("TransmissionInterface.jl")
 include("ACBus.jl")
 include("DCBus.jl")
 include("Arc.jl")
-include("TransformerWinding.jl")
+include("TransformerCircuit.jl")
 include("Line.jl")
 include("GenericArcImpedance.jl")
 include("DiscreteControlledACBranch.jl")
@@ -511,9 +511,10 @@ export get_b
 export get_b_unitful
 export get_base_power
 export get_base_power_12
-export get_base_power_13
 export get_base_power_23
+export get_base_power_31
 export get_base_voltage
+export get_base_voltage_primary
 export get_base_voltage_secondary
 export get_battery_resistance
 export get_battery_voltage
@@ -526,6 +527,7 @@ export get_bustype
 export get_c
 export get_c_dc
 export get_cf
+export get_circuit
 export get_compounding_resistance
 export get_conformity
 export get_constant_active_power
@@ -533,8 +535,10 @@ export get_constant_active_power_unitful
 export get_constant_reactive_power
 export get_constant_reactive_power_unitful
 export get_contributing_services
-export get_control
+export get_control_limits
 export get_control_mode
+export get_control_objective
+export get_controlled_quantity_limits
 export get_conversion_factor
 export get_converter_loss_from
 export get_converter_loss_to
@@ -703,6 +707,7 @@ export get_name
 export get_normal_branch_status
 export get_number
 export get_number_of_steps
+export get_number_of_tap_positions
 export get_operation_cost
 export get_outflow
 export get_outflow_limits
@@ -721,16 +726,16 @@ export get_power_mode
 export get_power_trajectory
 export get_power_trajectory_unitful
 export get_powerhouse_elevation
-export get_primary_winding
+export get_primary_circuit
 export get_prime_mover_type
 export get_q_nl
 export get_r
 export get_r_12
 export get_r_12_unitful
-export get_r_13
-export get_r_13_unitful
 export get_r_23
 export get_r_23_unitful
+export get_r_31
+export get_r_31_unitful
 export get_r_load
 export get_r_unitful
 export get_ramp_limits
@@ -795,10 +800,11 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_scheduled_dc_voltage
-export get_secondary_winding
+export get_secondary_circuit
 export get_self_discharge
 export get_services
 export get_shunt_control_type
+export get_shunt_location
 export get_speed_error_signal
 export get_spillage_limits
 export get_standing_loss
@@ -821,7 +827,7 @@ export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
 export get_tap
-export get_tertiary_winding
+export get_tertiary_circuit
 export get_tfh
 export get_tfl
 export get_thermal_unit
@@ -847,15 +853,14 @@ export get_voltage_limits
 export get_voltage_limits_from
 export get_voltage_limits_to
 export get_voltage_setpoint
-export get_winding
 export get_winding_group_number
 export get_x
 export get_x_12
 export get_x_12_unitful
-export get_x_13
-export get_x_13_unitful
 export get_x_23
 export get_x_23_unitful
+export get_x_31
+export get_x_31_unitful
 export get_x_unitful
 export get_α
 export get_β
@@ -1242,9 +1247,10 @@ export set_available!
 export set_b!
 export set_base_power!
 export set_base_power_12!
-export set_base_power_13!
 export set_base_power_23!
+export set_base_power_31!
 export set_base_voltage!
+export set_base_voltage_primary!
 export set_base_voltage_secondary!
 export set_battery_resistance!
 export set_battery_voltage!
@@ -1257,13 +1263,16 @@ export set_bustype!
 export set_c!
 export set_c_dc!
 export set_cf!
+export set_circuit!
 export set_compounding_resistance!
 export set_conformity!
 export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
-export set_control!
+export set_control_limits!
 export set_control_mode!
+export set_control_objective!
+export set_controlled_quantity_limits!
 export set_conversion_factor!
 export set_converter_loss_from!
 export set_converter_loss_to!
@@ -1412,6 +1421,7 @@ export set_name!
 export set_normal_branch_status!
 export set_number!
 export set_number_of_steps!
+export set_number_of_tap_positions!
 export set_operation_cost!
 export set_outflow!
 export set_outflow_limits!
@@ -1426,13 +1436,13 @@ export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
 export set_powerhouse_elevation!
-export set_primary_winding!
+export set_primary_circuit!
 export set_prime_mover_type!
 export set_q_nl!
 export set_r!
 export set_r_12!
-export set_r_13!
 export set_r_23!
+export set_r_31!
 export set_r_load!
 export set_ramp_limits!
 export set_rated_current!
@@ -1482,10 +1492,11 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
-export set_secondary_winding!
+export set_secondary_circuit!
 export set_self_discharge!
 export set_services!
 export set_shunt_control_type!
+export set_shunt_location!
 export set_speed_error_signal!
 export set_spillage_limits!
 export set_standing_loss!
@@ -1506,7 +1517,7 @@ export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
-export set_tertiary_winding!
+export set_tertiary_circuit!
 export set_tfh!
 export set_tfl!
 export set_thermal_unit!
@@ -1532,12 +1543,11 @@ export set_voltage_limits!
 export set_voltage_limits_from!
 export set_voltage_limits_to!
 export set_voltage_setpoint!
-export set_winding!
 export set_winding_group_number!
 export set_x!
 export set_x_12!
-export set_x_13!
 export set_x_23!
+export set_x_31!
 export set_α!
 export set_β!
 export set_γ_d1!

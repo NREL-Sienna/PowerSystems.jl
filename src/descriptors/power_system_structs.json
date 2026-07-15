@@ -416,18 +416,18 @@
             "supertype": "Topology"
         },
         {
-            "struct_name": "TransformerWinding",
-            "docstring": "The data defining one modeled arc of a transformer.\n\nA [`TwoWindingTransformer`](@ref) has one winding; a [`ThreeWindingTransformer`](@ref) has three, each connecting a terminal bus to the star bus. Winding `available` is the single source of truth for availability; the owning transformer derives its availability from its windings. `rating`/`rating_b`/`rating_c` and the flow fields are stored in device base per unit on `base_power` (MVA). `base_voltage` is the terminal-side base in kV. For a [`TwoWindingTransformer`](@ref), the single winding's `base_power` is the transformer's device base.",
+            "struct_name": "TransformerCircuit",
+            "docstring": "The data defining one modeled arc of a transformer.\n\nA [`TwoWindingTransformer`](@ref) has one circuit; a [`ThreeWindingTransformer`](@ref) has three, each connecting a terminal bus to the star bus. Circuit `available` is the single source of truth for availability; the owning transformer derives its availability from its circuits. `r`/`x` are the circuit impedance (for a two-winding transformer, the series impedance; for a three-winding transformer, the star-leg equivalent), in pu (device base) on `base_power` referenced to `base_voltage_primary`. `rating`/`rating_b`/`rating_c` and the flow fields are stored in device base per unit on `base_power` (MVA). Tap-changer / phase-shifter control is described by the flat control fields: `control_objective = UNDEFINED` means the circuit has no control block. `base_voltage_primary`/`base_voltage_secondary` are the two terminal-side base voltages in kV. For a [`TwoWindingTransformer`](@ref), the single circuit's `base_power` is the transformer's device base.",
             "fields": [
                 {
                     "name": "available",
-                    "comment": "Indicator of whether this winding is connected and online. Winding availability is the single source of truth; the owning transformer derives its availability from its windings",
+                    "comment": "Indicator of whether this circuit is connected and online. Circuit availability is the single source of truth; the owning transformer derives its availability from its circuits",
                     "null_value": "false",
                     "data_type": "Bool"
                 },
                 {
                     "name": "arc",
-                    "comment": "An [`Arc`](@ref) defining this winding `from` a terminal bus `to` the transformer's other terminal or star bus",
+                    "comment": "An [`Arc`](@ref) defining this circuit `from` a terminal bus `to` the transformer's other terminal or star bus",
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "data_type": "Arc"
                 },
@@ -440,7 +440,7 @@
                 },
                 {
                     "name": "α",
-                    "comment": "Initial condition of phase shift (radians) across this winding",
+                    "comment": "Initial condition of phase shift (radians) across this circuit",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
@@ -453,11 +453,67 @@
                     "default": "WindingGroupNumber.UNDEFINED"
                 },
                 {
-                    "name": "control",
-                    "comment": "Tap-changer / phase-shifter control specification, or `nothing` for an uncontrolled winding. See [`TransformerControl`](@ref)",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, TransformerControl}",
-                    "default": "nothing"
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "default": "0.0",
+                    "comment": "Circuit resistance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x",
+                    "data_type": "Float64",
+                    "default": "0.0",
+                    "comment": "Circuit reactance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
+                },
+                {
+                    "name": "control_objective",
+                    "comment": "Tap-changer / phase-shifter control objective (PSS/E COD). `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "data_type": "TransformerControlObjective",
+                    "default": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Controlled bus number (PSS/E CONT; sign = regulation side)",
+                    "null_value": "0",
+                    "data_type": "Int",
+                    "default": "0"
+                },
+                {
+                    "name": "control_limits",
+                    "comment": "Control band (PSS/E RMA/RMI): tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control",
+                    "null_value": "(min=0.9, max=1.1)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.9, max=1.1)"
+                },
+                {
+                    "name": "controlled_quantity_limits",
+                    "comment": "Controlled-quantity band (PSS/E VMA/VMI): pu voltage / Mvar / MW bounds depending on `control_objective`",
+                    "null_value": "(min=0.9, max=1.1)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.9, max=1.1)"
+                },
+                {
+                    "name": "number_of_tap_positions",
+                    "comment": "Number of tap positions (PSS/E NTP)",
+                    "null_value": "33",
+                    "data_type": "Int",
+                    "default": "33"
                 },
                 {
                     "name": "rating",
@@ -491,7 +547,7 @@
                 },
                 {
                     "name": "active_power_flow",
-                    "comment": "Initial condition of active power flow through this winding (MW)",
+                    "comment": "Initial condition of active power flow through this circuit (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
@@ -500,7 +556,7 @@
                 },
                 {
                     "name": "reactive_power_flow",
-                    "comment": "Initial condition of reactive power flow through this winding (MVAR)",
+                    "comment": "Initial condition of reactive power flow through this circuit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
@@ -509,16 +565,31 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) of this winding",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) of this circuit",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "default": "100.0"
                 },
                 {
-                    "name": "base_voltage",
-                    "comment": "Terminal-side base voltage in kV",
+                    "name": "base_voltage_primary",
+                    "comment": "Primary (from) terminal-side base voltage in kV; the reference voltage for this circuit's per-unit impedance",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "nothing"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary (to) terminal-side base voltage in kV. For a three-winding transformer this defaults to the primary base voltage at parse time",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
                     "default": "nothing"
                 },
                 {
@@ -1032,7 +1103,7 @@
         },
         {
             "struct_name": "TwoWindingTransformer",
-            "docstring": "A two-winding transformer connecting two buses.\n\nThe modeled arc, tap, phase shift, ratings, per-winding base power, base voltage, and control all live on the single [`TransformerWinding`](@ref) obtained with [`get_winding`](@ref); availability is winding-level (see [`get_available`](@ref)). `r`/`x` are the series impedance and `magnetizing_shunt` the magnetizing shunt admittance, both in pu on `base_power` referenced to the primary (winding) base voltage. The model uses an equivalent circuit assuming the impedance is on the high-voltage side and allocates iron losses and magnetizing susceptance to the primary side. The transformer's device base is the winding's `base_power`.",
+            "docstring": "A two-winding transformer connecting two buses.\n\nAll series electrical data — the modeled arc, tap, phase shift, series impedance `r`/`x`, ratings, per-winding base power, base voltages, and control — lives on the single [`TransformerCircuit`](@ref) obtained with [`get_circuit`](@ref); availability is circuit-level (see [`get_available`](@ref)). The `magnetizing_shunt` admittance and its `shunt_location` are transformer-level. The model uses an equivalent circuit assuming the impedance is on the high-voltage side and allocates iron losses and magnetizing susceptance according to `shunt_location`. The transformer's device base is the circuit's `base_power`.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1042,58 +1113,28 @@
                     "data_type": "String"
                 },
                 {
-                    "name": "winding",
-                    "comment": "The [`TransformerWinding`](@ref) carrying this transformer's arc, tap, phase shift, ratings, per-winding base power/voltage, availability, and control",
-                    "null_value": "TransformerWinding(nothing)",
-                    "data_type": "TransformerWinding",
+                    "name": "circuit",
+                    "comment": "The [`TransformerCircuit`](@ref) carrying this transformer's arc, tap, phase shift, series impedance, ratings, per-winding base power/voltages, availability, and control",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
                     "exclude_setter": true
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r",
-                    "data_type": "Float64",
-                    "comment": "Resistance in pu (device base on `base_power`), referenced to the primary (winding) base voltage",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x",
-                    "data_type": "Float64",
-                    "comment": "Reactance in pu (device base on `base_power`), referenced to the primary (winding) base voltage",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "magnetizing_shunt",
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}",
-                    "comment": "Magnetizing shunt admittance in pu (device base on `base_power`), referenced to the primary (winding) base voltage",
+                    "default": "0.0",
+                    "comment": "Magnetizing shunt admittance in pu (device base on the circuit's `base_power`) referenced to the circuit's `base_voltage_primary`",
                     "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
                 },
                 {
-                    "name": "base_voltage_secondary",
-                    "comment": "Secondary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_to(get_arc(winding)))"
+                    "name": "shunt_location",
+                    "comment": "Placement of `magnetizing_shunt` on the two sides of the circuit arc. See [`TwoWindingTransformerShuntLocation`](@ref)",
+                    "null_value": "TwoWindingTransformerShuntLocation.PRIMARY",
+                    "data_type": "TwoWindingTransformerShuntLocation",
+                    "default": "TwoWindingTransformerShuntLocation.PRIMARY"
                 },
                 {
                     "name": "services",
@@ -1121,7 +1162,7 @@
         },
         {
             "struct_name": "ThreeWindingTransformer",
-            "docstring": "A three-winding transformer.\n\nThe model uses an equivalent star model with a star (hidden) bus. Each of the three [`TransformerWinding`](@ref) objects ([`get_primary_winding`](@ref), [`get_secondary_winding`](@ref), [`get_tertiary_winding`](@ref)) connects a terminal bus to the star bus and carries its own arc, tap, phase shift, ratings, per-winding base power/voltage, availability, and control. The pairwise measured impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_13`/`x_13` are the only stored impedance representation; the individual star-leg impedances are derived downstream from them. Each pairwise impedance (and `magnetizing_shunt`) is in pu (device base) on the corresponding `base_power_12`/`base_power_23`/`base_power_13`, referenced to the FIRST-INDEX winding's base voltage: `r_12`/`x_12` and `magnetizing_shunt` to the primary winding's base voltage, `r_23`/`x_23` to the secondary winding's base voltage, and `r_13`/`x_13` to the primary winding's base voltage (PSS/E CZ = 1). Availability is winding-level (see [`get_available`](@ref)). The model is described in Chapter 3.6 of J.D. Glover, M.S. Sarma and T. Overbye: Power Systems Analysis and Design.",
+            "docstring": "A three-winding transformer.\n\nThe model uses an equivalent star model with a star (hidden) bus. Each of the three [`TransformerCircuit`](@ref) objects ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)) connects a terminal bus to the star bus and carries its own arc, tap, phase shift, star-leg impedance, ratings, per-winding base power/voltages, availability, and control. The `magnetizing_shunt` admittance and its `shunt_location` are transformer-level. The pairwise measured impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` are one representation of the transformer impedance; the individual star-leg impedances stored on each circuit are derived from them at parse time. Each pairwise impedance is in pu (device base) on the corresponding `base_power_12`/`base_power_23`/`base_power_31`, referenced to the FIRST-INDEX circuit's base voltage (PSS/E CZ = 1): `r_12`/`x_12` to the primary circuit's base voltage, `r_23`/`x_23` to the secondary circuit's base voltage, and `r_31`/`x_31` to the tertiary circuit's base voltage. Mutating either representation after construction does not update the other. Power-flow and Ybus assembly read the per-circuit star-leg impedances, not the pairwise fields. Availability is circuit-level (see [`get_available`](@ref)). The model is described in Chapter 3.6 of J.D. Glover, M.S. Sarma and T. Overbye: Power Systems Analysis and Design.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1131,24 +1172,24 @@
                     "data_type": "String"
                 },
                 {
-                    "name": "primary_winding",
-                    "comment": "The primary [`TransformerWinding`](@ref) connecting the primary bus to the star bus",
-                    "null_value": "TransformerWinding(nothing)",
-                    "data_type": "TransformerWinding",
+                    "name": "primary_circuit",
+                    "comment": "The primary [`TransformerCircuit`](@ref) connecting the primary bus to the star bus",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
                     "exclude_setter": true
                 },
                 {
-                    "name": "secondary_winding",
-                    "comment": "The secondary [`TransformerWinding`](@ref) connecting the secondary bus to the star bus",
-                    "null_value": "TransformerWinding(nothing)",
-                    "data_type": "TransformerWinding",
+                    "name": "secondary_circuit",
+                    "comment": "The secondary [`TransformerCircuit`](@ref) connecting the secondary bus to the star bus",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
                     "exclude_setter": true
                 },
                 {
-                    "name": "tertiary_winding",
-                    "comment": "The tertiary [`TransformerWinding`](@ref) connecting the tertiary bus to the star bus",
-                    "null_value": "TransformerWinding(nothing)",
-                    "data_type": "TransformerWinding",
+                    "name": "tertiary_circuit",
+                    "comment": "The tertiary [`TransformerCircuit`](@ref) connecting the tertiary bus to the star bus",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
                     "exclude_setter": true
                 },
                 {
@@ -1161,7 +1202,7 @@
                     "null_value": "0.0",
                     "name": "r_12",
                     "data_type": "Float64",
-                    "comment": "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E).",
+                    "comment": "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1174,7 +1215,7 @@
                     "null_value": "0.0",
                     "name": "x_12",
                     "data_type": "Float64",
-                    "comment": "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E).",
+                    "comment": "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1187,7 +1228,7 @@
                     "null_value": "0.0",
                     "name": "r_23",
                     "data_type": "Float64",
-                    "comment": "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E).",
+                    "comment": "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1200,7 +1241,7 @@
                     "null_value": "0.0",
                     "name": "x_23",
                     "data_type": "Float64",
-                    "comment": "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E).",
+                    "comment": "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1211,9 +1252,9 @@
                 },
                 {
                     "null_value": "0.0",
-                    "name": "r_13",
+                    "name": "r_31",
                     "data_type": "Float64",
-                    "comment": "Measured resistance in pu (device base on `base_power_13`), referenced to the primary winding's base voltage, from primary to tertiary windings (R1-3 with CZ = 1 in PSS/E).",
+                    "comment": "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1224,9 +1265,9 @@
                 },
                 {
                     "null_value": "0.0",
-                    "name": "x_13",
+                    "name": "x_31",
                     "data_type": "Float64",
-                    "comment": "Measured reactance in pu (device base on `base_power_13`), referenced to the primary winding's base voltage, from primary to tertiary windings (X1-3 with CZ = 1 in PSS/E).",
+                    "comment": "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1262,10 +1303,10 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "base_power_13",
+                    "name": "base_power_31",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings.",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings.",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1278,10 +1319,18 @@
                     "name": "magnetizing_shunt",
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}",
-                    "comment": "Magnetizing shunt admittance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from star (hidden) bus to ground",
+                    "default": "0.0",
+                    "comment": "Magnetizing shunt admittance in pu (device base on `base_power_12`) referenced to the primary circuit's base voltage",
                     "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
+                },
+                {
+                    "name": "shunt_location",
+                    "comment": "Placement of `magnetizing_shunt` in the equivalent star model. See [`ThreeWindingTransformerShuntLocation`](@ref)",
+                    "null_value": "ThreeWindingTransformerShuntLocation.PRIMARY",
+                    "data_type": "ThreeWindingTransformerShuntLocation",
+                    "default": "ThreeWindingTransformerShuntLocation.PRIMARY"
                 },
                 {
                     "name": "services",

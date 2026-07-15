@@ -37,7 +37,7 @@ const _CONTAINS_SHOULD_ENCODE = Union{
     MarketBidTimeSeriesCost,
     ImportExportCost,
     ImportExportTimeSeriesCost,
-    TransformerWinding,
+    TransformerCircuit,
 }  # PSY types with fields that we should_encode_as_uuid
 
 function IS.serialize(component::T) where {T <: _CONTAINS_SHOULD_ENCODE}

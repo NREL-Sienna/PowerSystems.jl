@@ -182,33 +182,57 @@ end
 const TYPICAL_XFRM_REACTANCE = (min = 0.05, max = 0.2) # per-unit
 
 # `valid_range`s for `tap`/`α`/`base_voltage`. These fields live on
-# `TransformerWinding`, which is not a `Component` added to the system's `Components`
+# `TransformerCircuit`, which is not a `Component` added to the system's `Components`
 # container, so IS's generic `validate_fields` (which only recurses into
 # `Union{Nothing, InfrastructureSystemsType}`-typed fields, not sub-structs stored
 # directly) never reaches them. They are validated here, on the
 # `validate_component_with_system` path for the owning transformer(s).
-const WINDING_TAP_LIMITS = (min = 0.0, max = 2.0)
-const WINDING_ANGLE_LIMITS = (min = -1.571, max = 1.571)
+const CIRCUIT_TAP_LIMITS = (min = 0.0, max = 2.0)
+const CIRCUIT_ANGLE_LIMITS = (min = -1.571, max = 1.571)
 
-function check_winding_values(winding::TransformerWinding, xfrm_name::AbstractString)
+function check_circuit_values(circuit::TransformerCircuit, xfrm_name::AbstractString)
     is_valid = true
 
-    tap = get_tap(winding)
-    if tap < WINDING_TAP_LIMITS.min || tap > WINDING_TAP_LIMITS.max
-        @error "Winding tap $(tap) for transformer $(xfrm_name) is outside the valid range $(WINDING_TAP_LIMITS)." _group =
+    tap = get_tap(circuit)
+    if tap < CIRCUIT_TAP_LIMITS.min || tap > CIRCUIT_TAP_LIMITS.max
+        @error "Circuit tap $(tap) for transformer $(xfrm_name) is outside the valid range $(CIRCUIT_TAP_LIMITS)." _group =
             IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         is_valid = false
     end
 
-    α = get_α(winding)
-    if α < WINDING_ANGLE_LIMITS.min || α > WINDING_ANGLE_LIMITS.max
-        @warn "Winding phase shift α $(α) (radians) for transformer $(xfrm_name) is outside the typical range $(WINDING_ANGLE_LIMITS)." _group =
+    α = get_α(circuit)
+    if α < CIRCUIT_ANGLE_LIMITS.min || α > CIRCUIT_ANGLE_LIMITS.max
+        @warn "Circuit phase shift α $(α) (radians) for transformer $(xfrm_name) is outside the typical range $(CIRCUIT_ANGLE_LIMITS)." _group =
             IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
     end
 
-    base_voltage = get_base_voltage(winding)
-    if base_voltage !== nothing && base_voltage <= 0
-        @error "Winding base_voltage $(base_voltage) for transformer $(xfrm_name) must be positive." _group =
+    for (field, base_voltage) in (
+        (:base_voltage_primary, get_base_voltage_primary(circuit)),
+        (:base_voltage_secondary, get_base_voltage_secondary(circuit)),
+    )
+        if base_voltage !== nothing && base_voltage <= 0
+            @error "Circuit $(field) $(base_voltage) for transformer $(xfrm_name) must be positive." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            is_valid = false
+        end
+    end
+
+    control_limits = get_control_limits(circuit)
+    if control_limits.min > control_limits.max
+        @error "Circuit control_limits.min $(control_limits.min) exceeds max $(control_limits.max) for transformer $(xfrm_name)." _group =
+            IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+        is_valid = false
+    end
+
+    controlled_quantity_limits = get_controlled_quantity_limits(circuit)
+    if controlled_quantity_limits.min > controlled_quantity_limits.max
+        @error "Circuit controlled_quantity_limits.min $(controlled_quantity_limits.min) exceeds max $(controlled_quantity_limits.max) for transformer $(xfrm_name)." _group =
+            IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+        is_valid = false
+    end
+
+    if get_number_of_tap_positions(circuit) < 0
+        @error "Circuit number_of_tap_positions $(get_number_of_tap_positions(circuit)) for transformer $(xfrm_name) must be non-negative." _group =
             IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         is_valid = false
     end
@@ -222,8 +246,8 @@ function validate_component_with_system(
 )
     is_valid_reactance = check_transformer_reactance(xfrm)
     is_valid_rating = check_rating_values(xfrm, _get_base_power(sys))
-    is_valid_winding = check_winding_values(get_winding(xfrm), get_name(xfrm))
-    return is_valid_reactance && is_valid_rating && is_valid_winding
+    is_valid_circuit = check_circuit_values(get_circuit(xfrm), get_name(xfrm))
+    return is_valid_reactance && is_valid_rating && is_valid_circuit
 end
 
 function validate_component_with_system(
@@ -231,8 +255,8 @@ function validate_component_with_system(
     sys::System,
 )
     is_valid = true
-    for winding in get_windings(xfrm)
-        if !check_winding_values(winding, get_name(xfrm))
+    for circuit in get_circuits(xfrm)
+        if !check_circuit_values(circuit, get_name(xfrm))
             is_valid = false
         end
     end
@@ -252,10 +276,10 @@ function check_rating_values(
     closest_v_level = voltage_levels[closestV_ix[2]]
     closest_rate_range = MVA_LIMITS_TRANSFORMERS[closest_v_level]
     device_base_power = _get_base_power(xfrm)
-    # The rate is in device pu; rating fields are stored on the winding.
-    winding = get_winding(xfrm)
+    # The rate is in device pu; rating fields are stored on the circuit.
+    circuit = get_circuit(xfrm)
     for field in [:rating, :rating_b, :rating_c]
-        rating_value = getfield(winding, field)
+        rating_value = getfield(circuit, field)
         if isnothing(rating_value)
             @assert field ∈ [:rating_b, :rating_c]
             continue
@@ -281,7 +305,7 @@ end
 function check_transformer_reactance(
     xfrm::TwoWindingTransformer,
 )
-    x_pu = getproperty(xfrm, :x)
+    x_pu = get_x(get_circuit(xfrm), DU)
     if x_pu < TYPICAL_XFRM_REACTANCE.min
         @warn "Transformer $(get_name(xfrm)) per-unit reactance $(x_pu) is lower than the typical range $(TYPICAL_XFRM_REACTANCE). \
             Check if the reactance source data is correct." _group = IS.LOG_GROUP_PARSING maxlog =

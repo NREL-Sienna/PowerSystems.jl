@@ -78,24 +78,22 @@ end
     get_high_voltage(t::TwoWindingTransformer)
 
 Return the high-side base voltage (kV) of a [`TwoWindingTransformer`](@ref) as the
-maximum of the primary winding's base voltage and `base_voltage_secondary`.
+maximum of the circuit's primary and secondary base voltages.
 """
 function get_high_voltage(t::TwoWindingTransformer)
-    v_primary = get_base_voltage(get_winding(t))
-    v_secondary = get_base_voltage_secondary(t)
-    return max(v_primary, v_secondary)
+    circuit = get_circuit(t)
+    return max(get_base_voltage_primary(circuit), get_base_voltage_secondary(circuit))
 end
 
 """
     get_low_voltage(t::TwoWindingTransformer)
 
 Return the low-side base voltage (kV) of a [`TwoWindingTransformer`](@ref) as the
-minimum of the primary winding's base voltage and `base_voltage_secondary`.
+minimum of the circuit's primary and secondary base voltages.
 """
 function get_low_voltage(t::TwoWindingTransformer)
-    v_primary = get_base_voltage(get_winding(t))
-    v_secondary = get_base_voltage_secondary(t)
-    return min(v_primary, v_secondary)
+    circuit = get_circuit(t)
+    return min(get_base_voltage_primary(circuit), get_base_voltage_secondary(circuit))
 end
 
 """
@@ -288,7 +286,7 @@ function set_units_setting!(
     settings::Union{SystemUnitsSettings, Nothing},
 )
     set_units_info!(get_internal(t), settings)
-    for w in get_windings(t)
+    for w in get_circuits(t)
         w.units_info = settings
     end
     return

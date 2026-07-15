@@ -147,9 +147,9 @@ max_flow = "Max Flow (MW)"
 
 Build the lines and transformers using the [`Line`](@ref) and
 [`TwoWindingTransformer`](@ref) constructors. A [`TwoWindingTransformer`](@ref)
-carries its arc, rating, and availability on a single [`TransformerWinding`](@ref)
-(obtained with [`get_winding`](@ref)); `r`/`x`/`magnetizing_shunt` live on the
-transformer itself.
+carries its arc, series impedance `r`/`x`, rating, base power, and availability on
+a single [`TransformerCircuit`](@ref) (obtained with [`get_circuit`](@ref)); the
+`magnetizing_shunt` and its `shunt_location` are transformer-level fields.
 
 ```julia
 for row in eachrow(branch_params)
@@ -171,17 +171,17 @@ for row in eachrow(branch_params)
     else
         branch = TwoWindingTransformer(;
             name = "tline$(row[branch_num])",
-            winding = TransformerWinding(;
+            circuit = TransformerCircuit(;
                 arc = Arc(; from = bus_from, to = bus_to),
                 available = true,
                 active_power_flow = 0.0,
                 reactive_power_flow = 0.0,
+                r = row[resistance],
+                x = row[reactance],
                 rating = row[max_flow] / system_base_power,
+                base_power = system_base_power,
             ),
-            r = row[resistance],
-            x = row[reactance],
             magnetizing_shunt = 0.0,
-            base_power = system_base_power,
         )
     end
     add_component!(sys, branch)

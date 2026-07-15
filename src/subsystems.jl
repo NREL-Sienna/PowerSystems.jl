@@ -201,9 +201,9 @@ function _check_branch_consistency(
 )
     msg = "A branch must be assigned to the same subystems as its arc."
     arcs = [
-        get_arc(get_primary_winding(branch)),
-        get_arc(get_secondary_winding(branch)),
-        get_arc(get_tertiary_winding(branch)),
+        get_arc(get_primary_circuit(branch)),
+        get_arc(get_secondary_circuit(branch)),
+        get_arc(get_tertiary_circuit(branch)),
     ]
     for arc in arcs
         _check_subsystem_assignments(sys, branch, arc, msg; symmetric_diff = true)

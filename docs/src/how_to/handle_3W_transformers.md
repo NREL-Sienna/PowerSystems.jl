@@ -1,6 +1,6 @@
 # [Handle 3-winding transformer data](@id 3wtdata)
 
-PowerSystems.jl models the [`ThreeWindingTransformer`](@ref) with a star (or wye) topology: three [`TransformerWinding`](@ref)s ([`get_primary_winding`](@ref), [`get_secondary_winding`](@ref), [`get_tertiary_winding`](@ref)), each connecting a terminal bus to a common star (hidden) bus ([`get_star_bus`](@ref)). PowerSystems.jl does **not** store or compute the equivalent star-leg impedances $Z_1, Z_2, Z_3$ themselves. It stores only the measured (PSS/E-shaped) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_13`/`x_13` between winding pairs, on their respective per-pair base powers. Deriving the star-leg impedances from these pairwise values is left to downstream packages — PowerNetworkMatrices owns the cached star derivation used for network-matrix assembly.
+PowerSystems.jl models the [`ThreeWindingTransformer`](@ref) with a star (or wye) topology: three [`TransformerCircuit`](@ref)s ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)), each connecting a terminal bus to a common star (hidden) bus ([`get_star_bus`](@ref)). PowerSystems.jl does **not** store or compute the equivalent star-leg impedances $Z_1, Z_2, Z_3$ themselves. It stores only the measured (PSS/E-shaped) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` between winding pairs, on their respective per-pair base powers. Deriving the star-leg impedances from these pairwise values is left to downstream packages — PowerNetworkMatrices owns the cached star derivation used for network-matrix assembly.
 
 ## The "Starbus" Representation
 
@@ -63,12 +63,12 @@ For transformers with on-load tap changers (OLTCs) or phase shifters, additional
 
 ## Deriving the Equivalent Star Impedances from PSSe
 
-In `PowerSystems.jl`, the [`ThreeWindingTransformer`](@ref) stores only the measured (delta) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_13`/`x_13` (accessed with [`get_r_12`](@ref) etc.) on their respective `base_power_12`/`base_power_23`/`base_power_13` bases, plus the star bus ([`get_star_bus`](@ref)). The equivalent star (wye) series impedance for each winding ($Z_1, Z_2, Z_3$) is *not* stored directly; it is derived on demand — for example by PowerNetworkMatrices — from the PSS®E Positive Sequence Impedance data (e.g., R1-2, X1-2, etc.) using the following formulas:
+In `PowerSystems.jl`, the [`ThreeWindingTransformer`](@ref) stores only the measured (delta) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` (accessed with [`get_r_12`](@ref) etc.) on their respective `base_power_12`/`base_power_23`/`base_power_31` bases, plus the star bus ([`get_star_bus`](@ref)). The equivalent star (wye) series impedance for each winding ($Z_1, Z_2, Z_3$) is *not* stored directly; it is derived on demand — for example by PowerNetworkMatrices — from the PSS®E Positive Sequence Impedance data (e.g., R1-2, X1-2, etc.) using the following formulas:
 
 $$\begin{aligned}
-Z_1 &= \frac{1}{2} (Z_{12} + Z_{13} - Z_{23}) \\
-Z_2 &= \frac{1}{2} (Z_{12} + Z_{23} - Z_{13}) \\
-Z_3 &= \frac{1}{2} (Z_{13} + Z_{23} - Z_{12})
+Z_1 &= \frac{1}{2} (Z_{12} + Z_{31} - Z_{23}) \\
+Z_2 &= \frac{1}{2} (Z_{12} + Z_{23} - Z_{31}) \\
+Z_3 &= \frac{1}{2} (Z_{31} + Z_{23} - Z_{12})
 \end{aligned}$$
 
 Where:
@@ -77,4 +77,4 @@ Where:
   - $Z_2$: Equivalent series impedance of winding 2, connected between its terminal and the neutral point of the equivalent star.
   - $Z_3$: Equivalent series impedance of winding 3, connected between its terminal and the neutral point of the equivalent star.
 
-Each of the three [`TransformerWinding`](@ref)s ([`get_primary_winding`](@ref), [`get_secondary_winding`](@ref), [`get_tertiary_winding`](@ref)) carries its own arc, tap, phase shift, ratings, and per-winding base power/voltage, and connects a terminal bus to the star bus.
+Each of the three [`TransformerCircuit`](@ref)s ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)) carries its own arc, tap, phase shift, ratings, and per-winding base power/voltage, and connects a terminal bus to the star bus.
