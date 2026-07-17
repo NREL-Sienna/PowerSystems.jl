@@ -10,73 +10,17 @@ ensuring cleanup even if errors occur.
 
 ## Available Context Managers
 
-PowerSystems provides three main context managers:
+PowerSystems provides two main context managers:
 
- 1. [`with_units_base`](@ref) - Temporarily change unit system for getting/setting component data
- 2. [`begin_supplemental_attributes_update`](@ref) - Optimize bulk addition/removal of supplemental attributes
- 3. [`begin_time_series_update`](@ref) - Optimize bulk addition of time series data
-
-## Using `with_units_base`
-
-The [`with_units_base`](@ref) function temporarily changes the [unit system](@ref per_unit)
-for a `System` or `Component`, executes your code, then automatically restores the original
-unit system. This is useful when you need to retrieve or set values in a specific unit system
-without permanently changing the system's configuration.
+ 1. [`begin_supplemental_attributes_update`](@ref) - Optimize bulk addition/removal of supplemental attributes
+ 2. [`begin_time_series_update`](@ref) - Optimize bulk addition of time series data
 
 !!! note
 
-    You can specify the unit system using either the `UnitSystem` enum (e.g.,
-    `UnitSystem.NATURAL_UNITS`) or a string (e.g., `"NATURAL_UNITS"`). Both forms are
-    supported and equivalent.
-
-### Example: Getting Component Data in Natural Units
-
-```julia
-using PowerSystems
-using PowerSystemCaseBuilder
-
-# Load a system
-sys = build_system(PSISystems, "c_sys5_pjm")
-gen = first(get_components(ThermalStandard, sys))
-
-# Get active power in natural units (MW) regardless of system's unit base
-active_power_mw = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
-    get_active_power(gen)
-end
-
-# The system's unit base is automatically restored after the block
-```
-
-### Example: Setting Multiple Component Values in Natural Units
-
-```julia
-# Temporarily change units to add/modify multiple components in natural units
-with_units_base(sys, "NATURAL_UNITS") do
-    for gen in get_components(ThermalStandard, sys)
-        # Set values in MW, MVA, etc.
-        set_active_power!(gen, 150.0)  # MW
-        set_rating!(gen, 200.0)        # MVA
-    end
-end
-
-# System automatically returns to original unit base
-```
-
-### Component-Level Context Manager
-
-You can also use `with_units_base` on individual components:
-
-```julia
-active_power_mw = with_units_base(gen, UnitSystem.NATURAL_UNITS) do
-    get_active_power(gen)
-end
-```
-
-!!! tip
-
-    The `with_units_base` context manager is particularly useful when you need to work with
-    data in natural units (MW, MVA, etc.) while keeping your system configured in per-unit
-    for optimization or simulation purposes.
+    Earlier versions of PowerSystems also provided a `with_units_base` context manager for
+    temporarily changing a stateful, system-wide unit setting. Units are explicit at every
+    call site now (see [Per-unit Conventions](@ref per_unit)), so that mechanism has been
+    removed.
 
 ## Using `begin_supplemental_attributes_update`
 
@@ -223,11 +167,10 @@ end
  3. **Nested context managers**: You can nest context managers if needed:
 
     ```julia
-    with_units_base(sys, "NATURAL_UNITS") do
+    begin_supplemental_attributes_update(sys) do
         begin_time_series_update(sys) do
-            # Add time series with natural unit scaling factors
             for gen in get_components(Generator, sys)
-                # ... add time series ...
+                # ... add supplemental attributes and time series ...
             end
         end
     end

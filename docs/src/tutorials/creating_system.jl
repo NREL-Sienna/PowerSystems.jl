@@ -228,10 +228,8 @@ get_bus(retrieved_component)
 #     below.
 
 # ## Per-Unit Conversions with Explicit Units
-# Now, let's use a getter function to look up the solar generator's `rating`. As of
-# PowerSystems 6, every unit-bearing accessor takes an explicit `units` argument; there is no
-# system-wide setting that changes what getters return (see [Per-unit Conventions](@ref per_unit)).
-# Ask for the rating in **system base** (`SU`):
+# Now, let's use a getter function to look up the solar generator's `rating`
+# Ask for the rating in **system base**, `SU` (see [Per-unit Conventions](@ref per_unit)).
 
 get_rating(retrieved_component, SU)
 
@@ -254,18 +252,11 @@ get_rating(retrieved_component, DU)
 # This reads 1.0 — 5.0 MVA per-unitized by the device's own `base_power` of 5.0 MVA, which is
 # the format we used to originally define the device.
 #
-# The legacy `UnitSystem` enum (`get_units_base`, `set_units_base_system!`, `with_units_base`)
-# still exists, but it is now **system metadata only**: it is shown in the `System` summary and
-# no longer changes what the accessors return.
-
-get_units_base(sys)
-
-# Recall that you can always print the [`System`](@ref) to check its settings, including this
-# units-base metadata:
+# Units are explicit at every call site — there is no stateful, system-wide unit setting to
+# check or change. Recall that you can always print the [`System`](@ref) to check its
+# settings, including its base power:
 
 sys
-
-# See the units base is printed as one of the [`System`](@ref) properties.
 
 # ## Next Steps
 # In this tutorial, you manually created a power [`System`](@ref), added and then retrieved its components,

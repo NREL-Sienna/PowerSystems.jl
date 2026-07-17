@@ -186,10 +186,9 @@ end
 @testset "Unit-aware set_base_power_{12,23,13}! on ThreeWindingTransformer" begin
     system_base = 100.0
     xfmr = Transformer3W(nothing)
-    # Stand in for system attachment: set units_info so SU dispatch can read the
+    # Stand in for system attachment: set base_value so SU dispatch can read the
     # system base without building a full three-bus star-topology system.
-    IS.get_internal(xfmr).units_info =
-        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+    IS.set_base_value!(xfmr, system_base)
 
     for (setter, getter, internal) in (
         (set_base_power_12!, get_base_power_12, PSY._get_base_power_12),
@@ -215,8 +214,7 @@ end
     system_base = 100.0
     device_base = 250.0
     xfmr = Transformer3W(nothing)
-    IS.get_internal(xfmr).units_info =
-        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+    IS.set_base_value!(xfmr, system_base)
 
     for (setter, getter, getter_unitful) in (
         (set_base_power_12!, get_base_power_12, get_base_power_12_unitful),
@@ -254,13 +252,12 @@ end
     end
 end
 
-# Detached Transformer3W with seeded units_info (system base 100), distinct
+# Detached Transformer3W with seeded base_value (system base 100), distinct
 # per-winding base powers (15/20/25 MVA), and base voltages (230/138/69 kV) —
 # deliberately all different so a wrong-base selection is caught.
 function _make_test_3w_xfmr(; system_base = 100.0)
     xfmr = Transformer3W(nothing)
-    IS.get_internal(xfmr).units_info =
-        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+    IS.set_base_value!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
     set_base_power_13!(xfmr, 25.0)
@@ -400,12 +397,4 @@ end
     @test_logs (:warn, "Invalid range") match_mode = :any add_component!(sys, gen)
     gen2 = thermal_with_base_power(bus, "Test Gen with Non-Zero Base Power", 100.0)
     @test_nowarn add_component!(sys, gen2)
-    # uncomment if we correct to non-zero base power.
-    #=
-    with_units_base(sys, "SYSTEM_BASE") do
-        gen_added = PSY.get_component(PSY.ThermalStandard, sys, "Test Gen with Zero Base Power")
-        PSY.set_reactive_power!(gen_added, 0.0)
-        @test !isnan(PSY.get_reactive_power(gen_added))
-    end
-    =#
 end

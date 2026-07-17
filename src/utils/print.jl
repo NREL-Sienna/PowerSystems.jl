@@ -130,10 +130,9 @@ function show_component(io::IO, ist::Component; units = nothing)
         obj = getproperty(ist, name)
         getter_name = Symbol("get_$name")
         if obj isa InfrastructureSystemsInternal
-            units_info = IS.get_units_info(obj)
-            if !isnothing(units_info)
-                print(io, "\n   ")
-                show(io, MIME"text/plain"(), units_info)
+            base_value = IS.get_base_value(obj)
+            if !isnothing(base_value)
+                print(io, "\n   System base power (MVA): ", base_value)
             end
             continue
         elseif obj isa InfrastructureSystemsType ||

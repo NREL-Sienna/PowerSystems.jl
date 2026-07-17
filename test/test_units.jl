@@ -215,7 +215,7 @@ end
     @test sprint(show, 1.0MVA) == "1.0 MVA"
 end
 
-@testset "units_info lifecycle" begin
+@testset "base_value lifecycle" begin
     # sys_a: 100 MVA base; gen stored at device base (250 MVA default from _sys_with_thermal)
     sys_a, gen = _sys_with_thermal()
     p_a = get_active_power(gen, SU)
@@ -236,23 +236,50 @@ end
     @test get_active_power(gen, SU) ≈ 2.0 * p_a
 end
 
-@testset "deepcopy rebinds units_info to the copy" begin
+@testset "deepcopy preserves each component's base value" begin
     sys, gen = _sys_with_thermal()
 
     sys2 = deepcopy(sys)
     gen2 = get_component(ThermalStandard, sys2, get_name(gen))
-    @test IS.get_units_info(IS.get_internal(gen2)) === sys2.units_settings
-    @test IS.get_units_info(IS.get_internal(gen2)) !== sys.units_settings
+    @test IS.get_base_value(gen2) == sys2.base_power
+    @test IS.get_base_value(gen2) == IS.get_base_value(gen)
 end
 
-@testset "deserialized components share the system settings object" begin
+@testset "deserialized components carry the system's base value" begin
     sys, gen = _sys_with_thermal()
     path = joinpath(mktempdir(), "sys.json")
     to_json(sys, path)
     sys2 = System(path)
     gen2 = get_component(ThermalStandard, sys2, get_name(gen))
-    @test IS.get_units_info(IS.get_internal(gen2)) === sys2.units_settings
+    @test IS.get_base_value(gen2) == sys2.base_power
     @test get_active_power(gen2, SU) ≈ get_active_power(gen, SU)
+end
+
+@testset "HybridSystem attach/detach propagates base value to subcomponents" begin
+    sys = System(100.0)
+    bus = ACBus(;
+        number = 1, name = "b1", available = true,
+        bustype = ACBusTypes.REF, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys, bus)
+    h_sys = HybridSystem(;
+        name = "h1", available = true, status = true, bus = bus,
+        active_power = 1.0, reactive_power = 1.0,
+        thermal_unit = ThermalStandard(nothing),
+        electric_load = PowerLoad(nothing),
+        storage = EnergyReservoirStorage(nothing),
+        renewable_unit = RenewableDispatch(nothing),
+        base_power = 100.0,
+        operation_cost = MarketBidCost(nothing),
+    )
+    subcomponents = collect(PSY._get_components(h_sys))
+    @test length(subcomponents) == 4
+    add_component!(sys, h_sys)
+    @test all(c -> IS.get_base_value(c) !== nothing, subcomponents)
+
+    remove_component!(sys, h_sys)
+    @test all(c -> IS.get_base_value(c) === nothing, subcomponents)
 end
 
 @testset "convert_units rejects marker/value mismatches" begin
@@ -304,10 +331,7 @@ end
 # only includes test_units.jl itself).
 function _local_make_test_3w_xfmr(; system_base = 100.0)
     xfmr = Transformer3W(nothing)
-    IS.set_units_info!(
-        IS.get_internal(xfmr),
-        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE),
-    )
+    IS.set_base_value!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
     set_base_power_13!(xfmr, 25.0)
@@ -352,15 +376,6 @@ end
     @inferred set_active_power!(gen, 0.4 * SU)
 end
 
-@testset "conversions ignore the display unit_system" begin
-    sys, gen = _sys_with_thermal()
-
-    before = get_active_power(gen, SU)
-    set_units_base_system!(sys, "NATURAL_UNITS")
-    @test get_active_power(gen, SU) == before
-    set_units_base_system!(sys, "SYSTEM_BASE")
-end
-
 @testset "time series multiplier units default to SU" begin
     sys, gen = _sys_with_thermal()
 
@@ -386,10 +401,4 @@ end
 
     base_nu = get_max_active_power(gen, NU) / get_max_active_power(gen, SU)
     @test vals_nu ≈ vals_su .* base_nu
-end
-
-@testset "_set_units_base! errors on detached component" begin
-    sys, gen = _sys_with_thermal()
-    remove_component!(sys, gen)
-    @test_throws ErrorException with_units_base(() -> nothing, gen, "NATURAL_UNITS")
 end

@@ -9,7 +9,6 @@ const SYSTEM_KWARGS = Set((
     :time_series_directory,
     :time_series_in_memory,
     :time_series_read_only,
-    :unit_system,
     :enable_compression,
     :compression,
     :name,
@@ -61,9 +60,6 @@ System(; kwargs...)
 - `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
-- `unit_system::String`: (Default = `"SYSTEM_BASE"`) Set the unit system for
-    [per-unitization](@ref per_unit) while getting and setting data (`"SYSTEM_BASE"`,
-        `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
 - `internal::IS.InfrastructureSystemsInternal`: Internal structure for [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a `System` manually.
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
@@ -100,14 +96,14 @@ struct System <: IS.ComponentContainer
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
     runchecks::Base.RefValue{Bool}
-    units_settings::SystemUnitsSettings
+    base_power::Float64
     time_series_directory::Union{Nothing, String}
     metadata::SystemMetadata
     internal::IS.InfrastructureSystemsInternal
 
     function System(
         data,
-        units_settings::SystemUnitsSettings,
+        base_power::Float64,
         internal::IS.InfrastructureSystemsInternal;
         runchecks = true,
         frequency = DEFAULT_SYSTEM_FREQUENCY,
@@ -124,18 +120,13 @@ struct System <: IS.ComponentContainer
         # elsewhere.
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
-        if !isnothing(get(kwargs, :unit_system, nothing))
-            @warn(
-                "unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence"
-            )
-        end
         bus_numbers = Set(get_number.(IS.get_components(ACBus, data)))
         return new(
             data,
             frequency,
             bus_numbers,
             Base.RefValue{Bool}(runchecks),
-            units_settings,
+            base_power,
             time_series_directory,
             SystemMetadata(name, description),
             internal,
@@ -144,10 +135,7 @@ struct System <: IS.ComponentContainer
 end
 
 function System(data, base_power::Number, internal; kwargs...)
-    unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
-    unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
-    units_settings = SystemUnitsSettings(base_power, unit_system)
-    return System(data, units_settings, internal; kwargs...)
+    return System(data, Float64(base_power), internal; kwargs...)
 end
 
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
@@ -451,7 +439,7 @@ get_ext(sys::System) = IS.get_ext(sys.internal)
 """
 Unitless system base power (MVA) — internal anchor for unit conversion.
 """
-_get_base_power(sys::System) = sys.units_settings.base_value
+_get_base_power(sys::System) = sys.base_power
 
 """
 Return the system's base power as a bare `Float64` in natural units (MVA).
@@ -501,125 +489,14 @@ end
 
 function set_units_setting!(
     component::Component,
-    settings::Union{SystemUnitsSettings, Nothing},
+    value::Union{Float64, Nothing},
 )
-    set_units_info!(get_internal(component), settings)
+    IS.set_base_value!(component, value)
     return
-end
-
-function _set_units_base!(system::System, settings::UnitSystem)
-    to_change = (system.units_settings.unit_system != settings)
-    to_change && (system.units_settings.unit_system = settings)
-    return (to_change, settings)
-end
-
-_set_units_base!(system::System, settings::String) =
-    _set_units_base!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
-
-"""
-Set the system's stored [units base](@ref per_unit) setting. This is system
-metadata only; the unit-aware getters and setters take their units explicitly.
-
-# Examples
-```julia
-set_units_base_system!(sys, "NATURAL_UNITS")
-```
-```julia
-set_units_base_system!(sys, UnitSystem.SYSTEM_BASE)
-```
-"""
-function set_units_base_system!(system::System, units::Union{UnitSystem, String})
-    changed, new_units = _set_units_base!(system::System, units)
-    changed && @info "Unit System changed to $new_units"
-    return
-end
-
-_get_units_base(system::System) = system.units_settings.unit_system
-
-"""
-Get the system's stored [units base](@ref per_unit) setting.
-"""
-function get_units_base(system::System)
-    return string(_get_units_base(system))
-end
-
-"""
-A "context manager" that temporarily sets the [`System`](@ref)'s [units base](@ref per_unit)
-setting to the given value, executes the function, then restores the previous setting.
-
-Note that the unit-aware getters and setters take their units explicitly (e.g.
-`get_active_power(gen, NU)`); this setting only affects code that reads the system's
-configured units base via [`get_units_base`](@ref).
-
-# Examples
-```julia
-with_units_base(sys, UnitSystem.NATURAL_UNITS) do
-    get_units_base(sys)  # "NATURAL_UNITS" within the block; restored afterward
-end
-```
-"""
-function with_units_base(f::Function, sys::System, units::Union{UnitSystem, String})
-    old_units = _get_units_base(sys)
-    _set_units_base!(sys, units)
-    try
-        f()
-    finally
-        _set_units_base!(sys, old_units)
-    end
-end
-
-_set_units_base!(c::Component, settings::String) =
-    _set_units_base!(c::Component, UNIT_SYSTEM_MAPPING[uppercase(settings)])
-
-function _set_units_base!(c::Component, settings::UnitSystem)
-    units_info = IS.get_units_info(get_internal(c))
-    isnothing(units_info) && error("Component $(get_name(c)) is not attached to a system.")
-    old_base_value = units_info.base_value
-    set_units_setting!(
-        c,
-        SystemUnitsSettings(old_base_value, settings),
-    )
-    return
-end
-
-"""
-A "context manager" that temporarily sets the [`Component`](@ref)'s [units base](@ref per_unit)
-setting to the given value, executes the function, then restores the previous setting.
-
-Note that the unit-aware getters and setters take their units explicitly (e.g.
-`get_active_power(component, NU)`); this setting only affects code that reads the
-component's configured units base.
-
-# Examples
-```julia
-with_units_base(component, UnitSystem.NATURAL_UNITS) do
-    get_units_setting(component)  # carries NATURAL_UNITS within the block; restored afterward
-end
-```
-"""
-function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
-    internal = get_internal(c)
-    old_units_info = IS.get_units_info(internal)
-    _set_units_base!(c, units)
-    temp_units_info = IS.get_units_info(internal)
-    try
-        f()
-    finally
-        # Only restore if units_info is still temp_units_info.
-        # The user may have changed it in the function body, e.g. by removing the component
-        # and attaching it to a different system.
-        IS.get_units_info(internal) === temp_units_info || error(
-            "Units info was modified during with_units_base.")
-        IS.set_units_info!(internal, old_units_info)
-    end
-end
-
-function get_units_setting(component::T) where {T <: Component}
-    return get_units_info(get_internal(component))
 end
 
 function has_units_setting(component::T) where {T <: Component}
-    return !isnothing(get_units_setting(component))
+    return !isnothing(IS.get_base_value(component))
 end
 
 """
@@ -673,7 +550,7 @@ function add_component!(
     skip_validation = false,
     kwargs...,
 ) where {T <: Component}
-    set_units_setting!(component, sys.units_settings)
+    set_units_setting!(component, sys.base_power)
     @assert has_units_setting(component)
 
     check_topology(sys, component)
@@ -831,7 +708,7 @@ function _add_service!(
         throw_if_not_attached(device, sys)
     end
 
-    set_units_setting!(service, sys.units_settings)
+    set_units_setting!(service, sys.base_power)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 
@@ -879,7 +756,7 @@ function _add_service!(
 )
     skip_validation = _validate_or_skip!(sys, service, skip_validation)
     _validate_types_for_interface(sys, contributing_devices)
-    set_units_setting!(service, sys.units_settings)
+    set_units_setting!(service, sys.base_power)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 
@@ -897,7 +774,7 @@ function _add_service!(
 )
     skip_validation = _validate_or_skip!(sys, service, skip_validation)
     _validate_types_for_agc(contributing_devices)
-    set_units_setting!(service, sys.units_settings)
+    set_units_setting!(service, sys.base_power)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 
@@ -967,7 +844,7 @@ function add_service!(
         throw_if_not_attached(_service, sys)
     end
 
-    set_units_setting!(service, sys.units_settings)
+    set_units_setting!(service, sys.base_power)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
     return
 end
@@ -1003,7 +880,7 @@ function add_service!(
     skip_validation = _validate_or_skip!(sys, service, skip_validation)
     set_contributing_services!(sys, service, contributing_services)
 
-    set_units_setting!(service, sys.units_settings)
+    set_units_setting!(service, sys.base_power)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
     return
 end
@@ -1220,7 +1097,7 @@ Throws an exception if the component is attached to a system.
 """
 function set_name!(component::Component, name::AbstractString)
     # The units setting is nothing until the component is attached to the system.
-    if get_units_setting(component) !== nothing
+    if has_units_setting(component)
         # This is not allowed because components are stored in the system in a Dict
         # keyed by name.
         error(
@@ -1233,7 +1110,7 @@ function set_name!(component::Component, name::AbstractString)
 end
 
 function clear_units!(component::Component)
-    IS.set_units_info!(get_internal(component), nothing)
+    set_units_setting!(component, nothing)
     return
 end
 
@@ -2462,7 +2339,7 @@ function from_dict(
     # already handled here.
     handled = (
         "data",
-        "units_settings",
+        "base_power",
         "bus_numbers",
         "internal",
         "data_format_version",
@@ -2480,7 +2357,7 @@ function from_dict(
         parsed_kwargs[:runchecks] = kwargs[:runchecks]
     end
 
-    units = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
+    base_power = raw["base_power"]
     data = IS.deserialize(
         IS.SystemData,
         raw["data"];
@@ -2494,7 +2371,7 @@ function from_dict(
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
     sys = System(
         data,
-        units,
+        base_power,
         internal;
         name = name,
         description = description,
@@ -3340,7 +3217,7 @@ function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
     return InfrastructureSystemsInternal(;
         uuid = deepcopy(internal.uuid),
-        units_info = deepcopy(IS.get_units_info(internal)),
+        base_value = IS.get_base_value(internal),
         shared_system_references = nothing,
         ext = deepcopy(internal.ext),
     )
@@ -3417,17 +3294,13 @@ function fast_deepcopy_system(
     )
     new_sys = System(
         new_data,
-        deepcopy(sys.units_settings),
+        sys.base_power,
         deepcopy(sys.internal);
         runchecks = deepcopy(sys.runchecks[]),
         frequency = deepcopy(sys.frequency),
         time_series_directory = deepcopy(sys.time_series_directory),
         name = deepcopy(sys.metadata.name),
         description = deepcopy(sys.metadata.description))
-    # deepcopying sys.data separately from sys.units_settings broke the shared units references, so we have to fix them here
-    for comp in iterate_components(new_sys)
-        IS.set_units_info!(get_internal(comp), new_sys.units_settings)
-    end
     return new_sys
 end
 

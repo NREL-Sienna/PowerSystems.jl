@@ -474,11 +474,11 @@ end
 
 function set_units_setting!(
     value::HybridSystem,
-    settings::Union{SystemUnitsSettings, Nothing},
+    settings::Union{Float64, Nothing},
 )
-    set_units_info!(get_internal(value), settings)
+    IS.set_base_value!(value, settings)
     for component in _get_components(value)
-        set_units_info!(get_internal(component), settings)
+        IS.set_base_value!(component, settings)
     end
     return
 end
