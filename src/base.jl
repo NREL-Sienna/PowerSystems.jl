@@ -2934,6 +2934,7 @@ function handle_component_removal!(sys::System, component::StaticInjectionSubsys
     _handle_component_removal_common!(component)
     subcomponents = collect(get_subcomponents(component))
     for subcomponent in subcomponents
+        clear_units!(subcomponent)
         IS.remove_masked_component!(sys.data, subcomponent)
     end
 end
