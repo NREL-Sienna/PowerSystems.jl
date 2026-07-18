@@ -223,6 +223,14 @@ function _make_test_3w_xfmr(; system_base = 100.0)
     return xfmr
 end
 
+@testset "3W magnetizing_shunt converts on the primary circuit base" begin
+    xfmr = _make_test_3w_xfmr()                       # anchor 100; base_power_12 = 15
+    set_base_power!(get_primary_circuit(xfmr), 50.0)  # decouple circuit base from pair base
+    set_magnetizing_shunt!(xfmr, (1.0 + 0.0im) * DU)
+    # SU must scale by the primary CIRCUIT base (50), not base_power_12 (15)
+    @test real(get_magnetizing_shunt(xfmr, SU)) ≈ 1.0 * 50.0 / 100.0
+end
+
 @testset "Pairwise impedance getters on ThreeWindingTransformer use the pair base" begin
     # Regression guard for a silent units bug. The getters must honor the explicit
     # `units` argument and resolve the CORRECT pair base. Each pairwise impedance

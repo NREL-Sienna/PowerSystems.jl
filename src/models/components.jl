@@ -298,8 +298,9 @@ _unit_category(::Val{:siemens}) = ADMITTANCE
 # Convention: Z_ij is pu on base_power_ij referenced to the first-index circuit's
 # base voltage (PSS/E CZ = 1): r_12/x_12 -> primary, r_23/x_23 -> secondary,
 # r_31/x_31 -> tertiary (R3-1 references NOMV3, the tertiary winding). The
-# transformer-level `magnetizing_shunt` is pu on base_power_12 referenced to the
-# primary circuit's base voltage.
+# transformer-level `magnetizing_shunt` is pu on the primary circuit's own
+# `base_power` referenced to the primary circuit's base voltage (it converts
+# directly on the primary `TransformerCircuit`, not through a `PairBase`).
 struct PairBase{T <: ThreeWindingTransformer}
     transformer::T
     base_power::Float64
@@ -318,4 +319,4 @@ _conversion_base(c::ThreeWindingTransformer, ::Union{Val{:r_23}, Val{:x_23}}) =
 _conversion_base(c::ThreeWindingTransformer, ::Union{Val{:r_31}, Val{:x_31}}) =
     PairBase(c, get_base_power_31(c), get_base_voltage(get_tertiary_circuit(c)))
 _conversion_base(c::ThreeWindingTransformer, ::Val{:magnetizing_shunt}) =
-    PairBase(c, get_base_power_12(c), get_base_voltage(get_primary_circuit(c)))
+    get_primary_circuit(c)

@@ -46,7 +46,7 @@ The model uses an equivalent star model with a star (hidden) bus. Each of the th
 - `base_power_12::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings., validation range: `(0.0001, nothing)`
 - `base_power_23::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings., validation range: `(0.0001, nothing)`
 - `base_power_31::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings., validation range: `(0.0001, nothing)`
-- `magnetizing_shunt::Complex{Float64}`: (default: `0.0`) Magnetizing shunt admittance in pu (device base on `base_power_12`) referenced to the primary circuit's base voltage
+- `magnetizing_shunt::Complex{Float64}`: (default: `0.0`) Magnetizing shunt admittance in pu (device base on the primary circuit's `base_power`) referenced to the primary circuit's base voltage
 - `shunt_location::ThreeWindingTransformerShuntLocation`: (default: `ThreeWindingTransformerShuntLocation.PRIMARY`) Placement of `magnetizing_shunt` in the equivalent star model. See [`ThreeWindingTransformerShuntLocation`](@ref)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -81,7 +81,7 @@ mutable struct ThreeWindingTransformer <: ACTransmission
     base_power_23::Float64
     "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings."
     base_power_31::Float64
-    "Magnetizing shunt admittance in pu (device base on `base_power_12`) referenced to the primary circuit's base voltage"
+    "Magnetizing shunt admittance in pu (device base on the primary circuit's `base_power`) referenced to the primary circuit's base voltage"
     magnetizing_shunt::Complex{Float64}
     "Placement of `magnetizing_shunt` in the equivalent star model. See [`ThreeWindingTransformerShuntLocation`](@ref)"
     shunt_location::ThreeWindingTransformerShuntLocation

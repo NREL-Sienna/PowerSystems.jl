@@ -1320,7 +1320,7 @@
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}",
                     "default": "0.0",
-                    "comment": "Magnetizing shunt admittance in pu (device base on `base_power_12`) referenced to the primary circuit's base voltage",
+                    "comment": "Magnetizing shunt admittance in pu (device base on the primary circuit's `base_power`) referenced to the primary circuit's base voltage",
                     "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
