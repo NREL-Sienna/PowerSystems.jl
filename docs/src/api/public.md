@@ -24,9 +24,8 @@ Pages   = ["PowerSystems.jl",
            "operational_cost.jl",
            "cost_function_timeseries.jl",
            "definitions.jl",
-           "transformer_control.jl",
-           "transformer_windings.jl",
-           "TransformerWinding.jl"
+           "transformer_circuits.jl",
+           "TransformerCircuit.jl"
            ]
 Public = true
 Private = false
@@ -54,6 +53,7 @@ before narrowing by `Pages`, so every `Modules = [IS]` filter below sees IS's
 method for a `Union`, so the `!(t isa Union)` guard is required on each of these
 filters that calls `nameof`.
 -->
+
 ```@autodocs
 Modules = [IS]
 Pages   = ["geographic_supplemental_attribute.jl"
