@@ -1199,10 +1199,11 @@
                     "data_type": "ACBus"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "r_12",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1212,10 +1213,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "x_12",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1225,10 +1227,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "r_23",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1238,10 +1241,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "x_23",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1251,10 +1255,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "r_31",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1264,10 +1269,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "x_31",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1280,9 +1286,10 @@
                     "name": "base_power_12",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
-                    "null_value": "100.0",
-                    "data_type": "Float64",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
                         "min": 1e-4,
                         "max": null
@@ -1293,9 +1300,10 @@
                     "name": "base_power_23",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings.",
-                    "null_value": "100.0",
-                    "data_type": "Float64",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
                         "min": 1e-4,
                         "max": null
@@ -1306,9 +1314,10 @@
                     "name": "base_power_31",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings.",
-                    "null_value": "100.0",
-                    "data_type": "Float64",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
                         "min": 1e-4,
                         "max": null

@@ -11,15 +11,15 @@ This file is auto-generated. Do not edit.
         secondary_circuit::TransformerCircuit
         tertiary_circuit::TransformerCircuit
         star_bus::ACBus
-        r_12::Float64
-        x_12::Float64
-        r_23::Float64
-        x_23::Float64
-        r_31::Float64
-        x_31::Float64
-        base_power_12::Float64
-        base_power_23::Float64
-        base_power_31::Float64
+        r_12::Union{Nothing, Float64}
+        x_12::Union{Nothing, Float64}
+        r_23::Union{Nothing, Float64}
+        x_23::Union{Nothing, Float64}
+        r_31::Union{Nothing, Float64}
+        x_31::Union{Nothing, Float64}
+        base_power_12::Union{Nothing, Float64}
+        base_power_23::Union{Nothing, Float64}
+        base_power_31::Union{Nothing, Float64}
         magnetizing_shunt::Complex{Float64}
         shunt_location::ThreeWindingTransformerShuntLocation
         services::Vector{Service}
@@ -37,15 +37,15 @@ The model uses an equivalent star model with a star (hidden) bus. Each of the th
 - `secondary_circuit::TransformerCircuit`: The secondary [`TransformerCircuit`](@ref) connecting the secondary bus to the star bus
 - `tertiary_circuit::TransformerCircuit`: The tertiary [`TransformerCircuit`](@ref) connecting the tertiary bus to the star bus
 - `star_bus::ACBus`: Star (hidden) Bus that this component (equivalent model) is connected to
-- `r_12::Float64`: Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring., validation range: `(0, 4)`
-- `x_12::Float64`: Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring., validation range: `(0, 4)`
-- `r_23::Float64`: Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring., validation range: `(0, 4)`
-- `x_23::Float64`: Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring., validation range: `(0, 4)`
-- `r_31::Float64`: Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring., validation range: `(0, 4)`
-- `x_31::Float64`: Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring., validation range: `(0, 4)`
-- `base_power_12::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings., validation range: `(0.0001, nothing)`
-- `base_power_23::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings., validation range: `(0.0001, nothing)`
-- `base_power_31::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings., validation range: `(0.0001, nothing)`
+- `r_12::Union{Nothing, Float64}`: (default: `nothing`) Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0, 4)`
+- `x_12::Union{Nothing, Float64}`: (default: `nothing`) Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0, 4)`
+- `r_23::Union{Nothing, Float64}`: (default: `nothing`) Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0, 4)`
+- `x_23::Union{Nothing, Float64}`: (default: `nothing`) Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0, 4)`
+- `r_31::Union{Nothing, Float64}`: (default: `nothing`) Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0, 4)`
+- `x_31::Union{Nothing, Float64}`: (default: `nothing`) Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0, 4)`
+- `base_power_12::Union{Nothing, Float64}`: (default: `nothing`) Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0.0001, nothing)`
+- `base_power_23::Union{Nothing, Float64}`: (default: `nothing`) Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0.0001, nothing)`
+- `base_power_31::Union{Nothing, Float64}`: (default: `nothing`) Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`., validation range: `(0.0001, nothing)`
 - `magnetizing_shunt::Complex{Float64}`: (default: `0.0`) Magnetizing shunt admittance in pu (device base on the primary circuit's `base_power`) referenced to the primary circuit's base voltage
 - `shunt_location::ThreeWindingTransformerShuntLocation`: (default: `ThreeWindingTransformerShuntLocation.PRIMARY`) Placement of `magnetizing_shunt` in the equivalent star model. See [`ThreeWindingTransformerShuntLocation`](@ref)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -63,24 +63,24 @@ mutable struct ThreeWindingTransformer <: ACTransmission
     tertiary_circuit::TransformerCircuit
     "Star (hidden) Bus that this component (equivalent model) is connected to"
     star_bus::ACBus
-    "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring."
-    r_12::Float64
-    "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring."
-    x_12::Float64
-    "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring."
-    r_23::Float64
-    "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring."
-    x_23::Float64
-    "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring."
-    r_31::Float64
-    "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring."
-    x_31::Float64
-    "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings."
-    base_power_12::Float64
-    "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings."
-    base_power_23::Float64
-    "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings."
-    base_power_31::Float64
+    "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    r_12::Union{Nothing, Float64}
+    "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    x_12::Union{Nothing, Float64}
+    "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    r_23::Union{Nothing, Float64}
+    "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    x_23::Union{Nothing, Float64}
+    "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    r_31::Union{Nothing, Float64}
+    "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    x_31::Union{Nothing, Float64}
+    "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    base_power_12::Union{Nothing, Float64}
+    "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    base_power_23::Union{Nothing, Float64}
+    "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`."
+    base_power_31::Union{Nothing, Float64}
     "Magnetizing shunt admittance in pu (device base on the primary circuit's `base_power`) referenced to the primary circuit's base voltage"
     magnetizing_shunt::Complex{Float64}
     "Placement of `magnetizing_shunt` in the equivalent star model. See [`ThreeWindingTransformerShuntLocation`](@ref)"
@@ -93,11 +93,11 @@ mutable struct ThreeWindingTransformer <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function ThreeWindingTransformer(name, primary_circuit, secondary_circuit, tertiary_circuit, star_bus, r_12, x_12, r_23, x_23, r_31, x_31, base_power_12, base_power_23, base_power_31, magnetizing_shunt=0.0, shunt_location=ThreeWindingTransformerShuntLocation.PRIMARY, services=Device[], ext=Dict{String, Any}(), )
+function ThreeWindingTransformer(name, primary_circuit, secondary_circuit, tertiary_circuit, star_bus, r_12=nothing, x_12=nothing, r_23=nothing, x_23=nothing, r_31=nothing, x_31=nothing, base_power_12=nothing, base_power_23=nothing, base_power_31=nothing, magnetizing_shunt=0.0, shunt_location=ThreeWindingTransformerShuntLocation.PRIMARY, services=Device[], ext=Dict{String, Any}(), )
     ThreeWindingTransformer(name, primary_circuit, secondary_circuit, tertiary_circuit, star_bus, r_12, x_12, r_23, x_23, r_31, x_31, base_power_12, base_power_23, base_power_31, magnetizing_shunt, shunt_location, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function ThreeWindingTransformer(; name, primary_circuit, secondary_circuit, tertiary_circuit, star_bus, r_12, x_12, r_23, x_23, r_31, x_31, base_power_12, base_power_23, base_power_31, magnetizing_shunt=0.0, shunt_location=ThreeWindingTransformerShuntLocation.PRIMARY, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function ThreeWindingTransformer(; name, primary_circuit, secondary_circuit, tertiary_circuit, star_bus, r_12=nothing, x_12=nothing, r_23=nothing, x_23=nothing, r_31=nothing, x_31=nothing, base_power_12=nothing, base_power_23=nothing, base_power_31=nothing, magnetizing_shunt=0.0, shunt_location=ThreeWindingTransformerShuntLocation.PRIMARY, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     ThreeWindingTransformer(name, primary_circuit, secondary_circuit, tertiary_circuit, star_bus, r_12, x_12, r_23, x_23, r_31, x_31, base_power_12, base_power_23, base_power_31, magnetizing_shunt, shunt_location, services, ext, internal, )
 end
 
@@ -109,15 +109,15 @@ function ThreeWindingTransformer(::Nothing)
         secondary_circuit=TransformerCircuit(nothing),
         tertiary_circuit=TransformerCircuit(nothing),
         star_bus=ACBus(nothing),
-        r_12=0.0,
-        x_12=0.0,
-        r_23=0.0,
-        x_23=0.0,
-        r_31=0.0,
-        x_31=0.0,
-        base_power_12=100.0,
-        base_power_23=100.0,
-        base_power_31=100.0,
+        r_12=nothing,
+        x_12=nothing,
+        r_23=nothing,
+        x_23=nothing,
+        r_31=nothing,
+        x_31=nothing,
+        base_power_12=nothing,
+        base_power_23=nothing,
+        base_power_31=nothing,
         magnetizing_shunt=0.0,
         shunt_location=ThreeWindingTransformerShuntLocation.PRIMARY,
         services=Device[],

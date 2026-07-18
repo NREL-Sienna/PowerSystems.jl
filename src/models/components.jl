@@ -259,9 +259,12 @@ set_value(::UnitsBearer, _, ::Nothing, ::Val) = nothing
 get_base_power_12(t::ThreeWindingTransformer) = t.base_power_12
 get_base_power_23(t::ThreeWindingTransformer) = t.base_power_23
 get_base_power_31(t::ThreeWindingTransformer) = t.base_power_31
-set_base_power_12!(t::ThreeWindingTransformer, v::Float64) = t.base_power_12 = v
-set_base_power_23!(t::ThreeWindingTransformer, v::Float64) = t.base_power_23 = v
-set_base_power_31!(t::ThreeWindingTransformer, v::Float64) = t.base_power_31 = v
+set_base_power_12!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
+    t.base_power_12 = v
+set_base_power_23!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
+    t.base_power_23 = v
+set_base_power_31!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
+    t.base_power_31 = v
 
 # A TwoWindingTransformer's series electrical data lives entirely on its circuit.
 # Forward the base-power accessors to the circuit so the units engine's device-base
@@ -303,11 +306,17 @@ _unit_category(::Val{:siemens}) = ADMITTANCE
 # directly on the primary `TransformerCircuit`, not through a `PairBase`).
 struct PairBase{T <: ThreeWindingTransformer}
     transformer::T
-    base_power::Float64
+    base_power::Union{Nothing, Float64}
     base_voltage::Union{Nothing, Float64}
 end
 
-_get_device_base_power(p::PairBase) = p.base_power
+function _get_device_base_power(p::PairBase)
+    isnothing(p.base_power) && error(
+        "The pairwise PSS/E fields (r_12/x_12/r_23/x_23/r_31/x_31 and base_power_12/23/31) " *
+        "of $(summary(p.transformer)) are not set; cannot convert pairwise values",
+    )
+    return p.base_power
+end
 _get_system_base_power(p::PairBase) = _get_system_base_power(p.transformer)
 get_base_voltage(p::PairBase) = p.base_voltage
 Base.summary(p::PairBase) = "PairBase($(summary(p.transformer)))"

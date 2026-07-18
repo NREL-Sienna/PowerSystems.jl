@@ -250,11 +250,29 @@ function validate_component_with_system(
     return is_valid_reactance && is_valid_rating && is_valid_circuit
 end
 
+const _PSSE_PAIRWISE_FIELDS = (
+    :r_12, :x_12, :r_23, :x_23, :r_31, :x_31,
+    :base_power_12, :base_power_23, :base_power_31,
+)
+
+# The pairwise PSS/E block is carried verbatim from source data or absent entirely;
+# a partial block has no defined conversion (impedances without their base) and is
+# always a data error.
+function check_psse_pairwise_block(xfrm::ThreeWindingTransformer)
+    missing_fields = [f for f in _PSSE_PAIRWISE_FIELDS if isnothing(getfield(xfrm, f))]
+    isempty(missing_fields) && return true
+    length(missing_fields) == length(_PSSE_PAIRWISE_FIELDS) && return true
+    @error "ThreeWindingTransformer $(get_name(xfrm)) has a partial PSS/E pairwise block; \
+            missing $(missing_fields). Set all of $(collect(_PSSE_PAIRWISE_FIELDS)) or none." _group =
+        IS.LOG_GROUP_PARSING
+    return false
+end
+
 function validate_component_with_system(
     xfrm::ThreeWindingTransformer,
     sys::System,
 )
-    is_valid = true
+    is_valid = check_psse_pairwise_block(xfrm)
     for circuit in get_circuits(xfrm)
         if !check_circuit_values(circuit, get_name(xfrm))
             is_valid = false

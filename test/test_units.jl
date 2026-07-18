@@ -372,9 +372,10 @@ end
     # rating_b is set to 0.9 in _sys_with_line so the non-nothing branch executes
     @inferred Union{Nothing, Float64} get_rating_b(line, SU)
 
-    # three-winding pairwise bases (PairBase engine)
-    @inferred get_r_12(xfmr3w, SU)
-    @inferred get_r_23(xfmr3w, DU)
+    # three-winding pairwise bases (PairBase engine); r_12/r_23 are now
+    # Union{Nothing, Float64} descriptor fields (optional PSSE pairwise block)
+    @inferred Union{Nothing, Float64} get_r_12(xfmr3w, SU)
+    @inferred Union{Nothing, Float64} get_r_23(xfmr3w, DU)
 
     # setter chain: returns the stored DU Float64
     @inferred set_active_power!(gen, 0.4 * SU)
@@ -409,17 +410,27 @@ end
 
 @testset "TransformerCircuit base_value anchor lifecycle" begin
     sys = System(100.0)
-    b1 = ACBus(nothing); set_name!(b1, "b1"); set_number!(b1, 1)
-    b2 = ACBus(nothing); set_name!(b2, "b2"); set_number!(b2, 2)
-    b3 = ACBus(nothing); set_name!(b3, "b3"); set_number!(b3, 3)
-    star = ACBus(nothing); set_name!(star, "star"); set_number!(star, 901)
+    b1 = ACBus(nothing);
+    set_name!(b1, "b1");
+    set_number!(b1, 1)
+    b2 = ACBus(nothing);
+    set_name!(b2, "b2");
+    set_number!(b2, 2)
+    b3 = ACBus(nothing);
+    set_name!(b3, "b3");
+    set_number!(b3, 3)
+    star = ACBus(nothing);
+    set_name!(star, "star");
+    set_number!(star, 901)
     for b in (b1, b2, b3, star)
         set_base_voltage!(b, 100.0)
         set_bustype!(b, ACBusTypes.PQ)
         add_component!(sys, b)
     end
     set_bustype!(b1, ACBusTypes.REF)
-    a1 = Arc(b1, star); a2 = Arc(b2, star); a3 = Arc(b3, star)
+    a1 = Arc(b1, star);
+    a2 = Arc(b2, star);
+    a3 = Arc(b3, star)
     foreach(a -> add_component!(sys, a), (a1, a2, a3))
     t3w = ThreeWindingTransformer(nothing)
     set_name!(t3w, "t3w")

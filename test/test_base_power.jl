@@ -355,3 +355,75 @@ end
     gen2 = thermal_with_base_power(bus, "Test Gen with Non-Zero Base Power", 100.0)
     @test_nowarn add_component!(sys, gen2)
 end
+
+@testset "PSSE pairwise block is optional, all-or-none" begin
+    sys = System(100.0)
+    b1 = ACBus(nothing);
+    set_name!(b1, "b1");
+    set_number!(b1, 1)
+    b2 = ACBus(nothing);
+    set_name!(b2, "b2");
+    set_number!(b2, 2)
+    b3 = ACBus(nothing);
+    set_name!(b3, "b3");
+    set_number!(b3, 3)
+    star = ACBus(nothing);
+    set_name!(star, "star");
+    set_number!(star, 901)
+    for b in (b1, b2, b3, star)
+        set_base_voltage!(b, 100.0)
+        set_bustype!(b, ACBusTypes.PQ)
+        add_component!(sys, b)
+    end
+    set_bustype!(b1, ACBusTypes.REF)
+    a1 = Arc(b1, star);
+    a2 = Arc(b2, star);
+    a3 = Arc(b3, star)
+    foreach(a -> add_component!(sys, a), (a1, a2, a3))
+    function _pairwise_test_3w(name)
+        t = ThreeWindingTransformer(nothing)
+        set_name!(t, name)
+        set_arc!(get_primary_circuit(t), a1)
+        set_arc!(get_secondary_circuit(t), a2)
+        set_arc!(get_tertiary_circuit(t), a3)
+        foreach(c -> set_available!(c, true), get_circuits(t))
+        set_star_bus!(t, star)
+        return t
+    end
+
+    # (a) fully absent: (nothing)-constructed 3W now defaults the block to nothing
+    t_bare = _pairwise_test_3w("t_bare")
+    @test get_base_power_12(t_bare) === nothing
+    add_component!(sys, t_bare)   # must not throw
+    @test get_r_12(t_bare, SU) === nothing
+    @test get_x_31(t_bare, DU) === nothing
+
+    # (b) converting a real value against a missing base errors informatively
+    t_partial = _pairwise_test_3w("t_partial")
+    set_r_12!(t_partial, 0.01 * DU)   # DU-tagged set needs no base; block stays partial
+    @test get_r_12(t_partial, DU) ≈ 0.01
+    @test_throws ErrorException get_r_12(t_partial, SU)
+
+    # (c) partial block rejected at add_component!
+    @test_logs(
+        (:error, r"partial PSS/E pairwise block"),
+        match_mode = :any,
+        @test_throws(IS.InvalidValue, add_component!(sys, t_partial))
+    )
+
+    # (d) full block still accepted, existing conversion behavior intact
+    t_full = _pairwise_test_3w("t_full")
+    set_base_power_12!(t_full, 15.0)
+    set_base_power_23!(t_full, 20.0)
+    set_base_power_31!(t_full, 25.0)
+    for (setter, v) in (
+        (set_r_12!, 0.01), (set_x_12!, 0.10),
+        (set_r_23!, 0.02), (set_x_23!, 0.20),
+        (set_r_31!, 0.03), (set_x_31!, 0.30),
+    )
+        setter(t_full, v * DU)
+    end
+    add_component!(sys, t_full)   # must not throw
+    @test get_base_power_12(t_full) == 15.0
+    @test get_r_12(t_full, SU) ≈ 0.01 * (100.0 / 15.0)
+end
