@@ -262,8 +262,8 @@ function check_psse_pairwise_block(xfrm::ThreeWindingTransformer)
     missing_fields = [f for f in _PSSE_PAIRWISE_FIELDS if isnothing(getfield(xfrm, f))]
     isempty(missing_fields) && return true
     length(missing_fields) == length(_PSSE_PAIRWISE_FIELDS) && return true
-    @error "ThreeWindingTransformer $(get_name(xfrm)) has a partial PSS/E pairwise block; \
-            missing $(missing_fields). Set all of $(collect(_PSSE_PAIRWISE_FIELDS)) or none." _group =
+    @error "ThreeWindingTransformer $(get_name(xfrm)) has a partial PSS/E pairwise block; " *
+           "missing $(missing_fields). Set all of $(collect(_PSSE_PAIRWISE_FIELDS)) or none." _group =
         IS.LOG_GROUP_PARSING
     return false
 end
