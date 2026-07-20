@@ -2257,29 +2257,50 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
     return
 end
 
+"""
+Build the clean node Dict for one substation NODE record. `vm`/`va` are carried
+only when the RAW stored a solved voltage for the node (a `Number`); when omitted
+the node inherits its bus voltage downstream, so the keys are left absent rather
+than defaulted to a flat 1.0/0.0 that would masquerade as a genuine solution.
+"""
+function _psse2pm_substation_node(n::Dict)
+    node = Dict{String, Any}(
+        "number" => n["NI"], "name" => n["NAME"], "bus" => n["I"],
+        "status" => n["STATUS"],
+    )
+    n["VM"] isa Number && (node["vm"] = n["VM"])
+    n["VA"] isa Number && (node["va"] = n["VA"])
+    return node
+end
+
 function _psse2pm_substation_data!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @warn "Parsing PSS(R)E Substation data into a PowerModels Dict..."
-    pm_data["substation_data"] = []
-
-    if haskey(pti_data, "SUBSTATION DATA")
-        for substation_data in pti_data["SUBSTATION DATA"]
-            sub_data = Dict{String, Any}()
-
-            sub_data["name"] = substation_data["NAME"]
-            sub_data["substation_is"] = substation_data["IS"]
-
-            sub_data["latitude"] = substation_data["LATITUDE"]
-            sub_data["longitude"] = substation_data["LONGITUDE"]
-            sub_data["nodes"] = substation_data["NODES"]
-
-            if import_all
-                _import_remaining_keys!(sub_data, substation_data)
-            end
-
-            sub_data["index"] = length(pm_data["substation_data"]) + 1
-            push!(pm_data["substation_data"], sub_data)
-        end
+    @info "Parsing PSS(R)E Substation data into a PowerModels Dict..."
+    pm_data["substation"] = []
+    haskey(pti_data, "SUBSTATION DATA") || return
+    for substation in pti_data["SUBSTATION DATA"]
+        sub = Dict{String, Any}()
+        sub["number"] = pop!(substation, "IS")
+        sub["name"] = strip(pop!(substation, "NAME"))
+        sub["latitude"] = pop!(substation, "LATITUDE")
+        sub["longitude"] = pop!(substation, "LONGITUDE")
+        sub["grounding_resistance"] = pop!(substation, "SGR")
+        sub["nodes"] = [_psse2pm_substation_node(n) for n in pop!(substation, "NODES")]
+        sub["switching_devices"] = [Dict{String, Any}(
+            "from_node" => d["NI"], "to_node" => d["NJ"], "ckt" => d["CKT"],
+            "name" => d["NAME"], "device_type" => d["TYPE"], "status" => d["STATUS"],
+            "normal_status" => d["NSTAT"], "x" => d["X"],
+            "rates" => [d["RATE1"], d["RATE2"], d["RATE3"]],
+        ) for d in pop!(substation, "SWITCHING DEVICES")]
+        sub["terminals"] = [Dict{String, Any}(
+            "bus" => t["I"], "node" => t["NI"], "type" => t["TYP"], "id" => t["ID"],
+            "secondary_bus" => t["J"], "tertiary_bus" => t["K"],
+        ) for t in pop!(substation, "TERMINALS")]
+        sub["source_id"] = ["substation", sub["number"]]
+        sub["index"] = length(pm_data["substation"]) + 1
+        import_all && _import_remaining_keys!(sub, substation)
+        push!(pm_data["substation"], sub)
     end
+    return
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)

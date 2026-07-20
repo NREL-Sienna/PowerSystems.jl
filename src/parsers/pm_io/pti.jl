@@ -868,6 +868,31 @@ const _substation_dtypes_v35 = [
     ("SGR", Float64),
 ]
 
+const _substation_node_dtypes_v35 = [
+    ("NI", Int64),
+    ("NAME", String),
+    ("I", Int64),
+    ("STATUS", Int64),
+    ("VM", Float64),
+    ("VA", Float64),
+]
+
+const _substation_switching_device_dtypes_v35 = [
+    ("NI", Int64),
+    ("NJ", Int64),
+    ("CKT", String),
+    ("NAME", String),
+    ("TYPE", Int64),
+    ("STATUS", Int64),
+    ("NSTAT", Int64),
+    ("X", Float64),
+    ("RATE1", Float64),
+    ("RATE2", Float64),
+    ("RATE3", Float64),
+]
+
+const _substation_terminal_two_bus_types = ("B", "2")
+
 """
 lookup array of data types for PTI file sections given by
 `field_name`, as enumerated by PSS/E Program Operation Manual.
@@ -940,6 +965,8 @@ const _pti_dtypes_v35 = Dict{String, Array}(
     "GNE DEVICE" => _gne_device_dtypes_v35,
     "INDUCTION MACHINE" => _induction_machine_dtypes_v35,
     "SUBSTATION DATA" => _substation_dtypes_v35,
+    "SUBSTATION NODE" => _substation_node_dtypes_v35,
+    "SUBSTATION SWITCHING DEVICE" => _substation_switching_device_dtypes_v35,
 )
 
 const _default_case_identification = Dict(
@@ -1460,9 +1487,26 @@ const _default_induction_machine_v35 = _default_induction_machine
 
 const _default_substation_data_v35 = Dict(
     "NAME" => "",
-    "LATI" => 0.0,
-    "LONG" => 0.0,
+    "LATITUDE" => 0.0,
+    "LONGITUDE" => 0.0,
     "SGR" => 0.1,
+    # VM/VA are intentionally absent: a node's voltage is optional in the RAW,
+    # and when omitted the node inherits its bus voltage rather than a fabricated
+    # flat 1.0/0.0. _populate_defaults! skips these fields for NODES.
+    "NODES" => Dict("NAME" => "", "STATUS" => 1),
+    "SWITCHING DEVICES" => Dict(
+        "CKT" => "1",
+        "NAME" => "",
+        "TYPE" => 1,
+        "STATUS" => 1,
+        "NSTAT" => 1,
+        "X" => 0.0001,
+        "RATE1" => 0.0,
+        "RATE2" => 0.0,
+        "RATE3" => 0.0,
+    ),
+    # terminals are fully populated positionally in _parse_substation_terminal
+    "TERMINALS" => Dict(),
 )
 
 const _pti_defaults = Dict(
@@ -1776,138 +1820,126 @@ function _get_line_elements(line::AbstractString)
     return (elements, comment)
 end
 
-"""
-Process substation data with elements and parse associated nodes
-"""
-function parse_substation_nodes!(
-    section_data::Dict{String, Any},
-    data_lines::Vector{String},
-    start_line_index::Int,
-)::Int
-    """Parse nodes for a substation and return the updated line index"""
-    section_data["NODES"] = []
-    temp_line_index = start_line_index + 1
+const _substation_quote_chars = ('\'', '"')
 
-    # Look for "BEGIN SUBSTATION NODE DATA" comment
-    while temp_line_index <= length(data_lines)
-        temp_line = data_lines[temp_line_index]
-        if contains(temp_line, "BEGIN SUBSTATION NODE DATA")
-            temp_line_index += 1
-            break
-        end
-        temp_line_index += 1
-    end
+function _unquote(element::AbstractString)
+    return String(strip(strip(strip(element), _substation_quote_chars)))
+end
 
-    # Parse node data until we hit the end marker
-    while temp_line_index <= length(data_lines)
-        temp_line = data_lines[temp_line_index]
-
-        if startswith(temp_line, "0 /") && (
-            contains(temp_line, "END OF SUBSTATION NODE DATA") ||
-            contains(temp_line, "SUBSTATION TERMINAL DATA")
+function _parse_substation_terminal(
+    elements::AbstractVector{<:AbstractString},
+    line_index::Int,
+)
+    length(elements) < 4 && throw(
+        DataFormatError(
+            "Substation terminal record at line $line_index has $(length(elements)) fields, expected at least 4",
+        ),
+    )
+    terminal = Dict{String, Any}()
+    terminal["I"] = parse(Int64, strip(elements[1]))
+    terminal["NI"] = parse(Int64, strip(elements[2]))
+    type_code = _unquote(elements[3])
+    terminal["TYP"] = type_code
+    if type_code == "3"
+        length(elements) < 6 && throw(
+            DataFormatError(
+                "Three-winding substation terminal record at line $line_index has $(length(elements)) fields, expected 6",
+            ),
         )
-            return temp_line_index
-        end
-
-        if contains(temp_line, "BEGIN SUBSTATION DATA BLOCK")
-            return temp_line_index - 1
-        end
-
-        if !startswith(temp_line, "@!") && !isempty(strip(temp_line))
-            (check_elements, check_comment) = _get_line_elements(temp_line)
-            if length(check_elements) == 5 &&
-               tryparse(Int, strip(check_elements[1])) !== nothing &&
-               occursin('\'', check_elements[2]) &&
-               tryparse(Float64, strip(check_elements[3])) !== nothing &&
-               tryparse(Float64, strip(check_elements[4])) !== nothing &&
-               tryparse(Float64, strip(check_elements[5])) !== nothing
-                return temp_line_index - 1
-            end
-        end
-
-        if startswith(temp_line, "@!")
-            temp_line_index += 1
-            continue
-        end
-
-        if !isempty(strip(temp_line))
-            (node_elements, node_comment) = _get_line_elements(temp_line)
-
-            if length(node_elements) >= 4
-                if length(node_elements) >= 3 &&
-                   length(strip(node_elements[3])) == 3 &&
-                   startswith(strip(node_elements[3]), "'") &&
-                   endswith(strip(node_elements[3]), "'")
-                    return temp_line_index - 1
-                end
-            end
-
-            if length(node_elements) >= 4 && length(node_elements) <= 6
-                node_data = Dict{String, Any}()
-                node_data["NI"] = parse(Int, strip(node_elements[1]))
-
-                name_string = strip(node_elements[2])
-                if startswith(name_string, "'") && endswith(name_string, "'")
-                    name_string = name_string[2:(end - 1)]  # Remove quotes
-                end
-                node_data["NAME"] = strip(name_string)
-
-                i_value = strip(node_elements[3])
-                if startswith(i_value, "'") && endswith(i_value, "'")
-                    i_value = i_value[2:(end - 1)]  # Remove quotes
-                end
-                node_data["I"] = parse(Int, strip(i_value))
-
-                node_data["STATUS"] = parse(Int, strip(node_elements[4]))
-                if length(node_elements) >= 5 && !isempty(strip(node_elements[5]))
-                    node_data["VM"] = parse(Float64, strip(node_elements[5]))
-                end
-                if length(node_elements) >= 6 && !isempty(strip(node_elements[6]))
-                    node_data["VA"] = parse(Float64, strip(node_elements[6]))
-                end
-                push!(section_data["NODES"], node_data)
-            elseif length(node_elements) > 6
-                return temp_line_index - 1
-            end
-        end
-        temp_line_index += 1
+        terminal["J"] = parse(Int64, strip(elements[4]))
+        terminal["K"] = parse(Int64, strip(elements[5]))
+        terminal["ID"] = _unquote(elements[6])
+    elseif type_code in _substation_terminal_two_bus_types
+        length(elements) < 5 && throw(
+            DataFormatError(
+                "Branch substation terminal record at line $line_index has $(length(elements)) fields, expected 5",
+            ),
+        )
+        terminal["J"] = parse(Int64, strip(elements[4]))
+        terminal["K"] = 0
+        terminal["ID"] = _unquote(elements[5])
+    else
+        terminal["J"] = 0
+        terminal["K"] = 0
+        terminal["ID"] = _unquote(elements[4])
     end
-
-    return temp_line_index
+    return terminal
 end
 
 """
-Process substation data with elements and parse associated nodes
+Parse the entire v35 SUBSTATION DATA section starting at `start_index`.
+
+Sub-blocks follow the RAW spec state order substation record -> nodes ->
+switching devices -> terminals, each terminated by a record whose first field
+is 0; a 0 in the substation-record state terminates the section. Comment
+(`@!`) lines are skipped and never used as parse anchors. Returns the index
+of the first unconsumed line.
 """
-function process_substation_data!(
-    section_data,
-    elements,
-    section,
-    current_dtypes,
-    data_lines,
-    line_index,
-    pti_data,
+function _parse_substation_section!(
+    pti_data::Dict,
+    data_lines::Vector{String},
+    start_index::Int,
+    dtypes::Dict{String, Array},
 )
-    try
-        _parse_line_element!(section_data, elements, section, current_dtypes)
-
-        if haskey(section_data, "NAME")
-            section_data["NAME"] = strip(section_data["NAME"])
+    substations = get!(pti_data, "SUBSTATION DATA", Dict{String, Any}[])
+    state = :substation_record
+    current = Dict{String, Any}()
+    line_index = start_index
+    while line_index <= length(data_lines)
+        line = data_lines[line_index]
+        if startswith(line, "@!") || isempty(strip(line))
+            line_index += 1
+            continue
         end
-
-        # Parse nodes for this substation
-        updated_line_index = parse_substation_nodes!(section_data, data_lines, line_index)
-
-        if haskey(pti_data, section)
-            push!(pti_data[section], section_data)
+        (elements, _) = _get_line_elements(line)
+        first_element = _unquote(elements[1])
+        if first_element == "Q"
+            return line_index
+        end
+        if first_element == "0"
+            if state == :substation_record
+                return line_index + 1
+            elseif state == :nodes
+                state = :switching_devices
+            elseif state == :switching_devices
+                state = :terminals
+            else
+                state = :substation_record
+            end
+            line_index += 1
+            continue
+        end
+        if state == :substation_record
+            current = Dict{String, Any}()
+            _parse_line_element!(current, elements, "SUBSTATION DATA", dtypes)
+            current["NAME"] = String(strip(current["NAME"]))
+            current["NODES"] = Dict{String, Any}[]
+            current["SWITCHING DEVICES"] = Dict{String, Any}[]
+            current["TERMINALS"] = Dict{String, Any}[]
+            push!(substations, current)
+            state = :nodes
+        elseif state == :nodes
+            node = Dict{String, Any}()
+            _parse_line_element!(node, elements, "SUBSTATION NODE", dtypes)
+            node["NAME"] = String(strip(node["NAME"]))
+            push!(current["NODES"], node)
+        elseif state == :switching_devices
+            device = Dict{String, Any}()
+            _parse_line_element!(
+                device,
+                elements,
+                "SUBSTATION SWITCHING DEVICE",
+                dtypes,
+            )
+            device["CKT"] = String(strip(device["CKT"]))
+            device["NAME"] = String(strip(device["NAME"]))
+            push!(current["SWITCHING DEVICES"], device)
         else
-            pti_data[section] = [section_data]
+            push!(current["TERMINALS"], _parse_substation_terminal(elements, line_index))
         end
-
-        return updated_line_index
-    catch message
-        error("Parsing failed at line $line_index: $(sprint(showerror, message))")
+        line_index += 1
     end
+    return line_index
 end
 
 """
@@ -2471,71 +2503,13 @@ function _parse_pti_data(data_io::IO)
                 line_index += 1
 
             elseif section == "SUBSTATION DATA" && is_v35
-                if startswith(line, "@!")
-                    line_index += 1
-                    continue
-                else
-                    if length(elements) == 4 && occursin('\'', elements[1])
-                        first_part = elements[1]
-                        if occursin(",'", first_part)
-                            comma_quote_pos = findfirst(",'", first_part)
-                            if comma_quote_pos !== nothing
-                                is_part = first_part[1:(comma_quote_pos[1] - 1)]
-                                name_part = first_part[(comma_quote_pos[1] + 1):end]
-
-                                corrected_elements = [
-                                    is_part,
-                                    name_part,
-                                    elements[2],
-                                    elements[3],
-                                    elements[4],
-                                ]
-
-                                if length(corrected_elements) == 5 &&
-                                   occursin('\'', corrected_elements[2]) &&
-                                   tryparse(Float64, strip(corrected_elements[3])) !==
-                                   nothing &&
-                                   tryparse(Float64, strip(corrected_elements[4])) !==
-                                   nothing &&
-                                   tryparse(Float64, strip(corrected_elements[5])) !==
-                                   nothing
-                                    @debug "Parsing substation data line: $line" _group =
-                                        IS.LOG_GROUP_PARSING
-                                    section_data = Dict{String, Any}()
-                                    line_index = process_substation_data!(
-                                        section_data,
-                                        corrected_elements,
-                                        section,
-                                        current_dtypes,
-                                        data_lines,
-                                        line_index,
-                                        pti_data,
-                                    )
-                                end
-                            end
-                        end
-
-                    elseif length(elements) == 5 &&
-                           occursin('\'', elements[2]) &&
-                           tryparse(Float64, strip(elements[3])) !== nothing &&
-                           tryparse(Float64, strip(elements[4])) !== nothing &&
-                           tryparse(Float64, strip(elements[5])) !== nothing
-                        section_data = Dict{String, Any}()
-                        line_index = process_substation_data!(
-                            section_data,
-                            elements,
-                            section,
-                            current_dtypes,
-                            data_lines,
-                            line_index,
-                            pti_data,
-                        )
-                    end
-
-                    line_index += 1
-                    continue
-                end
-                line_index += 1
+                line_index = _parse_substation_section!(
+                    pti_data,
+                    data_lines,
+                    line_index,
+                    current_dtypes,
+                )
+                continue
 
             elseif section == "GNE DEVICE"
                 # TODO: handle multiple lines of GNE Device
@@ -2653,6 +2627,14 @@ function _populate_defaults!(data::Dict)
                         for sub_component in field_value
                             for (sub_field, sub_field_value) in sub_component
                                 if sub_field_value == ""
+                                    # Substation NODE voltages are optional; leave
+                                    # them unset when the RAW omits them so a node
+                                    # inheriting its bus voltage is not confused with
+                                    # one that genuinely solved to 1.0/0.0.
+                                    if field == "NODES" &&
+                                       (sub_field == "VM" || sub_field == "VA")
+                                        continue
+                                    end
                                     try
                                         sub_component[sub_field] =
                                             component_defaults[field][sub_field]

@@ -59,7 +59,10 @@ function System(pm_data::PowerModelsData; kwargs...)
     sys = System(data["baseMVA"]; kwargs...)
     source_type = data["source_type"]
 
+    nb = materialize_node_breaker!(data)
     bus_number_to_bus = read_bus!(sys, data; kwargs...)
+    _stamp_node_breaker_bus_ext!(bus_number_to_bus, nb)
+    _create_node_breaker_switches!(sys, nb, bus_number_to_bus)
     read_loads!(sys, data, bus_number_to_bus; kwargs...)
     read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
@@ -78,10 +81,219 @@ function System(pm_data::PowerModelsData; kwargs...)
         check(sys)
     end
 
-    substation_data = get(data, "substation_data", [])
+    substation_data = get(data, "substation", [])
     add_geographic_info_to_buses!(sys, substation_data)
 
     return sys
+end
+
+# Representative node for a PSS/E bus I within a substation: the node whose (vm,va) matches
+# the BUS record, else the lowest NI. Keeps number I so by-number references stay valid.
+# The node that keeps the original PSS/E bus number must end up at that bus's
+# BUS-record voltage: PNM's zero-impedance reduction may retain this bus as a
+# merged group's electrical representative, so it has to carry the real solved
+# voltage, not a split segment's. A node inherits the bus voltage when it stored
+# none, or when its stored voltage equals the bus's. Prefer such a node (lowest
+# NI); only if every node stores a differing voltage fall back to lowest NI.
+function _representative_node(nodes::Vector, src::Dict)
+    inherits_bus_voltage(n) =
+        !haskey(n, "vm") ||
+        (n["vm"] == get(src, "vm", nothing) &&
+         get(n, "va", nothing) == rad2deg(get(src, "va", 0.0)))
+    pool = filter(inherits_bus_voltage, nodes)
+    isempty(pool) && (pool = nodes)
+    return pool[argmin([n["number"] for n in pool])]
+end
+
+# Pass 1: materialize node-buses in data["bus"], resolve numbering, build terminal + switch tables.
+function _prepare_node_breaker!(data::Dict)
+    node_number = Dict{Tuple{Int, Int}, Int}()
+    terminal_node = Dict{Tuple{Int, String, Int, String}, Int}()
+    nb_bus_numbers = Set{Int}()
+    # bus number -> its substation/PSS(R)E-bus/node provenance, for stamping the ACBus
+    # ext post-read_bus! (make_bus/read_bus! do not propagate a bus record's "ext").
+    node_ext = Dict{Int, Dict{String, Any}}()
+    switches = NamedTuple{(:from, :to, :closed, :x, :dtype, :name),
+        Tuple{Int, Int, Bool, Float64, Int, String}}[]
+    subs = get(data, "substation", [])
+    (get(data, "source_type", "") == "pti" && !isempty(subs)) ||
+        return (; node_number, terminal_node, nb_bus_numbers, switches, node_ext)
+
+    busrec = data["bus"]::Dict
+    next_no = maximum(b["bus_i"] for b in values(busrec)) + 1
+    for sub in sort(collect(values(subs)); by = s -> get(s, "index", 0))
+        idx = get(sub, "index", 0)
+        # local NI -> assigned bus number for this substation
+        ni_to_no = Dict{Int, Int}()
+        # group in-service nodes by PSS/E bus I
+        by_I = Dict{Int, Vector{Dict}}()
+        for n in get(sub, "nodes", [])
+            get(n, "status", 1) == 1 || continue
+            push!(get!(by_I, n["bus"], Vector{Dict}()), n)
+        end
+        for (I, nodes) in by_I
+            haskey(busrec, I) || continue
+            push!(nb_bus_numbers, I)
+            src = busrec[I]
+            rep = _representative_node(nodes, src)
+            for n in nodes
+                if n === rep
+                    num = I
+                else
+                    num = next_no
+                    next_no += 1
+                    rec = deepcopy(src)
+                    rec["bus_i"] = num
+                    rec["name"] = strip(string(get(n, "name", string(num))))
+                    rec["bus_type"] = 1
+                    busrec[num] = rec
+                end
+                haskey(n, "vm") && (busrec[num]["vm"] = n["vm"])
+                haskey(n, "va") && (busrec[num]["va"] = deg2rad(n["va"]))
+                ni_to_no[n["number"]] = num
+                node_number[(idx, n["number"])] = num
+                rec_ext = get!(busrec[num], "ext", Dict{String, Any}())
+                rec_ext["nb_substation"] = idx
+                rec_ext["nb_bus"] = I
+                rec_ext["nb_node"] = n["number"]
+                node_ext[num] = rec_ext
+            end
+        end
+        for t in get(sub, "terminals", [])
+            haskey(ni_to_no, t["node"]) || continue
+            terminal_node[(t["bus"], String(t["type"]),
+                something(get(t, "secondary_bus", 0), 0), String(t["id"]))] = ni_to_no[t["node"]]
+        end
+        for d in get(sub, "switching_devices", [])
+            (haskey(ni_to_no, d["from_node"]) && haskey(ni_to_no, d["to_node"])) || continue
+            push!(switches, (from = ni_to_no[d["from_node"]], to = ni_to_no[d["to_node"]],
+                closed = get(d, "status", 1) == 1, x = Float64(get(d, "x", 1e-4)),
+                dtype = Int(get(d, "device_type", 0)), name = String(get(d, "name", ""))))
+        end
+    end
+    return (; node_number, terminal_node, nb_bus_numbers, switches, node_ext)
+end
+
+_nb_ckt(d) = (sid = get(d, "source_id", nothing);
+    sid === nothing ? "" : strip(string(sid[1] == "transformer" ? sid[end - 1] : sid[end])))
+_nb_branch_type(d) = (sid = get(d, "source_id", nothing);
+    (sid !== nothing && sid[1] == "transformer") ? "2" : "B")
+
+function _nb_target(nb, busno, typ, other, id)
+    ni = get(nb.terminal_node, (busno, typ, something(other, 0), string(id)), nothing)
+    ni === nothing ? busno : ni
+end
+
+# A type-"3" terminal's key carries only ONE of the winding's two sibling buses (whichever
+# PSS/E happened to store as its "secondary_bus" column); try both siblings and take
+# whichever hits.
+function _nb_target_3w(nb, busno, ckt, others)
+    for other in others
+        ni = get(nb.terminal_node, (busno, "3", other, ckt), nothing)
+        ni !== nothing && return ni
+    end
+    return busno
+end
+
+# Stamps each node-bus ACBus's ext with its substation/PSS(R)E-bus/node provenance.
+# read_bus!/make_bus construct the ACBus's ext from scratch (area-interchange data) and
+# never read a bus record's "ext" key, so this has to happen post-read_bus! rather than
+# via propagation.
+function _stamp_node_breaker_bus_ext!(bus_number_to_bus::Dict{Int, ACBus}, nb)
+    isempty(nb.node_ext) && return nothing
+    for (num, ext) in nb.node_ext
+        haskey(bus_number_to_bus, num) || continue
+        merge!(get_ext(bus_number_to_bus[num]), ext)
+    end
+    return nothing
+end
+
+# Materializes each switching device as a DiscreteControlledACBranch between its two
+# node-buses. Availability always stays true; open/closed status lives in branch_status.
+function _create_node_breaker_switches!(sys::System, nb, bus_number_to_bus::Dict{Int, ACBus})
+    isempty(nb.switches) && return nothing
+    seen_names = Set{String}()
+    for (i, s) in enumerate(nb.switches)
+        (haskey(bus_number_to_bus, s.from) && haskey(bus_number_to_bus, s.to)) || continue
+        bf = bus_number_to_bus[s.from]
+        bt = bus_number_to_bus[s.to]
+        base_name = isempty(s.name) ? "switch_$(s.from)_$(s.to)_$i" : s.name
+        name = base_name
+        suffix = 1
+        while name in seen_names
+            suffix += 1
+            name = "$(base_name)_$suffix"
+        end
+        push!(seen_names, name)
+        br = DiscreteControlledACBranch(;
+            name = name,
+            available = true,
+            active_power_flow = 0.0,
+            reactive_power_flow = 0.0,
+            arc = Arc(bf, bt),
+            r = 0.0,
+            x = s.x,
+            rating = 0.0,
+            discrete_branch_type = DiscreteControlledBranchType.SWITCH,
+            branch_status = s.closed ? DiscreteControlledBranchStatus.CLOSED :
+                            DiscreteControlledBranchStatus.OPEN,
+            ext = Dict{String, Any}("device_type" => s.dtype),
+        )
+        add_component!(sys, br; skip_validation = SKIP_PM_VALIDATION)
+    end
+    return nothing
+end
+
+# Pass 2: reroute every device's endpoint bus to its node-bus number, per nb.terminal_node.
+function _reroute_devices_to_nodes!(data::Dict, nb)
+    isempty(nb.nb_bus_numbers) && return nothing
+    if haskey(data, "branch")
+        for d in values(data["branch"])
+            typ = _nb_branch_type(d)
+            f0, t0 = d["f_bus"], d["t_bus"]
+            f0 in nb.nb_bus_numbers && (d["f_bus"] = _nb_target(nb, f0, typ, t0, _nb_ckt(d)))
+            t0 in nb.nb_bus_numbers && (d["t_bus"] = _nb_target(nb, t0, typ, f0, _nb_ckt(d)))
+        end
+    end
+    haskey(data, "switch") && for d in values(data["switch"])
+        f0, t0 = d["f_bus"], d["t_bus"]
+        f0 in nb.nb_bus_numbers && (d["f_bus"] = _nb_target(nb, f0, "B", t0, _nb_ckt(d)))
+        t0 in nb.nb_bus_numbers && (d["t_bus"] = _nb_target(nb, t0, "B", f0, _nb_ckt(d)))
+    end
+    haskey(data, "breaker") && for d in values(data["breaker"])
+        f0, t0 = d["f_bus"], d["t_bus"]
+        f0 in nb.nb_bus_numbers && (d["f_bus"] = _nb_target(nb, f0, "B", t0, _nb_ckt(d)))
+        t0 in nb.nb_bus_numbers && (d["t_bus"] = _nb_target(nb, t0, "B", f0, _nb_ckt(d)))
+    end
+    for (section, field, typ) in
+        (("load", "load_bus", "L"), ("gen", "gen_bus", "M"),
+         ("shunt", "shunt_bus", "S"), ("switched_shunt", "shunt_bus", "S"))
+        haskey(data, section) || continue
+        for d in values(data[section])
+            b = d[field]
+            b in nb.nb_bus_numbers && (d[field] = _nb_target(nb, b, typ, nothing, _nb_ckt(d)))
+        end
+    end
+    haskey(data, "3w_transformer") && for d in values(data["3w_transformer"])
+        ckt = string(get(d, "circuit", ""))
+        b1, b2, b3 = d["bus_primary"], d["bus_secondary"], d["bus_tertiary"]
+        b1 in nb.nb_bus_numbers && (d["bus_primary"] = _nb_target_3w(nb, b1, ckt, (b2, b3)))
+        b2 in nb.nb_bus_numbers && (d["bus_secondary"] = _nb_target_3w(nb, b2, ckt, (b1, b3)))
+        b3 in nb.nb_bus_numbers && (d["bus_tertiary"] = _nb_target_3w(nb, b3, ckt, (b1, b2)))
+    end
+    return nothing
+end
+
+"""
+Materializes node-breaker substation data into `data["bus"]` and reroutes every device
+to its node-bus (Pass 1 + Pass 2), returning the `nb` NamedTuple needed to create the
+switch components once `read_bus!` has built the real `ACBus` objects. A no-op (returns
+an empty `nb`) when `data` carries no PTI substation section.
+"""
+function materialize_node_breaker!(data::Dict)
+    nb = _prepare_node_breaker!(data)
+    _reroute_devices_to_nodes!(data, nb)
+    return nb
 end
 
 function correct_pm_transformer_status!(pm_data::PowerModelsData)
@@ -220,8 +432,8 @@ function add_geographic_info_to_buses!(sys, substation_data)
                 ),
             )
             for node in substation["nodes"]
-                if haskey(node, "I")
-                    bus_coords_lookup[node["I"]] = geo_info
+                if haskey(node, "bus")
+                    bus_coords_lookup[node["bus"]] = geo_info
                 end
             end
         end

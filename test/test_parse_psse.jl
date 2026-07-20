@@ -763,15 +763,105 @@ end
 
 @testset "PSSE v35 populated SUBSTATION section parses" begin
     # A v35 raw whose SUBSTATION section carries a node sub-block used to abort with
-    # `KeyError: "NODES"` in _populate_defaults!; the node-breaker section must be inert
-    # for the AC bus-branch model.
+    # `KeyError: "NODES"` in _populate_defaults!; now the node-breaker section is
+    # materialized into real node-buses and switch components (see
+    # `materialize_node_breaker!`), not treated as inert.
+    #
+    # SYNTHSUB has 3 nodes: NI=1 and NI=2 both sit on file bus 1 (NI=1 is the
+    # representative, keeping bus number 1; NI=2 is injected as a new bus), and NI=3 sits
+    # on file bus 2 (the sole node there, so no injection). A closed breaker ties NI=1 to
+    # NI=2, and a closed disconnect ties NI=2 to NI=3 -- so buses 1, 2, and the injected
+    # bus are all electrically the same node once switches are collapsed, even though
+    # they came from 2 different file bus numbers.
     base_dir = string(dirname(@__FILE__))
     file_dir = joinpath(base_dir, "test_data", "synthetic_v35_substation.raw")
     sys = System(file_dir; runchecks = false)
-    @test length(get_components(ACBus, sys)) == 3
+    @test length(get_components(ACBus, sys)) == 4          # 3 file buses + 1 injected node-bus
     @test length(get_components(Generator, sys)) == 2
     @test length(get_components(ElectricLoad, sys)) == 1
-    @test length(get_components(ACBranch, sys)) == 2
+    @test length(get_components(DiscreteControlledACBranch, sys)) == 2
+    @test all(
+        get_branch_status(s) == DiscreteControlledBranchStatus.CLOSED
+        for s in get_components(DiscreteControlledACBranch, sys)
+    )
+    @test length(get_components(Line, sys)) == 2
+    @test length(get_components(ACBranch, sys)) == 4        # 2 lines + 2 switches
+
+    # The two closed switches carry the substation's internal topology: they bridge file
+    # bus 1, the injected node-bus, and file bus 2 into one switch-connected chain (1 -
+    # injected - 2), never a direct 1-2 tie. This checks only that the parse attached the
+    # switches to the right buses; whether the zero-impedance reduction then collapses that
+    # chain to a single electrical bus is a PowerNetworkMatrices concern, tested there.
+    sw_ends = [Set((get_number(get_from(get_arc(s))), get_number(get_to(get_arc(s)))))
+               for s in get_components(DiscreteControlledACBranch, sys)]
+    touched = union(sw_ends...)
+    @test 1 in touched && 2 in touched          # both file buses are bridged by the switches
+    @test !(Set((1, 2)) in sw_ends)             # ... through the injected node, not directly
+end
+
+@testset "PSSE v35 node-breaker parses to node-level buses" begin
+    # NBFCSUB has 4 nodes, all on file bus 2: NI=1 (representative, keeps bus number 2),
+    # NI=2, NI=3, NI=4 (each injected as a new bus). A closed breaker ties NI=1-NI=2, a
+    # closed breaker ties NI=3-NI=4, and an OPEN breaker ties NI=2-NI=3 -- so bus 2 is
+    # split into two electrical segments {NI=1,NI=2} and {NI=3,NI=4}. An external line
+    # attaches NI=1 to bus 1 (which carries a generator), and a second external line
+    # attaches NI=4 to bus 3 (which carries a load).
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_node_breaker.raw")
+    sys = System(file_dir; runchecks = false)
+    @test length(get_components(ACBus, sys)) > 3                              # nodes materialized as buses
+    @test length(collect(get_components(DiscreteControlledACBranch, sys))) >= 3
+    @test any(get_branch_status(s) == DiscreteControlledBranchStatus.OPEN
+              for s in get_components(DiscreteControlledACBranch, sys))       # open switch preserved, inactive
+
+    # The open switch is what splits the substation into two segments: the parser preserves
+    # it as an inactive (OPEN) branch between two distinct node-buses rather than dropping it
+    # or pre-collapsing the split. Whether the zero-impedance reduction then keeps those two
+    # sides as separate electrical buses is a PowerNetworkMatrices concern, tested there.
+    opens = [s for s in get_components(DiscreteControlledACBranch, sys)
+             if get_branch_status(s) == DiscreteControlledBranchStatus.OPEN]
+    @test length(opens) == 1
+    o = only(opens)
+    @test get_number(get_from(get_arc(o))) != get_number(get_to(get_arc(o)))  # separates two node-buses
+end
+
+@testset "node-breaker components carry substation provenance in ext" begin
+    base_dir = string(dirname(@__FILE__))
+    sys = System(joinpath(base_dir, "test_data", "synthetic_v35_node_breaker.raw");
+        runchecks = false)
+    sw = first(get_components(DiscreteControlledACBranch, sys))
+    @test haskey(get_ext(sw), "device_type")
+    nb_bus = first(b for b in get_components(ACBus, sys) if haskey(get_ext(b), "nb_node"))
+    @test haskey(get_ext(nb_bus), "nb_substation") && haskey(get_ext(nb_bus), "nb_bus")
+end
+
+@testset "node-breaker nodes with no stored voltage inherit their bus voltage" begin
+    # A substation whose NODE records omit VM/VA (the common case: the RAW stores a
+    # voltage only for electrically-distinct nodes, not the ~99% that inherit their
+    # bus). The reader must not fabricate a flat 1.0/0.0 for these; each materialized
+    # node-bus must carry the BUS-record voltage, so PNM's reduction reports the real
+    # solved voltage on whichever node-bus it retains. NVSUB has 3 voltage-less nodes
+    # on file bus 2 (BUS record 1.05 pu / 3 deg), tied by two closed breakers.
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_node_voltage_inherit.raw")
+    sys = System(file_dir; runchecks = false)
+    node_buses = [b for b in get_components(ACBus, sys) if haskey(get_ext(b), "nb_node")]
+    @test length(node_buses) >= 3
+    for b in node_buses
+        @test isapprox(get_magnitude(b), 1.05; atol = 1e-6)      # inherited, not flat 1.0
+        @test isapprox(get_angle(b), deg2rad(3.0); atol = 1e-6)  # inherited, not flat 0.0
+    end
+end
+
+@testset "non-node-breaker parse is unaffected by node-breaker materialization" begin
+    # A raw with no SUBSTATION section at all; the materialization pass must be a strict
+    # no-op here.
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "5circuit_3w.raw")
+    sys = System(file_dir; runchecks = false)
+    @test length(get_components(ACBus, sys)) == 8
+    @test isempty(collect(get_components(DiscreteControlledACBranch, sys)))
+    @test length(collect(get_components(ACBranch, sys))) == 5
 end
 
 @testset "PSSE two-terminal DC resistance per-unit base" begin
@@ -790,4 +880,254 @@ end
     @test isapprox(get_r(lcc), 0.003125)
     @test !isapprox(get_r(lcc), rdc_ohms / (ebasr_kv^2 / sbase))
     @test get_scheduled_dc_voltage(lcc) == vschd_kv
+end
+
+@testset "_prepare_node_breaker! injects node-buses with representative keeping I" begin
+    data = Dict{String, Any}(
+        "source_type" => "pti",
+        "bus" => Dict{Int, Any}(10 => Dict("bus_i" => 10, "name" => "SUB", "base_kv" => 138.0,
+            "bus_type" => 1, "vm" => 1.02, "va" => 0.0, "area" => 1, "zone" => 1,
+            "vmin" => 0.9, "vmax" => 1.1)),
+        "substation" => Dict("1" => Dict("index" => 1,
+            "nodes" => [
+                Dict("number" => 1, "name" => "SUB\$N1", "bus" => 10, "status" => 1, "vm" => 1.02, "va" => 0.0),
+                Dict("number" => 2, "name" => "SUB\$N2", "bus" => 10, "status" => 1, "vm" => 1.01, "va" => 5.0)],
+            "switching_devices" => [Dict("from_node" => 1, "to_node" => 2, "status" => 1,
+                "device_type" => 2, "x" => 1e-4, "name" => "CB1")],
+            "terminals" => [
+                Dict("bus" => 10, "node" => 1, "type" => "B", "secondary_bus" => 20, "id" => "1"),
+                Dict("bus" => 10, "node" => 2, "type" => "B", "secondary_bus" => 30, "id" => "1")])),
+    )
+    nb = PowerSystems._prepare_node_breaker!(data)
+    @test 10 in nb.nb_bus_numbers
+    @test length(data["bus"]) == 2                       # node 1 keeps 10, node 2 injected
+    @test nb.node_number[(1, 1)] == 10                   # representative (node whose va matches BUS) keeps I
+    @test nb.node_number[(1, 2)] != 10
+    new_no = nb.node_number[(1, 2)]
+    @test isapprox(data["bus"][new_no]["va"], deg2rad(5.0))   # deg -> rad on injected node
+    @test data["bus"][new_no]["bus_type"] == 1
+    @test nb.terminal_node[(10, "B", 30, "1")] == new_no
+    @test length(nb.switches) == 1 && nb.switches[1].closed
+    @test nb.switches[1].from == 10 && nb.switches[1].to == new_no
+end
+
+@testset "_prepare_node_breaker! is a no-op without substation data" begin
+    data = Dict{String, Any}("source_type" => "pti",
+        "bus" => Dict{Int, Any}(10 => Dict("bus_i" => 10)))
+    nb = PowerSystems._prepare_node_breaker!(data)
+    @test isempty(nb.nb_bus_numbers) && length(data["bus"]) == 1
+end
+
+@testset "_psse2pm_substation_node carries voltage only when the RAW stored one" begin
+    # A node that stored no voltage (RAW omits VM/VA -> parsed as "") must not carry
+    # "vm"/"va" keys, so downstream it inherits its bus voltage rather than a
+    # fabricated flat 1.0/0.0. A node that stored a real voltage keeps it.
+    absent = PowerSystems._psse2pm_substation_node(
+        Dict("NI" => 5, "NAME" => "N5", "I" => 10, "STATUS" => 1, "VM" => "", "VA" => ""))
+    @test !haskey(absent, "vm") && !haskey(absent, "va")
+    @test absent["number"] == 5 && absent["bus"] == 10 && absent["status"] == 1
+    present = PowerSystems._psse2pm_substation_node(
+        Dict("NI" => 6, "NAME" => "N6", "I" => 10, "STATUS" => 1, "VM" => 1.03, "VA" => 7.5))
+    @test present["vm"] == 1.03 && present["va"] == 7.5
+end
+
+@testset "_prepare_node_breaker! node without a stored voltage inherits its bus voltage" begin
+    # The regression that flat-lined real cases: 99.7% of substation nodes store no
+    # voltage. Such a node must keep the original bus number AND its BUS-record
+    # voltage (so PNM's reduction, which may retain this bus, reports the real solved
+    # value) -- never a flat 1.0/0.0. A sibling node that DID store a differing
+    # voltage splits off to a new bus carrying that stored value.
+    data = Dict{String, Any}(
+        "source_type" => "pti",
+        "bus" => Dict{Int, Any}(10 => Dict("bus_i" => 10, "name" => "SUB", "base_kv" => 138.0,
+            "bus_type" => 1, "vm" => 1.04277, "va" => deg2rad(23.04), "area" => 1, "zone" => 1,
+            "vmin" => 0.9, "vmax" => 1.1)),
+        "substation" => Dict("1" => Dict("index" => 1,
+            "nodes" => [
+                # NI=1 stored no voltage (no "vm"/"va" keys) -> must inherit the bus voltage
+                Dict("number" => 1, "name" => "SUB\$N1", "bus" => 10, "status" => 1),
+                # NI=2 stored a differing solved voltage -> splits off to a new bus
+                Dict("number" => 2, "name" => "SUB\$N2", "bus" => 10, "status" => 1, "vm" => 1.015, "va" => 21.9)],
+            "switching_devices" => [Dict("from_node" => 1, "to_node" => 2, "status" => 0,
+                "device_type" => 3, "x" => 1e-4, "name" => "DSC1")],
+            "terminals" => [
+                Dict("bus" => 10, "node" => 1, "type" => "B", "secondary_bus" => 20, "id" => "1"),
+                Dict("bus" => 10, "node" => 2, "type" => "B", "secondary_bus" => 30, "id" => "1")])),
+    )
+    nb = PowerSystems._prepare_node_breaker!(data)
+    @test nb.node_number[(1, 1)] == 10                        # voltage-less node keeps I
+    @test isapprox(data["bus"][10]["vm"], 1.04277)            # ... and the real BUS voltage, not flat
+    @test isapprox(data["bus"][10]["va"], deg2rad(23.04))
+    new_no = nb.node_number[(1, 2)]
+    @test new_no != 10                                        # stored-voltage node splits off
+    @test isapprox(data["bus"][new_no]["vm"], 1.015)          # ... carrying its own stored voltage
+    @test isapprox(data["bus"][new_no]["va"], deg2rad(21.9))
+end
+
+@testset "_reroute_devices_to_nodes! attaches devices to their node-buses" begin
+    data = Dict{String, Any}(
+        "source_type" => "pti",
+        "bus" => Dict{Int, Any}(10 => Dict("bus_i" => 10, "name" => "SUB", "base_kv" => 138.0,
+            "bus_type" => 1, "vm" => 1.02, "va" => 0.0, "area" => 1, "zone" => 1,
+            "vmin" => 0.9, "vmax" => 1.1)),
+        "branch" => Dict(
+            "1" => Dict("f_bus" => 20, "t_bus" => 10, "source_id" => ["branch", 20, 10, "1"]),
+            "2" => Dict("f_bus" => 10, "t_bus" => 30, "source_id" => ["branch", 10, 30, "1"])),
+        "substation" => Dict("1" => Dict("index" => 1,
+            "nodes" => [
+                Dict("number" => 1, "name" => "SUB\$N1", "bus" => 10, "status" => 1, "vm" => 1.02, "va" => 0.0),
+                Dict("number" => 2, "name" => "SUB\$N2", "bus" => 10, "status" => 1, "vm" => 1.01, "va" => 5.0)],
+            "switching_devices" => [Dict("from_node" => 1, "to_node" => 2, "status" => 1,
+                "device_type" => 2, "x" => 1e-4, "name" => "CB1")],
+            "terminals" => [
+                Dict("bus" => 10, "node" => 1, "type" => "B", "secondary_bus" => 20, "id" => "1"),
+                Dict("bus" => 10, "node" => 2, "type" => "B", "secondary_bus" => 30, "id" => "1")])),
+    )
+    nb = PowerSystems._prepare_node_breaker!(data)
+    PowerSystems._reroute_devices_to_nodes!(data, nb)
+    @test data["branch"]["1"]["t_bus"] == 10                       # to node 1 (representative)
+    @test data["branch"]["2"]["f_bus"] == nb.node_number[(1, 2)]   # to node 2 (injected)
+end
+
+@testset "_reroute_devices_to_nodes! routes breaker, 2-winding transformer, and load devices to their node-buses" begin
+    data = Dict{String, Any}(
+        "source_type" => "pti",
+        "bus" => Dict{Int, Any}(10 => Dict("bus_i" => 10, "name" => "SUB", "base_kv" => 138.0,
+            "bus_type" => 1, "vm" => 1.02, "va" => 0.0, "area" => 1, "zone" => 1,
+            "vmin" => 0.9, "vmax" => 1.1)),
+        "breaker" => Dict(
+            "1" => Dict("f_bus" => 10, "t_bus" => 40,
+                "source_id" => ["breaker", 10, 40, "1"])),
+        "branch" => Dict(
+            "1" => Dict("f_bus" => 10, "t_bus" => 50,
+                "source_id" => ["transformer", 10, 50, 0, "1", 0])),
+        "load" => Dict(
+            "1" => Dict("load_bus" => 10, "source_id" => ["load", 10, "1"])),
+        "substation" => Dict("1" => Dict("index" => 1,
+            "nodes" => [
+                Dict("number" => 1, "name" => "SUB\$N1", "bus" => 10, "status" => 1, "vm" => 1.02, "va" => 0.0),
+                Dict("number" => 2, "name" => "SUB\$N2", "bus" => 10, "status" => 1, "vm" => 1.01, "va" => 5.0)],
+            "switching_devices" => [Dict("from_node" => 1, "to_node" => 2, "status" => 1,
+                "device_type" => 2, "x" => 1e-4, "name" => "CB1")],
+            "terminals" => [
+                Dict("bus" => 10, "node" => 2, "type" => "B", "secondary_bus" => 40, "id" => "1"),
+                Dict("bus" => 10, "node" => 2, "type" => "2", "secondary_bus" => 50, "id" => "1"),
+                Dict("bus" => 10, "node" => 2, "type" => "L", "id" => "1")])),
+    )
+    nb = PowerSystems._prepare_node_breaker!(data)
+    PowerSystems._reroute_devices_to_nodes!(data, nb)
+    new_no = nb.node_number[(1, 2)]
+    @test data["breaker"]["1"]["f_bus"] == new_no    # breaker endpoint routed to node 2
+    @test data["branch"]["1"]["f_bus"] == new_no     # 2-winding transformer endpoint routed to node 2
+    @test data["load"]["1"]["load_bus"] == new_no    # load routed to node 2
+end
+
+@testset "_reroute_devices_to_nodes! routes a 3-winding transformer winding to its node-bus" begin
+    data = Dict{String, Any}(
+        "source_type" => "pti",
+        "bus" => Dict{Int, Any}(10 => Dict("bus_i" => 10, "name" => "SUB", "base_kv" => 138.0,
+            "bus_type" => 1, "vm" => 1.02, "va" => 0.0, "area" => 1, "zone" => 1,
+            "vmin" => 0.9, "vmax" => 1.1)),
+        "3w_transformer" => Dict(
+            "1" => Dict("bus_primary" => 10, "bus_secondary" => 20, "bus_tertiary" => 30,
+                "circuit" => "3W1")),
+        "substation" => Dict("1" => Dict("index" => 1,
+            "nodes" => [
+                Dict("number" => 1, "name" => "SUB\$N1", "bus" => 10, "status" => 1, "vm" => 1.02, "va" => 0.0),
+                Dict("number" => 2, "name" => "SUB\$N2", "bus" => 10, "status" => 1, "vm" => 1.01, "va" => 5.0)],
+            "switching_devices" => [Dict("from_node" => 1, "to_node" => 2, "status" => 1,
+                "device_type" => 2, "x" => 1e-4, "name" => "CB1")],
+            "terminals" => [
+                # winding on bus 10 lands on node 2 (non-representative); the other two
+                # windings (20, 30) are the terminal's secondary/tertiary siblings.
+                Dict("bus" => 10, "node" => 2, "type" => "3", "secondary_bus" => 20,
+                    "tertiary_bus" => 30, "id" => "3W1")])),
+    )
+    nb = PowerSystems._prepare_node_breaker!(data)
+    PowerSystems._reroute_devices_to_nodes!(data, nb)
+    new_no = nb.node_number[(1, 2)]
+    xfmr = data["3w_transformer"]["1"]
+    @test xfmr["bus_primary"] == new_no    # rerouted off the representative bus (10)
+    @test xfmr["bus_primary"] != 10
+    @test xfmr["bus_secondary"] == 20      # not a node-breaker bus: left alone
+    @test xfmr["bus_tertiary"] == 30
+end
+
+@testset "_create_node_breaker_switches! builds open/closed switch branches" begin
+    sys = System(100.0)
+    b1 = ACBus(;
+        number = 1,
+        name = "N1",
+        available = true,
+        bustype = ACBusTypes.REF,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 138.0,
+    )
+    b2 = ACBus(;
+        number = 2,
+        name = "N2",
+        available = true,
+        bustype = ACBusTypes.PQ,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 138.0,
+    )
+    add_components!(sys, [b1, b2])
+    lookup = Dict(1 => b1, 2 => b2)
+    nb = (; switches = [
+        (from = 1, to = 2, closed = true, x = 1e-4, dtype = 2, name = "CB_a"),
+        (from = 1, to = 2, closed = false, x = 1e-4, dtype = 3, name = "DSC_b")])
+    PowerSystems._create_node_breaker_switches!(sys, nb, lookup)
+    sw = collect(get_components(DiscreteControlledACBranch, sys))
+    @test length(sw) == 2
+    @test all(get_available(s) for s in sw)                       # availability never encodes state
+    closed = only(filter(s -> occursin("CB_a", get_name(s)), sw))
+    open_ = only(filter(s -> occursin("DSC_b", get_name(s)), sw))
+    @test get_branch_status(closed) == DiscreteControlledBranchStatus.CLOSED
+    @test get_branch_status(open_) == DiscreteControlledBranchStatus.OPEN
+    @test get_r(closed) == 0.0 && get_x(closed) == 1e-4
+end
+
+@testset "_create_node_breaker_switches! disambiguates duplicate non-empty names" begin
+    sys = System(100.0)
+    b1 = ACBus(;
+        number = 1,
+        name = "N1",
+        available = true,
+        bustype = ACBusTypes.REF,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 138.0,
+    )
+    b2 = ACBus(;
+        number = 2,
+        name = "N2",
+        available = true,
+        bustype = ACBusTypes.PQ,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 138.0,
+    )
+    add_components!(sys, [b1, b2])
+    lookup = Dict(1 => b1, 2 => b2)
+    nb = (; switches = [
+        (from = 1, to = 2, closed = true, x = 1e-4, dtype = 2, name = "CB_dup"),
+        (from = 1, to = 2, closed = false, x = 1e-4, dtype = 3, name = "CB_dup")])
+    PowerSystems._create_node_breaker_switches!(sys, nb, lookup)
+    sw = collect(get_components(DiscreteControlledACBranch, sys))
+    @test length(sw) == 2                              # both devices are created despite the name clash
+    names = get_name.(sw)
+    @test length(unique(names)) == 2                   # names are guaranteed unique
+    @test "CB_dup" in names                             # the original PSS/E name is preserved once
+end
+
+@testset "materialize_node_breaker! composes prepare + reroute and no-ops off path" begin
+    data = Dict{String, Any}("source_type" => "pti", "bus" => Dict{Int, Any}(10 => Dict("bus_i" => 10)))
+    nb = PowerSystems.materialize_node_breaker!(data)
+    @test isempty(nb.nb_bus_numbers)   # no substation data -> no-op
 end
