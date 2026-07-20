@@ -553,8 +553,6 @@ export get_description
 export set_description!
 export get_frequency
 export get_frequency_droop
-export set_units_base_system!
-export with_units_base
 export to_json
 export from_json
 export serialize
@@ -577,7 +575,6 @@ export get_filter
 export get_V_ref
 export get_P_ref
 export get_saturation_coeffs
-export get_units_base
 export get_runchecks
 export get_from_to_flow_limit
 export get_to_from_flow_limit
@@ -747,8 +744,8 @@ import InfrastructureSystems:
     get_next_time,
     reset!,
     has_supplemental_attributes,
-    get_units_info,
-    set_units_info!,
+    get_base_value,
+    set_base_value!,
     to_json,
     from_json,
     serialize,
@@ -760,7 +757,6 @@ import InfrastructureSystems:
     NormalizationFactor,
     NormalizationTypes,
     UnitSystem,
-    SystemUnitsSettings,
     open_file_logger,
     make_logging_config_file,
     validate_struct,

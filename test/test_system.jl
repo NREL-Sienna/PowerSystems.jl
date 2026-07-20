@@ -624,9 +624,10 @@ end
             ),
         )
 
-        # We copy the SystemData separately from the other System fields, so the egal-ity of these references could get broken
+        # base_power is a plain Float64 now (not a shared mutable object), so equality
+        # rather than identity is the correct check here.
         generator = get_component(ThermalStandard, sys2, "322_CT_6")
-        @test sys2.units_settings === generator.internal.units_info
+        @test sys2.base_power == generator.internal.base_value
     end
 end
 
