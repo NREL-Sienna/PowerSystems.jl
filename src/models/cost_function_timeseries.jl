@@ -202,7 +202,15 @@ function get_start_up(
 )
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for MarketBidTimeSeriesCost"))
-    return IS.build_static_tuple(get_start_up(cost), device, start_time)
+    raw = only(
+        get_time_series_values(
+            device,
+            get_start_up(cost);
+            start_time = start_time,
+            len = 1,
+        ),
+    )
+    return StartUpStages(raw)
 end
 
 # ── STATIC ReserveDemandCurve GETTERS ──────────────────────────────────────

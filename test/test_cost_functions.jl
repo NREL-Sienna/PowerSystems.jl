@@ -377,7 +377,7 @@ end
 
     mbtc = MarketBidTimeSeriesCost(;
         no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
-        start_up = TupleTimeSeries{PSY.StartUpStages}(su_key),
+        start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
         decremental_offer_curves = make_market_bid_ts_curve(dec_key),
@@ -402,7 +402,7 @@ end
     @test_throws ArgumentError get_decremental_variable_cost(generator, mbtc)
 end
 
-@testset "MarketBidTimeSeriesCost resolves start_up via TupleTimeSeries" begin
+@testset "MarketBidTimeSeriesCost resolves start_up at start_time" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generator = get_component(ThermalStandard, sys, "322_CT_6")
 
@@ -421,13 +421,14 @@ end
 
     mbtc = MarketBidTimeSeriesCost(;
         no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
-        start_up = TupleTimeSeries{PSY.StartUpStages}(su_key),
+        start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
         decremental_offer_curves = make_market_bid_ts_curve(dec_key),
     )
 
-    @test get_start_up(mbtc) isa TupleTimeSeries{PSY.StartUpStages}
+    @test get_start_up(mbtc) isa IS.ConcreteTimeSeriesKey
+    @test get_start_up(mbtc) === su_key
 
     resolved_first =
         get_start_up(generator, mbtc; start_time = _TS_RESOLVE_INITIAL_TIME)
@@ -528,7 +529,7 @@ function _build_min_mbtc(sys, component)
     )
     return MarketBidTimeSeriesCost(;
         no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
-        start_up = TupleTimeSeries{PSY.StartUpStages}(su_key),
+        start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
         decremental_offer_curves = make_market_bid_ts_curve(dec_key),
