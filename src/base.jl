@@ -3336,14 +3336,21 @@ get_time_series_counts(sys::System) = IS.get_time_series_counts(sys.data)
 Checks time series in the system for inconsistencies.
 
 For SingleTimeSeries, returns a Tuple of initial_timestamp and length.
+Consistency is required per resolution; when the system stores SingleTimeSeries
+at more than one resolution, pass `resolution` to name the grid to check and
+return.
 
 This is a no-op for subtypes of Forecast because those are already guaranteed to be
 consistent.
 
 Throws InfrastructureSystems.InvalidValue if any time series is inconsistent.
 """
-function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeSeriesData}
-    return IS.check_time_series_consistency(sys.data, T)
+function check_time_series_consistency(
+    sys::System,
+    ::Type{T};
+    resolution::Union{Nothing, Dates.Period} = nothing,
+) where {T <: TimeSeriesData}
+    return IS.check_time_series_consistency(sys.data, T; resolution = resolution)
 end
 
 stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)
