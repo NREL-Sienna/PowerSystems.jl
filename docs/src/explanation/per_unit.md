@@ -48,7 +48,10 @@ clear error instead of producing a silently wrong number.
 
 ## Migration guide: stateful → explicit units
 
-Code written against PowerSystems 5 used a mutable system-wide unit setting:
+Code written against PowerSystems 5 used a mutable system-wide unit setting. That entire
+stateful-override mechanism (`set_units_base_system!`, `with_units_base`, `get_units_base`)
+has been removed — it caused real bugs and, once units became explicit at every call
+site, had no effect on any conversion result to begin with.
 
 | PowerSystems 5 (stateful)                                                       | PowerSystems 6 (explicit)                                                                       |
 |:------------------------------------------------------------------------------- |:----------------------------------------------------------------------------------------------- |
@@ -63,9 +66,6 @@ Notes:
   - Time-series retrieval passes a units argument to two-argument scaling-factor
     multipliers; the default for PowerSystems components is `SU`. One-argument multipliers
     (custom closures) are still invoked with the owner only.
-  - The `UnitSystem` enum (`get_units_base`, `set_units_base_system!`,
-    `with_units_base`) is system metadata only (shown in the `System` summary); it does
-    not affect any conversion.
   - `CostCurve`/`FuelCurve` take the marker instances (`NaturalUnit()`,
     `SystemBaseUnit()`, `DeviceBaseUnit()`) for `power_units`.
 
@@ -85,7 +85,7 @@ problems won't converge when using natural units (for example in
 ## Detachment
 
 Unit-aware getters require the component to be attached to a `System`. The system base power
-is resolved at call time through the component's internal `units_info` slot, which is
+is resolved at call time through the component's internal `base_value` slot, which is
 populated by `add_component!` and cleared by `remove_component!`. Calling a unit-aware
 getter on a detached component raises an error:
 
@@ -103,22 +103,11 @@ meaningless without a known base.
 
 ## The system base is immutable
 
-`SystemUnitsSettings.base_value` is a `const` field set at `System` construction from the
-`base_power` argument. It cannot be changed after construction. `set_units_base_system!`
-changes only the display label stored in `unit_system` — it has no effect on what any
-getter returns:
-
-```julia
-sys = System(100.0)                          # base_power = 100 MVA
-add_component!(sys, gen)
-
-before = get_active_power(gen, SU)
-set_units_base_system!(sys, "NATURAL_UNITS") # display label only
-@assert get_active_power(gen, SU) == before  # conversion result is unchanged
-```
-
-`get_units_base` and `with_units_base` read and temporarily set the same display label.
-None of them affect conversion results.
+`System.base_power` is set once at construction (from the `base_power` argument) and
+cannot be changed afterward — there is no `set_base_power!(::System, ...)`. Each attached
+component's knowledge of that value is a plain `Float64`, kept up to date by
+`add_component!`/`remove_component!`; there is no mutable, system-wide unit setting that
+could change what a getter returns.
 
 ## Conversion errors
 

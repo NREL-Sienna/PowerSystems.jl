@@ -1,7 +1,7 @@
 @inline function _get_system_base_power(c::Component)
-    units_info = IS.get_units_info(get_internal(c))
-    isnothing(units_info) && error("Component $(get_name(c)) is not attached to a system.")
-    return units_info.base_value
+    base_value = IS.get_base_value(c)
+    isnothing(base_value) && error("Component $(get_name(c)) is not attached to a system.")
+    return base_value
 end
 
 """
