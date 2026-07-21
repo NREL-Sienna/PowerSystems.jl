@@ -184,7 +184,7 @@ function set_value(c::Component, _, val, conversion_unit)
     return _set_value(c, val, conversion_unit)
 end
 
-function _set_value(c::Component, value::Float64, conversion_unit)::Float64
+function _set_value(c::Component, value::Real, conversion_unit)::Float64
     return (1 / _get_multiplier(c, conversion_unit)) * value
 end
 
@@ -440,7 +440,7 @@ end
 function set_value(
     c::ThreeWindingTransformer,
     field,
-    val::Float64,
+    val::Real,
     conversion_unit,
 )
     settings = get_internal(c).units_info
