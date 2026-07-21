@@ -1810,6 +1810,25 @@ get_forecast_interval(sys::System; kwargs...) =
     IS.get_forecast_interval(sys.data; kwargs...)
 
 """
+Build a `ForecastReader` over every forecast in the system of `time_series_type`.
+`resolution` is required and pins the reader to one forecast resolution; `name` and
+`features` further narrow the match.
+
+Drive the reader with `read_forecast_window!` and read each entry with
+`get_forecast_window`. Forecasts that share an underlying array are read from storage
+once per timestamp regardless of how many components reference them — see
+[`get_time_series_array_groups`](@ref).
+"""
+build_forecast_reader(
+    sys::System,
+    ::Type{T};
+    resolution::Dates.Period,
+    name::Union{Nothing, AbstractString} = nothing,
+    features...,
+) where {T <: Forecast} =
+    IS.build_forecast_reader(sys.data, T; resolution = resolution, name = name, features...)
+
+"""
 Return a sorted Vector of distinct resolutions for all time series of the given type
 (or all types).
 """
@@ -3331,6 +3350,20 @@ Returns counts of time series including attachments to components and supplement
 attributes.
 """
 get_time_series_counts(sys::System) = IS.get_time_series_counts(sys.data)
+
+"""
+Group the time series in the system by the array they are stored in. Returns a `Dict`
+mapping each content hash to the `(owner, key)` pairs that resolve to that one array.
+
+By default only the arrays referenced more than once are returned, which identifies the
+time series that share data, such as those added with
+`add_time_series!(sys, components, time_series)`. Pass `only_shared = false` to get every
+stored array.
+
+See also `get_time_series_hash` for the hash of a single `(owner, key)` pair.
+"""
+get_time_series_array_groups(sys::System; only_shared = true) =
+    IS.get_time_series_array_groups(sys.data; only_shared = only_shared)
 
 """
 Checks time series in the system for inconsistencies.

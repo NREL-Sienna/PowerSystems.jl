@@ -287,6 +287,90 @@ end
     end
 end
 
+@testset "Test time series sharing accessors" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gens = ThermalStandard[]
+    for i in 1:2
+        gen = ThermalStandard(nothing)
+        gen.name = string(i)
+        gen.bus = bus
+        add_component!(sys, gen)
+        push!(gens, gen)
+    end
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    dates = collect(range(initial_time; step = resolution, length = 24))
+    make_sts(name, data) =
+        SingleTimeSeries(; name = name, data = TimeSeries.TimeArray(dates, data))
+
+    # One array shared by both generators, one array owned by the first alone.
+    add_time_series!(sys, gens, make_sts("max_active_power", collect(1.0:24.0)))
+    add_time_series!(sys, gens[1], make_sts("solo", collect(25.0:48.0)))
+
+    shared_keys =
+        [only(get_time_series_keys(g; name = "max_active_power")) for g in gens]
+    solo_key = only(get_time_series_keys(gens[1]; name = "solo"))
+    shared_hash = get_time_series_hash(gens[1], shared_keys[1])
+    @test get_time_series_hash(gens[2], shared_keys[2]) == shared_hash
+    @test get_time_series_hash(gens[1], solo_key) != shared_hash
+
+    # By default only the shared array is reported.
+    groups = get_time_series_array_groups(sys)
+    @test collect(keys(groups)) == [shared_hash]
+    @test Set(get_name(o) for (o, _) in groups[shared_hash]) == Set(["1", "2"])
+
+    all_groups = get_time_series_array_groups(sys; only_shared = false)
+    @test length(all_groups) == 2
+    @test Set(get_name(o) for (o, _) in all_groups[shared_hash]) == Set(["1", "2"])
+    @test only(
+        get_name(o) for (o, _) in all_groups[get_time_series_hash(gens[1],
+            solo_key)]
+    ) == "1"
+end
+
+@testset "Test forecast reader over shared forecasts" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gens = ThermalStandard[]
+    for i in 1:2
+        gen = ThermalStandard(nothing)
+        gen.name = string(i)
+        gen.bus = bus
+        add_component!(sys, gen)
+        push!(gens, gen)
+    end
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    interval = Dates.Hour(24)
+    horizon = 24
+    initial_times = [initial_time, initial_time + interval]
+    data = Dict(it => collect(1.0:horizon) for it in initial_times)
+    add_time_series!(sys, gens, Deterministic("max_active_power", data, resolution))
+
+    reader = build_forecast_reader(sys, Deterministic; resolution = resolution)
+    @test reader isa ForecastReader
+    @test length(reader) == 2
+    # Both entries resolve to the one shared array, so one read serves both.
+    @test get_num_forecast_slots(reader) == 1
+    @test Set(get_name(e.owner) for e in get_forecast_reader_entries(reader)) ==
+          Set(["1", "2"])
+
+    timeline = get_forecast_reader_timeline(reader)
+    @test timeline.initial_timestamp == initial_time
+    @test timeline.count == length(initial_times)
+
+    read_forecast_window!(reader, initial_time)
+    @test get_forecast_window(reader, 1) == collect(1.0:horizon)
+    @test get_forecast_window(reader, 2) == get_forecast_window(reader, 1)
+end
+
 @testset "Test bulk add of time series" begin
     sys = System(100.0)
     bus = ACBus(nothing)
