@@ -569,6 +569,7 @@ export get_dc_control
 export get_dc_control_from
 export get_dc_control_to
 export get_dc_current
+export get_dc_current_unitful
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_dc_setpoint
@@ -694,6 +695,7 @@ export get_max_current_reactive_power_unitful
 export get_max_dc_current
 export get_max_dc_current_from
 export get_max_dc_current_to
+export get_max_dc_current_unitful
 export get_max_flow
 export get_max_flow_unitful
 export get_max_impedance_active_power
