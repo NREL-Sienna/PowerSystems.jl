@@ -5231,16 +5231,20 @@
                 },
                 {
                     "name": "dc_current",
-                    "comment": "DC current (A) on the converter",
+                    "comment": "DC current on the converter, in per unit power-equivalent on the converter `base_power` (I is approximately P at 1.0 pu DC voltage)",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "0.0"
                 },
                 {
                     "name": "max_dc_current",
-                    "comment": "Maximum stable dc current limits (A)",
+                    "comment": "Maximum stable DC current limit, in per unit power-equivalent on the converter `base_power` (I is approximately P at 1.0 pu DC voltage)",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "1e8"
                 },
                 {
