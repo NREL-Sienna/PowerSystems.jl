@@ -235,6 +235,22 @@ end
     @test active_power_mw == get_active_power(gen)
 end
 
+@testset "Test set_value with non-Float64 Real" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    set_units_base_system!(sys, "NATURAL_UNITS")
+    line = first(get_components(Line, sys))
+    rating = get_rating(line)
+
+    set_rating!(line, rating)
+    @test get_rating(line) == rating
+
+    set_rating!(line, Int(round(rating)))
+    @test get_rating(line) == round(rating)
+
+    set_rating!(line, Rational(Int(round(rating * 10)), 10))
+    @test get_rating(line) ≈ rating
+end
+
 @testset "Test with_units_base on component" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     set_units_base_system!(sys, "SYSTEM_BASE")
