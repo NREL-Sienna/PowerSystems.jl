@@ -575,17 +575,27 @@ function _process_set_cost(::Type{T}, _, _, _, cost::T) where {T}
     return cost
 end
 
+# `TimeSeriesData{T}` carries its value element type, so the payload check is dispatch
+# rather than a `<:` branch; the fallback below reports the mismatch.
 function _process_set_cost(
     ::Type{_},
     ::Type{T},
     sys::System,
     component::Component,
-    cost::IS.TimeSeriesData,
+    cost::IS.TimeSeriesData{<:T},
 ) where {_, T}
-    data_type = IS.eltype_data(cost)
-    !(data_type <: T) && throw(TypeError(_process_set_cost, T, data_type))
     key = add_time_series!(sys, component, cost)
     return key
+end
+
+function _process_set_cost(
+    ::Type{_},
+    ::Type{T},
+    ::System,
+    ::Component,
+    cost::IS.TimeSeriesData,
+) where {_, T}
+    throw(TypeError(:_process_set_cost, "time series values", T, eltype(cost)))
 end
 
 # ── FuelCurve Setter (unchanged) ───────────────────────────────────────────
@@ -619,18 +629,16 @@ Adds service bids time-series data to the cost.
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
 - `service::Service,`: Service for which the device is eligible to contribute
-- `time_series_data::IS.TimeSeriesData`: TimeSeriesData
+- `time_series_data::IS.TimeSeriesData{<:PiecewiseStepData}`: TimeSeriesData whose values
+  are `PiecewiseStepData`
 """
 function set_service_bid!(
     sys::System,
     component::StaticInjection,
     service::Service,
-    time_series_data::IS.TimeSeriesData,
+    time_series_data::IS.TimeSeriesData{<:PiecewiseStepData},
     power_units::IS.AbstractUnitSystem,
 )
-    data_type = IS.eltype_data(time_series_data)
-    !(data_type <: PiecewiseStepData) &&
-        throw(TypeError(set_service_bid!, PiecewiseStepData, data_type))
     cost = get_operation_cost(component)
     (cost isa OfferCurveCost) || throw(
         ArgumentError("Operation cost must be an OfferCurveCost for service bids"),
@@ -652,4 +660,23 @@ function set_service_bid!(
     ancillary_service_offers = get_ancillary_service_offers(cost)
     push!(ancillary_service_offers, service)
     return
+end
+
+# Service bids must be piecewise step data; report the mismatch rather than letting the
+# narrowed signature above surface as a bare MethodError.
+function set_service_bid!(
+    ::System,
+    ::StaticInjection,
+    ::Service,
+    time_series_data::IS.TimeSeriesData,
+    ::IS.AbstractUnitSystem,
+)
+    throw(
+        TypeError(
+            :set_service_bid!,
+            "time series values",
+            PiecewiseStepData,
+            eltype(time_series_data),
+        ),
+    )
 end
