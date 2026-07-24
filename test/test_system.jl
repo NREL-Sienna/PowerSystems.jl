@@ -626,7 +626,7 @@ end
     ts_dir = mktempdir()
     sys = System(100.0; time_series_directory = ts_dir)
     sys2 = deepcopy(sys)
-    @test dirname(sys2.data.time_series_manager.data_store.path) == ts_dir
+    @test dirname(IS._store_path(sys2.data.time_series_manager.data_store)) == ts_dir
 end
 
 @testset "Test time series counts" begin
@@ -660,9 +660,9 @@ end
         time_series_in_memory = true,
         force_build = true,
     )
-    @test sys.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
+    @test sys.data.time_series_manager.data_store isa IS.Store
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
+    @test sys2.data.time_series_manager.data_store isa IS.Store
     @test IS.compare_values(sys, sys2)
     # Ensure that the storage references got updated correctly.
     for component in get_components(x -> has_time_series(x), Component, sys2)
@@ -676,9 +676,9 @@ end
         time_series_in_memory = false,
         force_build = true,
     )
-    @test sys.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
+    @test sys.data.time_series_manager.data_store isa IS.Store
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_manager.data_store isa IS.RustTimeSeriesStore
+    @test sys2.data.time_series_manager.data_store isa IS.Store
     @test IS.compare_values(sys, sys2)
     for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.internal.shared_system_references.time_series_manager ===
