@@ -416,6 +416,194 @@
             "supertype": "Topology"
         },
         {
+            "struct_name": "TransformerCircuit",
+            "docstring": "The data defining one modeled arc of a transformer.\n\nA [`TwoWindingTransformer`](@ref) has one circuit; a [`ThreeWindingTransformer`](@ref) has three, each connecting a terminal bus to the star bus. Circuit `available` is the single source of truth for availability; the owning transformer derives its availability from its circuits. `r`/`x` are the circuit impedance (for a two-winding transformer, the series impedance; for a three-winding transformer, the star-leg equivalent), in pu (device base) on `base_power` referenced to `base_voltage_primary`. `rating`/`rating_b`/`rating_c` and the flow fields are stored in device base per unit on `base_power` (MVA). Tap-changer / phase-shifter control is described by the flat control fields: `control_objective = UNDEFINED` means the circuit has no control block. `base_voltage_primary`/`base_voltage_secondary` are the two terminal-side base voltages in kV. For a [`TwoWindingTransformer`](@ref), the single circuit's `base_power` is the transformer's device base.",
+            "fields": [
+                {
+                    "name": "available",
+                    "comment": "Indicator of whether this circuit is connected and online. Circuit availability is the single source of truth; the owning transformer derives its availability from its circuits",
+                    "null_value": "false",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "arc",
+                    "comment": "An [`Arc`](@ref) defining this circuit `from` a terminal bus `to` the transformer's other terminal or star bus",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "data_type": "Arc"
+                },
+                {
+                    "name": "tap",
+                    "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "α",
+                    "comment": "Initial condition of phase shift (radians) across this circuit",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "winding_group_number",
+                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) due to the connection group configuration",
+                    "null_value": "WindingGroupNumber.UNDEFINED",
+                    "data_type": "WindingGroupNumber",
+                    "default": "WindingGroupNumber.UNDEFINED"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "default": "0.0",
+                    "comment": "Circuit resistance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x",
+                    "data_type": "Float64",
+                    "default": "0.0",
+                    "comment": "Circuit reactance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
+                },
+                {
+                    "name": "control_objective",
+                    "comment": "Tap-changer / phase-shifter control objective (PSS/E COD). `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "data_type": "TransformerControlObjective",
+                    "default": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Controlled bus number (PSS/E CONT; sign = regulation side)",
+                    "null_value": "0",
+                    "data_type": "Int",
+                    "default": "0"
+                },
+                {
+                    "name": "control_limits",
+                    "comment": "Control band (PSS/E RMA/RMI): tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control",
+                    "null_value": "(min=0.9, max=1.1)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.9, max=1.1)"
+                },
+                {
+                    "name": "controlled_quantity_limits",
+                    "comment": "Controlled-quantity band (PSS/E VMA/VMI): pu voltage / Mvar / MW bounds depending on `control_objective`",
+                    "null_value": "(min=0.9, max=1.1)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.9, max=1.1)"
+                },
+                {
+                    "name": "number_of_tap_positions",
+                    "comment": "Number of tap positions (PSS/E NTP)",
+                    "null_value": "33",
+                    "data_type": "Int",
+                    "default": "33"
+                },
+                {
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA) stored in device base per unit on `base_power`",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
+                },
+                {
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
+                },
+                {
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
+                    "display_units": "DU"
+                },
+                {
+                    "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow through this circuit (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow through this circuit (MVAR)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) of this circuit",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0"
+                },
+                {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary (from) terminal-side base voltage in kV; the reference voltage for this circuit's per-unit impedance",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "nothing"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary (to) terminal-side base voltage in kV. For a three-winding transformer this defaults to the primary base voltage at parse time",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "nothing"
+                },
+                {
+                    "name": "base_value",
+                    "comment": "(**Do not modify.**) System base power (MVA) anchor for explicit-units conversion; populated when the owning transformer is attached to a System",
+                    "internal_default": "nothing",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "data_type": "Union{Nothing, Float64}"
+                }
+            ],
+            "supertype": "DeviceParameter"
+        },
+        {
             "struct_name": "Line",
             "docstring": "An AC transmission line",
             "fields": [
@@ -733,6 +921,13 @@
                     "default": "DiscreteControlledBranchStatus.CLOSED"
                 },
                 {
+                    "name": "normal_branch_status",
+                    "comment": "Normal (as-designed) open or close status of the device",
+                    "null_value": "DiscreteControlledBranchStatus.CLOSED",
+                    "data_type": "DiscreteControlledBranchStatus",
+                    "default": "DiscreteControlledBranchStatus.CLOSED"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
@@ -907,8 +1102,8 @@
             "supertype": "ACTransmission"
         },
         {
-            "struct_name": "PhaseShiftingTransformer",
-            "docstring": "A phase-shifting transformer regulating the phase angle between two buses to control active power flow in the system.\n\nThe model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side",
+            "struct_name": "TwoWindingTransformer",
+            "docstring": "A two-winding transformer connecting two buses.\n\nAll series electrical data — the modeled arc, tap, phase shift, series impedance `r`/`x`, ratings, per-winding base power, base voltages, and control — lives on the single [`TransformerCircuit`](@ref) obtained with [`get_circuit`](@ref); availability is circuit-level (see [`get_available`](@ref)). The `magnetizing_shunt` admittance and its `shunt_location` are transformer-level. The model uses an equivalent circuit assuming the impedance is on the high-voltage side and allocates iron losses and magnetizing susceptance according to `shunt_location`. The transformer's device base is the circuit's `base_power`.",
             "fields": [
                 {
                     "null_value": "init",
@@ -918,172 +1113,28 @@
                     "data_type": "String"
                 },
                 {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
+                    "name": "circuit",
+                    "comment": "The [`TransformerCircuit`](@ref) carrying this transformer's arc, tap, phase shift, series impedance, ratings, per-winding base power/voltages, availability, and control",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
+                    "exclude_setter": true
                 },
                 {
-                    "name": "active_power_flow",
-                    "comment": "Initial condition of active power flow through the transformer (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow",
-                    "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r",
-                    "data_type": "Float64",
-                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x",
-                    "data_type": "Float64",
-                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "name": "primary_shunt",
+                    "name": "magnetizing_shunt",
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}",
-                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "default": "0.0",
+                    "comment": "Magnetizing shunt admittance in pu (device base on the circuit's `base_power`) referenced to the circuit's `base_voltage_primary`",
                     "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
                 },
                 {
-                    "name": "tap",
-                    "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "α",
-                    "comment": "Initial condition of phase shift (radians) between the `from` and `to` buses ",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
-                    "null_value": "0.0",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "name": "base_power",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "100.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 1e-4,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "base_voltage_primary",
-                    "comment": "Primary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(arc))"
-                },
-                {
-                    "name": "base_voltage_secondary",
-                    "comment": "Secondary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_to(arc))"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_b",
-                    "comment": "Second current rating; entered in MVA.",
-                    "data_type": "Union{Nothing, Float64}",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "default": "nothing"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_c",
-                    "comment": "Third current rating; entered in MVA.",
-                    "data_type": "Union{Nothing, Float64}",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "default": "nothing"
-                },
-                {
-                    "name": "phase_angle_limits",
-                    "comment": "Minimum and maximum phase angle limits (radians)",
-                    "null_value": "(min=-3.1416, max=3.1416)",
-                    "data_type": "MinMax",
-                    "default": "(min=-3.1416, max=3.1416)"
-                },
-                {
-                    "name": "control_objective",
-                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
+                    "name": "shunt_location",
+                    "comment": "Placement of `magnetizing_shunt` on the two sides of the circuit arc. See [`TwoWindingTransformerShuntLocation`](@ref)",
+                    "null_value": "TwoWindingTransformerShuntLocation.PRIMARY",
+                    "data_type": "TwoWindingTransformerShuntLocation",
+                    "default": "TwoWindingTransformerShuntLocation.PRIMARY"
                 },
                 {
                     "name": "services",
@@ -1107,11 +1158,11 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "TwoWindingTransformer"
+            "supertype": "ACTransmission"
         },
         {
-            "struct_name": "TapTransformer",
-            "docstring": "A 2-winding transformer, with a tap changer for variable turns ratio.\n\nThe model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side",
+            "struct_name": "ThreeWindingTransformer",
+            "docstring": "A three-winding transformer.\n\nThe model uses an equivalent star model with a star (hidden) bus. Each of the three [`TransformerCircuit`](@ref) objects ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)) connects a terminal bus to the star bus and carries its own arc, tap, phase shift, star-leg impedance, ratings, per-winding base power/voltages, availability, and control. The `magnetizing_shunt` admittance and its `shunt_location` are transformer-level. The pairwise measured impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` are one representation of the transformer impedance; the individual star-leg impedances stored on each circuit are derived from them at parse time. Each pairwise impedance is in pu (device base) on the corresponding `base_power_12`/`base_power_23`/`base_power_31`, referenced to the FIRST-INDEX circuit's base voltage (PSS/E CZ = 1): `r_12`/`x_12` to the primary circuit's base voltage, `r_23`/`x_23` to the secondary circuit's base voltage, and `r_31`/`x_31` to the tertiary circuit's base voltage. Mutating either representation after construction does not update the other. Power-flow and Ybus assembly read the per-circuit star-leg impedances, not the pairwise fields. Availability is circuit-level (see [`get_available`](@ref)). The model is described in Chapter 3.6 of J.D. Glover, M.S. Sarma and T. Overbye: Power Systems Analysis and Design.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1121,422 +1172,25 @@
                     "data_type": "String"
                 },
                 {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "active_power_flow",
-                    "comment": "Initial condition of active power flow through the transformer (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow",
-                    "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r",
-                    "data_type": "Float64",
-                    "comment": "Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 2
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x",
-                    "data_type": "Float64",
-                    "comment": "Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "name": "primary_shunt",
-                    "null_value": "0.0",
-                    "data_type": "Complex{Float64}",
-                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":siemens"
-                },
-                {
-                    "name": "tap",
-                    "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
-                    "null_value": "0.0",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "name": "base_power",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "100.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 1e-4,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "base_voltage_primary",
-                    "comment": "Primary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(arc))"
-                },
-                {
-                    "name": "base_voltage_secondary",
-                    "comment": "Secondary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_to(arc))"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_b",
-                    "comment": "Second current rating; entered in MVA.",
-                    "data_type": "Union{Nothing, Float64}",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "default": "nothing"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_c",
-                    "comment": "Third current rating; entered in MVA.",
-                    "data_type": "Union{Nothing, Float64}",
-                   "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "default": "nothing"
-                },
-                {
-                    "name": "winding_group_number",
-                    "null_value": "WindingGroupNumber.UNDEFINED",
-                    "data_type": "WindingGroupNumber",
-                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
-                    "default": "WindingGroupNumber.UNDEFINED"
-                },
-                {
-                    "name": "control_objective",
-                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
-                },
-                {
-                    "name": "tap_limits",
-                    "comment": "Minimum and maximum tap ratio (per-unit turns ratio) over which the tap changer may regulate",
-                    "null_value": "(min=0.9, max=1.1)",
-                    "data_type": "MinMax",
-                    "default": "(min=0.9, max=1.1)"
-                },
-                {
-                    "name": "number_of_tap_positions",
-                    "comment": "Number of discrete tap positions spanning `tap_limits` (NTP in PSS/e); used to snap the tap to a realizable step",
-                    "null_value": 33,
-                    "data_type": "Int",
-                    "default": "33"
-                },
-                {
-                    "name": "regulated_bus_number",
-                    "comment": "ACBus [`number`](@ref ACBus) whose voltage the tap changer regulates; `0` identifies the `to` bus of this transformer's arc (local control)",
-                    "null_value": 0,
-                    "data_type": "Int",
-                    "default": "0"
-                },
-                {
-                    "name": "voltage_setpoint",
-                    "comment": "Voltage setpoint at the regulated bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "default": "1.0"
-                },
-                {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
+                    "name": "primary_circuit",
+                    "comment": "The primary [`TransformerCircuit`](@ref) connecting the primary bus to the star bus",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
                     "exclude_setter": true
-                }
-            ],
-            "supertype": "TwoWindingTransformer"
-        },
-        {
-            "struct_name": "Transformer2W",
-            "docstring": "A basic 2-winding transformer.\n\nThe model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
                 },
                 {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "active_power_flow",
-                    "comment": "Initial condition of active power flow through the transformer (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow",
-                    "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r",
-                    "data_type": "Float64",
-                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x",
-                    "data_type": "Float64",
-                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "name": "primary_shunt",
-                    "null_value": "0.0",
-                    "data_type": "Complex{Float64}",
-                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":siemens"
-                },
-                {
-                    "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                   "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "name": "base_power",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "100.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 1e-4,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "base_voltage_primary",
-                    "comment": "Primary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(arc))"
-                },
-                {
-                    "name": "base_voltage_secondary",
-                    "comment": "Secondary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_to(arc))"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_b",
-                    "comment": "Second current rating; entered in MVA.",
-                    "data_type": "Union{Nothing, Float64}",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "default": "nothing"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_c",
-                    "comment": "Third current rating; entered in MVA.",
-                    "data_type": "Union{Nothing, Float64}",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "default": "nothing"
-                },
-                {
-                    "name": "winding_group_number",
-                    "null_value": "WindingGroupNumber.UNDEFINED",
-                    "data_type": "WindingGroupNumber",
-                    "comment": "Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses",
-                    "default": "WindingGroupNumber.UNDEFINED"
-                },
-                {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
+                    "name": "secondary_circuit",
+                    "comment": "The secondary [`TransformerCircuit`](@ref) connecting the secondary bus to the star bus",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
                     "exclude_setter": true
-                }
-            ],
-            "supertype": "TwoWindingTransformer"
-        },
-        {
-            "struct_name": "Transformer3W",
-            "docstring": "A 3-winding transformer.\n\nThe model uses an equivalent star model with a star (hidden) bus. The user must transform the data to use `CW = CZ = CM = 1` and `COD1 = COD2 = COD3 = 0` (no voltage control) if taken from a PSS/E 3W transformer model. Three equivalent impedances (connecting each side to the star bus) are required to define the model. Shunt conductance (iron losses) and magnetizing susceptance can be considered from the star bus to ground. The model is described in Chapter 3.6 in J.D. Glover, M.S. Sarma and T. Overbye: Power Systems Analysis and Design.",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
                 },
                 {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "primary_star_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` the star bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "secondary_star_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` the star bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "tertiary_star_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus",
-                    "data_type": "Arc"
+                    "name": "tertiary_circuit",
+                    "comment": "The tertiary [`TransformerCircuit`](@ref) connecting the tertiary bus to the star bus",
+                    "null_value": "TransformerCircuit(nothing)",
+                    "data_type": "TransformerCircuit",
+                    "exclude_setter": true
                 },
                 {
                     "name": "star_bus",
@@ -1545,150 +1199,11 @@
                     "data_type": "ACBus"
                 },
                 {
-                    "name": "active_power_flow_primary",
-                    "comment": "Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow_primary",
-                    "comment": "Initial condition of reactive power flow through the transformer primary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "active_power_flow_secondary",
-                    "comment": "Initial condition of active power flow through the transformer secondary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow_secondary",
-                    "comment": "Initial condition of reactive power flow through the transformer secondary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "active_power_flow_tertiary",
-                    "comment": "Initial condition of active power flow through the transformer tertiary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow_tertiary",
-                    "comment": "Initial condition of reactive power flow through the transformer tertiary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_primary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_primary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_secondary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_secondary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_tertiary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from tertiary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_tertiary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from tertiary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "null_value": "0.0",
+                    "default": "nothing",
                     "name": "r_12",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to secondary windings (R1-2 with CZ = 1 in PSS/E).",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1698,10 +1213,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "x_12",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to secondary windings (X1-2 with CZ = 1 in PSS/E).",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1711,10 +1227,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "r_23",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E).",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1724,10 +1241,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
+                    "null_value": "nothing",
+                    "default": "nothing",
                     "name": "x_23",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E).",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1737,10 +1255,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
-                    "name": "r_13",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (R1-3 with CZ = 1 in PSS/E).",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "name": "r_31",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1750,10 +1269,11 @@
                     "conversion_unit": ":ohm"
                 },
                 {
-                    "null_value": "0.0",
-                    "name": "x_13",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (X1-3 with CZ = 1 in PSS/E).",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "name": "x_31",
+                    "data_type": "Union{Nothing, Float64}",
+                    "comment": "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1766,11 +1286,12 @@
                     "name": "base_power_12",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -1779,195 +1300,46 @@
                     "name": "base_power_23",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
                 },
                 {
-                    "name": "base_power_13",
+                    "name": "base_power_31",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "null_value": "nothing",
+                    "default": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
                 },
                 {
-                    "name": "base_voltage_primary",
-                    "comment": "Primary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(primary_star_arc))"
-                },
-                {
-                    "name": "base_voltage_secondary",
-                    "comment": "Secondary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(secondary_star_arc))"
-                },
-                {
-                    "name": "base_voltage_tertiary",
-                    "comment": "Tertiary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(tertiary_star_arc))"
-                },
-                {
-                    "name": "g",
+                    "name": "magnetizing_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E).",
+                    "data_type": "Complex{Float64}",
                     "default": "0.0",
+                    "comment": "Magnetizing shunt admittance in pu (device base on the primary circuit's `base_power`) referenced to the primary circuit's base voltage",
+                    "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
                 },
                 {
-                    "name": "b",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E).",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":siemens"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "primary_turns_ratio",
-                    "data_type": "Float64",
-                    "comment": "Primary side off-nominal turns ratio in p.u. with respect to connected primary bus (WINDV1 with CW = 1 in PSS/E).",
-                    "default": "1.0"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "secondary_turns_ratio",
-                    "data_type": "Float64",
-                    "comment": "Secondary side off-nominal turns ratio in p.u. with respect to connected secondary bus (WINDV2 with CW = 1 in PSS/E).",
-                    "default": "1.0"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "tertiary_turns_ratio",
-                    "data_type": "Float64",
-                    "comment": "Tertiary side off-nominal turns ratio in p.u. with respect to connected tertiary bus (WINDV3 with CW = 1 in PSS/E).",
-                    "default": "1.0"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available_primary",
-                    "data_type": "Bool",
-                    "comment": "Status if primary winding is available or not.",
-                    "default": "true"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available_secondary",
-                    "data_type": "Bool",
-                    "comment": "Status if primary winding is available or not.",
-                    "default": "true"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available_tertiary",
-                    "data_type": "Bool",
-                    "comment": "Status if primary winding is available or not.",
-                    "default": "true"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_primary",
-                    "data_type": "Float64",
-                    "comment": "Rating (in MVA) for primary winding.",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_secondary",
-                    "data_type": "Float64",
-                    "comment": "Rating (in MVA) for secondary winding.",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_tertiary",
-                    "data_type": "Float64",
-                    "comment": "Rating (in MVA) for tertiary winding.",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "name": "primary_group_number",
-                    "null_value": "WindingGroupNumber.UNDEFINED",
-                    "data_type": "WindingGroupNumber",
-                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
-                    "default": "WindingGroupNumber.UNDEFINED"
-                },
-                {
-                    "name": "secondary_group_number",
-                    "null_value": "WindingGroupNumber.UNDEFINED",
-                    "data_type": "WindingGroupNumber",
-                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
-                    "default": "WindingGroupNumber.UNDEFINED"
-                },
-                {
-                    "name": "tertiary_group_number",
-                    "null_value": "WindingGroupNumber.UNDEFINED",
-                    "data_type": "WindingGroupNumber",
-                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
-                    "default": "WindingGroupNumber.UNDEFINED"
-                },
-                {
-                    "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
-                },
-                {
-                    "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
-                },
-                {
-                    "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
+                    "name": "shunt_location",
+                    "comment": "Placement of `magnetizing_shunt` in the equivalent star model. See [`ThreeWindingTransformerShuntLocation`](@ref)",
+                    "null_value": "ThreeWindingTransformerShuntLocation.PRIMARY",
+                    "data_type": "ThreeWindingTransformerShuntLocation",
+                    "default": "ThreeWindingTransformerShuntLocation.PRIMARY"
                 },
                 {
                     "name": "services",
@@ -1991,516 +1363,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ThreeWindingTransformer"
-        },
-        {
-            "struct_name": "PhaseShiftingTransformer3W",
-            "docstring": "A 3-winding phase-shifting transformer.\n\n. Phase shifts are specified in radians for primary, secondary, and tertiary windings.",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "primary_star_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` the star bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "secondary_star_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` the star bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "tertiary_star_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "name": "star_bus",
-                    "comment": "Star (hidden) Bus that this component (equivalent model) is connected to",
-                    "null_value": "ACBus(nothing)",
-                    "data_type": "ACBus"
-                },
-                {
-                    "name": "active_power_flow_primary",
-                    "comment": "Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow_primary",
-                    "comment": "Initial condition of reactive power flow through the transformer primary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "active_power_flow_secondary",
-                    "comment": "Initial condition of active power flow through the transformer secondary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow_secondary",
-                    "comment": "Initial condition of reactive power flow through the transformer secondary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "active_power_flow_tertiary",
-                    "comment": "Initial condition of active power flow through the transformer tertiary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_flow_tertiary",
-                    "comment": "Initial condition of reactive power flow through the transformer tertiary side to star (hidden) bus (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_primary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_primary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_secondary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_secondary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_tertiary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from tertiary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_tertiary",
-                    "data_type": "Float64",
-                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from tertiary to star (hidden) bus.",
-                    "valid_range": {
-                        "min": -2,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_12",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to secondary windings (R1-2 with CZ = 1 in PSS/E).",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_12",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to secondary windings (X1-2 with CZ = 1 in PSS/E).",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_23",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E).",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_23",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E).",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "r_13",
-                    "data_type": "Float64",
-                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (R1-3 with CZ = 1 in PSS/E).",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "x_13",
-                    "data_type": "Float64",
-                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (X1-3 with CZ = 1 in PSS/E).",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 4
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":ohm"
-                },
-                {
-                    "name": "α_primary",
-                    "comment": "Initial condition of primary phase shift (radians) between the `from` and `to` buses ",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "α_secondary",
-                    "comment": "Initial condition of secondary phase shift (radians) between the `from` and `to` buses ",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "α_tertiary",
-                    "comment": "Initial condition of tertiary phase shift (radians) between the `from` and `to` buses ",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "base_power_12",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "base_power_23",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "base_power_13",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "base_voltage_primary",
-                    "comment": "Primary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(primary_star_arc))"
-                },
-                {
-                    "name": "base_voltage_secondary",
-                    "comment": "Secondary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(secondary_star_arc))"
-                },
-                {
-                    "name": "base_voltage_tertiary",
-                    "comment": "Tertiary base voltage in kV",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "default": "get_base_voltage(get_from(tertiary_star_arc))"
-                },
-                {
-                    "name": "g",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E).",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":siemens"
-                },
-                {
-                    "name": "b",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E).",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":siemens"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "primary_turns_ratio",
-                    "data_type": "Float64",
-                    "comment": "Primary side off-nominal turns ratio in p.u. with respect to connected primary bus (WINDV1 with CW = 1 in PSS/E).",
-                    "default": "1.0"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "secondary_turns_ratio",
-                    "data_type": "Float64",
-                    "comment": "Secondary side off-nominal turns ratio in p.u. with respect to connected secondary bus (WINDV2 with CW = 1 in PSS/E).",
-                    "default": "1.0"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "tertiary_turns_ratio",
-                    "data_type": "Float64",
-                    "comment": "Tertiary side off-nominal turns ratio in p.u. with respect to connected tertiary bus (WINDV3 with CW = 1 in PSS/E).",
-                    "default": "1.0"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available_primary",
-                    "data_type": "Bool",
-                    "comment": "Status if primary winding is available or not.",
-                    "default": "true"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available_secondary",
-                    "data_type": "Bool",
-                    "comment": "Status if primary winding is available or not.",
-                    "default": "true"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available_tertiary",
-                    "data_type": "Bool",
-                    "comment": "Status if primary winding is available or not.",
-                    "default": "true"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_primary",
-                    "data_type": "Float64",
-                    "comment": "Rating (in MVA) for primary winding.",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_secondary",
-                    "data_type": "Float64",
-                    "comment": "Rating (in MVA) for secondary winding.",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "null_value": "0.0",
-                    "name": "rating_tertiary",
-                    "data_type": "Float64",
-                    "comment": "Rating (in MVA) for tertiary winding.",
-                    "default": "0.0",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva",
-                    "display_units": "DU"
-                },
-                {
-                    "name": "phase_angle_limits",
-                    "comment": "Minimum and maximum phase angle limits (radians)",
-                    "null_value": "(min=-3.1416, max=3.1416)",
-                    "data_type": "MinMax",
-                    "default": "(min=-3.1416, max=3.1416)"
-                },
-                {
-                    "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
-                },
-                {
-                    "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
-                },
-                {
-                    "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
-                    "data_type": "TransformerControlObjective",
-                    "null_value": "TransformerControlObjective.UNDEFINED",
-                    "default": "TransformerControlObjective.UNDEFINED"
-                },
-                {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "ThreeWindingTransformer"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "TwoTerminalGenericHVDCLine",
@@ -2870,17 +1733,27 @@
                 },
                 {
                     "name": "remote_bus_control_from",
-                    "comment": "Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE` (`0` regulates its own terminal bus).",
-                    "null_value": 0,
-                    "data_type": "Int",
-                    "default": 0
+                    "comment": "Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Int}",
+                    "default": "nothing",
+                    "valid_range": {
+                        "min": 1,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "remote_bus_control_to",
-                    "comment": "Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE` (`0` regulates its own terminal bus).",
-                    "null_value": 0,
-                    "data_type": "Int",
-                    "default": 0
+                    "comment": "Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Int}",
+                    "default": "nothing",
+                    "valid_range": {
+                        "min": 1,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "rmpct_from",
@@ -3753,20 +2626,41 @@
                 },
                 {
                     "name": "voltage_setpoint",
-                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
-                    "internal_default": "1.0",
+                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "null_value": "1.0",
+                    "default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "max_shunt_current",
-                    "comment": "Maximum shunt current at the sending end bus; entered in MVA at unity voltage.",
-                    "internal_default": "9999.0",
+                    "comment": "Maximum shunt current at unity voltage (PSS/E SHMX), MVA; the STATCOM current limit and SVC susceptance base.",
+                    "default": "9999.0",
                     "data_type": "Float64"
                 },
                 {
+                    "name": "max_reactive_power",
+                    "comment": "Independent maximum reactive power ceiling (MVA); the device reactive limit is min(the current/susceptance law on max_shunt_current, this value). Non-binding at the 9999.0 default.",
+                    "default": "9999.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "shunt_control_type",
+                    "comment": "Device class selecting the reactive-limit law (SVC vs STATCOM)",
+                    "null_value": "FACTSShuntControlType.STATCOM",
+                    "default": "FACTSShuntControlType.STATCOM",
+                    "data_type": "FACTSShuntControlType"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Bus whose voltage this device regulates; 0 ⇒ local (sending) bus (PSS/E FCREG)",
+                    "null_value": "0",
+                    "default": "0",
+                    "data_type": "Int"
+                },
+                {
                     "name": "reactive_power_required",
-                    "comment": "Total MVAr required to hold voltage at sending bus, in %.",
-                    "internal_default": "100.0",
+                    "comment": "Solver-populated: delivered reactive power after solve (output; not parsed from input)",
+                    "default": "0.0",
                     "data_type": "Float64"
                 },
                 {
@@ -3917,6 +2811,20 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=1.0, max=1.0)"
+                },
+                {
+                    "name": "control_mode",
+                    "comment": "Switched-shunt control mode (PSS/E MODSW).",
+                    "data_type": "SwitchedAdmittanceControlMode",
+                    "null_value": "SwitchedAdmittanceControlMode.FIXED",
+                    "default": "SwitchedAdmittanceControlMode.FIXED"
+                },
+                {
+                    "name": "regulated_bus_number",
+                    "comment": "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG).",
+                    "data_type": "Int",
+                    "null_value": "0",
+                    "default": "0"
                 },
                 {
                     "name": "dynamic_injector",
@@ -5231,16 +4139,20 @@
                 },
                 {
                     "name": "dc_current",
-                    "comment": "DC current (A) on the converter",
+                    "comment": "DC current on the converter, in per unit power-equivalent on the converter `base_power` (I is approximately P at 1.0 pu DC voltage)",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "0.0"
                 },
                 {
                     "name": "max_dc_current",
-                    "comment": "Maximum stable dc current limits (A)",
+                    "comment": "Maximum stable DC current limit, in per unit power-equivalent on the converter `base_power` (I is approximately P at 1.0 pu DC voltage)",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "1e8"
                 },
                 {
@@ -5284,6 +4196,44 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
+                },
+                {
+                    "name": "remote_bus_control",
+                    "comment": "Number of the AC bus whose voltage the converter regulates when `ac_control` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Int}",
+                    "default": "nothing",
+                    "valid_range": {
+                        "min": 1,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "rmpct",
+                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by this converter that is contributed by this converter.",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0"
+                },
+                {
+                    "name": "power_factor_weighting_fraction",
+                    "comment": "Power weighting factor fraction used in reducing the active power order and either the reactive power order when the converter rating is violated. When is 0.0, only the active power is reduced; when is 1.0, only the reactive power is reduced; otherwise, a weighted reduction of both active and reactive power is applied.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "voltage_limits",
+                    "comment": "Limits on the voltage at the DC bus in [per unit](@ref per_unit).",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=999.9)"
                 },
                 {
                     "name": "services",
@@ -6192,6 +5142,18 @@
                     "comment": "Head to volume relationship for the reservoir.",
                     "null_value": "LinearFunctionData(0.0)",
                     "data_type": "FunctionData"
+                },
+                {
+                    "name": "evaporative_loss",
+                    "comment": "Standing loss from evaporation as a fraction of the reservoir's stored volume/energy lost per hour (pu/hr)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn",
+                    "default": "0.0"
                 },
                 {
                     "name": "upstream_turbines",
@@ -7182,6 +6144,46 @@
                     "null_value": "0",
                     "data_type": "Int",
                     "default": "1e4"
+                },
+                {
+                    "name": "ramp_limits",
+                    "comment": "ramp up and ramp down limits in MW/min",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, UpDown}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
+                    "default": "nothing"
+                },
+                {
+                    "name": "self_discharge",
+                    "comment": "Self-discharge (leakage loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn",
+                    "default": "0.0"
+                },
+                {
+                    "name": "standing_loss",
+                    "comment": "Constant standing-loss power drawn by the storage system, in per unit of the device `base_power`. Reduces the effective charging power (`p_in - standing_loss`) and increases the power drawn from the storage when discharging (`p_out + standing_loss`). For the fractional energy leakage see `self_discharge`",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva",
+                    "default": "0.0"
                 },
                 {
                     "name": "services",

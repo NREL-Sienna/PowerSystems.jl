@@ -14,6 +14,8 @@ This file is auto-generated. Do not edit.
         number_of_steps::Vector{Int}
         Y_increase::Vector{Complex{Float64}}
         admittance_limits::MinMax
+        control_mode::SwitchedAdmittanceControlMode
+        regulated_bus_number::Int
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -33,6 +35,8 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `number_of_steps::Vector{Int}`: (default: `Int[]`) Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.
 - `Y_increase::Vector{Complex{Float64}}`: (default: `Complex{Float64}[]`) Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2.
 - `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
+- `control_mode::SwitchedAdmittanceControlMode`: (default: `SwitchedAdmittanceControlMode.FIXED`) Switched-shunt control mode (PSS/E MODSW).
+- `regulated_bus_number::Int`: (default: `0`) Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG).
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -55,6 +59,10 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     Y_increase::Vector{Complex{Float64}}
     "Shunt admittance limits for switched shunt model"
     admittance_limits::MinMax
+    "Switched-shunt control mode (PSS/E MODSW)."
+    control_mode::SwitchedAdmittanceControlMode
+    "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG)."
+    regulated_bus_number::Int
     "corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
@@ -65,12 +73,12 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     internal::InfrastructureSystemsInternal
 end
 
-function SwitchedAdmittance(name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
-    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
+function SwitchedAdmittance(name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), control_mode=SwitchedAdmittanceControlMode.FIXED, regulated_bus_number=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, control_mode, regulated_bus_number, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function SwitchedAdmittance(; name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, internal, )
+function SwitchedAdmittance(; name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), control_mode=SwitchedAdmittanceControlMode.FIXED, regulated_bus_number=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, control_mode, regulated_bus_number, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -84,6 +92,8 @@ function SwitchedAdmittance(::Nothing)
         number_of_steps=Int[],
         Y_increase=Complex{Float64}[],
         admittance_limits=(min=0.0, max=0.0),
+        control_mode=SwitchedAdmittanceControlMode.FIXED,
+        regulated_bus_number=0,
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -106,6 +116,10 @@ get_number_of_steps(value::SwitchedAdmittance) = value.number_of_steps
 get_Y_increase(value::SwitchedAdmittance) = value.Y_increase
 """Get [`SwitchedAdmittance`](@ref) `admittance_limits`."""
 get_admittance_limits(value::SwitchedAdmittance) = value.admittance_limits
+"""Get [`SwitchedAdmittance`](@ref) `control_mode`."""
+get_control_mode(value::SwitchedAdmittance) = value.control_mode
+"""Get [`SwitchedAdmittance`](@ref) `regulated_bus_number`."""
+get_regulated_bus_number(value::SwitchedAdmittance) = value.regulated_bus_number
 """Get [`SwitchedAdmittance`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::SwitchedAdmittance) = value.dynamic_injector
 """Get [`SwitchedAdmittance`](@ref) `services`."""
@@ -129,6 +143,10 @@ set_number_of_steps!(value::SwitchedAdmittance, val) = value.number_of_steps = v
 set_Y_increase!(value::SwitchedAdmittance, val) = value.Y_increase = val
 """Set [`SwitchedAdmittance`](@ref) `admittance_limits`."""
 set_admittance_limits!(value::SwitchedAdmittance, val) = value.admittance_limits = val
+"""Set [`SwitchedAdmittance`](@ref) `control_mode`."""
+set_control_mode!(value::SwitchedAdmittance, val) = value.control_mode = val
+"""Set [`SwitchedAdmittance`](@ref) `regulated_bus_number`."""
+set_regulated_bus_number!(value::SwitchedAdmittance, val) = value.regulated_bus_number = val
 """Set [`SwitchedAdmittance`](@ref) `services`."""
 set_services!(value::SwitchedAdmittance, val) = value.services = val
 """Set [`SwitchedAdmittance`](@ref) `ext`."""

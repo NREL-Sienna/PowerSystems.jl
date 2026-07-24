@@ -14,11 +14,43 @@ _get_base_power(c::Component) = _get_system_base_power(c)
 # engine resolves bases through these three functions, so every getter and
 # setter shares one base-power/base-voltage choice per component type.
 _get_device_base_power(c::Component) = _get_base_power(c)
+
+# TransformerCircuit is a self-contained explicit-units base provider (defined
+# in models/transformer_circuits.jl, included earlier): it carries its own
+# base_power/base_voltage_primary/base_value and does not need a component to
+# delegate to (Base.summary(w) is defined alongside the struct).
+_get_device_base_power(w::TransformerCircuit) = w.base_power
+function _get_system_base_power(w::TransformerCircuit)
+    base_value = IS.get_base_value(w)
+    isnothing(base_value) && error(
+        "TransformerCircuit is not attached to a System; cannot convert to/from system base",
+    )
+    return base_value
+end
+
+# The circuit's impedance is per-unit referenced to its primary base voltage, so
+# the conversion engine's generic base-voltage resolver reads
+# base_voltage_primary.
+get_base_voltage(w::TransformerCircuit) = get_base_voltage_primary(w)
+
+const UnitsBearer = Union{Component, TransformerCircuit}
+
 get_base_voltage(c::Branch) = get_base_voltage(get_arc(c).from)
-get_base_voltage(c::TwoWindingTransformer) = get_base_voltage_primary(c)
+
+# TwoWindingTransformer has no `arc` field of its own (the arc lives on its
+# TransformerCircuit); delegate the generic Branch interface (get_arc, set_arc!)
+# to the circuit so that check_component_addition/check_attached_buses/
+# _handle_branch_addition_common! and get_from_bus/get_to_bus (all defined
+# generically over `Branch` in terms of get_arc) work unmodified.
+get_arc(c::TwoWindingTransformer) = get_arc(get_circuit(c))
+set_arc!(c::TwoWindingTransformer, arc::Arc) = set_arc!(get_circuit(c), arc)
+
+# 2W: device base voltage is the primary (circuit) side
+get_base_voltage(c::TwoWindingTransformer) = get_base_voltage(get_circuit(c))
 get_base_voltage(c::ThreeWindingTransformer) = error(
-    "Three-winding transformers have per-winding base voltages; use " *
-    "get_base_voltage_primary/secondary/tertiary.",
+    "Three-winding transformers have per-circuit base voltages; use " *
+    "get_base_voltage(get_primary_circuit(t))/get_base_voltage(get_secondary_circuit(t))/" *
+    "get_base_voltage(get_tertiary_circuit(t)).",
 )
 
 # `base_power` is always stored and reported in natural units (MVA). It is the
@@ -113,7 +145,7 @@ Returns a `RelativeQuantity` (for DU/SU targets) or a `Unitful.Quantity` (for
 natural units like MW). Public getters wrap this in `_strip_units` for the
 bare-number form, with `_unitful` companions returning the wrapped value.
 """
-function get_value(c::Component, field::Val{T}, conversion_unit, units) where {T}
+function get_value(c::UnitsBearer, field::Val{T}, conversion_unit, units::UnitArg) where {T}
     value = Base.getproperty(c, T)
     return _convert_from_device_base(
         _conversion_base(c, field),
@@ -123,18 +155,16 @@ function get_value(c::Component, field::Val{T}, conversion_unit, units) where {T
     )
 end
 
-# Base provider for the conversion engine: which object carries the bases for
-# a given field. Components are their own provider; multi-winding components
-# substitute a per-winding view (see `WindingBase` below). This single hook is
-# what makes the generic getter/setter paths winding-aware — no per-type
-# method mirrors.
-_conversion_base(c::Component, ::Any) = c
-_conversion_base(c::ThreeWindingTransformer, field::Val) = WindingBase(c, field)
+# Base provider for the conversion engine: which object carries the bases for a
+# given field. Components (and `TransformerCircuit`, which is its own base
+# provider) are their own provider. Multi-winding transformers delegate to their
+# per-circuit `TransformerCircuit` objects, which are themselves `UnitsBearer`s.
+_conversion_base(c::UnitsBearer, ::Any) = c
 
 # ---- DU → requested units: one delegation to the conversion engine. The
 # field's conversion-unit token picks the physical category; the engine
 # resolves bases through the component interface above. ----
-_convert_from_device_base(base, value::Number, cu::Val, units) =
+_convert_from_device_base(base, value::Number, cu::Val, units::UnitArg) =
     convert_units(base, value, _unit_category(cu), DU, units)
 
 # ---- Nothing passthrough ----
@@ -171,210 +201,136 @@ _convert_from_device_base(base, v::StartUpShutDown, cu, u) = (
 #######################################################
 
 # ---- From Unitful.Quantity (natural units): inverse engine conversion ----
-set_value(c::Component, field, val::Quantity, cu::Val) = IS._strip_units(
+set_value(c::UnitsBearer, field, val::Quantity, cu::Val) = IS._strip_units(
     convert_units(_conversion_base(c, field), val, _unit_category(cu), NU, DU),
 )
 
 # ---- From RelativeQuantity in DU (trivial) ----
-set_value(::Component, field, val::RelativeQuantity{<:Any, DeviceBaseUnit}, ::Val) =
+set_value(::UnitsBearer, field, val::RelativeQuantity{<:Any, DeviceBaseUnit}, ::Val) =
     ustrip(val)
 
 # ---- From RelativeQuantity in SU ----
-set_value(c::Component, field, val::RelativeQuantity{<:Any, SystemBaseUnit}, cu::Val) =
+set_value(c::UnitsBearer, field, val::RelativeQuantity{<:Any, SystemBaseUnit}, cu::Val) =
     IS._strip_units(
         convert_units(_conversion_base(c, field), ustrip(val), _unit_category(cu), SU, DU),
     )
 
 # ---- Bare Float64 is rejected: callers must attach units explicitly ----
-set_value(::Component, ::Any, ::Float64, ::Val) = throw(
+set_value(::UnitsBearer, ::Any, ::Float64, ::Val) = throw(
     ArgumentError(
         "setter requires explicit units (e.g. `val * SU`, `val * DU`, `val * MW`)",
     ),
 )
 
 # ---- Compound field types for setters ----
-_to_device_base(c::Component, val, cu) = set_value(c, nothing, val, cu)
+_to_device_base(c::UnitsBearer, val, cu) = set_value(c, nothing, val, cu)
 
-set_value(c::Component, field, val::NamedTuple{(:min, :max)}, cu::Val) = (
+set_value(c::UnitsBearer, field, val::NamedTuple{(:min, :max)}, cu::Val) = (
     min = _to_device_base(c, val.min, cu),
     max = _to_device_base(c, val.max, cu),
 )
 
-set_value(c::Component, field, val::NamedTuple{(:up, :down)}, cu::Val) = (
+set_value(c::UnitsBearer, field, val::NamedTuple{(:up, :down)}, cu::Val) = (
     up = _to_device_base(c, val.up, cu),
     down = _to_device_base(c, val.down, cu),
 )
 
-set_value(c::Component, field, val::NamedTuple{(:from_to, :to_from)}, cu::Val) = (
+set_value(c::UnitsBearer, field, val::NamedTuple{(:from_to, :to_from)}, cu::Val) = (
     from_to = _to_device_base(c, val.from_to, cu),
     to_from = _to_device_base(c, val.to_from, cu),
 )
 
-set_value(c::Component, field, val::NamedTuple{(:from, :to)}, cu::Val) = (
+set_value(c::UnitsBearer, field, val::NamedTuple{(:from, :to)}, cu::Val) = (
     from = _to_device_base(c, val.from, cu),
     to = _to_device_base(c, val.to, cu),
 )
 
-set_value(c::Component, field, val::NamedTuple{(:startup, :shutdown)}, cu::Val) = (
+set_value(c::UnitsBearer, field, val::NamedTuple{(:startup, :shutdown)}, cu::Val) = (
     startup = _to_device_base(c, val.startup, cu),
     shutdown = _to_device_base(c, val.shutdown, cu),
 )
 
 # ---- Nothing passthrough ----
-set_value(::Component, _, ::Nothing, ::Val) = nothing
+set_value(::UnitsBearer, _, ::Nothing, ::Val) = nothing
 
 ######################################
 ########### Transformer 3W ###########
 ######################################
 
-PrimaryImpedances = Union{
-    Val{:r_primary},
-    Val{:x_primary},
-    Val{:r_12},
-    Val{:x_12},
-}
+# Per-winding base powers for the three-winding transformer. The generator emits
+# the private `_get_base_power_XX` field accessors (`base_power_*` are
+# exclude_getter fields); these plain public accessors expose them. Circuit-aware
+# unit conversion is handled through the per-circuit `TransformerCircuit` objects.
+get_base_power_12(t::ThreeWindingTransformer) = t.base_power_12
+get_base_power_23(t::ThreeWindingTransformer) = t.base_power_23
+get_base_power_31(t::ThreeWindingTransformer) = t.base_power_31
+set_base_power_12!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
+    t.base_power_12 = v
+set_base_power_23!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
+    t.base_power_23 = v
+set_base_power_31!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
+    t.base_power_31 = v
 
-PrimaryAdmittances = Union{
-    Val{:g},
-    Val{:b},
-}
+# A TwoWindingTransformer's series electrical data lives entirely on its circuit.
+# Forward the base-power accessors to the circuit so the units engine's device-base
+# resolution and downstream base-power reads/writes keep working. The value-typed
+# setter variants mirror the generic Component ones (natural units only) so no
+# ambiguity arises with `set_base_power!(::Component, ...)`.
+_get_base_power(t::TwoWindingTransformer) = get_base_power(get_circuit(t))
+get_base_power(t::TwoWindingTransformer) = get_base_power(get_circuit(t))
+set_base_power!(t::TwoWindingTransformer, val::Float64) =
+    set_base_power!(get_circuit(t), val)
+set_base_power!(t::TwoWindingTransformer, val::Unitful.Quantity) =
+    set_base_power!(get_circuit(t), Unitful.ustrip(MVA, val))
+set_base_power!(::TwoWindingTransformer, ::RelativeQuantity{<:Any, U}) where {U} =
+    _base_power_units_error(U())
 
-PrimaryPower = Union{
-    Val{:active_power_flow_primary},
-    Val{:reactive_power_flow_primary},
-    Val{:rating},
-    Val{:rating_primary},
-}
-
-SecondaryImpedances = Union{
-    Val{:r_secondary},
-    Val{:x_secondary},
-    Val{:r_23},
-    Val{:x_23},
-}
-
-SecondaryPower = Union{
-    Val{:active_power_flow_secondary},
-    Val{:reactive_power_flow_secondary},
-    Val{:rating_secondary},
-}
-
-TertiaryImpedances = Union{
-    Val{:r_tertiary},
-    Val{:x_tertiary},
-    Val{:r_13},
-    Val{:x_13},
-}
-
-TertiaryPower = Union{
-    Val{:active_power_flow_tertiary},
-    Val{:reactive_power_flow_tertiary},
-    Val{:rating_tertiary},
-}
-
-###### Multipliers ######
-
-_get_winding_base_power(
-    c::ThreeWindingTransformer,
-    ::Union{PrimaryImpedances, PrimaryAdmittances, PrimaryPower},
-) = _get_base_power_12(c)
-_get_winding_base_power(
-    c::ThreeWindingTransformer,
-    ::Union{SecondaryImpedances, SecondaryPower},
-) =
-    _get_base_power_23(c)
-_get_winding_base_power(
-    c::ThreeWindingTransformer,
-    ::Union{TertiaryImpedances, TertiaryPower},
-) =
-    _get_base_power_13(c)
-
-# Public unit-aware winding base_power accessors for ThreeWindingTransformer.
-# Bare-number `$pub` plus unit-bearing `$pub_unitful` companion.
-for (pub, priv, field) in (
-    (:get_base_power_12, :_get_base_power_12, :base_power_12),
-    (:get_base_power_23, :_get_base_power_23, :base_power_23),
-    (:get_base_power_13, :_get_base_power_13, :base_power_13),
-)
-    pub_unitful = Symbol(pub, :_unitful)
-    setter = Symbol(:set_, field, :!)
-    @eval begin
-        $pub(c::ThreeWindingTransformer, u) = IS._strip_units($pub_unitful(c, u))
-
-        $pub_unitful(c::ThreeWindingTransformer, ::NaturalUnit) = $priv(c) * MVA
-        $pub_unitful(c::ThreeWindingTransformer, u::Unitful.Units) =
-            Unitful.uconvert(u, $priv(c) * MVA)
-        $pub_unitful(c::ThreeWindingTransformer, ::SystemBaseUnit) =
-            ($priv(c) / _get_system_base_power(c)) * SU
-        $pub_unitful(c::ThreeWindingTransformer, ::DeviceBaseUnit) = 1.0 * DU
-
-        $setter(c::ThreeWindingTransformer, val::Float64) = (c.$field = val)
-        $setter(c::ThreeWindingTransformer, val::Unitful.Quantity) =
-            (c.$field = Unitful.ustrip(u"MW", val))
-        $setter(c::ThreeWindingTransformer, val::RelativeQuantity{<:Any, SystemBaseUnit}) =
-            (c.$field = ustrip(val) * _get_system_base_power(c))
-        $setter(::ThreeWindingTransformer, ::RelativeQuantity{<:Any, DeviceBaseUnit}) =
-            error(
-                "Setting " * $(string(field)) * " in device base (DU) is ambiguous: " *
-                "device base is 1.0 pu of itself by construction. Pass MVA, MW, or SU instead.",
-            )
-
-        IS.display_units_arg(::typeof($pub), ::Type{<:ThreeWindingTransformer}) = NU
-        IS.display_units_arg(::typeof($pub_unitful), ::Type{<:ThreeWindingTransformer}) = NU
-        IS.display_units_arg(::typeof($setter), ::Type{<:ThreeWindingTransformer}) = NU
-    end
-end
-
-function _get_winding_base_voltage(
-    c::ThreeWindingTransformer,
-    ::Union{PrimaryImpedances, PrimaryAdmittances},
-)
-    base_voltage = get_base_voltage_primary(c)
-    if isnothing(base_voltage)
-        error("Base voltage is not defined for $(summary(c)).")
-    end
-    return base_voltage
-end
-
-function _get_winding_base_voltage(
-    c::ThreeWindingTransformer,
-    ::SecondaryImpedances,
-)
-    base_voltage = get_base_voltage_secondary(c)
-    if isnothing(base_voltage)
-        error("Base voltage is not defined for $(summary(c)).")
-    end
-    return base_voltage
-end
-
-function _get_winding_base_voltage(
-    c::ThreeWindingTransformer,
-    ::TertiaryImpedances,
-)
-    base_voltage = get_base_voltage_tertiary(c)
-    if isnothing(base_voltage)
-        error("Base voltage is not defined for $(summary(c)).")
-    end
-    return base_voltage
-end
-
-# Each winding pair carries its own MVA and kV base, so the component-wide
-# `_get_base_power`/`get_base_voltage` used by the generic conversion are wrong
-# here. `WindingBase` is a lightweight per-winding *base provider*: it
-# implements the conversion-engine component interface with the winding's
-# bases (the field doubles as the winding token), so the entire 5-arg
-# `convert_units` engine — getters and setters alike — works per-winding.
-struct WindingBase{T <: ThreeWindingTransformer, F <: Val}
-    component::T
-    field::F
-end
-
-_get_device_base_power(w::WindingBase) = _get_winding_base_power(w.component, w.field)
-_get_system_base_power(w::WindingBase) = _get_system_base_power(w.component)
-get_base_voltage(w::WindingBase) = _get_winding_base_voltage(w.component, w.field)
-Base.summary(w::WindingBase) = summary(w.component)
+# The series impedance r/x lives on the circuit. These forwarding accessors keep
+# dispatch on the parent working (e.g. PowerNetworkMatrices reads get_r/get_x on
+# the TwoWindingTransformer during Ybus assembly) by delegating to the circuit's
+# explicit-units accessors. `magnetizing_shunt` is a parent field, so its
+# accessors are generated directly on the transformer and need no forwarding.
+get_r(t::TwoWindingTransformer, units) = get_r(get_circuit(t), units)
+get_r_unitful(t::TwoWindingTransformer, units) = get_r_unitful(get_circuit(t), units)
+set_r!(t::TwoWindingTransformer, val) = set_r!(get_circuit(t), val)
+get_x(t::TwoWindingTransformer, units) = get_x(get_circuit(t), units)
+get_x_unitful(t::TwoWindingTransformer, units) = get_x_unitful(get_circuit(t), units)
+set_x!(t::TwoWindingTransformer, val) = set_x!(get_circuit(t), val)
 
 # Physical category implied by a field's conversion unit.
 _unit_category(::Val{:mva}) = POWER
 _unit_category(::Val{:ohm}) = IMPEDANCE
 _unit_category(::Val{:siemens}) = ADMITTANCE
+
+# Base provider for the pairwise impedance fields of a ThreeWindingTransformer.
+# Convention: Z_ij is pu on base_power_ij referenced to the first-index circuit's
+# base voltage (PSS/E CZ = 1): r_12/x_12 -> primary, r_23/x_23 -> secondary,
+# r_31/x_31 -> tertiary (R3-1 references NOMV3, the tertiary winding). The
+# transformer-level `magnetizing_shunt` is pu on the primary circuit's own
+# `base_power` referenced to the primary circuit's base voltage (it converts
+# directly on the primary `TransformerCircuit`, not through a `PairBase`).
+struct PairBase{T <: ThreeWindingTransformer}
+    transformer::T
+    base_power::Union{Nothing, Float64}
+    base_voltage::Union{Nothing, Float64}
+end
+
+function _get_device_base_power(p::PairBase)
+    isnothing(p.base_power) && error(
+        "The pairwise PSS/E fields (r_12/x_12/r_23/x_23/r_31/x_31 and base_power_12/23/31) " *
+        "of $(summary(p.transformer)) are not set; cannot convert pairwise values",
+    )
+    return p.base_power
+end
+_get_system_base_power(p::PairBase) = _get_system_base_power(p.transformer)
+get_base_voltage(p::PairBase) = p.base_voltage
+Base.summary(p::PairBase) = "PairBase($(summary(p.transformer)))"
+
+_conversion_base(c::ThreeWindingTransformer, ::Union{Val{:r_12}, Val{:x_12}}) =
+    PairBase(c, get_base_power_12(c), get_base_voltage(get_primary_circuit(c)))
+_conversion_base(c::ThreeWindingTransformer, ::Union{Val{:r_23}, Val{:x_23}}) =
+    PairBase(c, get_base_power_23(c), get_base_voltage(get_secondary_circuit(c)))
+_conversion_base(c::ThreeWindingTransformer, ::Union{Val{:r_31}, Val{:x_31}}) =
+    PairBase(c, get_base_power_31(c), get_base_voltage(get_tertiary_circuit(c)))
+_conversion_base(c::ThreeWindingTransformer, ::Val{:magnetizing_shunt}) =
+    get_primary_circuit(c)

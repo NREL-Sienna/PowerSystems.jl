@@ -117,7 +117,7 @@ end
 
 The next step is to build the [`Branch`](@ref) components in the system. In this
 example, we only have two branch types: a [`Line`](@ref), if the connecting buses
-have the same base voltage; and a [`Transformer2W`](@ref) if they
+have the same base voltage; and a [`TwoWindingTransformer`](@ref) if they
 have different base voltages. You may need to implement additional logic if you
 have other branch types as well.
 
@@ -146,7 +146,10 @@ max_flow = "Max Flow (MW)"
 ```
 
 Build the lines and transformers using the [`Line`](@ref) and
-[`Transformer2W`](@ref) constructors.
+[`TwoWindingTransformer`](@ref) constructors. A [`TwoWindingTransformer`](@ref)
+carries its arc, series impedance `r`/`x`, rating, base power, and availability on
+a single [`TransformerCircuit`](@ref) (obtained with [`get_circuit`](@ref)); the
+`magnetizing_shunt` and its `shunt_location` are transformer-level fields.
 
 ```julia
 for row in eachrow(branch_params)
@@ -166,16 +169,19 @@ for row in eachrow(branch_params)
             angle_limits = (min = 0.0, max = 0.0),
         )
     else
-        branch = Transformer2W(;
+        branch = TwoWindingTransformer(;
             name = "tline$(row[branch_num])",
-            available = true,
-            active_power_flow = 0.0,
-            reactive_power_flow = 0.0,
-            arc = Arc(; from = bus_from, to = bus_to),
-            r = row[resistance],
-            x = row[reactance],
-            primary_shunt = 0.0,
-            rating = row[max_flow] / system_base_power,
+            circuit = TransformerCircuit(;
+                arc = Arc(; from = bus_from, to = bus_to),
+                available = true,
+                active_power_flow = 0.0,
+                reactive_power_flow = 0.0,
+                r = row[resistance],
+                x = row[reactance],
+                rating = row[max_flow] / system_base_power,
+                base_power = system_base_power,
+            ),
+            magnetizing_shunt = 0.0,
         )
     end
     add_component!(sys, branch)

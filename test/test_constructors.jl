@@ -76,16 +76,10 @@ end
     @test tTwoTerminalLCCLine isa PowerSystems.Component
     tTwoTerminalVSCLine = TwoTerminalVSCLine(nothing)
     @test tTwoTerminalVSCLine isa PowerSystems.Component
-    tTransformer2W = Transformer2W(nothing)
-    @test tTransformer2W isa PowerSystems.Component
-    tTapTransformer = TapTransformer(nothing)
-    @test tTapTransformer isa PowerSystems.Component
-    tPhaseShiftingTransformer = PhaseShiftingTransformer(nothing)
-    @test tPhaseShiftingTransformer isa PowerSystems.Component
-    tTransformer3W = Transformer3W(nothing)
-    @test tTransformer3W isa PowerSystems.Component
-    tPhaseShiftingTransformer3W = PhaseShiftingTransformer3W(nothing)
-    @test tPhaseShiftingTransformer3W isa PowerSystems.Component
+    tTwoWindingTransformer = TwoWindingTransformer(nothing)
+    @test tTwoWindingTransformer isa PowerSystems.Component
+    tThreeWindingTransformer = ThreeWindingTransformer(nothing)
+    @test tThreeWindingTransformer isa PowerSystems.Component
     tGenericArcImpedance = GenericArcImpedance(nothing)
     @test tGenericArcImpedance isa PowerSystems.Component
 end
@@ -94,8 +88,8 @@ end
     # Defaults come from the `::Nothing` demo constructor.
     default_vsc = TwoTerminalVSCLine(nothing)
     @test get_rated_dc_voltage(default_vsc) == 0.0
-    @test get_remote_bus_control_from(default_vsc) == 0
-    @test get_remote_bus_control_to(default_vsc) == 0
+    @test isnothing(get_remote_bus_control_from(default_vsc))
+    @test isnothing(get_remote_bus_control_to(default_vsc))
     @test get_rmpct_from(default_vsc) == 100.0
     @test get_rmpct_to(default_vsc) == 100.0
 
@@ -130,6 +124,58 @@ end
     @test get_remote_bus_control_to(vsc) == 13
     @test get_rmpct_from(vsc) == 60.0
     @test get_rmpct_to(vsc) == 40.0
+end
+
+@testset "InterconnectingConverter VSC remote-control / voltage-limit fields" begin
+    default_ic = InterconnectingConverter(nothing)
+    @test isnothing(get_remote_bus_control(default_ic))
+    @test get_rmpct(default_ic) == 100.0
+
+    ic = InterconnectingConverter(;
+        name = "ipc",
+        available = true,
+        bus = ACBus(nothing),
+        dc_bus = DCBus(nothing),
+        active_power = 0.0,
+        rating = 1.0,
+        active_power_limits = (min = -1.0, max = 1.0),
+        base_power = 100.0,
+        remote_bus_control = 5,
+        rmpct = 75.0,
+        power_factor_weighting_fraction = 0.25,
+        voltage_limits = (min = 0.9, max = 1.1),
+    )
+    @test get_remote_bus_control(ic) == 5
+    @test get_rmpct(ic) == 75.0
+    @test get_power_factor_weighting_fraction(ic) == 0.25
+    @test get_voltage_limits(ic) == (min = 0.9, max = 1.1)
+
+    set_remote_bus_control!(ic, 8)
+    set_rmpct!(ic, 55.0)
+    set_power_factor_weighting_fraction!(ic, 0.75)
+    set_voltage_limits!(ic, (min = 0.95, max = 1.05))
+    @test get_remote_bus_control(ic) == 8
+    @test get_rmpct(ic) == 55.0
+    @test get_power_factor_weighting_fraction(ic) == 0.75
+    @test get_voltage_limits(ic) == (min = 0.95, max = 1.05)
+
+    # remote_bus_control is a bus number: nothing regulates the own bus, any set value must be > 0.
+    sys = System(100.0; runchecks = false)
+    bad_ic = InterconnectingConverter(;
+        name = "bad_ic",
+        available = true,
+        bus = ACBus(nothing),
+        dc_bus = DCBus(nothing),
+        active_power = 0.0,
+        rating = 1.0,
+        active_power_limits = (min = -1.0, max = 1.0),
+        base_power = 100.0,
+        remote_bus_control = 0,
+    )
+    @test_logs (:error, "Invalid range") match_mode = :any @test_throws IS.InvalidValue PowerSystems.check_component(
+        sys,
+        bad_ic,
+    )
 end
 
 @testset "Service Constructors" begin

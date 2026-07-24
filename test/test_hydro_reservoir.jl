@@ -38,6 +38,7 @@ end
     @test get_outflow(reservoir) == 0.0
     @test get_intake_elevation(reservoir) == 0.0
     @test get_head_to_volume_factor(reservoir) == LinearFunctionData(0.0)
+    @test get_evaporative_loss(reservoir) == 0.0
     set_intake_elevation!(reservoir, 10.0)
     @test get_intake_elevation(reservoir) == 10.0
 end
@@ -49,6 +50,9 @@ end
     @test set_level_data_type!(reservoir, ReservoirDataType.HEAD) == ReservoirDataType.HEAD
     @test set_inflow!(reservoir, 10.0) == 10.0
     @test set_outflow!(reservoir, 10.0) == 10.0
+    @test get_evaporative_loss(reservoir) == 0.0
+    @test set_evaporative_loss!(reservoir, 0.01) == 0.01
+    @test get_evaporative_loss(reservoir) == 0.01
 end
 
 @testset "Test single `HydroTurbine` with single `HydroReservoir`" begin

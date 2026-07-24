@@ -138,7 +138,7 @@ function convert_units end
 # --- From DU ---
 # `Real`/`ComplexF64` are split so a Unitful/RelativeQuantity value (both <: Number)
 # falls through to the marker/value guards instead. ComplexF64 mirrors serve the
-# complex admittance getters (`primary_shunt`).
+# complex admittance getters (`magnetizing_shunt`).
 
 function convert_units(c, value::Real, cat::UnitCategory, ::DeviceBaseUnit, units::Units)
     natural = value * base_value(c, cat) * natural_unit(cat)
@@ -350,7 +350,7 @@ function convert_units(::Any, value, ::UnitCategory, from, to)
     )
 end
 
-# Multi-winding components (e.g. three-winding transformers) do not need a
-# separate conversion family: a per-winding *base provider* view (see
-# `WindingBase` in `src/models/components.jl`) implements the same three
-# interface functions, so the full engine above works per-winding.
+# Multi-circuit components (e.g. three-winding transformers) do not need a
+# separate conversion family: a per-pair *base provider* view (see
+# `PairBase` in `src/models/components.jl`) implements the same three
+# interface functions, so the full engine above works per pair.

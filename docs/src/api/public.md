@@ -23,7 +23,9 @@ Pages   = ["PowerSystems.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
            "cost_function_timeseries.jl",
-           "definitions.jl"
+           "definitions.jl",
+           "transformer_circuits.jl",
+           "TransformerCircuit.jl"
            ]
 Public = true
 Private = false
@@ -37,11 +39,21 @@ Pages   = ["outages.jl",
            "contingencies.jl",
            "impedance_correction.jl",
            "plant_attribute.jl",
-           "emissions_data.jl"
+           "emissions_data.jl",
+           "substation.jl"
            ]
 Public = true
 Private = false
 ```
+
+<!--
+Documenter applies a block's `Filter` to every documented binding in `Modules`
+before narrowing by `Pages`, so every `Modules = [IS]` filter below sees IS's
+`const … = Union{…}` aliases (e.g. `TimeSeriesValueCurve`) as well as non-type
+constants. `nameof` has no method for a `Union` (or a `String`), so each filter
+below that calls `nameof` must first restrict `t` to the kinds `nameof` accepts:
+`DataType`, `UnionAll`, or `Function`.
+-->
 
 ```@autodocs
 Modules = [IS]

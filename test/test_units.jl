@@ -324,22 +324,26 @@ function _sys_with_line()
     return sys, line
 end
 
-# Local copy of the Transformer3W fixture from test_base_power.jl, reproduced
-# here so test_units.jl remains self-contained when run in isolation
-# (test_base_power.jl is included first alphabetically in the full suite, but
-# the name-filter run — `julia --project=test test/runtests.jl test_units` —
-# only includes test_units.jl itself).
+# Local copy of the ThreeWindingTransformer fixture from test_base_power.jl
+# (`_make_test_3w_xfmr` / `_test_t3w`), reproduced here so test_units.jl remains
+# self-contained when run in isolation (test_base_power.jl is included first
+# alphabetically in the full suite, but the name-filter run — `julia
+# --project=test test/runtests.jl test_units` — only includes test_units.jl
+# itself).
 function _local_make_test_3w_xfmr(; system_base = 100.0)
-    xfmr = Transformer3W(nothing)
-    IS.set_base_value!(xfmr, system_base)
+    xfmr = ThreeWindingTransformer(nothing)
+    PowerSystems.set_units_setting!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
-    set_base_power_13!(xfmr, 25.0)
-    set_base_voltage_primary!(xfmr, 230.0)
-    set_base_voltage_secondary!(xfmr, 138.0)
-    set_base_voltage_tertiary!(xfmr, 69.0)
-    setproperty!(xfmr, :r_primary, 0.01)
-    setproperty!(xfmr, :r_secondary, 0.02)
+    set_base_power_31!(xfmr, 25.0)
+    set_base_power!(get_primary_circuit(xfmr), 15.0)
+    set_base_power!(get_secondary_circuit(xfmr), 20.0)
+    set_base_power!(get_tertiary_circuit(xfmr), 25.0)
+    set_base_voltage_primary!(get_primary_circuit(xfmr), 230.0)
+    set_base_voltage_primary!(get_secondary_circuit(xfmr), 138.0)
+    set_base_voltage_primary!(get_tertiary_circuit(xfmr), 69.0)
+    set_r_12!(xfmr, 0.01 * DU)
+    set_r_23!(xfmr, 0.02 * DU)
     return xfmr
 end
 
@@ -368,9 +372,10 @@ end
     # rating_b is set to 0.9 in _sys_with_line so the non-nothing branch executes
     @inferred Union{Nothing, Float64} get_rating_b(line, SU)
 
-    # three-winding per-winding bases
-    @inferred get_r_primary(xfmr3w, SU)
-    @inferred get_r_secondary(xfmr3w, DU)
+    # three-winding pairwise bases (PairBase engine); r_12/r_23 are now
+    # Union{Nothing, Float64} descriptor fields (optional PSSE pairwise block)
+    @inferred Union{Nothing, Float64} get_r_12(xfmr3w, SU)
+    @inferred Union{Nothing, Float64} get_r_23(xfmr3w, DU)
 
     # setter chain: returns the stored DU Float64
     @inferred set_active_power!(gen, 0.4 * SU)
@@ -389,3 +394,70 @@ end
 #    `scaling_factor_multiplier` and the `units` kwarg on `get_time_series_values`, both of
 #    which this branch removed. Time series now store actual per-device quantities, so
 #    there is no multiplier to resolve.
+
+@testset "TransformerCircuit base_value anchor lifecycle" begin
+    sys = System(100.0)
+    b1 = ACBus(nothing);
+    set_name!(b1, "b1");
+    set_number!(b1, 1)
+    b2 = ACBus(nothing);
+    set_name!(b2, "b2");
+    set_number!(b2, 2)
+    b3 = ACBus(nothing);
+    set_name!(b3, "b3");
+    set_number!(b3, 3)
+    star = ACBus(nothing);
+    set_name!(star, "star");
+    set_number!(star, 901)
+    for b in (b1, b2, b3, star)
+        set_base_voltage!(b, 100.0)
+        set_bustype!(b, ACBusTypes.PQ)
+        add_component!(sys, b)
+    end
+    set_bustype!(b1, ACBusTypes.REF)
+    a1 = Arc(b1, star);
+    a2 = Arc(b2, star);
+    a3 = Arc(b3, star)
+    foreach(a -> add_component!(sys, a), (a1, a2, a3))
+    t3w = ThreeWindingTransformer(nothing)
+    set_name!(t3w, "t3w")
+    set_arc!(get_primary_circuit(t3w), a1)
+    set_arc!(get_secondary_circuit(t3w), a2)
+    set_arc!(get_tertiary_circuit(t3w), a3)
+    foreach(c -> set_available!(c, true), get_circuits(t3w))
+    set_star_bus!(t3w, star)
+
+    # detached: no anchor, SU conversion refuses
+    for w in get_circuits(t3w)
+        @test IS.get_base_value(w) === nothing
+    end
+    @test_throws ErrorException get_r(get_primary_circuit(t3w), SU)
+
+    add_component!(sys, t3w)
+    for w in get_circuits(t3w)
+        @test IS.get_base_value(w) == 100.0
+    end
+
+    # set_circuit! propagates the anchor onto a replacement circuit
+    new_circuit = TransformerCircuit(nothing)
+    set_arc!(new_circuit, a1)
+    set_available!(new_circuit, true)
+    @test IS.get_base_value(new_circuit) === nothing
+    set_primary_circuit!(t3w, new_circuit)
+    @test IS.get_base_value(new_circuit) == 100.0
+
+    # anchor is never serialized; it is repopulated on attach during load
+    path = joinpath(mktempdir(), "anchor_sys.json")
+    to_json(sys, path)
+    sys2 = System(path)
+    t2 = only(get_components(ThreeWindingTransformer, sys2))
+    for w in get_circuits(t2)
+        @test IS.get_base_value(w) == 100.0
+    end
+
+    # detach clears the anchor on every circuit
+    remove_component!(sys, t3w)
+    for w in get_circuits(t3w)
+        @test IS.get_base_value(w) === nothing
+    end
+end

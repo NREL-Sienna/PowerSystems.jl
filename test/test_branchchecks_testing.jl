@@ -269,18 +269,20 @@ end
     add_component!(sys, bus_to)
     # rating_b has no descriptor valid_range, so only the PSY-level guard can
     # reject a negative secondary rating.
-    xfrm = Transformer2W(;
-        name = "negxfrm",
+    circuit = TransformerCircuit(;
+        arc = Arc(; from = bus_from, to = bus_to),
         available = true,
         active_power_flow = 0.0,
         reactive_power_flow = 0.0,
-        arc = Arc(; from = bus_from, to = bus_to),
+        rating = 1.0,
+        rating_b = -1.0,            # negative secondary rating
+        base_power = 100.0,
         r = 0.01,
         x = 0.1,
-        primary_shunt = 0.0,
-        rating = 1.0,
-        base_power = 100.0,
-        rating_b = -1.0,            # negative secondary rating
+    )
+    xfrm = TwoWindingTransformer(;
+        name = "negxfrm",
+        circuit = circuit,
     )
     add_component!(sys, xfrm)
 
@@ -288,4 +290,128 @@ end
     Logging.with_logger(test_logger) do
         @test_throws IS.InvalidValue PowerSystems.check_component(sys, xfrm)
     end
+end
+
+function _circuit_check_buses()
+    bus_from = ACBus(
+        1, "wcfrom", true, ACBusTypes.REF, 0, 1.0, (min = 0.9, max = 1.05), 230,
+        nothing, nothing,
+    )
+    bus_to = ACBus(
+        2, "wcto", true, ACBusTypes.PQ, 0, 1.0, (min = 0.9, max = 1.05), 138,
+        nothing, nothing,
+    )
+    return bus_from, bus_to
+end
+
+function _circuit_check_xfrm(name, bus_from, bus_to)
+    xfrm = TwoWindingTransformer(nothing)
+    set_name!(xfrm, name)
+    w = get_circuit(xfrm)
+    set_arc!(w, Arc(; from = bus_from, to = bus_to))
+    set_rating!(w, 1.0 * DU)
+    set_x!(xfrm, 0.1 * DU)
+    return xfrm
+end
+
+@testset "Circuit tap outside [0, 2] throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _circuit_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _circuit_check_xfrm("badtap", bus_from, bus_to)
+    set_tap!(get_circuit(xfrm), 2.5)   # outside [0, 2]
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badtap") === nothing
+end
+
+@testset "Circuit α outside typical range warns but adds" begin
+    sys = System(100.0)
+    bus_from, bus_to = _circuit_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _circuit_check_xfrm("badalpha", bus_from, bus_to)
+    set_α!(get_circuit(xfrm), 2.0)   # outside [-1.571, 1.571]
+
+    @test_logs (:warn, r"phase shift") match_mode = :any add_component!(sys, xfrm)
+    @test get_component(TwoWindingTransformer, sys, "badalpha") !== nothing
+end
+
+@testset "Circuit base_voltage_primary <= 0 throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _circuit_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _circuit_check_xfrm("badbasevoltage", bus_from, bus_to)
+    set_base_voltage_primary!(get_circuit(xfrm), -10.0)
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badbasevoltage") === nothing
+end
+
+@testset "Circuit base_voltage_secondary <= 0 throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _circuit_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _circuit_check_xfrm("badbasevoltage2", bus_from, bus_to)
+    set_base_voltage_secondary!(get_circuit(xfrm), -10.0)
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badbasevoltage2") === nothing
+end
+
+@testset "Circuit control_limits.min > max throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _circuit_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _circuit_check_xfrm("badcontrollimits", bus_from, bus_to)
+    set_control_limits!(get_circuit(xfrm), (min = 1.1, max = 0.9))   # inverted
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badcontrollimits") === nothing
+end
+
+@testset "Circuit controlled_quantity_limits.min > max throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _circuit_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _circuit_check_xfrm("badcql", bus_from, bus_to)
+    set_controlled_quantity_limits!(get_circuit(xfrm), (min = 1.05, max = 0.95))
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badcql") === nothing
+end
+
+@testset "Circuit number_of_tap_positions < 0 throws on add_component!" begin
+    sys = System(100.0)
+    bus_from, bus_to = _circuit_check_buses()
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    xfrm = _circuit_check_xfrm("badntp", bus_from, bus_to)
+    set_number_of_tap_positions!(get_circuit(xfrm), -1)
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue add_component!(sys, xfrm)
+    end
+    @test get_component(TwoWindingTransformer, sys, "badntp") === nothing
 end

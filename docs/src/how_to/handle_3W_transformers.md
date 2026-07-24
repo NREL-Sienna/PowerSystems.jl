@@ -1,10 +1,10 @@
 # [Handle 3-winding transformer data](@id 3wtdata)
 
-PowerSystems.jl stores the topological data for the [`Transformer3W`](@ref) as the common equivalent circuit in the star (or wye) configuration. In this representation, the series impedances of each winding are transformed into an equivalent star network with a common star bus.
+PowerSystems.jl models the [`ThreeWindingTransformer`](@ref) with a star (or wye) topology: three [`TransformerCircuit`](@ref)s ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)), each connecting a terminal bus to a common star (hidden) bus ([`get_star_bus`](@ref)). PowerSystems.jl does **not** store or compute the equivalent star-leg impedances $Z_1, Z_2, Z_3$ themselves. It stores only the measured (PSS/E-shaped) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` between winding pairs, on their respective per-pair base powers. Deriving the star-leg impedances from these pairwise values is left to downstream packages — PowerNetworkMatrices owns the cached star derivation used for network-matrix assembly.
 
 ## The "Starbus" Representation
 
-The resulting $Z_{12}, Z_{23},$ and $Z_{13}$ represent the series impedances in a star network. The common point of this star network is the conceptual "starbus" or internal neutral node. Each winding's terminal in the power system network is then connected to its corresponding impedance in this equivalent star.
+The star bus is the common point of this star topology: the conceptual "starbus" or internal neutral node. Each winding's terminal in the power system network is connected through an equivalent series impedance ($Z_1$, $Z_2$, $Z_3$ below) to this star bus. These per-leg impedances are not stored on the component; they are derived downstream from the stored pairwise data (see [Deriving the Equivalent Star Impedances from PSSe](@ref) below).
 
 ```mermaid
 graph TD
@@ -18,7 +18,7 @@ graph TD
 
 ## Representing 3-winding transformer PSSe Data in `PowerSystems.jl`
 
-PSS®E represents a [`Transformer3W`](@ref) as a single element with a dedicated data record. This record contains several fields that define the transformer's characteristics and connections. The key information stored includes:
+PSS®E represents a [`ThreeWindingTransformer`](@ref) as a single element with a dedicated data record. This record contains several fields that define the transformer's characteristics and connections. The key information stored includes:
 
 ### Bus Connections in Delta configuration
 
@@ -63,12 +63,12 @@ For transformers with on-load tap changers (OLTCs) or phase shifters, additional
 
 ## Deriving the Equivalent Star Impedances from PSSe
 
-In `PowerSystems.jl`, we explictly represent and store the [`Transformer3W`](@ref) as an equivalent star (wye) circuit with a common neutral point (often referred to conceptually as a "starbus"), we calculate the equivalent series impedance for each winding ($Z_1, Z_2, Z_3$) from the PSS®E Positive Sequence Impedance data (e.g., R1-2, X1-2, etc.) using the following formulas:
+In `PowerSystems.jl`, the [`ThreeWindingTransformer`](@ref) stores only the measured (delta) pairwise impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` (accessed with [`get_r_12`](@ref) etc.) on their respective `base_power_12`/`base_power_23`/`base_power_31` bases, plus the star bus ([`get_star_bus`](@ref)). The equivalent star (wye) series impedance for each winding ($Z_1, Z_2, Z_3$) is *not* stored directly; it is derived on demand — for example by PowerNetworkMatrices — from the PSS®E Positive Sequence Impedance data (e.g., R1-2, X1-2, etc.) using the following formulas:
 
 $$\begin{aligned}
-Z_1 &= \frac{1}{2} (Z_{12} + Z_{13} - Z_{23}) \\
-Z_2 &= \frac{1}{2} (Z_{12} + Z_{23} - Z_{13}) \\
-Z_3 &= \frac{1}{2} (Z_{13} + Z_{23} - Z_{12})
+Z_1 &= \frac{1}{2} (Z_{12} + Z_{31} - Z_{23}) \\
+Z_2 &= \frac{1}{2} (Z_{12} + Z_{23} - Z_{31}) \\
+Z_3 &= \frac{1}{2} (Z_{31} + Z_{23} - Z_{12})
 \end{aligned}$$
 
 Where:
@@ -77,4 +77,4 @@ Where:
   - $Z_2$: Equivalent series impedance of winding 2, connected between its terminal and the neutral point of the equivalent star.
   - $Z_3$: Equivalent series impedance of winding 3, connected between its terminal and the neutral point of the equivalent star.
 
-We store the data from both representations (Delta and Wye) for completeness as well as the star bus used in the wye representation.
+Each of the three [`TransformerCircuit`](@ref)s ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)) carries its own arc, tap, phase shift, ratings, and per-winding base power/voltage, and connects a terminal bus to the star bus.

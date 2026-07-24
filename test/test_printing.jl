@@ -28,25 +28,17 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
             continue
         end
 
-        # The show method uses getters, which may return unit-bearing values
-        # (e.g. "0.55 SU"). Call the getter (if any) for the displayed value
-        # and extract its numeric part for the occursin check.
+        # The show method resolves each field's displayed value through
+        # `_show_accessor_value` (unit-bearing, e.g. "0.55 SU"; for a
+        # `MinMax`-typed field, a NamedTuple of unit-bearing values). Reuse it
+        # here instead of re-deriving the value from the plain getter, whose
+        # `_strip_units` fully strips nested NamedTuple elements and would
+        # otherwise disagree with the suffixed value the custom output shows.
         getter_name = Symbol("get_$name")
         display_val = if hasproperty(PowerSystems, getter_name)
             getter_func = getproperty(PowerSystems, getter_name)
-            arg = IS.display_units_arg(getter_func, typeof(obj))
             try
-                # Resolve the same way `show` does — through the getter's `_unitful`
-                # companion — so that unit-bearing fields compare against the tagged
-                # rendering. This matters for NamedTuple-valued fields such as
-                # `active_power_limits`, which print as `(min = 0.22 SU, max = 0.55 SU)`:
-                # the untagged getter would yield `(min = 0.22, max = 0.55)` and never
-                # match.
-                if ismissing(arg)
-                    getter_func(obj)
-                else
-                    IS.unitful_variant(getter_func)(obj, arg)
-                end
+                PowerSystems._show_accessor_value(getter_func, obj)
             catch
                 val
             end
@@ -218,18 +210,16 @@ end
     rating_getters = [
         (Line, get_rating),
         (MonitoredLine, get_rating),
-        (PhaseShiftingTransformer, get_rating),
-        (TapTransformer, get_rating),
-        (Transformer2W, get_rating),
-        (Transformer3W, get_rating),
-        (Transformer3W, get_rating_primary),
-        (Transformer3W, get_rating_secondary),
-        (Transformer3W, get_rating_tertiary),
-        (PhaseShiftingTransformer3W, get_rating_primary),
         (TwoTerminalVSCLine, get_rating),
         (RenewableDispatch, get_rating),
         (ThermalStandard, get_rating),
         (EnergyReservoirStorage, get_rating),
+        # Rating fields on TwoWindingTransformer/ThreeWindingTransformer live entirely on
+        # the (sub-object) TransformerCircuit -- neither transformer parent has a scalar
+        # `rating` field of its own, so there is no `(T, getter)` pair to add for them here.
+        (TransformerCircuit, get_rating),
+        (TransformerCircuit, get_rating_b),
+        (TransformerCircuit, get_rating_c),
     ]
     for (T, getter) in rating_getters
         @test IS.display_units_arg(getter, T) === IS.DU
