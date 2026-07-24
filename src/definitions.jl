@@ -210,10 +210,10 @@ Notes
 
 IS.@scoped_enum(
     WindingCategory,
-    TR2W_WINDING = 0,       # Transformer2W only winding associated with a TICT
-    PRIMARY_WINDING = 1,    # Primary winding of Trasnformer3W associated with a TICT
-    SECONDARY_WINDING = 2,  # Secondary winding of Trasnformer3W associated with a TICT
-    TERTIARY_WINDING = 3,   # Tertiary winding of Trasnformer3W associated with a TICT
+    TR2W_WINDING = 0,       # TwoWindingTransformer only winding associated with a TICT
+    PRIMARY_WINDING = 1,    # Primary winding of ThreeWindingTransformer associated with a TICT
+    SECONDARY_WINDING = 2,  # Secondary winding of ThreeWindingTransformer associated with a TICT
+    TERTIARY_WINDING = 3,   # Tertiary winding of ThreeWindingTransformer associated with a TICT
 )
 @doc"
     WindingCategory
@@ -222,10 +222,10 @@ An enumeration representing different types of transformer windings used in powe
 Reflects how to interpret the Transformer Impedance Correction Table (TICT) winding association as described in [`ImpedanceCorrectionData`](@ref).
 
 # Values
-- `TR2W_WINDING = 0`: Winding associated with a two-winding transformer (Transformer2W) connected to a tap-changing transformer's [`ImpedanceCorrectionData`](@ref)
-- `PRIMARY_WINDING = 1`: Primary winding of a three-winding transformer (Transformer3W) associated with a [`ImpedanceCorrectionData`](@ref)
-- `SECONDARY_WINDING = 2`: Secondary winding of a three-winding transformer (Transformer3W) associated with a [`ImpedanceCorrectionData`](@ref)
-- `TERTIARY_WINDING = 3`: Tertiary winding of a three-winding transformer (Transformer3W) associated with a [`ImpedanceCorrectionData`](@ref)
+- `TR2W_WINDING = 0`: Winding associated with a two-winding transformer ([`TwoWindingTransformer`](@ref)) connected to a tap-changing transformer's [`ImpedanceCorrectionData`](@ref)
+- `PRIMARY_WINDING = 1`: Primary winding of a three-winding transformer ([`ThreeWindingTransformer`](@ref)) associated with a [`ImpedanceCorrectionData`](@ref)
+- `SECONDARY_WINDING = 2`: Secondary winding of a three-winding transformer ([`ThreeWindingTransformer`](@ref)) associated with a [`ImpedanceCorrectionData`](@ref)
+- `TERTIARY_WINDING = 3`: Tertiary winding of a three-winding transformer ([`ThreeWindingTransformer`](@ref)) associated with a [`ImpedanceCorrectionData`](@ref)
 
 This enumeration is used to categorize transformer windings based on their role and configuration
 in the power system model, particularly in relation to tap-changing transformers.
@@ -330,6 +330,38 @@ Negative values indicate disabled control modes, while positive values represent
 control objectives. The `FIXED` mode (0) indicates manual tap position control without
 automatic adjustment.
 " TransformerControlObjective
+
+IS.@scoped_enum(
+    TwoWindingTransformerShuntLocation,
+    PRIMARY = 1,
+    SECONDARY = 2,
+    SPLIT = 3,
+)
+@doc"
+    TwoWindingTransformerShuntLocation
+
+Placement of a [`TwoWindingTransformer`](@ref)'s magnetizing shunt admittance on the two sides of its single circuit arc.
+
+# Values
+- `PRIMARY = 1`: the full magnetizing shunt is applied on the primary (from) side
+- `SECONDARY = 2`: the full magnetizing shunt is applied on the secondary (to) side
+- `SPLIT = 3`: the full complex magnetizing shunt value is applied on BOTH sides
+" TwoWindingTransformerShuntLocation
+
+IS.@scoped_enum(
+    ThreeWindingTransformerShuntLocation,
+    PRIMARY = 1,
+    STAR = 2,
+)
+@doc"
+    ThreeWindingTransformerShuntLocation
+
+Placement of a [`ThreeWindingTransformer`](@ref)'s magnetizing shunt admittance in the equivalent star model.
+
+# Values
+- `PRIMARY = 1`: the full magnetizing shunt is applied on the winding-1 (primary) terminal side
+- `STAR = 2`: the full magnetizing shunt is applied at the star node
+" ThreeWindingTransformerShuntLocation
 
 IS.@scoped_enum(
     MotorLoadTechnology,

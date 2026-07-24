@@ -74,12 +74,7 @@ export TwoTerminalGenericHVDCLine
 export TwoTerminalVSCLine
 export TwoTerminalLCCLine
 export TModelHVDCLine
-export Transformer2W
-export TapTransformer
-export PhaseShiftingTransformer
 export FACTSControlDevice
-export Transformer3W
-export PhaseShiftingTransformer3W
 export SynchronousCondenser
 
 # from IS function_data.jl
@@ -628,10 +623,12 @@ export UnitCategory,
     VoltageCategory, CurrentCategory
 export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
 export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
-# Hand-written unit-bearing companions for `exclude_getter` descriptor entries
-# (their bare-number counterparts get exported via generated/includes.jl).
+# Hand-written unit-bearing companion for the `exclude_getter` `base_power`
+# descriptor entry (its bare-number counterpart gets exported via
+# generated/includes.jl). `base_power_12`/`_23`/`_31` on `ThreeWindingTransformer`
+# are plain (non-unit-converting) fields with no `_unitful` companion; their bare
+# getters/setters are exported via generated/includes.jl.
 export get_base_power_unitful
-export get_base_power_12_unitful, get_base_power_23_unitful, get_base_power_13_unitful
 
 # ComponentSelector
 export ComponentSelector
@@ -649,6 +646,13 @@ export get_available_groups
 export MinMax
 export GeneratorCostModels
 export TransformerControlObjective
+export TwoWindingTransformerShuntLocation
+export ThreeWindingTransformerShuntLocation
+export get_limits
+export TransformerCircuit
+export is_phase_shifting
+export get_circuits
+export has_control
 export supports_services
 
 #################################################################################
@@ -720,6 +724,7 @@ import InfrastructureSystems:
     copy_time_series!,
     get_available,
     set_available!,
+    get_limits,
     get_count,
     get_data,
     get_horizon,
@@ -919,6 +924,11 @@ include("models/cost_functions/HydroReservoirCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
+
+# Hand-written methods on the generated `TransformerCircuit` type; included after
+# generated/includes.jl so the type is defined.
+include("models/transformer_circuits.jl")
+
 include("models/cost_functions/ReserveDemandCurve.jl")
 include("models/cost_functions/ReserveDemandTimeSeriesCurve.jl")
 

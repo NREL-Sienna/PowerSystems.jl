@@ -5,15 +5,13 @@ include("TransmissionInterface.jl")
 include("ACBus.jl")
 include("DCBus.jl")
 include("Arc.jl")
+include("TransformerCircuit.jl")
 include("Line.jl")
 include("GenericArcImpedance.jl")
 include("DiscreteControlledACBranch.jl")
 include("MonitoredLine.jl")
-include("PhaseShiftingTransformer.jl")
-include("TapTransformer.jl")
-include("Transformer2W.jl")
-include("Transformer3W.jl")
-include("PhaseShiftingTransformer3W.jl")
+include("TwoWindingTransformer.jl")
+include("ThreeWindingTransformer.jl")
 include("TwoTerminalGenericHVDCLine.jl")
 include("TwoTerminalVSCLine.jl")
 include("TwoTerminalLCCLine.jl")
@@ -489,12 +487,6 @@ export get_active_power
 export get_active_power_flow
 export get_active_power_flow_limits
 export get_active_power_flow_limits_unitful
-export get_active_power_flow_primary
-export get_active_power_flow_primary_unitful
-export get_active_power_flow_secondary
-export get_active_power_flow_secondary_unitful
-export get_active_power_flow_tertiary
-export get_active_power_flow_tertiary_unitful
 export get_active_power_flow_unitful
 export get_active_power_limits
 export get_active_power_limits_from
@@ -515,19 +507,16 @@ export get_angle_limits
 export get_arc
 export get_area
 export get_available
-export get_available_primary
-export get_available_secondary
-export get_available_tertiary
 export get_b
 export get_b_unitful
 export get_base_power
 export get_base_power_12
-export get_base_power_13
 export get_base_power_23
+export get_base_power_31
+export get_base_value
 export get_base_voltage
 export get_base_voltage_primary
 export get_base_voltage_secondary
-export get_base_voltage_tertiary
 export get_battery_resistance
 export get_battery_voltage
 export get_bias
@@ -539,6 +528,7 @@ export get_bustype
 export get_c
 export get_c_dc
 export get_cf
+export get_circuit
 export get_compounding_resistance
 export get_conformity
 export get_constant_active_power
@@ -546,11 +536,10 @@ export get_constant_active_power_unitful
 export get_constant_reactive_power
 export get_constant_reactive_power_unitful
 export get_contributing_services
+export get_control_limits
 export get_control_mode
 export get_control_objective
-export get_control_objective_primary
-export get_control_objective_secondary
-export get_control_objective_tertiary
+export get_controlled_quantity_limits
 export get_conversion_factor
 export get_converter_loss_from
 export get_converter_loss_to
@@ -682,6 +671,8 @@ export get_load_zone
 export get_loss
 export get_loss_function
 export get_lv
+export get_magnetizing_shunt
+export get_magnetizing_shunt_unitful
 export get_magnitude
 export get_max_active_power
 export get_max_active_power_unitful
@@ -727,7 +718,6 @@ export get_peak_active_power
 export get_peak_active_power_unitful
 export get_peak_reactive_power
 export get_peak_reactive_power_unitful
-export get_phase_angle_limits
 export get_power_factor
 export get_power_factor_weighting_fraction
 export get_power_factor_weighting_fraction_from
@@ -737,27 +727,17 @@ export get_power_mode
 export get_power_trajectory
 export get_power_trajectory_unitful
 export get_powerhouse_elevation
-export get_primary_group_number
-export get_primary_shunt
-export get_primary_shunt_unitful
-export get_primary_star_arc
-export get_primary_turns_ratio
+export get_primary_circuit
 export get_prime_mover_type
 export get_q_nl
 export get_r
 export get_r_12
 export get_r_12_unitful
-export get_r_13
-export get_r_13_unitful
 export get_r_23
 export get_r_23_unitful
+export get_r_31
+export get_r_31_unitful
 export get_r_load
-export get_r_primary
-export get_r_primary_unitful
-export get_r_secondary
-export get_r_secondary_unitful
-export get_r_tertiary
-export get_r_tertiary_unitful
 export get_r_unitful
 export get_ramp_limits
 export get_ramp_limits_unitful
@@ -771,24 +751,12 @@ export get_rating_c
 export get_rating_c_unitful
 export get_rating_from
 export get_rating_from_unitful
-export get_rating_primary
-export get_rating_primary_unitful
-export get_rating_secondary
-export get_rating_secondary_unitful
-export get_rating_tertiary
-export get_rating_tertiary_unitful
 export get_rating_to
 export get_rating_to_unitful
 export get_rating_unitful
 export get_rc_rfd
 export get_reactive_power
 export get_reactive_power_flow
-export get_reactive_power_flow_primary
-export get_reactive_power_flow_primary_unitful
-export get_reactive_power_flow_secondary
-export get_reactive_power_flow_secondary_unitful
-export get_reactive_power_flow_tertiary
-export get_reactive_power_flow_tertiary_unitful
 export get_reactive_power_flow_unitful
 export get_reactive_power_from
 export get_reactive_power_from_unitful
@@ -833,12 +801,11 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_scheduled_dc_voltage
-export get_secondary_group_number
-export get_secondary_star_arc
-export get_secondary_turns_ratio
+export get_secondary_circuit
 export get_self_discharge
 export get_services
 export get_shunt_control_type
+export get_shunt_location
 export get_speed_error_signal
 export get_spillage_limits
 export get_standing_loss
@@ -861,10 +828,7 @@ export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
 export get_tap
-export get_tap_limits
-export get_tertiary_group_number
-export get_tertiary_star_arc
-export get_tertiary_turns_ratio
+export get_tertiary_circuit
 export get_tfh
 export get_tfl
 export get_thermal_unit
@@ -893,21 +857,12 @@ export get_winding_group_number
 export get_x
 export get_x_12
 export get_x_12_unitful
-export get_x_13
-export get_x_13_unitful
 export get_x_23
 export get_x_23_unitful
-export get_x_primary
-export get_x_primary_unitful
-export get_x_secondary
-export get_x_secondary_unitful
-export get_x_tertiary
-export get_x_tertiary_unitful
+export get_x_31
+export get_x_31_unitful
 export get_x_unitful
 export get_α
-export get_α_primary
-export get_α_secondary
-export get_α_tertiary
 export get_β
 export get_γ_d1
 export get_γ_d2
@@ -1277,9 +1232,6 @@ export set_ac_setpoint_to!
 export set_active_power!
 export set_active_power_flow!
 export set_active_power_flow_limits!
-export set_active_power_flow_primary!
-export set_active_power_flow_secondary!
-export set_active_power_flow_tertiary!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_pump!
@@ -1292,18 +1244,15 @@ export set_angle_limits!
 export set_arc!
 export set_area!
 export set_available!
-export set_available_primary!
-export set_available_secondary!
-export set_available_tertiary!
 export set_b!
 export set_base_power!
 export set_base_power_12!
-export set_base_power_13!
 export set_base_power_23!
+export set_base_power_31!
+export set_base_value!
 export set_base_voltage!
 export set_base_voltage_primary!
 export set_base_voltage_secondary!
-export set_base_voltage_tertiary!
 export set_battery_resistance!
 export set_battery_voltage!
 export set_bias!
@@ -1315,16 +1264,16 @@ export set_bustype!
 export set_c!
 export set_c_dc!
 export set_cf!
+export set_circuit!
 export set_compounding_resistance!
 export set_conformity!
 export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
+export set_control_limits!
 export set_control_mode!
 export set_control_objective!
-export set_control_objective_primary!
-export set_control_objective_secondary!
-export set_control_objective_tertiary!
+export set_controlled_quantity_limits!
 export set_conversion_factor!
 export set_converter_loss_from!
 export set_converter_loss_to!
@@ -1447,6 +1396,7 @@ export set_load_zone!
 export set_loss!
 export set_loss_function!
 export set_lv!
+export set_magnetizing_shunt!
 export set_magnitude!
 export set_max_active_power!
 export set_max_constant_active_power!
@@ -1479,7 +1429,6 @@ export set_outflow_limits!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
-export set_phase_angle_limits!
 export set_power_factor!
 export set_power_factor_weighting_fraction!
 export set_power_factor_weighting_fraction_from!
@@ -1488,20 +1437,14 @@ export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
 export set_powerhouse_elevation!
-export set_primary_group_number!
-export set_primary_shunt!
-export set_primary_star_arc!
-export set_primary_turns_ratio!
+export set_primary_circuit!
 export set_prime_mover_type!
 export set_q_nl!
 export set_r!
 export set_r_12!
-export set_r_13!
 export set_r_23!
+export set_r_31!
 export set_r_load!
-export set_r_primary!
-export set_r_secondary!
-export set_r_tertiary!
 export set_ramp_limits!
 export set_rated_current!
 export set_rated_dc_voltage!
@@ -1510,16 +1453,10 @@ export set_rating!
 export set_rating_b!
 export set_rating_c!
 export set_rating_from!
-export set_rating_primary!
-export set_rating_secondary!
-export set_rating_tertiary!
 export set_rating_to!
 export set_rc_rfd!
 export set_reactive_power!
 export set_reactive_power_flow!
-export set_reactive_power_flow_primary!
-export set_reactive_power_flow_secondary!
-export set_reactive_power_flow_tertiary!
 export set_reactive_power_from!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
@@ -1556,12 +1493,11 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
-export set_secondary_group_number!
-export set_secondary_star_arc!
-export set_secondary_turns_ratio!
+export set_secondary_circuit!
 export set_self_discharge!
 export set_services!
 export set_shunt_control_type!
+export set_shunt_location!
 export set_speed_error_signal!
 export set_spillage_limits!
 export set_standing_loss!
@@ -1582,10 +1518,7 @@ export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
-export set_tap_limits!
-export set_tertiary_group_number!
-export set_tertiary_star_arc!
-export set_tertiary_turns_ratio!
+export set_tertiary_circuit!
 export set_tfh!
 export set_tfl!
 export set_thermal_unit!
@@ -1613,15 +1546,9 @@ export set_voltage_setpoint!
 export set_winding_group_number!
 export set_x!
 export set_x_12!
-export set_x_13!
 export set_x_23!
-export set_x_primary!
-export set_x_secondary!
-export set_x_tertiary!
+export set_x_31!
 export set_α!
-export set_α_primary!
-export set_α_secondary!
-export set_α_tertiary!
 export set_β!
 export set_γ_d1!
 export set_γ_d2!

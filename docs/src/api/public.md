@@ -23,7 +23,9 @@ Pages   = ["PowerSystems.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
            "cost_function_timeseries.jl",
-           "definitions.jl"
+           "definitions.jl",
+           "transformer_circuits.jl",
+           "TransformerCircuit.jl"
            ]
 Public = true
 Private = false
@@ -44,12 +46,20 @@ Public = true
 Private = false
 ```
 
+<!--
+Documenter applies a block's `Filter` to every documented binding in `Modules`
+before narrowing by `Pages`, so every `Modules = [IS]` filter below sees IS's
+`const … = Union{…}` aliases (e.g. `TimeSeriesValueCurve`). `nameof` has no
+method for a `Union`, so the `!(t isa Union)` guard is required on each of these
+filters that calls `nameof`.
+-->
+
 ```@autodocs
 Modules = [IS]
 Pages   = ["geographic_supplemental_attribute.jl"
         ]
 Order = [:type, :function]
-Filter = t -> nameof(t) in names(PowerSystems)
+Filter = t -> !(t isa Union) && nameof(t) in names(PowerSystems)
 ```
 
 ## Operating Costs
@@ -61,7 +71,7 @@ Pages   = ["production_variable_cost_curve.jl",
             "value_curve.jl",
            ]
 Order = [:type, :function]
-Filter = t -> nameof(t) in names(PowerSystems)
+Filter = t -> !(t isa Union) && nameof(t) in names(PowerSystems)
 ```
 
 ## Time Series
@@ -78,7 +88,7 @@ Pages   = ["abstract_time_series.jl",
            "forecasts.jl",
            ]
 Order = [:type, :function]
-Filter = t -> nameof(t) in names(PowerSystems)
+Filter = t -> !(t isa Union) && nameof(t) in names(PowerSystems)
 ```
 
 ```@autodocs
@@ -90,7 +100,7 @@ Pages   = ["time_series_cache.jl",
             "time_series_parser.jl",
             "utils/print.jl"]
 Order = [:type, :function]
-Filter = t -> nameof(t) in names(PowerSystems)
+Filter = t -> !(t isa Union) && nameof(t) in names(PowerSystems)
 ```
 
 ## System
@@ -127,7 +137,7 @@ The primary way to retrieve components in PowerSystems.jl is with the [`get_comp
 ```@autodocs
 Modules = [IS]
 Pages   = ["component_selector.jl"]
-Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && !(nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
+Filter  = t -> !(t isa AbstractString) && !(t isa Union) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && !(nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
 ```
 
 ```@autodocs
@@ -140,7 +150,7 @@ Private = false
 ```@autodocs
 Modules = [IS]
 Pages   = ["component_selector.jl"]
-Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && (nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
+Filter  = t -> !(t isa AbstractString) && !(t isa Union) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && (nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
 ```
 
 ## Additional Component Methods

@@ -76,16 +76,10 @@ end
     @test tTwoTerminalLCCLine isa PowerSystems.Component
     tTwoTerminalVSCLine = TwoTerminalVSCLine(nothing)
     @test tTwoTerminalVSCLine isa PowerSystems.Component
-    tTransformer2W = Transformer2W(nothing)
-    @test tTransformer2W isa PowerSystems.Component
-    tTapTransformer = TapTransformer(nothing)
-    @test tTapTransformer isa PowerSystems.Component
-    tPhaseShiftingTransformer = PhaseShiftingTransformer(nothing)
-    @test tPhaseShiftingTransformer isa PowerSystems.Component
-    tTransformer3W = Transformer3W(nothing)
-    @test tTransformer3W isa PowerSystems.Component
-    tPhaseShiftingTransformer3W = PhaseShiftingTransformer3W(nothing)
-    @test tPhaseShiftingTransformer3W isa PowerSystems.Component
+    tTwoWindingTransformer = TwoWindingTransformer(nothing)
+    @test tTwoWindingTransformer isa PowerSystems.Component
+    tThreeWindingTransformer = ThreeWindingTransformer(nothing)
+    @test tThreeWindingTransformer isa PowerSystems.Component
     tGenericArcImpedance = GenericArcImpedance(nothing)
     @test tGenericArcImpedance isa PowerSystems.Component
 end

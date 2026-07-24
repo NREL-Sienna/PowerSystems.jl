@@ -395,7 +395,7 @@ end
 @testset "Test TransmissionInterface" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     lines = get_components(Line, sys)
-    xfr = get_components(TapTransformer, sys)
+    xfr = get_components(TwoWindingTransformer, sys)
     hvdc = collect(get_components(TwoTerminalGenericHVDCLine, sys))
     some_lines = collect(lines)[1:2]
     other_lines_and_hvdc = vcat(collect(lines)[10:14], hvdc)
