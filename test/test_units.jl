@@ -332,7 +332,7 @@ end
 # itself).
 function _local_make_test_3w_xfmr(; system_base = 100.0)
     xfmr = ThreeWindingTransformer(nothing)
-    IS.set_base_value!(xfmr, system_base)
+    PowerSystems.set_units_setting!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
     set_base_power_31!(xfmr, 25.0)

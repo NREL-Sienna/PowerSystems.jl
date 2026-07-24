@@ -17,14 +17,15 @@ _get_device_base_power(c::Component) = _get_base_power(c)
 
 # TransformerCircuit is a self-contained explicit-units base provider (defined
 # in models/transformer_circuits.jl, included earlier): it carries its own
-# base_power/base_voltage_primary/units_info and does not need a component to
+# base_power/base_voltage_primary/base_value and does not need a component to
 # delegate to (Base.summary(w) is defined alongside the struct).
 _get_device_base_power(w::TransformerCircuit) = w.base_power
 function _get_system_base_power(w::TransformerCircuit)
-    isnothing(w.units_info) && error(
+    base_value = IS.get_base_value(w)
+    isnothing(base_value) && error(
         "TransformerCircuit is not attached to a System; cannot convert to/from system base",
     )
-    return w.units_info.base_value
+    return base_value
 end
 
 # The circuit's impedance is per-unit referenced to its primary base voltage, so

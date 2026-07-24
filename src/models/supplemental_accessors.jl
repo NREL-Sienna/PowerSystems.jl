@@ -283,11 +283,11 @@ end
 
 function set_units_setting!(
     t::Union{TwoWindingTransformer, ThreeWindingTransformer},
-    settings::Union{SystemUnitsSettings, Nothing},
+    value::Union{Float64, Nothing},
 )
-    set_units_info!(get_internal(t), settings)
+    IS.set_base_value!(t, value)
     for w in get_circuits(t)
-        w.units_info = settings
+        IS.set_base_value!(w, value)
     end
     return
 end

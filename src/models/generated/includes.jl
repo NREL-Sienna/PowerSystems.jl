@@ -513,6 +513,7 @@ export get_base_power
 export get_base_power_12
 export get_base_power_23
 export get_base_power_31
+export get_base_value
 export get_base_voltage
 export get_base_voltage_primary
 export get_base_voltage_secondary
@@ -841,7 +842,6 @@ export get_transfer_setpoint
 export get_transition_time
 export get_travel_time
 export get_turbine_type
-export get_units_info
 export get_upstream_reservoirs
 export get_upstream_turbines
 export get_valve_position_limits
@@ -1249,6 +1249,7 @@ export set_base_power!
 export set_base_power_12!
 export set_base_power_23!
 export set_base_power_31!
+export set_base_value!
 export set_base_voltage!
 export set_base_voltage_primary!
 export set_base_voltage_secondary!
@@ -1531,7 +1532,6 @@ export set_transfer_setpoint!
 export set_transition_time!
 export set_travel_time!
 export set_turbine_type!
-export set_units_info!
 export set_upstream_reservoirs!
 export set_upstream_turbines!
 export set_valve_position_limits!

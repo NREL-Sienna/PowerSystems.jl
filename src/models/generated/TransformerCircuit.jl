@@ -26,7 +26,7 @@ This file is auto-generated. Do not edit.
         base_power::Float64
         base_voltage_primary::Union{Nothing, Float64}
         base_voltage_secondary::Union{Nothing, Float64}
-        units_info::Union{Nothing, SystemUnitsSettings}
+        base_value::Union{Nothing, Float64}
     end
 
 The data defining one modeled arc of a transformer.
@@ -54,7 +54,7 @@ A [`TwoWindingTransformer`](@ref) has one circuit; a [`ThreeWindingTransformer`]
 - `base_power::Float64`: (default: `100.0`) Base power (MVA) for [per unitization](@ref per_unit) of this circuit
 - `base_voltage_primary::Union{Nothing, Float64}`: (default: `nothing`) Primary (from) terminal-side base voltage in kV; the reference voltage for this circuit's per-unit impedance, validation range: `(0, nothing)`
 - `base_voltage_secondary::Union{Nothing, Float64}`: (default: `nothing`) Secondary (to) terminal-side base voltage in kV. For a three-winding transformer this defaults to the primary base voltage at parse time, validation range: `(0, nothing)`
-- `units_info::Union{Nothing, SystemUnitsSettings}`: (**Do not modify.**) Internal units settings for explicit-units conversion; populated when the owning transformer is attached to a System
+- `base_value::Union{Nothing, Float64}`: (**Do not modify.**) System base power (MVA) anchor for explicit-units conversion; populated when the owning transformer is attached to a System
 """
 mutable struct TransformerCircuit <: DeviceParameter
     "Indicator of whether this circuit is connected and online. Circuit availability is the single source of truth; the owning transformer derives its availability from its circuits"
@@ -97,16 +97,16 @@ mutable struct TransformerCircuit <: DeviceParameter
     base_voltage_primary::Union{Nothing, Float64}
     "Secondary (to) terminal-side base voltage in kV. For a three-winding transformer this defaults to the primary base voltage at parse time"
     base_voltage_secondary::Union{Nothing, Float64}
-    "(**Do not modify.**) Internal units settings for explicit-units conversion; populated when the owning transformer is attached to a System"
-    units_info::Union{Nothing, SystemUnitsSettings}
+    "(**Do not modify.**) System base power (MVA) anchor for explicit-units conversion; populated when the owning transformer is attached to a System"
+    base_value::Union{Nothing, Float64}
 end
 
 function TransformerCircuit(available, arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, r=0.0, x=0.0, control_objective=TransformerControlObjective.UNDEFINED, regulated_bus_number=0, control_limits=(min=0.9, max=1.1), controlled_quantity_limits=(min=0.9, max=1.1), number_of_tap_positions=33, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage_primary=nothing, base_voltage_secondary=nothing, )
     TransformerCircuit(available, arc, tap, α, winding_group_number, r, x, control_objective, regulated_bus_number, control_limits, controlled_quantity_limits, number_of_tap_positions, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage_primary, base_voltage_secondary, nothing, )
 end
 
-function TransformerCircuit(; available, arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, r=0.0, x=0.0, control_objective=TransformerControlObjective.UNDEFINED, regulated_bus_number=0, control_limits=(min=0.9, max=1.1), controlled_quantity_limits=(min=0.9, max=1.1), number_of_tap_positions=33, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage_primary=nothing, base_voltage_secondary=nothing, units_info=nothing, )
-    TransformerCircuit(available, arc, tap, α, winding_group_number, r, x, control_objective, regulated_bus_number, control_limits, controlled_quantity_limits, number_of_tap_positions, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage_primary, base_voltage_secondary, units_info, )
+function TransformerCircuit(; available, arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, r=0.0, x=0.0, control_objective=TransformerControlObjective.UNDEFINED, regulated_bus_number=0, control_limits=(min=0.9, max=1.1), controlled_quantity_limits=(min=0.9, max=1.1), number_of_tap_positions=33, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage_primary=nothing, base_voltage_secondary=nothing, base_value=nothing, )
+    TransformerCircuit(available, arc, tap, α, winding_group_number, r, x, control_objective, regulated_bus_number, control_limits, controlled_quantity_limits, number_of_tap_positions, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage_primary, base_voltage_secondary, base_value, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -204,7 +204,7 @@ get_base_voltage_primary(value::TransformerCircuit) = value.base_voltage_primary
 """Get [`TransformerCircuit`](@ref) `base_voltage_secondary`."""
 get_base_voltage_secondary(value::TransformerCircuit) = value.base_voltage_secondary
 
-_get_units_info(value::TransformerCircuit) = value.units_info
+_get_base_value(value::TransformerCircuit) = value.base_value
 
 """Set [`TransformerCircuit`](@ref) `available`."""
 set_available!(value::TransformerCircuit, val) = value.available = val

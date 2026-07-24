@@ -32,6 +32,15 @@ Base.summary(
     w::TransformerCircuit,
 ) = "TransformerCircuit($(summary(get_from(get_arc(w)))) → $(summary(get_to(get_arc(w)))))"
 
+# TransformerCircuit stores its units anchor directly rather than through an
+# `InfrastructureSystemsInternal`, so it needs concrete methods instead of the
+# generic `get_internal` forwarding in IS.
+IS.get_base_value(w::TransformerCircuit) = w.base_value
+function IS.set_base_value!(w::TransformerCircuit, val::Union{Float64, Nothing})
+    w.base_value = val
+    return
+end
+
 get_circuits(t::TwoWindingTransformer) = (get_circuit(t),)
 get_circuits(t::ThreeWindingTransformer) =
     (get_primary_circuit(t), get_secondary_circuit(t), get_tertiary_circuit(t))
@@ -39,38 +48,38 @@ get_circuits(t::ThreeWindingTransformer) =
 # `circuit`/`primary_circuit`/`secondary_circuit`/`tertiary_circuit` are
 # `exclude_setter: true` in the descriptor (see power_system_structs.json):
 # codegen's generated setters (`value.circuit = val`, etc.) install a
-# `TransformerCircuit` without propagating the parent's `units_info`, so a
-# circuit swapped in after the transformer is attached is left with stale (or
-# missing) units settings and its explicit-units getters silently misbehave.
+# `TransformerCircuit` without propagating the parent's units anchor, so a
+# circuit swapped in after the transformer is attached is left with a stale
+# (or missing) `base_value` and its explicit-units getters silently misbehave.
 # These hand-written replacements assign the field, then copy the parent's
-# current `units_info` onto the new circuit — matching what
+# current anchor onto the new circuit via `IS.set_base_value!` — matching what
 # `set_units_setting!` does for the circuits a transformer already has. A
-# detached parent has `units_info === nothing`; copying that is correct too.
-"""Set [`TwoWindingTransformer`](@ref) `circuit`, propagating this transformer's units settings to the new circuit."""
+# detached parent has `base_value === nothing`; copying that is correct too.
+"""Set [`TwoWindingTransformer`](@ref) `circuit`, propagating this transformer's units anchor to the new circuit."""
 function set_circuit!(t::TwoWindingTransformer, w::TransformerCircuit)
     setfield!(t, :circuit, w)
-    w.units_info = IS.get_units_info(get_internal(t))
+    IS.set_base_value!(w, IS.get_base_value(t))
     return
 end
 
-"""Set [`ThreeWindingTransformer`](@ref) `primary_circuit`, propagating this transformer's units settings to the new circuit."""
+"""Set [`ThreeWindingTransformer`](@ref) `primary_circuit`, propagating this transformer's units anchor to the new circuit."""
 function set_primary_circuit!(t::ThreeWindingTransformer, w::TransformerCircuit)
     setfield!(t, :primary_circuit, w)
-    w.units_info = IS.get_units_info(get_internal(t))
+    IS.set_base_value!(w, IS.get_base_value(t))
     return
 end
 
-"""Set [`ThreeWindingTransformer`](@ref) `secondary_circuit`, propagating this transformer's units settings to the new circuit."""
+"""Set [`ThreeWindingTransformer`](@ref) `secondary_circuit`, propagating this transformer's units anchor to the new circuit."""
 function set_secondary_circuit!(t::ThreeWindingTransformer, w::TransformerCircuit)
     setfield!(t, :secondary_circuit, w)
-    w.units_info = IS.get_units_info(get_internal(t))
+    IS.set_base_value!(w, IS.get_base_value(t))
     return
 end
 
-"""Set [`ThreeWindingTransformer`](@ref) `tertiary_circuit`, propagating this transformer's units settings to the new circuit."""
+"""Set [`ThreeWindingTransformer`](@ref) `tertiary_circuit`, propagating this transformer's units anchor to the new circuit."""
 function set_tertiary_circuit!(t::ThreeWindingTransformer, w::TransformerCircuit)
     setfield!(t, :tertiary_circuit, w)
-    w.units_info = IS.get_units_info(get_internal(t))
+    IS.set_base_value!(w, IS.get_base_value(t))
     return
 end
 
@@ -104,13 +113,13 @@ is_phase_shifting(t::Union{TwoWindingTransformer, ThreeWindingTransformer}) =
 # fields are abstract, so `fieldnames(Bus)` errors outright). `TransformerCircuit` is added
 # to `_CONTAINS_SHOULD_ENCODE` (`serialization.jl`) so its `arc` field is UUID-encoded like
 # any Component field, mirroring the `MarketBidCost`/cost-type precedent for a
-# non-`Component` struct with Component-valued fields. `units_info` is internal, runtime
+# non-`Component` struct with Component-valued fields. `base_value` is internal, runtime
 # state repopulated by `add_component!` (via `set_units_setting!`) — it must never be
 # serialized.
 function IS.serialize(w::TransformerCircuit)
     data = Dict{String, Any}()
     for name in fieldnames(TransformerCircuit)
-        name === :units_info && continue
+        name === :base_value && continue
         data[string(name)] = serialize_uuid_handling(getfield(w, name))
     end
     IS.add_serialization_metadata!(data, TransformerCircuit)
@@ -125,8 +134,8 @@ function IS.deserialize(
     vals = Dict{Symbol, Any}()
     for (fname, ftype) in
         zip(fieldnames(TransformerCircuit), fieldtypes(TransformerCircuit))
-        fname === :units_info && continue
+        fname === :base_value && continue
         vals[fname] = deserialize_uuid_handling(ftype, data[string(fname)], component_cache)
     end
-    return TransformerCircuit(; vals..., units_info = nothing)
+    return TransformerCircuit(; vals..., base_value = nothing)
 end

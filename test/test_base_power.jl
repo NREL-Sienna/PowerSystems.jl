@@ -204,13 +204,13 @@ end
     end
 end
 
-# Detached ThreeWindingTransformer with seeded base_value (system base 100), distinct
+# Detached ThreeWindingTransformer with seeded units anchor (system base 100), distinct
 # per-circuit/per-pair base powers (15/20/25 MVA), and base voltages (230/138/69 kV) —
 # deliberately all different so a wrong-base selection is caught. Mirrors `_test_t3w`
 # in test_transformer_circuits.jl.
 function _make_test_3w_xfmr(; system_base = 100.0)
     xfmr = ThreeWindingTransformer(nothing)
-    IS.set_base_value!(xfmr, system_base)
+    PowerSystems.set_units_setting!(xfmr, system_base)
     set_base_power_12!(xfmr, 15.0)
     set_base_power_23!(xfmr, 20.0)
     set_base_power_31!(xfmr, 25.0)

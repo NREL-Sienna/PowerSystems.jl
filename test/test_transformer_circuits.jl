@@ -16,7 +16,7 @@ function _test_circuit(; base_power = 20.0, system_base = 100.0)
         base_power = base_power,
         base_voltage_primary = 138.0,
     )
-    c.units_info = PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+    IS.set_base_value!(c, system_base)
     return c
 end
 
@@ -66,7 +66,7 @@ end
 
 @testset "TransformerCircuit detached errors cleanly on SU" begin
     c = _test_circuit()
-    c.units_info = nothing
+    IS.set_base_value!(c, nothing)
     @test get_rating(c, DU) ≈ 0.5          # DU needs no system base
     @test_throws ErrorException get_rating(c, SU)
 end
@@ -98,9 +98,7 @@ end
 
 function _test_t3w(; system_base = 100.0)
     t = ThreeWindingTransformer(nothing)
-    IS.get_internal(t).units_info =
-        PSY.SystemUnitsSettings(system_base, UnitSystem.SYSTEM_BASE)
-    PowerSystems.set_units_setting!(t, IS.get_internal(t).units_info)
+    PowerSystems.set_units_setting!(t, system_base)
     set_base_power_12!(t, 15.0)
     set_base_power_23!(t, 20.0)
     set_base_power_31!(t, 25.0)
@@ -156,27 +154,25 @@ end
 
 @testset "units settings propagate to circuits" begin
     t = _test_t3w()
-    @test !isnothing(get_primary_circuit(t).units_info)
+    @test !isnothing(IS.get_base_value(get_primary_circuit(t)))
     PowerSystems.set_units_setting!(t, nothing)
-    @test isnothing(get_primary_circuit(t).units_info)
+    @test isnothing(IS.get_base_value(get_primary_circuit(t)))
 end
 
 function _test_t2w(; system_base = 100.0)
     t = TwoWindingTransformer(nothing)
-    IS.get_internal(t).units_info =
-        PSY.SystemUnitsSettings(system_base, UnitSystem.SYSTEM_BASE)
-    PowerSystems.set_units_setting!(t, IS.get_internal(t).units_info)
+    PowerSystems.set_units_setting!(t, system_base)
     set_base_voltage_primary!(get_circuit(t), 138.0)
     return t
 end
 
-@testset "hand-written circuit setters propagate units_info" begin
+@testset "hand-written circuit setters propagate the units anchor" begin
     # set_circuit!/set_primary_circuit!/set_secondary_circuit!/set_tertiary_circuit!
     # are `exclude_setter: true` in the descriptor precisely because the
     # generated `value.circuit = val` form would install a circuit whose
-    # `units_info` is stale (or nothing, if freshly constructed) relative to
+    # `base_value` is stale (or nothing, if freshly constructed) relative to
     # the owning transformer's System. These setters must copy the parent's
-    # current units_info onto the incoming circuit.
+    # current anchor onto the incoming circuit.
     t2 = _test_t2w()
     fresh_2w = TransformerCircuit(;
         available = true,
@@ -184,10 +180,10 @@ end
         rating = 0.5,
         base_power = 100.0,
     )
-    @test isnothing(fresh_2w.units_info)
+    @test isnothing(IS.get_base_value(fresh_2w))
     set_circuit!(t2, fresh_2w)
     @test get_circuit(t2) === fresh_2w
-    @test get_circuit(t2).units_info === IS.get_units_info(IS.get_internal(t2))
+    @test IS.get_base_value(get_circuit(t2)) === IS.get_base_value(t2)
     @test get_rating(get_circuit(t2), SU) ≈ 0.5   # base_power == system_base here
 
     t3 = _test_t3w()
@@ -197,10 +193,10 @@ end
         rating = 0.5,
         base_power = 15.0,
     )
-    @test isnothing(fresh_3w.units_info)
+    @test isnothing(IS.get_base_value(fresh_3w))
     set_primary_circuit!(t3, fresh_3w)
     @test get_primary_circuit(t3) === fresh_3w
-    @test get_primary_circuit(t3).units_info === IS.get_units_info(IS.get_internal(t3))
+    @test IS.get_base_value(get_primary_circuit(t3)) === IS.get_base_value(t3)
     @test get_rating(get_primary_circuit(t3), SU) ≈ 0.5 * 15.0 / 100.0
 end
 
@@ -377,7 +373,7 @@ end
             get_number(get_from(a)) == 1 && get_number(get_to(a)) == 2
         ),
     )
-    @test !isnothing(PSY._get_units_info(c2))   # repopulated on add during load
+    @test IS.get_base_value(c2) == 100.0   # repopulated on add during load
     t3w2 = get_component(ThreeWindingTransformer, sys2, "t3w")
     @test get_r_12(t3w2, DU) ≈ 0.01
     @test get_r_31(t3w2, DU) ≈ 0.02
@@ -404,5 +400,5 @@ end
             get_number(get_from(a)) == 3 && get_number(get_to(a)) == 901
         ),
     )
-    @test !isnothing(PSY._get_units_info(get_primary_circuit(t3w2)))   # repopulated on add during load
+    @test IS.get_base_value(get_primary_circuit(t3w2)) == 100.0   # repopulated on add during load
 end

@@ -593,12 +593,12 @@
                     "default": "nothing"
                 },
                 {
-                    "name": "units_info",
-                    "comment": "(**Do not modify.**) Internal units settings for explicit-units conversion; populated when the owning transformer is attached to a System",
+                    "name": "base_value",
+                    "comment": "(**Do not modify.**) System base power (MVA) anchor for explicit-units conversion; populated when the owning transformer is attached to a System",
                     "internal_default": "nothing",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "data_type": "Union{Nothing, SystemUnitsSettings}"
+                    "data_type": "Union{Nothing, Float64}"
                 }
             ],
             "supertype": "DeviceParameter"
