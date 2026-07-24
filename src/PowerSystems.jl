@@ -740,7 +740,6 @@ import InfrastructureSystems:
     get_supplemental_attributes,
     set_name!,
     get_internal,
-    set_internal!,
     iterate_windows,
     get_time_series,
     has_time_series,
