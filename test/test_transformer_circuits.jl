@@ -366,8 +366,8 @@ end
     # parent-level shunt fields round-trip
     @test get_shunt_location(t2w2) == TwoWindingTransformerShuntLocation.SPLIT
     @test get_magnetizing_shunt(t2w2, DU) ≈ 0.02
-    # arc resolved to the live Arc component in sys2 (UUID ref, not an inline copy)
-    @test IS.get_uuid(get_arc(c2)) == IS.get_uuid(
+    # arc resolved to the live Arc component in sys2 (id ref, not an inline copy)
+    @test IS.get_id(get_arc(c2)) == IS.get_id(
         first(
             a for a in get_components(Arc, sys2) if
             get_number(get_from(a)) == 1 && get_number(get_to(a)) == 2
@@ -379,22 +379,22 @@ end
     @test get_r_31(t3w2, DU) ≈ 0.02
     @test get_shunt_location(t3w2) == ThreeWindingTransformerShuntLocation.STAR
     @test get_magnetizing_shunt(t3w2, DU) ≈ 0.03
-    # 3W refs also resolve to live components in sys2 (UUID refs, not inline copies)
-    @test IS.get_uuid(get_star_bus(t3w2)) ==
-          IS.get_uuid(get_component(ACBus, sys2, "star"))
-    @test IS.get_uuid(get_arc(get_primary_circuit(t3w2))) == IS.get_uuid(
+    # 3W refs also resolve to live components in sys2 (id refs, not inline copies)
+    @test IS.get_id(get_star_bus(t3w2)) ==
+          IS.get_id(get_component(ACBus, sys2, "star"))
+    @test IS.get_id(get_arc(get_primary_circuit(t3w2))) == IS.get_id(
         first(
             a for a in get_components(Arc, sys2) if
             get_number(get_from(a)) == 1 && get_number(get_to(a)) == 901
         ),
     )
-    @test IS.get_uuid(get_arc(get_secondary_circuit(t3w2))) == IS.get_uuid(
+    @test IS.get_id(get_arc(get_secondary_circuit(t3w2))) == IS.get_id(
         first(
             a for a in get_components(Arc, sys2) if
             get_number(get_from(a)) == 2 && get_number(get_to(a)) == 901
         ),
     )
-    @test IS.get_uuid(get_arc(get_tertiary_circuit(t3w2))) == IS.get_uuid(
+    @test IS.get_id(get_arc(get_tertiary_circuit(t3w2))) == IS.get_id(
         first(
             a for a in get_components(Arc, sys2) if
             get_number(get_from(a)) == 3 && get_number(get_to(a)) == 901
