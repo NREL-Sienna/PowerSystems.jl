@@ -18,6 +18,50 @@ fixed since the review snapshot. Work through the phases in order; correctness f
 
 ---
 
+## ⚠️ Status note — the transformer refactor landed (2026-07-24, PR #1714 `d19f3244f`)
+
+This brief was written against the pre-refactor transformer architecture. That architecture
+is gone, and several items below now describe types and code paths that no longer exist.
+**Do not action a transformer item without re-reading the current source** — "fixing" a bug in
+a deleted type is worse than leaving it.
+
+What changed: `Transformer2W`/`TapTransformer`/`PhaseShiftingTransformer` →
+`TwoWindingTransformer`; `Transformer3W`/`PhaseShiftingTransformer3W` →
+`ThreeWindingTransformer` (both formerly abstract supertypes, now concrete structs). Series
+electrical data moved onto `TransformerCircuit <: DeviceParameter`, one per 2W, three per 3W.
+Architecture detail: `.claude/CLAUDE.md` §Transformer architecture.
+
+Item-by-item, verified against `origin/psy6`:
+
+- **1.1, 1.2 — superseded.** The winding-aware `get_value`/`set_value` asymmetry is gone with
+  the winding method family. `TransformerCircuit` is now its own explicit-units base provider:
+  `_get_device_base_power(w::TransformerCircuit) = w.base_power` (`components.jl:22`) and
+  `_get_system_base_power(w)` reads the `base_value` anchor, erroring explicitly when the
+  circuit is detached rather than silently falling back to the system base. The specific bug —
+  a 3W field scaling against the system base because `Transformer3W` had no `base_power` — is
+  structurally impossible now: every circuit carries its own `base_power`.
+- **1.7 — likely superseded, re-verify.** Both directions now resolve base voltage through one
+  circuit-level accessor, `get_base_voltage(w::TransformerCircuit) = get_base_voltage_primary(w)`
+  (`components.jl:34`). The getter/setter split that caused the (230/115)² drift should be
+  single-sourced. Confirm with the round-trip test the item asks for before closing it.
+- **3.1 — partially delivered, rewrite the remainder.** The refactor implemented three of its
+  five steps for the transformer path:
+  - step 1: `_get_device_base_power(c::Component) = _get_base_power(c)` exists
+    (`components.jl:16`), as does the per-type base-voltage resolver.
+  - step 3: the proposed `WindingBase(c, winding)` view is realized — better — as
+    `TransformerCircuit` being a first-class `UnitsBearer`
+    (`const UnitsBearer = Union{Component, TransformerCircuit}`, `components.jl:36`) plus
+    `_conversion_base(c::UnitsBearer, ::Any) = c` (`:158`) and a `PairBase` provider for the
+    3W pairwise fields (`:314`). The duplicated 6-arg winding family in `conversions.jl` is
+    deleted.
+  - step 5: the triplicated base-power accessor family is collapsed; the 3W `@eval` loop is
+    gone.
+  Steps 2 and 4 (collapse the `Val{:mva}/:ohm/:siemens` ladder into `convert_units`; derive
+  `_du_to_su_ratio`) are **untouched and still valid** — and now cheaper, since the winding
+  special-casing that complicated them is gone.
+- Everything outside the transformer path (1.3-1.6, 1.8-1.18, Phase 2, 3.2-3.4, Phase 4) is
+  unaffected by this refactor. The Phase 0 versioning blocker also still stands.
+
 ## Ground rules
 
 1. **Never hand-edit `src/models/generated/*.jl`.** They are generated from
@@ -58,7 +102,7 @@ fixed since the review snapshot. Work through the phases in order; correctness f
 
 ## Phase 1 — Correctness: silent wrong numbers (highest priority)
 
-### 1.1 ThreeWindingTransformer: Unitful targets bypass winding bases (getters)
+### 1.1 ThreeWindingTransformer: Unitful targets bypass winding bases (getters) — ⚠️ SUPERSEDED, see the status note above
 - `PSY src/models/components.jl` (~line 422): the winding-aware override is
   `get_value(c::ThreeWindingTransformer, field::Val, cu::Val, units::IS.AbstractUnitSystem)`.
   `MW`/`MVA`/`Ω`/`S` are `Unitful.Units`, *disjoint* from `IS.AbstractUnitSystem`, so those
@@ -74,7 +118,7 @@ fixed since the review snapshot. Work through the phases in order; correctness f
   deeper consolidation). Existing test `test/test_base_power.jl` covers only `DU/SU/NU` on
   3W — add `MW`, `OHMS`, `SIEMENS` target cases asserting agreement with the `NU` path.
 
-### 1.2 ThreeWindingTransformer: no winding-aware `set_value` at all (setters)
+### 1.2 ThreeWindingTransformer: no winding-aware `set_value` at all (setters) — ⚠️ SUPERSEDED, see the status note above
 - All `set_value` methods in `components.jl:200-279` dispatch on `Component`/`Branch` only.
   Generated 3W setters (`set_rating_primary!`, `set_r_12!`, `set_active_power_flow_primary!`,
   also `PhaseShiftingTransformer3W`) route through them:
@@ -145,7 +189,7 @@ fixed since the review snapshot. Work through the phases in order; correctness f
   warn). If a lenient mode is truly needed, it must return `missing`, never a mislabeled
   number.
 
-### 1.7 2W transformer Ω/S set→get round-trip drift
+### 1.7 2W transformer Ω/S set→get round-trip drift — ⚠️ LIKELY SUPERSEDED, re-verify (see status note above)
 - Setter (`components.jl:204-218`, `T <: Branch`) divides by `get_base_voltage(get_arc(c).from)`;
   getter (`components.jl:98-126`, `T <: TwoWindingTransformer`) multiplies by
   `get_base_voltage_primary(c)`. These coincide only as a construction-time snapshot;
@@ -331,7 +375,7 @@ All verified by execution:
 
 ## Phase 3 — Consolidation refactors (design debt; sequence after Phases 1-2)
 
-### 3.1 One conversion engine, not two and a half
+### 3.1 One conversion engine, not two and a half — ⚠️ PARTIALLY DELIVERED (steps 1, 3, 5 done; 2 and 4 still open — see status note above)
 PSY currently has **two parallel implementations** of per-unit conversion that have already
 diverged behaviorally (missing-voltage handling; CurrentCategory inversion):
 - the `Val{:mva}/:ohm/:siemens` × target × component-type ladder in
