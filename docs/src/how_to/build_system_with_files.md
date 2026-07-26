@@ -13,7 +13,7 @@ manually is:
     component for each row. Hard-code any required parameters that are missing in
     your dataset. Use [`add_component!`](@ref) to add each component to the [`System`](@ref).
  4. Similarly, add cost and time series data either within each `for` loop, or after the
-    components have been defined using [`begin_time_series_update`](@ref).
+    components have been defined using [`time_series_transaction`](@ref).
  5. [Save your `System` to a JSON](@ref "Write, View, and Load Data with a JSON") once you are
     finished
 
@@ -649,7 +649,7 @@ end
 ```
 
 In a `for` loop, iterate over the regions in your [`System`](@ref), and use the
-[`begin_time_series_update`](@ref) function to create and attach the respective
+[`time_series_transaction`](@ref) function to create and attach the respective
 loads' time series to every load in a region at once. Note: due to how
 `max_active_power` is defined, the time series values are normalized to its
 maximum.
@@ -669,9 +669,9 @@ for reg in regions
         scaling_factor_multiplier = get_max_active_power,
     )
     region = get_component(Area, sys, reg)
-    begin_time_series_update(sys) do
+    time_series_transaction(sys) do context
         for component in get_components_in_aggregation_topology(PowerLoad, sys, region)
-            add_time_series!(sys, component, load_TS)
+            add_time_series!(sys, component, load_TS; context = context)
         end
     end
 end

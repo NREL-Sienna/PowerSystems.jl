@@ -83,15 +83,15 @@ add_time_series!(sys, generator, forecast_max_reactive_power)
 
 By default, the call to [`add_time_series!`](@ref) will open the HDF5 file, write the data to the file,
 and close the file. It will also add a row to an SQLite database. These operations have overhead.
-If you will add thousands of time series arrays, consider using [`begin_time_series_update`](@ref).
+If you will add thousands of time series arrays, consider using [`time_series_transaction`](@ref).
 All arrays will be written with one file handle. The bulk SQLite operations are much more
 efficient.
 
 ```julia
-begin_time_series_update(sys) do
-    add_time_series!(sys, component1, time_series1)
-    add_time_series!(sys, component2, time_series2)
-    add_time_series!(sys, component3, time_series3)
+time_series_transaction(sys) do context
+    add_time_series!(sys, component1, time_series1; context = context)
+    add_time_series!(sys, component2, time_series2; context = context)
+    add_time_series!(sys, component3, time_series3; context = context)
 end
 ```
 

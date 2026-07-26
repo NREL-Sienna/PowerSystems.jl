@@ -389,14 +389,14 @@ end
     arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
     ts_name = "test"
 
-    open_time_series_store!(sys, "r+") do
+    time_series_transaction(sys, "r+") do
         for (i, ta) in enumerate(arrays)
             ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
             add_time_series!(sys, component, ts)
         end
     end
 
-    open_time_series_store!(sys, "r") do
+    time_series_transaction(sys, "r") do
         for (i, expected_array) in enumerate(arrays)
             # `SingleTimeSeries.data` is a raw Array now; go through
             # `get_time_series_array` to compare timestamps as well as values.
@@ -431,7 +431,7 @@ end
         end
     end
 
-    open_time_series_store!(sys, "r") do
+    time_series_transaction(sys, "r") do
         for (i, expected_array) in enumerate(arrays)
             ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
             @test ta == expected_array

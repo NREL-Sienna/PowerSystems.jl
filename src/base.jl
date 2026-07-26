@@ -926,56 +926,32 @@ function add_service!(
 end
 
 """
-Open the time series store for bulk additions or reads
+Open a batch of time series work and run `func` on it, inside a store transaction.
 
-This is recommended before calling `add_time_series!` many times because of the overhead
-associated with opening and closing an HDF5 file.
+Pass the yielded context to each `add_time_series!` in the block and they are buffered
+and written as one bulk call, which is much faster than adding them one at a time.
 
-This is not necessary for an in-memory time series store.
+The block is also a transaction. If it throws, everything it did is rolled back —
+including removals, which are irreversible outside a block. Blocks nest
+innermost-first.
+
+An open block holds the store's write lock, so gather your data first and keep the
+block to the writes.
 
 # Examples
 ```julia
 # Assume there is a system with an array of Components and SingleTimeSeries
 # stored in the variables components and single_time_series, respectively
-open_time_series_store!(sys, "r+") do
+time_series_transaction(sys) do context
     for (component, ts) in zip(components, single_time_series)
-        add_time_series!(sys, component, ts)
+        add_time_series!(sys, component, ts; context = context)
     end
 end
 ```
-You can also use this function to make reads faster.
-Change the mode from `"r+"` to `"r"` to open the file read-only.
-
-See also: [`begin_time_series_update`](@ref)
 """
-function open_time_series_store!(
-    func::Function,
-    sys::System,
-    mode = "r",
-    args...;
-    kwargs...,
-)
-    IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
+function time_series_transaction(func::Function, sys::System)
+    return IS.time_series_transaction(func, sys.data)
 end
-
-"""
-Begin an update of time series. Use this function when adding many time series arrays
-in order to improve performance.
-
-If an error occurs during the update, changes will be reverted.
-
-Using this function to remove time series is currently not supported.
-
-# Examples
-```julia
-begin_time_series_update(sys) do
-    add_time_series!(sys, component1, time_series1)
-    add_time_series!(sys, component2, time_series2)
-end
-```
-"""
-begin_time_series_update(func::Function, sys::System) =
-    IS.begin_time_series_update(func, sys.data.time_series_manager)
 
 """
 Iterates over all components.
@@ -1557,40 +1533,12 @@ function add_time_series!(
     sys::System,
     component::Component,
     time_series::TimeSeriesData;
+    context::Union{Nothing, IS.TimeSeriesContext} = nothing,
     features...,
 )
-    return IS.add_time_series!(sys.data, component, time_series; features...)
-end
-
-"""
-Add time series in bulk.
-
-Prefer use of [`begin_time_series_update`](@ref).
-
-# Examples
-```julia
-# Assumes `read_time_series` will return data appropriate for Deterministic forecasts
-# based on the generator name and the filenames match the component and time series names.
-resolution = Dates.Hour(1)
-associations = (
-    IS.TimeSeriesAssociation(
-        gen,
-        Deterministic(
-            data = read_time_series(get_name(gen) * ".csv"),
-            name = "get_max_active_power",
-            resolution=resolution),
+    return IS.add_time_series!(
+        sys.data, component, time_series; context = context, features...,
     )
-    for gen in get_components(ThermalStandard, sys)
-)
-bulk_add_time_series!(sys, associations)
-```
-"""
-function bulk_add_time_series!(
-    sys::System,
-    associations;
-    batch_size::Int = IS.ADD_TIME_SERIES_BATCH_SIZE,
-)
-    return IS.bulk_add_time_series!(sys.data, associations; batch_size = batch_size)
 end
 
 """
@@ -1603,8 +1551,16 @@ array is stored.
 
 Throws ArgumentError if a component is not stored in the system.
 """
-function add_time_series!(sys::System, components, time_series::TimeSeriesData; features...)
-    return IS.add_time_series!(sys.data, components, time_series; features...)
+function add_time_series!(
+    sys::System,
+    components,
+    time_series::TimeSeriesData;
+    context::Union{Nothing, IS.TimeSeriesContext} = nothing,
+    features...,
+)
+    return IS.add_time_series!(
+        sys.data, components, time_series; context = context, features...,
+    )
 end
 
 #=

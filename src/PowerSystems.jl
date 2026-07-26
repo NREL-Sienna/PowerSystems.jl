@@ -389,7 +389,6 @@ export HydroTurbineType
 export ReservoirLocation
 
 # from IS time_series_structs.jl, time_series_cache.jl
-export TimeSeriesAssociation
 export TimeSeriesKey
 export StaticTimeSeriesKey
 export ForecastKey
@@ -417,10 +416,8 @@ export Scenarios # scenarios.jl
 
 export get_dynamic_components
 
-export open_time_series_store!
+export time_series_transaction
 export add_time_series!
-export bulk_add_time_series!
-export begin_time_series_update
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
@@ -720,7 +717,6 @@ import InfrastructureSystems:
     ForecastReaderEntry,
     TimeSeriesKey,
     TimeSeriesCounts,
-    TimeSeriesAssociation,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
