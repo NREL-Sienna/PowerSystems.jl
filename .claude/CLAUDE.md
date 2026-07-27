@@ -1,6 +1,6 @@
 # PowerSystems.jl (PSY) — psy6 branch
 
-The Sienna power-system **data model**: the `System` container plus ~210 component types (buses, branches, generators, storage, loads, services, dynamic models), operational cost structures, time series, and the **explicit-units engine**. Layer 1 of the psy6 stack, built on InfrastructureSystems (IS4 branch). Platform-wide conventions: `.claude/Sienna.md`. Workspace architecture: `/home/jdlara/Sienna_work/psy6/CLAUDE.md`.
+The Sienna power-system **data model**: the `System` container plus ~210 component types (buses, branches, generators, storage, loads, services, dynamic models), operational cost structures, time series, and the **explicit-units engine**. Layer 1 of the psy6 stack, built on InfrastructureSystems (IS4 branch). Platform-wide conventions: `.claude/Sienna.md`. Workspace architecture: the psy6 workspace root `CLAUDE.md`.
 
 **This branch has NO parsers.** `src/parsers/` was removed in the psy6 line; all Matpower/PSSE/table parsing lives in PowerFlowFileParser.jl (and PSB's parser wrappers). Do not re-add parsing here.
 
@@ -8,7 +8,7 @@ The Sienna power-system **data model**: the `System` container plus ~210 compone
 
 PNM, PF, POM, and PSB all consume PSY; SiennaSchemas mirrors PSY component fields (JSON schemas), so field renames/retypes create schema drift the sync tooling must catch. After a PSY change:
 
-1. compile-smoke the stack: `julia --project=/home/jdlara/Sienna_work/psy6 -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`
+1. compile-smoke the stack: `julia --project=<psy6-workspace-root> -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`
 2. **clear PSB's `data/serialized_system/` cache** — it has no version-aware invalidation, and stale cached systems produce confusing deserialization failures downstream.
 3. if the change touched a component field also present in SiennaSchemas, flag the schema counterpart (example of real drift: `head_to_volume_factor` moved to `FunctionData` in PSY commit `ed30a682` while `SiennaSchemas/Operations/StaticInjection/HydroReservoir.json` still `$ref`s `ValueCurve`).
 
@@ -45,7 +45,7 @@ The canonical example of psy6 cross-repo propagation — a PSY field change touc
 4. **PSB**: clear `data/serialized_system/` (cached fixtures embed the old shape); check whether any builder in `src/library/` sets the field.
 5. **SiennaSchemas**: mirror the field in the matching `Operations/...json` with an `x-unit` annotation; run `validate_units.py`. Skipping this creates the drift the sync check exists to catch.
 6. **GridDB**: if the field maps to a DB column, update `column_conventions.json` and regenerate the sealed registry.
-7. **Downstream smoke**: `julia --project=/home/jdlara/Sienna_work/psy6 -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`; consumers reading the field must pass an explicit unit system.
+7. **Downstream smoke**: `julia --project=<psy6-workspace-root> -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`; consumers reading the field must pass an explicit unit system.
 
 ## Transformer architecture (PR #1714, `d19f3244f`)
 
@@ -90,7 +90,7 @@ julia --project=docs docs/make.jl                                 # docs must bu
 julia --project=scripts/formatter -e 'include("scripts/formatter/formatter_code.jl")'   # always before done
 ```
 
-Compile-check after each edit: `julia --project=/home/jdlara/Sienna_work/psy6 -e 'using PowerSystems'`.
+Compile-check after each edit: `julia --project=<psy6-workspace-root> -e 'using PowerSystems'`.
 
 ## Working with the data model
 
