@@ -389,24 +389,22 @@ end
     arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
     ts_name = "test"
 
-    time_series_transaction(sys, "r+") do
+    time_series_transaction(sys) do context
         for (i, ta) in enumerate(arrays)
             ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
-            add_time_series!(sys, component, ts)
+            add_time_series!(sys, component, ts; context = context)
         end
     end
 
-    time_series_transaction(sys, "r") do
-        for (i, expected_array) in enumerate(arrays)
-            # `SingleTimeSeries.data` is a raw Array now; go through
-            # `get_time_series_array` to compare timestamps as well as values.
-            ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
-            @test ta == expected_array
-        end
+    for (i, expected_array) in enumerate(arrays)
+        # `SingleTimeSeries.data` is a raw Array now; go through
+        # `get_time_series_array` to compare timestamps as well as values.
+        ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+        @test ta == expected_array
     end
 end
 
-@testset "Test begin_time_series_update" begin
+@testset "Test time_series_transaction" begin
     sys = System(100.0)
     bus = ACBus(nothing)
     bus.bustype = ACBusTypes.REF
@@ -424,19 +422,30 @@ end
     arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
     ts_name = "test"
 
-    begin_time_series_update(sys) do
+    time_series_transaction(sys) do context
         for (i, ta) in enumerate(arrays)
             ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
-            add_time_series!(sys, component, ts)
+            add_time_series!(sys, component, ts; context = context)
         end
     end
 
-    time_series_transaction(sys, "r") do
-        for (i, expected_array) in enumerate(arrays)
-            ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
-            @test ta == expected_array
-        end
+    for (i, expected_array) in enumerate(arrays)
+        ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+        @test ta == expected_array
     end
+
+    # A throw inside the block rolls back everything it buffered.
+    @test_throws ErrorException time_series_transaction(sys) do context
+        ts = SingleTimeSeries(;
+            data = TimeSeries.TimeArray(timestamps, rand(len)),
+            name = "rolled_back",
+        )
+        add_time_series!(sys, component, ts; context = context)
+        error("abort the transaction")
+    end
+    @test isempty(
+        IS.get_time_series_keys(component; name = "rolled_back"),
+    )
 end
 
 @testset "Test set_name! of system component" begin
