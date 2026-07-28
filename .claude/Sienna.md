@@ -1,13 +1,13 @@
 # Sienna Programming Practices — psy6 / Sienna 1.0 line
 
-General practices and cross-package architecture for the **psy6 (Sienna 1.0) development line**. This file is intended to be **identical across every repo under `/home/jdlara/Sienna_work/psy6/`** — package-specific guidance belongs in that repo's `.claude/CLAUDE.md`, and workspace wiring/policy in `/home/jdlara/Sienna_work/psy6/CLAUDE.md`. The psy5 (released) line at the workspace top level has its own copy of this file; never mix checkouts between the two lines.
+General practices and cross-package architecture for the **psy6 (Sienna 1.0) development line**. This file is intended to be **identical across every repo in the psy6 workspace** — package-specific guidance belongs in that repo's `.claude/CLAUDE.md`, and workspace wiring/policy in the psy6 workspace root `CLAUDE.md`. The psy5 (released) line at the workspace top level has its own copy of this file; never mix checkouts between the two lines.
 
 ## Start here (fresh-session reading order)
 
 1. This file — shared practices, the stack, and the vocabulary (glossary at the end).
 2. The current repo's `.claude/CLAUDE.md` — package specifics, verified commands, gotchas.
-3. `/home/jdlara/Sienna_work/psy6/CLAUDE.md` — workspace architecture, design decisions, seams, and the knowledge index (audit, active plans).
-4. `/home/jdlara/Sienna_work/CLAUDE.md` — the two-line workspace layout and git/test policy.
+3. the psy6 workspace root `CLAUDE.md` — workspace architecture, design decisions, seams, and the knowledge index (audit, active plans).
+4. the workspace top-level `CLAUDE.md` (one level above the psy6 root) — the two-line workspace layout and git/test policy.
 
 If you are porting anything from the psy5 line (or reading psy5-era docs/PRs), read the psy5 → psy6 translation map below first — many psy5 facts are actively wrong here.
 
@@ -46,7 +46,7 @@ Blast-radius quick reference — after changing:
 Downstream smoke check after upstream edits:
 
 ```sh
-julia --project=/home/jdlara/Sienna_work/psy6 -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'
+julia --project=<psy6-workspace-root> -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'
 ```
 
 ## The data/schema pipeline (SiennaSchemas → OpenAPI models → SiennaGridDB)
@@ -108,11 +108,11 @@ These exist in the codebase and are flagged for removal; new code must error lou
 
 ## Environments and testing in the psy6 workspace
 
-- **Shared dev env:** `julia --project=/home/jdlara/Sienna_work/psy6` dev-wires all co-developed packages (rebuild with `psy6/wire_psy6.jl`). A dev'd dependency's own `[sources]` pins are ignored by the parent env — only the active project's count; that is why the shared env exists.
+- **Shared dev env:** `julia --project=<psy6-workspace-root>` dev-wires all co-developed packages (rebuild with the workspace's `wire_psy6.jl`). A dev'd dependency's own `[sources]` pins are ignored by the parent env — only the active project's count; that is why the shared env exists.
 - **Per-package `Pkg.test()` honors that package's own `[sources]` git pins**, not the shared env. To test against local checkouts, temporarily repoint that repo's `test/Project.toml` `[sources]` to local paths (restore before finishing).
 - **No version/compat bumps in any Project.toml until release** (PSY reads 5.10.0, IS 3.6.0 despite being the 6.0/4.0 lines). Bumps have reappeared spontaneously mid-session — revert them.
 - PSB cache: no version-aware invalidation — clear `data/serialized_system/` after PSY changes; the CaseData artifact download can flake (retry once).
-- Python tooling: use `python3` (never `python`); the units venv is `/home/jdlara/Sienna_work/psy6/.venv-units`; **`just` is not installed** — run the underlying commands from the `.justfile` directly.
+- Python tooling: use `python3` (never `python`); the units venv is `.venv-units` at the psy6 workspace root; **`just` is not installed** — run the underlying commands from the `.justfile` directly.
 
 ## Performance Requirements
 

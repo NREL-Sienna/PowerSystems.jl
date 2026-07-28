@@ -1,6 +1,6 @@
 # PowerSystems.jl (PSY) — psy6 branch
 
-The Sienna power-system **data model**: the `System` container plus ~210 component types (buses, branches, generators, storage, loads, services, dynamic models), operational cost structures, time series, and the **explicit-units engine**. Layer 1 of the psy6 stack, built on InfrastructureSystems (IS4 branch). Platform-wide conventions: `.claude/Sienna.md`. Workspace architecture: `/home/jdlara/Sienna_work/psy6/CLAUDE.md`.
+The Sienna power-system **data model**: the `System` container plus ~210 component types (buses, branches, generators, storage, loads, services, dynamic models), operational cost structures, time series, and the **explicit-units engine**. Layer 1 of the psy6 stack, built on InfrastructureSystems (IS4 branch). Platform-wide conventions: `.claude/Sienna.md`. Workspace architecture: the psy6 workspace root `CLAUDE.md`.
 
 **This branch has NO parsers.** `src/parsers/` was removed in the psy6 line; all Matpower/PSSE/table parsing lives in PowerFlowFileParser.jl (and PSB's parser wrappers). Do not re-add parsing here.
 
@@ -8,7 +8,7 @@ The Sienna power-system **data model**: the `System` container plus ~210 compone
 
 PNM, PF, POM, and PSB all consume PSY; SiennaSchemas mirrors PSY component fields (JSON schemas), so field renames/retypes create schema drift the sync tooling must catch. After a PSY change:
 
-1. compile-smoke the stack: `julia --project=/home/jdlara/Sienna_work/psy6 -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`
+1. compile-smoke the stack: `julia --project=<psy6-workspace-root> -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`
 2. **clear PSB's `data/serialized_system/` cache** — it has no version-aware invalidation, and stale cached systems produce confusing deserialization failures downstream.
 3. if the change touched a component field also present in SiennaSchemas, flag the schema counterpart (example of real drift: `head_to_volume_factor` moved to `FunctionData` in PSY commit `ed30a682` while `SiennaSchemas/Operations/StaticInjection/HydroReservoir.json` still `$ref`s `ValueCurve`).
 
@@ -45,7 +45,20 @@ The canonical example of psy6 cross-repo propagation — a PSY field change touc
 4. **PSB**: clear `data/serialized_system/` (cached fixtures embed the old shape); check whether any builder in `src/library/` sets the field.
 5. **SiennaSchemas**: mirror the field in the matching `Operations/...json` with an `x-unit` annotation; run `validate_units.py`. Skipping this creates the drift the sync check exists to catch.
 6. **GridDB**: if the field maps to a DB column, update `column_conventions.json` and regenerate the sealed registry.
-7. **Downstream smoke**: `julia --project=/home/jdlara/Sienna_work/psy6 -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`; consumers reading the field must pass an explicit unit system.
+7. **Downstream smoke**: `julia --project=<psy6-workspace-root> -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`; consumers reading the field must pass an explicit unit system.
+
+## Transformer architecture (PR #1714, `d19f3244f`)
+
+Five concrete transformer types became two, and series data moved onto a nested struct. `Transformer2W`, `TapTransformer`, `PhaseShiftingTransformer` → **`TwoWindingTransformer`**; `Transformer3W`, `PhaseShiftingTransformer3W` → **`ThreeWindingTransformer`**. Both names were previously *abstract supertypes* in `src/models/branches.jl` and are now concrete generated structs — code written against the old hierarchy changes meaning instead of failing.
+
+- **`TransformerCircuit <: DeviceParameter`** (generated; hand-written behavior in `src/models/transformer_circuits.jl`) holds the arc, tap, α, `r`/`x`, ratings, flows, `base_power`, both terminal base voltages, the flat control block, and `available`. 2W owns one (`get_circuit`); 3W owns three plus `star_bus`. `get_circuits(t)` returns the tuple for either arity.
+- **It is not a `Component`.** That drives three consequences worth knowing before touching it: it stores its units anchor directly in `base_value` (no `InfrastructureSystemsInternal`), so it extends `IS.get_base_value`/`IS.set_base_value!` concretely; it needs hand-written `IS.serialize`/`IS.deserialize` and membership in `_CONTAINS_SHOULD_ENCODE` (`src/models/serialization.jl`) so `arc` is UUID-encoded rather than inlined — the generic `InfrastructureSystemsType` path would inline `Arc`, and `Arc`'s abstract `Bus` fields make `fieldnames` error outright on read-back; and `base_value` must never serialize, being runtime state repopulated by `add_component!`.
+- **`circuit`/`primary_circuit`/`secondary_circuit`/`tertiary_circuit` are `exclude_setter: true`** in the descriptor. The hand-written `set_circuit!`/`set_*_circuit!` in `transformer_circuits.jl` assign the field *and* copy the parent's anchor onto the new circuit. Codegen's plain `value.circuit = val` would leave a stale or missing `base_value` and silently wrong explicit-units getters — do not let a regeneration reintroduce it.
+- **Availability is derived**: `get_available(t) = any(get_available, get_circuits(t))`; `set_available!(t, val)` cascades to all circuits, including ones individually out beforehand (PSS/E STAT semantics). Read-then-write is lossy.
+- `is_phase_shifting` is the **canonical** predicate — true when `α ≠ 0` or the control objective is one of four active-power objectives. Downstream must not re-derive it from raw fields. `has_control(w)` is `control_objective != UNDEFINED`.
+- 3W pairwise PSS/E fields are `Union{Nothing,Float64}`, validated **all-or-none** by `check_psse_pairwise_block`; a partial block is always a data error (impedances without their base have no defined conversion). `base_power_13` → `base_power_31`.
+- **Deleted, now owned by PowerNetworkMatrices**: `get_series_susceptance(s)`, `get_series_admittance(s)`, and the winding-group `get_α`/`get_α_primary`/`_secondary`/`_tertiary` derivations. Do not re-add them here — `get_α` is a plain circuit field now.
+- `get_arc` is defined for `TwoWindingTransformer` only (`components.jl:45`, delegating to the circuit); 3W has three arcs and no single-arc accessor.
 
 ## The explicit-units engine (the defining psy6 feature)
 
@@ -53,14 +66,14 @@ The canonical example of psy6 cross-repo propagation — a PSY field change touc
 - Getters require the unit system explicitly: `get_rating(br, PSY.SU)`. `SU`/`DU`/`NU` markers come from `IS.RelativeUnits`; PSY gives them domain meaning (`base_power` is the device base, MVA).
 - Setters take **tagged** values and reject bare floats: `set_rating_b!(line, 0.9 * PSY.SU)`.
 - PSY extends `IS._strip_units` (required by the IS codegen contract) and overrides `IS.default_units(::Component)` to return `SU` for time-series multipliers.
-- **`with_units_base` / `set_units_base_system!` are deliberately kept as display-only API** — do not delete or deprecation-mark them. The legacy `UnitSystem` enum is display metadata only.
+- **`with_units_base` / `set_units_base_system!` / `get_units_base` are GONE** (verified against `origin/psy6`: all three `isdefined(PowerSystems, …) == false`). The stateful units system was fully removed in the psy6 line — see `7ffbbdf8d` "remove last pieces of stateful units system". Every value is read with an explicit unit argument instead. The `UnitSystem` enum still exists as display metadata, but there is no setter. Downstream code calling any of the three must migrate to explicit unit args, not look for a replacement setter.
 - Serialization stores component values in **device base**; there is no natural-units export path yet (documented-not-implemented; the OpenAPI/GridDB pipeline expects natural units — that converter is the unclosed loop).
 - Cost curves default to `power_units = IS.NaturalUnit()`; `CostCurve{T,U}`/`FuelCurve{T,U}` carry the unit as a type parameter (IS4).
 - Units test filter: `julia --project=test test/runtests.jl test_units` (fast, ~22 s).
 
 ### Known audit items (do not silently "fix"; coordinate)
 
-- `check_rating_values(::Union{Line,MonitoredLine}, basemva)` at `src/utils/IO/branchdata_checks.jl:98` reads raw DU `getfield(line, :rating)` against a system-base threshold — numerically correct today only because Line/MonitoredLine lack `base_power` (DU==SU). Latent trap if `base_power` is ever added; the transformer sibling at line ~189 (`_get_base_power`) is the correct pattern.
+- `check_rating_values(::Union{Line,MonitoredLine}, basemva)` at `src/utils/IO/branchdata_checks.jl:88` reads raw DU `getfield(line, :rating)` against a system-base threshold — numerically correct today only because Line/MonitoredLine lack `base_power` (DU==SU). Latent trap if `base_power` is ever added; the transformer sibling — `check_rating_values(::TwoWindingTransformer, ::Float64)` at `branchdata_checks.jl:284`, which takes `device_base_power = _get_base_power(xfrm)` and reads the rating fields off `get_circuit(xfrm)` — is the correct pattern.
 - `_set_units_base!` at `src/base.jl:574` — `IS.get_units_info` is nothing-unguarded for detached components on the display path; wants the `isnothing(...) && error(...)` guard matching `_get_system_base_power` (`src/models/components.jl`).
 - `src/base.jl:~3290` — copy-paste bug: `old_load.max_active_power` copied into `max_constant_reactive_power`. Known, pending a separate fix.
 - Setters bypass validation and `set_bus!` does not maintain `sys.bus_numbers` — mutation after `add_component!` is convention-trusted.
@@ -77,7 +90,7 @@ julia --project=docs docs/make.jl                                 # docs must bu
 julia --project=scripts/formatter -e 'include("scripts/formatter/formatter_code.jl")'   # always before done
 ```
 
-Compile-check after each edit: `julia --project=/home/jdlara/Sienna_work/psy6 -e 'using PowerSystems'`.
+Compile-check after each edit: `julia --project=<psy6-workspace-root> -e 'using PowerSystems'`.
 
 ## Working with the data model
 
