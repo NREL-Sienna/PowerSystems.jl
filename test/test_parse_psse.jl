@@ -561,6 +561,20 @@ end
     @test get_max_active_power(isl) == 0.11485
 end
 
+@testset "PSSE v35 load distributed generation netting (DGENM/DGENF)" begin
+    # Distributed generation is netted out of the load only when its in-service flag
+    # (DGENM) is nonzero.
+    sys = build_system(PSSEParsingTestSystems, "pti_v35_dgen_sys")
+    load_at(bus) =
+        only(get_components(l -> get_number(get_bus(l)) == bus, StandardLoad, sys))
+    in_service = load_at(2)       # DGENM = 1: netted
+    out_of_service = load_at(3)   # DGENM = 0: gross load kept
+    @test get_constant_active_power(in_service) ≈ 0.8     # (100 - 20) MW
+    @test get_constant_reactive_power(in_service) ≈ 0.2   # (25 - 5) Mvar
+    @test get_constant_active_power(out_of_service) ≈ 0.5    # 50 MW gross
+    @test get_constant_reactive_power(out_of_service) ≈ 0.1  # 10 Mvar gross
+end
+
 @testset "Test conversion zero impedance branch to switch" begin
     sys = build_system(
         PSSEParsingTestSystems,

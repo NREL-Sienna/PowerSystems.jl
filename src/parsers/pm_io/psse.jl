@@ -592,10 +592,13 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 dgenm = pop!(load, "DGENM", 0.0)
             end
 
-            # PSS(R)E models distributed generation as negative demand on the load record.
-            # Net active/reactive demand seen by PF should be gross load minus DGEN.
-            sub_data["pd"] = pop!(load, "PL") - dgenp
-            sub_data["qd"] = pop!(load, "QL") - dgenq
+            # PSS(R)E nets a load's distributed generation out of the demand only while it
+            # is in service. 
+            pl = pop!(load, "PL")
+            ql = pop!(load, "QL")
+            dgen_in_service = dgenm != 0
+            sub_data["pd"] = dgen_in_service ? pl - dgenp : pl
+            sub_data["qd"] = dgen_in_service ? ql - dgenq : ql
             sub_data["pi"] = pop!(load, "IP")
             sub_data["qi"] = pop!(load, "IQ")
             sub_data["py"] = pop!(load, "YP")
