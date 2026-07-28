@@ -720,8 +720,6 @@ end
 end
 
 @testset "PSSE ISW area-slack bus assignment" begin
-    base_dir = string(dirname(@__FILE__))
-
     # Benchmark_4ger_33_2015.RAW AREA DATA: area 1 (LEFT) ISW=1 -> bus 1 (raw IDE=2,
     # PV) is promoted to SLACK; area 2 (RIGHT) ISW=3 -> bus 3 (raw IDE=3, REF) is left
     # as REF since it is already the area's own swing bus.
@@ -731,16 +729,17 @@ end
     @test get_bustype(bus1) == ACBusTypes.SLACK
     @test get_bustype(bus3) == ACBusTypes.REF
 
-    # Crafted fixture (copy of Benchmark_4ger_33_2015.RAW with edited AREA DATA and an
-    # added INTER-AREA TRANSFER record): area 1 ISW=7 targets a PQ bus (malformed,
-    # warn, no SLACK); area 2 ISW=0 (untouched, no SLACK, no warning); area 3 ISW=999
-    # targets a bus number that doesn't exist (malformed, warn).
-    file_dir = joinpath(base_dir, "test_data", "area_slack_variants.raw")
+    # Fixture: area 1 ISW=7 targets a PQ bus (malformed, warn, no SLACK); area 2 ISW=0
+    # (untouched); area 3 ISW=999 targets a nonexistent bus (malformed, warn).
     sys2 = @test_logs(
         (:warn, r"ISW=7"),
         (:warn, r"ISW=999"),
         match_mode = :any,
-        System(file_dir),
+        build_system(
+            PSSEParsingTestSystems,
+            "pti_area_slack_variants_sys";
+            force_build = true,
+        ),
     )
     bus7 = only(get_components(x -> get_number(x) == 7, ACBus, sys2))
     @test get_bustype(bus7) == ACBusTypes.PQ
@@ -762,12 +761,9 @@ end
 end
 
 @testset "PSSE v35 populated SUBSTATION section parses" begin
-    # A v35 raw whose SUBSTATION section carries a node sub-block used to abort with
-    # `KeyError: "NODES"` in _populate_defaults!; the node-breaker section must be inert
-    # for the AC bus-branch model.
-    base_dir = string(dirname(@__FILE__))
-    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_substation.raw")
-    sys = System(file_dir; runchecks = false)
+    # A v35 raw whose SUBSTATION section carries a node sub-block; the node-breaker
+    # section must be inert for the AC bus-branch model.
+    sys = build_system(PSSEParsingTestSystems, "pti_v35_substation_sys")
     @test length(get_components(ACBus, sys)) == 3
     @test length(get_components(Generator, sys)) == 2
     @test length(get_components(ElectricLoad, sys)) == 1
@@ -778,9 +774,7 @@ end
     # RDC is a DC-circuit resistance in ohms; its per-unit base is the DC voltage VSCHD,
     # not the AC commutating base EBASR. Fixture: RDC=5 ohm, VSCHD=400 kV, EBASR=200 kV,
     # SBASE=100 MVA -> r = 5 / (400^2 / 100) = 0.003125 pu (the AC base would give 0.0125).
-    base_dir = string(dirname(@__FILE__))
-    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_two_terminal_dc.raw")
-    sys = System(file_dir; runchecks = false)
+    sys = build_system(PSSEParsingTestSystems, "pti_v35_two_terminal_dc_sys")
     lcc = only(get_components(TwoTerminalLCCLine, sys))
     rdc_ohms = 5.0
     vschd_kv = 400.0
