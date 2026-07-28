@@ -114,11 +114,11 @@ Omitting `interval` when multiple intervals exist for the same name will raise a
 
 ## Data Storage
 
-By default PowerSystems stores time series data in an HDF5 file.
-This prevents
+By default PowerSystems stores time series data on disk, as a NetCDF file with a sidecar
+SQLite catalog. This prevents
 large datasets from overwhelming system memory. Refer to this
 [page](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/dev_guide/time_series/#Data-Format)
-for details on how the time series data is stored in HDF5 files.
+for details on how the time series data is stored.
 
 Time series data can be stored actual component values (for instance MW) or scaling
 factors intended to be multiplied by a scalar to generate the component values.

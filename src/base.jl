@@ -83,26 +83,27 @@ System(; kwargs...)
 - `frequency::Float64`: (default = 60.0) Operating frequency (Hz).
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidValue if an error is found.
-- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
-- `time_series_directory::Union{Nothing, String}`: Directory for the time series HDF5 file.
-    Defaults to the tmp file system.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of on disk.
+- `time_series_directory::Union{Nothing, String}`: Directory for the time series storage
+    files. Defaults to the tmp file system.
 - `time_series_read_only::Bool=false`: Open the time series store in read-only mode.
     This is useful for reading time series data without modifying it.
-- `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
-- `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
+- `enable_compression::Bool=false`: Enable compression of time series data.
+- `compression::CompressionSettings`: Allows customization of the compression settings.
 - `config_path::String`: specify path to validation config file
 - `internal::IS.InfrastructureSystemsInternal`: Internal structure for [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a `System` manually.
 
-By default, time series data is stored in an HDF5 file in the tmp file system to prevent
-large datasets from overwhelming system memory (see [Data Storage](@ref)).
+By default, time series data is stored on disk (as a NetCDF file with a sidecar SQLite
+catalog) in the tmp file system to prevent large datasets from overwhelming system memory
+(see [Data Storage](@ref)).
 **If the system's time series data will be larger than the amount of tmp space available**, use the
 `time_series_directory` parameter to change its location.
 You can also override the location by setting the environment
 variable `SIENNA_TIME_SERIES_DIRECTORY` to another directory.
 
-HDF5 compression is not enabled by default, but you can enable
+Compression is not enabled by default, but you can enable
 it with `enable_compression` to get significant storage savings at the cost of CPU time.
-[`CompressionSettings`](@ref) can be used to customize the HDF5 compression.
+[`CompressionSettings`](@ref) can be used to customize the compression.
 
 If you know that your dataset will fit in your computer's memory, then you can increase
 performance by storing it in memory with `time_series_in_memory`.
@@ -115,7 +116,7 @@ sys = System(path_to_my_json_file)
 sys = System(100.0; enable_compression = true)
 sys = System(100.0; compression = CompressionSettings(
     enabled = true,
-    type = CompressionTypes.DEFLATE,  # BLOSC is also supported
+    type = CompressionTypes.DEFLATE,
     level = 3,
     shuffle = true)
 )
@@ -928,8 +929,8 @@ end
 """
 Open a batch of time series work and run `func` on it, inside a store transaction.
 
-Pass the yielded context to each `add_time_series!` in the block and they are buffered
-and written as one bulk call, which is much faster than adding them one at a time.
+Call `add_time_series!` on the yielded transaction and the additions are buffered and
+written as one bulk call, which is much faster than adding them one at a time.
 
 The block is also a transaction. If it throws, everything it did is rolled back —
 including removals, which are irreversible outside a block. Blocks nest
@@ -942,15 +943,15 @@ block to the writes.
 ```julia
 # Assume there is a system with an array of Components and SingleTimeSeries
 # stored in the variables components and single_time_series, respectively
-time_series_transaction(sys) do context
+time_series_transaction(sys) do txn
     for (component, ts) in zip(components, single_time_series)
-        add_time_series!(sys, component, ts; context = context)
+        add_time_series!(txn, component, ts)
     end
 end
 ```
 """
-function time_series_transaction(func::Function, sys::System)
-    return IS.time_series_transaction(func, sys.data)
+function time_series_transaction(func::Function, sys::System; kwargs...)
+    return IS.time_series_transaction(func, sys.data; kwargs...)
 end
 
 """
@@ -1533,12 +1534,9 @@ function add_time_series!(
     sys::System,
     component::Component,
     time_series::TimeSeriesData;
-    context::Union{Nothing, IS.TimeSeriesContext} = nothing,
     features...,
 )
-    return IS.add_time_series!(
-        sys.data, component, time_series; context = context, features...,
-    )
+    return IS.add_time_series!(sys.data, component, time_series; features...)
 end
 
 """
@@ -1555,12 +1553,9 @@ function add_time_series!(
     sys::System,
     components,
     time_series::TimeSeriesData;
-    context::Union{Nothing, IS.TimeSeriesContext} = nothing,
     features...,
 )
-    return IS.add_time_series!(
-        sys.data, components, time_series; context = context, features...,
-    )
+    return IS.add_time_series!(sys.data, components, time_series; features...)
 end
 
 #=
@@ -1660,6 +1655,28 @@ build_forecast_reader(
     features...,
 ) where {T <: Forecast} =
     IS.build_forecast_reader(sys.data, T; resolution = resolution, name = name, features...)
+
+"""
+Build a `StaticTimeSeriesReader` over every `SingleTimeSeries` in the system.
+`resolution` is required and pins the reader to one resolution; `name` and
+`features` further narrow the match.
+
+Drive the reader with `read_static_time_series_values!` and read each entry with
+`get_static_time_series_value`. Series with the same element type are packed into one
+columnar group and served by a single storage read per timestamp.
+"""
+build_static_time_series_reader(
+    sys::System;
+    resolution::Dates.Period,
+    name::Union{Nothing, AbstractString} = nothing,
+    features...,
+) =
+    IS.build_static_time_series_reader(
+        sys.data;
+        resolution = resolution,
+        name = name,
+        features...,
+    )
 
 """
 Return a sorted Vector of distinct resolutions for all time series of the given type

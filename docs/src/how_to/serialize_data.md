@@ -40,7 +40,7 @@ Notice in the `Info` statements that the serialization process stores 3 files:
 
  1. System data file (`*.json` file)
  2. Validation data file (`*.json` file)
- 3. Time Series data file (`*.h5` file)
+ 3. Time Series data files (`*.nc` file with a `*.sqlite` catalog)
 
 ## Viewing `PowerSystems` Data in JSON Format
 

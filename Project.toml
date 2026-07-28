@@ -4,6 +4,7 @@ version = "5.10.0"
 authors = ["Jose Daniel Lara", "Daniel Thom", "Rodrigo Henriquez-Auba", "Gabriel Konar-Steenberg", "Clayton Barrows"]
 
 [deps]
+InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
@@ -16,8 +17,14 @@ TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 Unicode = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+# InfraStore is not registered yet, so it cannot resolve from a registry.
+# Pkg only honors the [sources] section of the root project, so every
+# environment that depends on IS needs its own entry (and InfraStore must be a
+# direct dependency for the source to apply). Drop this once InfraStore is
+# registered.
 [sources]
-InfrastructureSystems = {path = "../IS3.jl"}
+InfraStore = {path = "../../infrastore/julia/InfraStore.jl"}
+InfrastructureSystems = {rev = "feat/rust-time-series-store", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
 
 [compat]
 DataStructures = "^0.19"

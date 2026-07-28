@@ -397,6 +397,8 @@ export ForecastCache
 export StaticTimeSeriesCache
 export ForecastReader
 export ForecastReaderEntry
+export StaticTimeSeriesReader
+export StaticTimeSeriesReaderEntry
 # from IS time_series_metadata_store.jl and defined for System in base.jl
 export get_static_time_series_summary_table
 export get_forecast_summary_table
@@ -506,6 +508,12 @@ export get_forecast_window
 export get_forecast_reader_timeline
 export get_forecast_reader_entries
 export get_num_forecast_slots
+export build_static_time_series_reader
+export read_static_time_series_values!
+export get_static_time_series_value
+export get_static_time_series_reader_grid
+export get_static_time_series_reader_entries
+export get_num_static_time_series_groups
 export get_scenario_count
 export get_percentiles
 export get_next_time_series_array!
@@ -715,6 +723,8 @@ import InfrastructureSystems:
     StaticTimeSeriesCache,
     ForecastReader,
     ForecastReaderEntry,
+    StaticTimeSeriesReader,
+    StaticTimeSeriesReaderEntry,
     TimeSeriesKey,
     TimeSeriesCounts,
     InfrastructureSystemsComponent,
@@ -747,6 +757,7 @@ import InfrastructureSystems:
     get_internal,
     iterate_windows,
     get_time_series,
+    add_time_series!,
     has_time_series,
     get_time_series_type,
     get_time_series_array,
@@ -759,6 +770,11 @@ import InfrastructureSystems:
     get_forecast_reader_timeline,
     get_forecast_reader_entries,
     get_num_forecast_slots,
+    read_static_time_series_values!,
+    get_static_time_series_value,
+    get_static_time_series_reader_grid,
+    get_static_time_series_reader_entries,
+    get_num_static_time_series_groups,
     show_time_series,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports

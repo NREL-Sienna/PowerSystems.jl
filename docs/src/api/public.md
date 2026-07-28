@@ -97,8 +97,9 @@ Modules = [IS]
 Pages   = ["time_series_cache.jl",
             "time_series_interface.jl",
             "time_series_structs.jl",
-            "time_series_storage.jl",
+            "store.jl",
             "time_series_parser.jl",
+            "infrastore.jl",
             "utils/print.jl"]
 Order = [:type, :function]
 Filter = t -> (t isa DataType || t isa UnionAll || t isa Function) && nameof(t) in names(PowerSystems)

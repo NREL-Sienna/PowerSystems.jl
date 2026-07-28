@@ -371,6 +371,57 @@ end
     @test get_forecast_window(reader, 2) == get_forecast_window(reader, 1)
 end
 
+@testset "Test static time series reader" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gens = ThermalStandard[]
+    for i in 1:2
+        gen = ThermalStandard(nothing)
+        gen.name = string(i)
+        gen.bus = bus
+        add_component!(sys, gen)
+        push!(gens, gen)
+    end
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    len = 24
+    timestamps = range(initial_time; length = len, step = resolution)
+    arrays = [collect(1.0:len) .* i for i in 1:2]
+    for (gen, vals) in zip(gens, arrays)
+        add_time_series!(
+            sys,
+            gen,
+            SingleTimeSeries(;
+                data = TimeSeries.TimeArray(timestamps, vals),
+                name = "max_active_power",
+            ),
+        )
+    end
+
+    reader = build_static_time_series_reader(sys; resolution = resolution)
+    @test reader isa StaticTimeSeriesReader
+    @test length(reader) == 2
+    # Both scalar series pack into one columnar group: one read per timestamp.
+    @test get_num_static_time_series_groups(reader) == 1
+    entries = get_static_time_series_reader_entries(reader)
+    @test Set(get_name(e.owner) for e in entries) == Set(["1", "2"])
+
+    grid = get_static_time_series_reader_grid(reader)
+    @test grid.initial_timestamp == initial_time
+    @test grid.length == len
+
+    by_name = Dict(get_name(e.owner) => i for (i, e) in enumerate(entries))
+    for (k, timestamp) in enumerate(timestamps)
+        read_static_time_series_values!(reader, timestamp)
+        for i in 1:2
+            @test get_static_time_series_value(reader, by_name["$i"]) == arrays[i][k]
+        end
+    end
+end
+
 @testset "Test bulk add of time series" begin
     sys = System(100.0)
     bus = ACBus(nothing)
@@ -389,10 +440,10 @@ end
     arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
     ts_name = "test"
 
-    time_series_transaction(sys) do context
+    time_series_transaction(sys) do txn
         for (i, ta) in enumerate(arrays)
             ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
-            add_time_series!(sys, component, ts; context = context)
+            add_time_series!(txn, component, ts)
         end
     end
 
@@ -422,10 +473,10 @@ end
     arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
     ts_name = "test"
 
-    time_series_transaction(sys) do context
+    time_series_transaction(sys) do txn
         for (i, ta) in enumerate(arrays)
             ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
-            add_time_series!(sys, component, ts; context = context)
+            add_time_series!(txn, component, ts)
         end
     end
 
@@ -435,12 +486,12 @@ end
     end
 
     # A throw inside the block rolls back everything it buffered.
-    @test_throws ErrorException time_series_transaction(sys) do context
+    @test_throws ErrorException time_series_transaction(sys) do txn
         ts = SingleTimeSeries(;
             data = TimeSeries.TimeArray(timestamps, rand(len)),
             name = "rolled_back",
         )
-        add_time_series!(sys, component, ts; context = context)
+        add_time_series!(txn, component, ts)
         error("abort the transaction")
     end
     @test isempty(

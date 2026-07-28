@@ -224,7 +224,7 @@ function create_system_with_outages()
     gen2 = gens[2]
     geo1 = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [1.0, 2.0]))
     geo2 = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [3.0, 4.0]))
-    time_series_transaction(sys) do context
+    time_series_transaction(sys) do txn
         begin_supplemental_attributes_update(sys) do
             add_supplemental_attribute!(sys, gen1, geo1)
             add_supplemental_attribute!(sys, gen1.bus, geo1)
@@ -252,7 +252,7 @@ function create_system_with_outages()
                 ta = TimeSeries.TimeArray(dates, data, ["1"])
                 name = "ts_$(i)"
                 ts = SingleTimeSeries(; name = name, data = ta)
-                add_time_series!(sys, outage, ts; context = context)
+                add_time_series!(txn, outage, ts)
             end
         end
     end

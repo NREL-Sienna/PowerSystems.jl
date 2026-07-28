@@ -118,8 +118,8 @@ data = Dict(
 # Get components
 generators = collect(get_components(ThermalStandard, sys))
 
-# Use context manager for efficient bulk addition
-time_series_transaction(sys) do context
+# Use a transaction for efficient bulk addition
+time_series_transaction(sys) do txn
     for (i, gen) in enumerate(generators)
         forecast = Deterministic(
             "max_active_power",
@@ -127,7 +127,7 @@ time_series_transaction(sys) do context
             resolution;
             scaling_factor_multiplier = get_max_active_power,
         )
-        add_time_series!(sys, gen, forecast; context = context)
+        add_time_series!(txn, gen, forecast)
     end
 end
 ```
@@ -136,7 +136,7 @@ end
 
 ```julia
 # When you have time series data from multiple sources
-time_series_transaction(sys) do context
+time_series_transaction(sys) do txn
     for component in get_components(Generator, sys)
         # Create time series data specific to each component
         # (In practice, this might come from CSV files, databases, or other sources)
@@ -151,7 +151,7 @@ time_series_transaction(sys) do context
             resolution;
             scaling_factor_multiplier = get_max_active_power,
         )
-        add_time_series!(sys, component, forecast; context = context)
+        add_time_series!(txn, component, forecast)
     end
 end
 ```
@@ -159,8 +159,8 @@ end
 !!! tip
 
     When adding thousands of time series arrays, `time_series_transaction` can provide
-    large performance improvements — but only for the additions you pass the context to.
-    An `add_time_series!` inside the block that omits `context` writes on its own.
+    large performance improvements — but only for the additions made on the yielded
+    transaction. An `add_time_series!` on `sys` inside the block writes on its own.
 
 ## Best Practices
 

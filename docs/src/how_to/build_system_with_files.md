@@ -669,9 +669,9 @@ for reg in regions
         scaling_factor_multiplier = get_max_active_power,
     )
     region = get_component(Area, sys, reg)
-    time_series_transaction(sys) do context
+    time_series_transaction(sys) do txn
         for component in get_components_in_aggregation_topology(PowerLoad, sys, region)
-            add_time_series!(sys, component, load_TS; context = context)
+            add_time_series!(txn, component, load_TS)
         end
     end
 end
