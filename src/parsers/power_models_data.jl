@@ -639,6 +639,20 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     )
 end
 
+function make_distributed_generation(load::ElectricLoad, d::Dict, sys_mbase::Float64)
+    return RenewableNonDispatch(;
+        name = string(get_name(load), "_dgen"),
+        available = Bool(d["dgen_status"]),
+        bus = get_bus(load),
+        active_power = d["dgenp"],
+        reactive_power = d["dgenq"],
+        rating = hypot(d["dgenp"], d["dgenq"]),
+        prime_mover_type = PrimeMovers.OT,
+        power_factor = 1.0,
+        base_power = sys_mbase,
+    )
+end
+
 function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading Load data in PowerModels dict to populate System ..."
 
@@ -675,6 +689,16 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
             )
         end
         add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
+
+        if get(d, "dgenp", 0.0) != 0.0 || get(d, "dgenq", 0.0) != 0.0
+            dgen = make_distributed_generation(load, d, sys_mbase)
+            has_component(RenewableNonDispatch, sys, get_name(dgen)) && throw(
+                DataFormatError(
+                    "Found duplicate distributed generation names of $(summary(dgen)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
+            add_component!(sys, dgen; skip_validation = SKIP_PM_VALIDATION)
+        end
     end
 end
 
