@@ -410,17 +410,17 @@ end
 
 @testset "TransformerCircuit base_value anchor lifecycle" begin
     sys = System(100.0)
-    b1 = ACBus(nothing);
-    set_name!(b1, "b1");
+    b1 = ACBus(nothing)
+    set_name!(b1, "b1")
     set_number!(b1, 1)
-    b2 = ACBus(nothing);
-    set_name!(b2, "b2");
+    b2 = ACBus(nothing)
+    set_name!(b2, "b2")
     set_number!(b2, 2)
-    b3 = ACBus(nothing);
-    set_name!(b3, "b3");
+    b3 = ACBus(nothing)
+    set_name!(b3, "b3")
     set_number!(b3, 3)
-    star = ACBus(nothing);
-    set_name!(star, "star");
+    star = ACBus(nothing)
+    set_name!(star, "star")
     set_number!(star, 901)
     for b in (b1, b2, b3, star)
         set_base_voltage!(b, 100.0)
@@ -428,8 +428,8 @@ end
         add_component!(sys, b)
     end
     set_bustype!(b1, ACBusTypes.REF)
-    a1 = Arc(b1, star);
-    a2 = Arc(b2, star);
+    a1 = Arc(b1, star)
+    a2 = Arc(b2, star)
     a3 = Arc(b3, star)
     foreach(a -> add_component!(sys, a), (a1, a2, a3))
     t3w = ThreeWindingTransformer(nothing)

@@ -147,8 +147,8 @@ end
     # (3) A sum loop over the getter is allocation-free once compiled.
     gens = collect(get_components(ThermalStandard, sys))
     sum_strip(gs, u) = (s = 0.0; for g in gs
-            s += Unitful.ustrip(get_active_power_unitful(g, u))
-        end; s)
+        s += Unitful.ustrip(get_active_power_unitful(g, u))
+    end; s)
     for u in (SU, DU, NU)
         sum_strip(gens, u)  # warm up
         @test (@inferred sum_strip(gens, u)) isa Float64
@@ -358,17 +358,17 @@ end
 
 @testset "PSSE pairwise block is optional, all-or-none" begin
     sys = System(100.0)
-    b1 = ACBus(nothing);
-    set_name!(b1, "b1");
+    b1 = ACBus(nothing)
+    set_name!(b1, "b1")
     set_number!(b1, 1)
-    b2 = ACBus(nothing);
-    set_name!(b2, "b2");
+    b2 = ACBus(nothing)
+    set_name!(b2, "b2")
     set_number!(b2, 2)
-    b3 = ACBus(nothing);
-    set_name!(b3, "b3");
+    b3 = ACBus(nothing)
+    set_name!(b3, "b3")
     set_number!(b3, 3)
-    star = ACBus(nothing);
-    set_name!(star, "star");
+    star = ACBus(nothing)
+    set_name!(star, "star")
     set_number!(star, 901)
     for b in (b1, b2, b3, star)
         set_base_voltage!(b, 100.0)
@@ -376,8 +376,8 @@ end
         add_component!(sys, b)
     end
     set_bustype!(b1, ACBusTypes.REF)
-    a1 = Arc(b1, star);
-    a2 = Arc(b2, star);
+    a1 = Arc(b1, star)
+    a2 = Arc(b2, star)
     a3 = Arc(b3, star)
     foreach(a -> add_component!(sys, a), (a1, a2, a3))
     function _pairwise_test_3w(name)

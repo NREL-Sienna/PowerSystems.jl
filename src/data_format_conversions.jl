@@ -185,11 +185,6 @@ function _convert_data!(
             component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
             continue
         end
-        if component["__metadata__"]["type"] ∈ ("Transformer2W", "TapTransformer") &&
-           "winding_group_number" ∉ keys(component)
-            component["winding_group_number"] = WindingGroupNumber.GROUP_0
-            continue
-        end
     end
     =#
     return

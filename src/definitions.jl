@@ -232,38 +232,6 @@ in the power system model, particularly in relation to tap-changing transformers
 " WindingCategory
 
 IS.@scoped_enum(
-    WindingGroupNumber,
-    UNDEFINED = -99,
-    GROUP_0 = 0, # 0 Degrees
-    GROUP_1 = 1, # -30 Degrees
-    GROUP_5 = 5, # -150 Degrees
-    GROUP_6 = 6, # 180 Degrees
-    GROUP_7 = 7, # 150 Degrees
-    GROUP_11 = 11, # 30 Degrees
-)
-@doc"
-    WindingGroupNumber
-
-Enumeration defining transformer winding group numbers based on IEC 60076-1 standard.
-These numbers represent the phase displacement between primary and secondary windings
-of three-phase transformers.
-
-# Valid Values
-- `UNDEFINED = -99`: Undefined or unspecified winding group
-- `GROUP_0 = 0`: 0° phase displacement (Yy0, Dd0, Dz0)
-- `GROUP_1 = 1`: -30° phase displacement (Yy1, Dd1, Dz1)
-- `GROUP_5 = 5`: -150° phase displacement (Yy5, Dd5, Dz5)
-- `GROUP_6 = 6`: 180° phase displacement (Yy6, Dd6, Dz6)
-- `GROUP_7 = 7`: 150° phase displacement (Yy7, Dd7, Dz7)
-- `GROUP_11 = 11`: 30° phase displacement (Yy11, Dd11, Dz11)
-
-# Notes
-The phase displacement is measured from the primary to secondary winding, with
-positive angles representing a lead and negative angles representing a lag.
-Clock notation follows the convention where each hour represents 30°.
-" WindingGroupNumber
-
-IS.@scoped_enum(
     ImpedanceCorrectionTransformerControlMode,
     PHASE_SHIFT_ANGLE = 1,
     TAP_RATIO = 2,

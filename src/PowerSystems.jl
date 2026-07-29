@@ -323,7 +323,6 @@ export remove_monitored_components!
 # Impedance Correction Data
 export ImpedanceCorrectionData
 export WindingCategory
-export WindingGroupNumber
 export ImpedanceCorrectionTransformerControlMode
 
 export get_table_number

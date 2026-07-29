@@ -446,13 +446,6 @@
                     "default": "0.0"
                 },
                 {
-                    "name": "winding_group_number",
-                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) due to the connection group configuration",
-                    "null_value": "WindingGroupNumber.UNDEFINED",
-                    "data_type": "WindingGroupNumber",
-                    "default": "WindingGroupNumber.UNDEFINED"
-                },
-                {
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
