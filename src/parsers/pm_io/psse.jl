@@ -592,13 +592,13 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 dgenm = pop!(load, "DGENM", 0.0)
             end
 
-            # PSS(R)E nets a load's distributed generation out of the demand only while it
-            # is in service. 
-            pl = pop!(load, "PL")
-            ql = pop!(load, "QL")
-            dgen_in_service = dgenm != 0
-            sub_data["pd"] = dgen_in_service ? pl - dgenp : pl
-            sub_data["qd"] = dgen_in_service ? ql - dgenq : ql
+            # The load keeps the gross demand; distributed generation (DGENP/DGENQ)
+            # becomes its own injector downstream, so the net injection matches PSS(R)E netting.
+            sub_data["pd"] = pop!(load, "PL")
+            sub_data["qd"] = pop!(load, "QL")
+            sub_data["dgenp"] = dgenp
+            sub_data["dgenq"] = dgenq
+            sub_data["dgen_status"] = dgenm == 0 ? 0 : 1
             sub_data["pi"] = pop!(load, "IP")
             sub_data["qi"] = pop!(load, "IQ")
             sub_data["py"] = pop!(load, "YP")
@@ -615,9 +615,6 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["ext"]["LOADTYPE"] = ""
             elseif pm_data["source_version"] == "35"
                 sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE", "")
-                sub_data["ext"]["DGENP"] = dgenp
-                sub_data["ext"]["DGENQ"] = dgenq
-                sub_data["ext"]["DGENM"] = dgenm
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
