@@ -756,7 +756,8 @@ end
     # Benchmark_4ger_33_2015.RAW AREA DATA: area 1 (LEFT) ISW=1 -> bus 1 (raw IDE=2,
     # PV) is promoted to SLACK; area 2 (RIGHT) ISW=3 -> bus 3 (raw IDE=3, REF) is left
     # as REF since it is already the area's own swing bus.
-    sys = System(joinpath(PSSE_RAW_DIR, "Benchmark_4ger_33_2015.RAW"))
+    sys =
+        build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys"; force_build = true)
     bus1 = only(get_components(x -> get_number(x) == 1, ACBus, sys))
     bus3 = only(get_components(x -> get_number(x) == 3, ACBus, sys))
     @test get_bustype(bus1) == ACBusTypes.SLACK
