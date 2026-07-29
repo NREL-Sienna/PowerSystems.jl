@@ -318,6 +318,8 @@ function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
             _apply_func!(load, "qi", rescale)
             _apply_func!(load, "py", rescale)
             _apply_func!(load, "qy", rescale)
+            _apply_func!(load, "dgenp", rescale)
+            _apply_func!(load, "dgenq", rescale)
         end
     end
 

@@ -561,6 +561,39 @@ end
     @test get_max_active_power(isl) == 0.11485
 end
 
+@testset "PSSE v35 load distributed generation as RenewableNonDispatch" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_v35_dgen_sys"; force_build = true)
+    load_at(bus) =
+        only(get_components(l -> get_number(get_bus(l)) == bus, StandardLoad, sys))
+    dgen_at(bus) =
+        only(get_components(g -> get_number(get_bus(g)) == bus, RenewableNonDispatch, sys))
+
+    # Loads carry the gross demand.
+    @test get_constant_active_power(load_at(2)) ≈ 1.0     # 100 MW
+    @test get_constant_reactive_power(load_at(2)) ≈ 0.25  # 25 Mvar
+    @test get_constant_active_power(load_at(3)) ≈ 0.5     # 50 MW
+    @test get_constant_reactive_power(load_at(3)) ≈ 0.1   # 10 Mvar
+
+    # DGENM = 1: the distributed generation is available.
+    dgen2 = dgen_at(2)
+    @test get_available(dgen2)
+    @test get_active_power(dgen2) ≈ 0.2     # 20 MW
+    @test get_reactive_power(dgen2) ≈ 0.05  # 5 Mvar
+
+    # DGENM = 0: present but unavailable.
+    dgen3 = dgen_at(3)
+    @test !get_available(dgen3)
+    @test get_active_power(dgen3) ≈ 0.15    # 15 MW
+    @test get_reactive_power(dgen3) ≈ 0.03  # 3 Mvar
+
+    # Net injection at each bus still matches the PSS(R)E netting.
+    net_p(bus) =
+        get_constant_active_power(load_at(bus)) -
+        (get_available(dgen_at(bus)) ? get_active_power(dgen_at(bus)) : 0.0)
+    @test net_p(2) ≈ 0.8
+    @test net_p(3) ≈ 0.5
+end
+
 @testset "Test conversion zero impedance branch to switch" begin
     sys = build_system(
         PSSEParsingTestSystems,
