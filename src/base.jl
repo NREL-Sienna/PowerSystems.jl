@@ -350,8 +350,9 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
 
     # It would be faster to create an empty system and then populate it with
     # deep copies of each component in the subsystem. It would also result in a "clean" HDF5
-    # file (the result here will have deleted entries that need to repacked through
-    # serialization/de-serialization). That is not implemented because
+    # file: the result here is a copy of the original artifact with the filtered-out entries
+    # removed, so it keeps their space, and serializing/deserializing does not repack it
+    # (the artifact is copied byte-for-byte). That is not implemented because
     # 1. The performance loss should not be too large.
     # 2. We haven't yet implemented deepcopy(Component).
     # 3. There is extra code complexity in adding copied components in the correct order
@@ -1740,10 +1741,11 @@ end
 """
 Clear all time series data from the system.
 
-If you are storing time series data in an HDF5 file, this will
-will delete the HDF5 file and create a new one.
+If you are storing time series data on disk, this removes every association and frees the
+underlying arrays in place; it does not shrink the `.h5` file.
 
-See also: [`remove_time_series!`](@ref remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData})
+See also: [`remove_time_series!`](@ref remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}),
+which describes how to reclaim that space.
 """
 function clear_time_series!(sys::System)
     return IS.clear_time_series!(sys.data)
@@ -1781,11 +1783,16 @@ Remove all the time series data for a time series type.
 
 See also: [`clear_time_series!`](@ref)
 
-If you are storing time series data in an HDF5 file, `remove_time_series!` does
-not actually free up file space (HDF5 behavior). If you want to remove all or
-most time series instances then consider using `clear_time_series!`. It
-will delete the HDF5 file and create a new one. PowerSystems has plans to
-automate this type of workflow.
+If you are storing time series data on disk, `remove_time_series!` does not free up file
+space (HDF5 behavior): the arrays are dropped, but the `.h5` file does not shrink. Small
+arrays share packed datasets and their slots are reused by later additions; the space held
+by a large standalone array is not returned. `clear_time_series!` behaves the same way —
+it removes everything but leaves the file the same size — and serializing and
+deserializing the system does not repack it either, since the artifact is copied
+byte-for-byte.
+
+To actually reclaim the space, build a fresh `System` and add only the components and time
+series you want to keep, which writes a new file.
 """
 function remove_time_series!(
     sys::System,
