@@ -1,0 +1,106 @@
+name: Codecov Auth Probe
+
+# TEMPORARY diagnostic workflow. Delete before merging.
+#
+# Codecov uploads stopped on 2026-04-17, when the GitHub org was renamed
+# NREL-Sienna -> Sienna-Platform. Every upload since fails with
+# {"message":"Repository not found"} because PowerSystems.jl has no repo-level
+# CODECOV_TOKEN secret and inherits a stale org-level one.
+#
+# This probe tests each auth strategy independently against a synthetic lcov
+# report, so a single run answers "which auth works" in seconds instead of
+# waiting 45 minutes for the real suite.
+
+on:
+  push:
+    branches:
+      - jd/restore-codecov
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  probe:
+    name: "probe: ${{ matrix.name }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - v5-oidc
+          - v5-tokenless
+          - v5-token-only
+          - v5-token-with-slug
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Synthesize a minimal lcov report
+        run: |
+          cat > lcov.info <<'EOF'
+          TN:
+          SF:src/PowerSystems.jl
+          DA:1,1
+          DA:2,1
+          DA:3,0
+          LF:3
+          LH:2
+          end_of_record
+          EOF
+          cat lcov.info
+
+      - name: Report the token situation
+        env:
+          TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "CODECOV_TOKEN is present (length ${#TOKEN})"
+          else
+            echo "CODECOV_TOKEN is EMPTY or unset"
+          fi
+
+      - name: v5 + OIDC (no token)
+        if: matrix.name == 'v5-oidc'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./lcov.info
+          disable_search: true
+          flags: probe
+          use_oidc: true
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: v5 tokenless (public repo)
+        if: matrix.name == 'v5-tokenless'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./lcov.info
+          disable_search: true
+          flags: probe
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: v5 + inherited token
+        if: matrix.name == 'v5-token-only'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./lcov.info
+          disable_search: true
+          flags: probe
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: v5 + inherited token + explicit slug
+        if: matrix.name == 'v5-token-with-slug'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./lcov.info
+          disable_search: true
+          flags: probe
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Sienna-Platform/PowerSystems.jl
+          fail_ci_if_error: true
+          verbose: true
