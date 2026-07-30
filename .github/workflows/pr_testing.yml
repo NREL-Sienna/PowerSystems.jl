@@ -44,3 +44,5 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+          # Required when CODECOV_TOKEN is an organization-level token.
+          slug: ${{ github.repository }}

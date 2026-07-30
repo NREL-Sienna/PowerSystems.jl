@@ -9,7 +9,6 @@ coverage:
   status:
     project:                   # measuring the overall project coverage
       default:                 # context, you can create multiple ones with custom titles
-        enabled: yes           # must be yes|true to enable this status
         target: auto           # specify the target coverage for each commit status
                                #   option: "auto" (must increase from parent commit or pull request base)
                                #   option: "X%" a static target percentage to hit
@@ -19,14 +18,6 @@ coverage:
     patch:
       default:
         target: 70
-
-parsers:
-  gcov:
-    branch_detection:
-      conditional: yes
-      loop: yes
-      method: no
-      macro: no
 
 comment:
   layout: "reach,diff,flags,tree"

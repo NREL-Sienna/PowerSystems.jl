@@ -5,13 +5,13 @@ name: Codecov Token Check
 # Uploads a synthetic lcov report so the Codecov auth path can be verified in
 # seconds instead of waiting ~45 minutes for the real test suite.
 #
-# Run it (manually) right after setting the repo-level CODECOV_TOKEN secret:
 #   gh workflow run codecov-probe.yml --ref jd/restore-codecov
 #
-# Green  => the token is valid and coverage reporting is restored.
-# 404    => the token still does not resolve to Sienna-Platform/PowerSystems.jl.
+# An organization-level upload token requires the repository slug to be passed
+# explicitly; a repo-level token does not. This runs both so the logs say which
+# one the configured token needs.
 #
-# The upload lands under the `probe` flag so it does not disturb the real
+# Uploads land under the `probe` flag so they do not disturb the real
 # `unittests` coverage numbers.
 
 on:
@@ -19,7 +19,15 @@ on:
 
 jobs:
   check:
+    name: "token check: ${{ matrix.name }}"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - with-slug
+          - without-slug
+
     steps:
       - uses: actions/checkout@v4
 
@@ -47,7 +55,21 @@ jobs:
           EOF
           cat lcov.info
 
-      - uses: codecov/codecov-action@v5
+      - name: Upload with explicit slug (organization token)
+        if: matrix.name == 'with-slug'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./lcov.info
+          disable_search: true
+          flags: probe
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ github.repository }}
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload without slug (repository token)
+        if: matrix.name == 'without-slug'
+        uses: codecov/codecov-action@v5
         with:
           files: ./lcov.info
           disable_search: true
