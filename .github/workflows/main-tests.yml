@@ -18,23 +18,33 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@latest
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
-      - uses: julia-actions/julia-buildpkg@latest
+      - uses: julia-actions/julia-buildpkg@v1
         env:
           PYTHON: ""
-      - uses: julia-actions/julia-runtest@latest
+      - uses: julia-actions/julia-runtest@v1
         continue-on-error: ${{ matrix.julia-version == 'nightly' }}
         env:
           PYTHON: ""
+      # Report coverage from a single job. Uploading all six matrix legs sent
+      # duplicate reports per commit, including from nightly runs whose tests
+      # were allowed to fail.
       - uses: julia-actions/julia-processcoverage@v1
-      - uses: codecov/codecov-action@v1
+        if: matrix.os == 'ubuntu-latest' && matrix.julia-version == '1'
+      # Hard-fail on upload errors. A silent `false` here let uploads 404 for
+      # three months (2026-04-17 onward) while CI stayed green.
+      - uses: codecov/codecov-action@v5
+        if: matrix.os == 'ubuntu-latest' && matrix.julia-version == '1'
         with:
-          file: ./lcov.info
+          files: ./lcov.info
+          disable_search: true
           flags: unittests
           name: codecov-umbrella
-          fail_ci_if_error: false
+          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          # Required when CODECOV_TOKEN is an organization-level token.
+          slug: ${{ github.repository }}
