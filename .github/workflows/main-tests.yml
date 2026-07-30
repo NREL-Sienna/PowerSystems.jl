@@ -30,11 +30,18 @@ jobs:
         continue-on-error: ${{ matrix.julia-version == 'nightly' }}
         env:
           PYTHON: ""
+      # Coverage is reported from a single job: the matrix would otherwise submit six
+      # reports per commit, and the Windows ones carry backslash paths Codecov cannot
+      # match against the repo tree.
       - uses: julia-actions/julia-processcoverage@v1
-      - uses: codecov/codecov-action@v1
+        if: matrix.os == 'ubuntu-latest' && matrix.julia-version == '1'
+      - uses: codecov/codecov-action@v7
+        if: matrix.os == 'ubuntu-latest' && matrix.julia-version == '1'
         with:
-          file: ./lcov.info
+          files: ./lcov.info
+          disable_search: true
           flags: unittests
           name: codecov-umbrella
-          fail_ci_if_error: false
+          slug: ${{ github.repository }}
+          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
