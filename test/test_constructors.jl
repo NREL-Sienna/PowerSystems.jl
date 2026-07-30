@@ -15,7 +15,8 @@
         nothing,
     )
 
-    @test PowerSystems.get_bustype(bus) == ACBusTypes.REF
+    # SLACK is preserved as an explicit area-slack marker; no longer collapsed to REF.
+    @test PowerSystems.get_bustype(bus) == ACBusTypes.SLACK
 end
 
 @testset "Generation Constructors" begin
