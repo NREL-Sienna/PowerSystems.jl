@@ -93,7 +93,7 @@ System(; kwargs...)
 - `config_path::String`: specify path to validation config file
 - `internal::IS.InfrastructureSystemsInternal`: Internal structure for [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a `System` manually.
 
-By default, time series data is stored on disk (as a NetCDF file with a sidecar SQLite
+By default, time series data is stored on disk (as an HDF5 file with a sidecar SQLite
 catalog) in the tmp file system to prevent large datasets from overwhelming system memory
 (see [Data Storage](@ref)).
 **If the system's time series data will be larger than the amount of tmp space available**, use the

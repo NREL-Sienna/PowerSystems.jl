@@ -7,7 +7,7 @@ multiple times.
 
 ## Choosing the Storage Location
 
-By default, time series data is stored on disk (as a NetCDF file with a sidecar SQLite
+By default, time series data is stored on disk (as an HDF5 file with a sidecar SQLite
 catalog) in the tmp file system to prevent large datasets from overwhelming system memory.
 However, you can change its location.
 

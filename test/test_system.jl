@@ -779,7 +779,8 @@ end
 @testset "Test with compression enabled" begin
     @test get_compression_settings(System(100.0)) == CompressionSettings(; enabled = false)
 
-    # The Rust/NetCDF time-series backend supports DEFLATE only; BLOSC was an HDF5-ism.
+    # The Rust/HDF5 time-series backend supports DEFLATE only; BLOSC came from the
+    # older HDF5.jl-based store.
     settings = CompressionSettings(; enabled = true, type = CompressionTypes.DEFLATE)
     @test get_compression_settings(System(100.0; compression = settings)) == settings
     @test get_compression_settings(System(100.0; enable_compression = true)) ==
