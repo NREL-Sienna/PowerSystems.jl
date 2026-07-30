@@ -112,6 +112,28 @@ remove_time_series!(sys, DeterministicSingleTimeSeries, component, "max_active_p
 Omitting `interval` when multiple intervals exist for the same name will raise an
 `ArgumentError`.
 
+## Reading by Timestamp
+
+[`get_time_series_array`](@ref) and its variants are *series-oriented*: they return one
+component's whole array. Simulations need the transpose — every component's value at one
+timestamp, then the next — and cannot afford to hold every array in memory to get it.
+
+PowerSystems provides two *cross-sectional* readers for this. Build one once against a
+filter, then drive it forward through time:
+
+  - [`build_static_time_series_reader`](@ref) covers [`SingleTimeSeries`](@ref). Series
+    sharing an element type are packed into one columnar group and served by a single
+    storage read per timestamp.
+  - [`build_forecast_reader`](@ref) covers forecasts, returning each component's window.
+    Components whose forecasts are backed by the same array collapse into a single *slot*
+    and are read once per timestamp regardless of how many reference it — which is the
+    common case after [`transform_single_time_series!`](@ref).
+
+Each read touches only the values for the requested timestamp, so cost scales with the
+fleet's cross-section rather than with the length of its history.
+
+See [Read Time Series Data by Timestamp](@ref read_ts_by_timestamp).
+
 ## Data Storage
 
 By default PowerSystems stores time series data on disk, as an HDF5 file with a sidecar

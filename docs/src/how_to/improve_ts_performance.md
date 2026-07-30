@@ -109,6 +109,10 @@ Components that share a time series array are read from storage once per timesta
 regardless of how many components reference the data, and sweeping through timestamps in
 order reads each storage chunk once.
 
+The skeletons below are the performance recipe. For a complete worked example with output,
+how to filter what a reader covers, and the semantics worth knowing before you rely on one,
+see [Read Time Series Data by Timestamp](@ref read_ts_by_timestamp).
+
 ### Forecasts
 
 Build a [`ForecastReader`](@ref) over every forecast of one type at one resolution with
@@ -131,6 +135,11 @@ end
 Forecasts that share an underlying array — for example, one forecast added to a collection
 of components — collapse to a single physical read per timestamp; see
 [`get_num_forecast_slots`](@ref).
+
+!!! warning
+
+    Entries that share a slot get back the **same array object**, not a copy. Treat the
+    windows as read-only — mutating one mutates what every component in that slot sees.
 
 ### Static time series
 
