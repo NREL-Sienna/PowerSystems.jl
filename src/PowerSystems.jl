@@ -423,6 +423,7 @@ export add_time_series!
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
+export compact_time_series!
 export copy_time_series!
 export copy_subcomponent_time_series!
 export add_component!

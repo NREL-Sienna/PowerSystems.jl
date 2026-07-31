@@ -1742,13 +1742,31 @@ end
 Clear all time series data from the system.
 
 If you are storing time series data on disk, this removes every association and frees the
-underlying arrays in place; it does not shrink the `.h5` file.
-
-See also: [`remove_time_series!`](@ref remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}),
-which describes how to reclaim that space.
+underlying arrays in place; it does not shrink the `.h5` file. Call
+[`compact_time_series!`](@ref) to reclaim that space.
 """
 function clear_time_series!(sys::System)
     return IS.clear_time_series!(sys.data)
+end
+
+"""
+Reclaim the space that removed time series left behind, returning an
+`InfraStore.CompactionReport` (`slots_reclaimed`, `feature_sets_reclaimed`,
+`timestamp_sets_reclaimed`, `bytes_reclaimed`).
+
+HDF5 cannot hand freed space back in place, so removing time series — including
+[`clear_time_series!`](@ref) — leaves the `.h5` file the same size. For a system whose
+time series are on disk, this rewrites that file from what the catalog still references
+and replaces it, which is what actually shrinks it; `bytes_reclaimed` reports by how
+much. A system holding its time series in memory has no file to rewrite, and reports `0`
+bytes.
+
+The rewrite assumes this process is the file's only user: another process with the same
+file open keeps reading the pre-compaction file on Unix, and blocks the replacement on
+Windows.
+"""
+function compact_time_series!(sys::System)
+    return IS.compact_time_series!(sys.data)
 end
 
 """
@@ -1791,8 +1809,8 @@ it removes everything but leaves the file the same size — and serializing and
 deserializing the system does not repack it either, since the artifact is copied
 byte-for-byte.
 
-To actually reclaim the space, build a fresh `System` and add only the components and time
-series you want to keep, which writes a new file.
+To actually reclaim the space, call [`compact_time_series!`](@ref), which rewrites the
+file from what is still referenced.
 """
 function remove_time_series!(
     sys::System,
