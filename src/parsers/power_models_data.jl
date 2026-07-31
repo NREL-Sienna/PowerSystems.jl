@@ -284,15 +284,57 @@ function _reroute_devices_to_nodes!(data::Dict, nb)
     return nothing
 end
 
+# Pass 3: a machine's voltage regulation moves with it to its node-bus. The PSS(R)E BUS
+# record carries the PV/REF type, but after Pass 2 the machine lives on a node-bus that
+# Pass 1 typed PQ; left unmigrated, the source bus is a PV bus hosting no machine (so
+# downstream bus-type correction demotes it to PQ) and the plant stops regulating voltage.
+# Mirrors PowerFlowFileParser's `_migrate_node_breaker_gen_bus_type!`. The move is
+# skipped when the source bus still hosts a machine of its own (its type is then earned),
+# and only the first machine per source bus carries the type over.
+function _migrate_node_breaker_gen_bus_type!(data::Dict, nb)
+    (haskey(data, "gen") && !isempty(nb.nb_bus_numbers)) || return nothing
+    gen_moves = Dict{Int, Int}()
+    # Whether the recorded target hosts an IN-SERVICE machine. The type must follow a
+    # live machine whenever the plant has one: an out-of-service unit's node would be
+    # typed PV/REF with no live machine on it, get demoted downstream, and the plant
+    # would stop regulating voltage. Only when every unit is offline may the type land
+    # on a dead unit's node (where demotion is then correct).
+    gen_move_live = Dict{Int, Bool}()
+    gen_buses = Set{Int}()
+    for d in values(data["gen"])
+        target = d["gen_bus"]
+        push!(gen_buses, target)
+        source = parse(Int, string(d["source_id"][2]))
+        source == target && continue
+        live = get(d, "gen_status", 1) == 1
+        if !haskey(gen_moves, source) || (live && !gen_move_live[source])
+            gen_moves[source] = target
+            gen_move_live[source] = live
+        end
+    end
+    for (source, target) in gen_moves
+        source_bus = data["bus"][source]
+        bus_type = source_bus["bus_type"]
+        bus_type in (2, 3) || continue
+        source in gen_buses && continue
+        data["bus"][target]["bus_type"] = bus_type
+        source_bus["bus_type"] = 1
+        get!(() -> Dict{String, Any}(), source_bus, "ext")["nb_bus_type_moved_to"] = target
+    end
+    return nothing
+end
+
 """
-Materializes node-breaker substation data into `data["bus"]` and reroutes every device
-to its node-bus (Pass 1 + Pass 2), returning the `nb` NamedTuple needed to create the
-switch components once `read_bus!` has built the real `ACBus` objects. A no-op (returns
-an empty `nb`) when `data` carries no PTI substation section.
+Materializes node-breaker substation data into `data["bus"]`, reroutes every device
+to its node-bus, and migrates generator bus types to the node-buses their machines
+landed on (Pass 1 + Pass 2 + Pass 3), returning the `nb` NamedTuple needed to create
+the switch components once `read_bus!` has built the real `ACBus` objects. A no-op
+(returns an empty `nb`) when `data` carries no PTI substation section.
 """
 function materialize_node_breaker!(data::Dict)
     nb = _prepare_node_breaker!(data)
     _reroute_devices_to_nodes!(data, nb)
+    _migrate_node_breaker_gen_bus_type!(data, nb)
     return nb
 end
 
