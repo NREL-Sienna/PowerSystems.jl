@@ -4524,7 +4524,7 @@
                 },
                 {
                     "name": "time_limits",
-                    "comment": "Minimum up and Minimum down time limits in hours",
+                    "comment": "Minimum up and Minimum down time limits in minutes",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -4557,7 +4557,7 @@
                     "null_value": "INFINITE_TIME",
                     "default": "INFINITE_TIME",
                     "name": "time_at_status",
-                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "comment": "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`",
                     "data_type": "Float64"
                 },
                 {
@@ -4724,7 +4724,7 @@
                 },
                 {
                     "name": "time_limits",
-                    "comment": "Minimum up and Minimum down time limits in hours",
+                    "comment": "Minimum up and Minimum down time limits in minutes",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -4777,7 +4777,7 @@
                 },
                 {
                     "name": "travel_time",
-                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "comment": "Downstream (from reservoir into turbine) travel time in minutes.",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Float64}",
                     "default": "nothing"
@@ -4937,7 +4937,7 @@
                 },
                 {
                     "name": "time_limits",
-                    "comment": "Minimum up and Minimum down time limits in hours",
+                    "comment": "Minimum up and Minimum down time limits in minutes",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -4971,7 +4971,7 @@
                     "null_value": "INFINITE_TIME",
                     "default": "INFINITE_TIME",
                     "name": "time_at_status",
-                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "comment": "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`",
                     "data_type": "Float64"
                 },
                 {
@@ -4999,21 +4999,21 @@
                 },
                 {
                     "name": "transition_time",
-                    "comment": "Transition time in hours to switch into the specific mode.",
+                    "comment": "Transition time in minutes to switch into the specific mode.",
                     "null_value": "(turbine = 0.0, pump = 0.0)",
                     "data_type": "TurbinePump",
                     "default": "(turbine = 0.0, pump = 0.0)"
                 },
                 {
                     "name": "minimum_time",
-                    "comment": "Minimum operating time in hours for the specific mode.",
+                    "comment": "Minimum operating time in minutes for the specific mode.",
                     "null_value": "(turbine = 0.0, pump = 0.0)",
                     "data_type": "TurbinePump",
                     "default": "(turbine = 0.0, pump = 0.0)"
                 },
                 {
                     "name": "travel_time",
-                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "comment": "Downstream (from reservoir into turbine) travel time in minutes.",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Float64}",
                     "default": "nothing"
@@ -5562,7 +5562,7 @@
                 },
                 {
                     "name": "time_limits",
-                    "comment": "Minimum up and Minimum down time limits in hours",
+                    "comment": "Minimum up and Minimum down time limits in minutes",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -5603,7 +5603,7 @@
                 {
                     "null_value": "INFINITE_TIME",
                     "name": "time_at_status",
-                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "comment": "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`",
                     "data_type": "Float64",
                     "default": "INFINITE_TIME"
                 },
@@ -5864,7 +5864,7 @@
                 },
                 {
                     "name": "time_limits",
-                    "comment": "Minimum up and Minimum down time limits in hours",
+                    "comment": "Minimum up and Minimum down time limits in minutes",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -5875,7 +5875,7 @@
                 },
                 {
                     "name": "start_time_limits",
-                    "comment": "Time limits for start-up based on turbine temperature in hours",
+                    "comment": "Time limits for start-up based on turbine temperature in minutes",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, StartUpStages}"
                 },
@@ -5918,7 +5918,7 @@
                 },
                 {
                     "name": "time_at_status",
-                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "comment": "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`",
                     "null_value": "INFINITE_TIME",
                     "data_type": "Float64",
                     "default": "INFINITE_TIME"
@@ -6154,7 +6154,7 @@
                 },
                 {
                     "name": "self_discharge",
-                    "comment": "Self-discharge (leakage loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`",
+                    "comment": "Self-discharge (leakage loss) as a fraction of the stored energy lost per minute (pu/min of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6436,14 +6436,14 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in seconds reserve contribution must sustained at a specified level",
+                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
                         "max": null
                     },
-                    "default": "3600.0",
+                    "default": "60.0",
                     "validation_action": "error"
                 },
                 {
@@ -6542,14 +6542,14 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in seconds reserve contribution must sustained at a specified level",
+                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
                         "max": null
                     },
-                    "default": "3600.0",
+                    "default": "60.0",
                     "validation_action": "error"
                 },
                 {
@@ -6700,14 +6700,14 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in seconds reserve contribution must sustained at a specified level",
+                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
                         "max": null
                     },
-                    "default": "3600.0",
+                    "default": "60.0",
                     "validation_action": "error"
                 },
                 {
@@ -6801,14 +6801,14 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in seconds reserve contribution must sustained at a specified level",
+                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
                         "max": null
                     },
-                    "default": "14400.0",
+                    "default": "240.0",
                     "validation_action": "error"
                 },
                 {

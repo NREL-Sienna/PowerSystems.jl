@@ -46,13 +46,13 @@ A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suita
 - `operation_cost::OperationalCost`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `powerhouse_elevation::Float64`: (default: `0.0`) Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
 - `ramp_limits::Union{Nothing, UpDown}`: (default: `nothing`) ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
-- `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in minutes, validation range: `(0, nothing)`
 - `outflow_limits::Union{Nothing, MinMax}`: (default: `nothing`) Turbine outflow limits in m3/s. Set to `Nothing` if not applicable
 - `efficiency::Float64`: (default: `1.0`) Turbine efficiency [0, 1.0], validation range: `(0, 1)`
 - `turbine_type::HydroTurbineType`: (default: `HydroTurbineType.UNKNOWN`) Type of the turbine
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.HY`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
-- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in hours.
+- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in minutes.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -83,7 +83,7 @@ mutable struct HydroTurbine <: HydroUnit
     powerhouse_elevation::Float64
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
-    "Minimum up and Minimum down time limits in hours"
+    "Minimum up and Minimum down time limits in minutes"
     time_limits::Union{Nothing, UpDown}
     "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable"
     outflow_limits::Union{Nothing, MinMax}
@@ -95,7 +95,7 @@ mutable struct HydroTurbine <: HydroUnit
     conversion_factor::Float64
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers
-    "Downstream (from reservoir into turbine) travel time in hours."
+    "Downstream (from reservoir into turbine) travel time in minutes."
     travel_time::Union{Nothing, Float64}
     "Services that this device contributes to"
     services::Vector{Service}

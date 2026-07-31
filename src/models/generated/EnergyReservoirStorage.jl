@@ -61,7 +61,7 @@ This is suitable for modeling storage charging and discharging with average effi
 - `storage_target::Float64`: (default: `0.0`) Storage target at the end of simulation as ratio of storage capacity
 - `cycle_limits::Int`: (default: `1e4`) Storage Maximum number of cycles per year
 - `ramp_limits::Union{Nothing, UpDown}`: (default: `nothing`) ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
-- `self_discharge::Float64`: (default: `0.0`) Self-discharge (leakage loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`, validation range: `(0, nothing)`
+- `self_discharge::Float64`: (default: `0.0`) Self-discharge (leakage loss) as a fraction of the stored energy lost per minute (pu/min of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`, validation range: `(0, nothing)`
 - `standing_loss::Float64`: (default: `0.0`) Constant standing-loss power drawn by the storage system, in per unit of the device `base_power`. Reduces the effective charging power (`p_in - standing_loss`) and increases the power drawn from the storage when discharging (`p_out + standing_loss`). For the fractional energy leakage see `self_discharge`, validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
@@ -111,7 +111,7 @@ mutable struct EnergyReservoirStorage <: Storage
     cycle_limits::Int
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
-    "Self-discharge (leakage loss) as a fraction of the stored energy lost per hour (pu/hr of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`"
+    "Self-discharge (leakage loss) as a fraction of the stored energy lost per minute (pu/min of `storage_capacity`), modeled as `E[t] = (1 - self_discharge * dt) * E[t-1]`. For the constant-power standing loss see `standing_loss`"
     self_discharge::Float64
     "Constant standing-loss power drawn by the storage system, in per unit of the device `base_power`. Reduces the effective charging power (`p_in - standing_loss`) and increases the power drawn from the storage when discharging (`p_out + standing_loss`). For the fractional energy leakage see `self_discharge`"
     standing_loss::Float64
