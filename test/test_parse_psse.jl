@@ -561,6 +561,39 @@ end
     @test get_max_active_power(isl) == 0.11485
 end
 
+@testset "PSSE v35 load distributed generation as RenewableNonDispatch" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_v35_dgen_sys"; force_build = true)
+    load_at(bus) =
+        only(get_components(l -> get_number(get_bus(l)) == bus, StandardLoad, sys))
+    dgen_at(bus) =
+        only(get_components(g -> get_number(get_bus(g)) == bus, RenewableNonDispatch, sys))
+
+    # Loads carry the gross demand.
+    @test get_constant_active_power(load_at(2)) ≈ 1.0     # 100 MW
+    @test get_constant_reactive_power(load_at(2)) ≈ 0.25  # 25 Mvar
+    @test get_constant_active_power(load_at(3)) ≈ 0.5     # 50 MW
+    @test get_constant_reactive_power(load_at(3)) ≈ 0.1   # 10 Mvar
+
+    # DGENM = 1: the distributed generation is available.
+    dgen2 = dgen_at(2)
+    @test get_available(dgen2)
+    @test get_active_power(dgen2) ≈ 0.2     # 20 MW
+    @test get_reactive_power(dgen2) ≈ 0.05  # 5 Mvar
+
+    # DGENM = 0: present but unavailable.
+    dgen3 = dgen_at(3)
+    @test !get_available(dgen3)
+    @test get_active_power(dgen3) ≈ 0.15    # 15 MW
+    @test get_reactive_power(dgen3) ≈ 0.03  # 3 Mvar
+
+    # Net injection at each bus still matches the PSS(R)E netting.
+    net_p(bus) =
+        get_constant_active_power(load_at(bus)) -
+        (get_available(dgen_at(bus)) ? get_active_power(dgen_at(bus)) : 0.0)
+    @test net_p(2) ≈ 0.8
+    @test net_p(3) ≈ 0.5
+end
+
 @testset "Test conversion zero impedance branch to switch" begin
     sys = build_system(
         PSSEParsingTestSystems,
@@ -720,27 +753,27 @@ end
 end
 
 @testset "PSSE ISW area-slack bus assignment" begin
-    base_dir = string(dirname(@__FILE__))
-
     # Benchmark_4ger_33_2015.RAW AREA DATA: area 1 (LEFT) ISW=1 -> bus 1 (raw IDE=2,
     # PV) is promoted to SLACK; area 2 (RIGHT) ISW=3 -> bus 3 (raw IDE=3, REF) is left
     # as REF since it is already the area's own swing bus.
-    sys = System(joinpath(PSSE_RAW_DIR, "Benchmark_4ger_33_2015.RAW"))
+    sys =
+        build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys"; force_build = true)
     bus1 = only(get_components(x -> get_number(x) == 1, ACBus, sys))
     bus3 = only(get_components(x -> get_number(x) == 3, ACBus, sys))
     @test get_bustype(bus1) == ACBusTypes.SLACK
     @test get_bustype(bus3) == ACBusTypes.REF
 
-    # Crafted fixture (copy of Benchmark_4ger_33_2015.RAW with edited AREA DATA and an
-    # added INTER-AREA TRANSFER record): area 1 ISW=7 targets a PQ bus (malformed,
-    # warn, no SLACK); area 2 ISW=0 (untouched, no SLACK, no warning); area 3 ISW=999
-    # targets a bus number that doesn't exist (malformed, warn).
-    file_dir = joinpath(base_dir, "test_data", "area_slack_variants.raw")
+    # Fixture: area 1 ISW=7 targets a PQ bus (malformed, warn, no SLACK); area 2 ISW=0
+    # (untouched); area 3 ISW=999 targets a nonexistent bus (malformed, warn).
     sys2 = @test_logs(
         (:warn, r"ISW=7"),
         (:warn, r"ISW=999"),
         match_mode = :any,
-        System(file_dir),
+        build_system(
+            PSSEParsingTestSystems,
+            "pti_area_slack_variants_sys";
+            force_build = true,
+        ),
     )
     bus7 = only(get_components(x -> get_number(x) == 7, ACBus, sys2))
     @test get_bustype(bus7) == ACBusTypes.PQ
@@ -762,21 +795,10 @@ end
 end
 
 @testset "PSSE v35 populated SUBSTATION section parses" begin
-    # A v35 raw whose SUBSTATION section carries a node sub-block used to abort with
-    # `KeyError: "NODES"` in _populate_defaults!; now the node-breaker section is
-    # materialized into real node-buses and switch components (see
-    # `materialize_node_breaker!`), not treated as inert.
-    #
-    # SYNTHSUB has 3 nodes: NI=1 and NI=2 both sit on file bus 1 (NI=1 is the
-    # representative, keeping bus number 1; NI=2 is injected as a new bus), and NI=3 sits
-    # on file bus 2 (the sole node there, so no injection). A closed breaker ties NI=1 to
-    # NI=2, and a closed disconnect ties NI=2 to NI=3 -- so buses 1, 2, and the injected
-    # bus are all electrically the same node once switches are collapsed, even though
-    # they came from 2 different file bus numbers.
-    base_dir = string(dirname(@__FILE__))
-    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_substation.raw")
-    sys = System(file_dir; runchecks = false)
-    @test length(get_components(ACBus, sys)) == 4          # 3 file buses + 1 injected node-bus
+    # A v35 raw whose SUBSTATION section carries a node sub-block; the node-breaker
+    # section must be inert for the AC bus-branch model.
+    sys = build_system(PSSEParsingTestSystems, "pti_v35_substation_sys")
+    @test length(get_components(ACBus, sys)) == 3
     @test length(get_components(Generator, sys)) == 2
     @test length(get_components(ElectricLoad, sys)) == 1
     @test length(get_components(DiscreteControlledACBranch, sys)) == 2
@@ -868,9 +890,7 @@ end
     # RDC is a DC-circuit resistance in ohms; its per-unit base is the DC voltage VSCHD,
     # not the AC commutating base EBASR. Fixture: RDC=5 ohm, VSCHD=400 kV, EBASR=200 kV,
     # SBASE=100 MVA -> r = 5 / (400^2 / 100) = 0.003125 pu (the AC base would give 0.0125).
-    base_dir = string(dirname(@__FILE__))
-    file_dir = joinpath(base_dir, "test_data", "synthetic_v35_two_terminal_dc.raw")
-    sys = System(file_dir; runchecks = false)
+    sys = build_system(PSSEParsingTestSystems, "pti_v35_two_terminal_dc_sys")
     lcc = only(get_components(TwoTerminalLCCLine, sys))
     rdc_ohms = 5.0
     vschd_kv = 400.0

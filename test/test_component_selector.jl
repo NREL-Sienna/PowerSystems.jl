@@ -298,7 +298,7 @@ end
     @test length(
         collect(
             get_groups(make_selector(ThermalStandard;
-                    groupby = x -> length(get_name(x))), test_sys),
+                groupby = x -> length(get_name(x))), test_sys),
         ),
     ) == 3
 

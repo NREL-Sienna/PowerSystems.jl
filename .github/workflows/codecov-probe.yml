@@ -1,0 +1,79 @@
+name: Codecov Token Check
+
+# TEMPORARY validation workflow — delete once coverage reporting is confirmed.
+#
+# Uploads a synthetic lcov report so the Codecov auth path can be verified in
+# seconds instead of waiting ~45 minutes for the real test suite.
+#
+#   gh workflow run codecov-probe.yml --ref jd/restore-codecov
+#
+# An organization-level upload token requires the repository slug to be passed
+# explicitly; a repo-level token does not. This runs both so the logs say which
+# one the configured token needs.
+#
+# Uploads land under the `probe` flag so they do not disturb the real
+# `unittests` coverage numbers.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: "token check: ${{ matrix.name }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - with-slug
+          - without-slug
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Report the token situation
+        env:
+          TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            echo "CODECOV_TOKEN is present (length ${#TOKEN})"
+          else
+            echo "CODECOV_TOKEN is EMPTY or unset"
+          fi
+
+      - name: Synthesize a minimal lcov report
+        run: |
+          cat > lcov.info <<'EOF'
+          TN:
+          SF:src/PowerSystems.jl
+          DA:1,1
+          DA:2,1
+          DA:3,0
+          LF:3
+          LH:2
+          end_of_record
+          EOF
+          cat lcov.info
+
+      - name: Upload with explicit slug (organization token)
+        if: matrix.name == 'with-slug'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./lcov.info
+          disable_search: true
+          flags: probe
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ${{ github.repository }}
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Upload without slug (repository token)
+        if: matrix.name == 'without-slug'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./lcov.info
+          disable_search: true
+          flags: probe
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          verbose: true
