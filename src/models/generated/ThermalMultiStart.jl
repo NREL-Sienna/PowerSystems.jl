@@ -50,13 +50,13 @@ A thermal generator, such as a fossil fuel or nuclear generator, that can start-
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`:, validation range: `(0, nothing)`
 - `power_trajectory::Union{Nothing, StartUpShutDown}`: Power trajectory the unit will take during the start-up and shut-down ramp process, validation range: `(0, nothing)`
-- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
-- `start_time_limits::Union{Nothing, StartUpStages}`: Time limits for start-up based on turbine temperature in hours
+- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in minutes, validation range: `(0, nothing)`
+- `start_time_limits::Union{Nothing, StartUpStages}`: Time limits for start-up based on turbine temperature in minutes
 - `start_types::Int`: Number of start-up based on turbine temperature, where `1` = *hot*, `2` = *warm*, and `3` = *cold*, validation range: `(1, 3)`
 - `operation_cost::OperationalCost`: [`OperationalCost`](@ref) of generation
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
+- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`
 - `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -88,9 +88,9 @@ mutable struct ThermalMultiStart <: ThermalGen
     ramp_limits::Union{Nothing, UpDown}
     "Power trajectory the unit will take during the start-up and shut-down ramp process"
     power_trajectory::Union{Nothing, StartUpShutDown}
-    "Minimum up and Minimum down time limits in hours"
+    "Minimum up and Minimum down time limits in minutes"
     time_limits::Union{Nothing, UpDown}
-    "Time limits for start-up based on turbine temperature in hours"
+    "Time limits for start-up based on turbine temperature in minutes"
     start_time_limits::Union{Nothing, StartUpStages}
     "Number of start-up based on turbine temperature, where `1` = *hot*, `2` = *warm*, and `3` = *cold*"
     start_types::Int
@@ -100,7 +100,7 @@ mutable struct ThermalMultiStart <: ThermalGen
     base_power::Float64
     "Services that this device contributes to"
     services::Vector{Service}
-    "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`"
+    "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
     "Set to `true` if the unit is must run"
     must_run::Bool

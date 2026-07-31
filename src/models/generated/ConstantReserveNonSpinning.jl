@@ -27,7 +27,7 @@ This reserve product includes back-up generators that might not be currently syn
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `time_frame::Float64`: the saturation time frame in minutes that a participating device must provide its reserve contribution, validation range: `(0, nothing)`
 - `requirement::Float64`: the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, nothing)`
-- `sustained_time::Float64`: (default: `3600.0`) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
+- `sustained_time::Float64`: (default: `60.0`) the time in minutes reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
 - `max_output_fraction::Float64`: (default: `1.0`) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`
 - `max_participation_factor::Float64`: (default: `1.0`) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`
 - `deployed_fraction::Float64`: (default: `0.0`) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0, validation range: `(0, 1)`
@@ -43,7 +43,7 @@ mutable struct ConstantReserveNonSpinning <: ReserveNonSpinning
     time_frame::Float64
     "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
     requirement::Float64
-    "the time in seconds reserve contribution must sustained at a specified level"
+    "the time in minutes reserve contribution must sustained at a specified level"
     sustained_time::Float64
     "the maximum fraction of each device's output that can be assigned to the service"
     max_output_fraction::Float64
@@ -57,11 +57,11 @@ mutable struct ConstantReserveNonSpinning <: ReserveNonSpinning
     internal::InfrastructureSystemsInternal
 end
 
-function ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
+function ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time=60.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
     ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
 end
 
-function ConstantReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function ConstantReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=60.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
 end
 

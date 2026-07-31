@@ -628,7 +628,9 @@ const DEFAULT_BASE_MVA = 100.0
 # selects the unit basis (see `_sum_or_zero`).
 const MW_ACCUMULATOR_TYPE = Float64
 
-const INFINITE_TIME = 1e4
+# Sentinel for `time_at_status`: "has been in this state indefinitely". Carried
+# in minutes, matching the operational-duration convention (was 1e4 hours).
+const INFINITE_TIME = 6e5
 const START_COST = 1e8
 const INFINITE_COST = 1e8
 const INFINITE_BOUND = 1e6

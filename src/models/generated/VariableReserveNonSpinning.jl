@@ -29,7 +29,7 @@ This is only an upwards reserve. For faster-responding upwards or downwards rese
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`
 - `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
-- `sustained_time::Float64`: (default: `14400.0`) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
+- `sustained_time::Float64`: (default: `240.0`) the time in minutes reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
 - `max_output_fraction::Float64`: (default: `1.0`) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`
 - `max_participation_factor::Float64`: (default: `1.0`) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`
 - `deployed_fraction::Float64`: (default: `0.0`) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0, validation range: `(0, 1)`
@@ -45,7 +45,7 @@ mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
     time_frame::Float64
     "the required quantity of the product should be scaled by a TimeSeriesData"
     requirement::Float64
-    "the time in seconds reserve contribution must sustained at a specified level"
+    "the time in minutes reserve contribution must sustained at a specified level"
     sustained_time::Float64
     "the maximum fraction of each device's output that can be assigned to the service"
     max_output_fraction::Float64
@@ -59,11 +59,11 @@ mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
+function VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time=240.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
     VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function VariableReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=240.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
 end
 
