@@ -1,6 +1,8 @@
 # PowerSystems.jl (PSY) — psy6 branch
 
-The Sienna power-system **data model**: the `System` container plus ~210 component types (buses, branches, generators, storage, loads, services, dynamic models), operational cost structures, time series, and the **explicit-units engine**. Layer 1 of the psy6 stack, built on InfrastructureSystems (IS4 branch). Platform-wide conventions: `.claude/Sienna.md`. Workspace architecture: the psy6 workspace root `CLAUDE.md`.
+The Sienna power-system **data model**: the `System` container plus ~210 component types (buses, branches, generators, storage, loads, services, dynamic models), operational cost structures, time series, and the **explicit-units engine**. Layer 1 of the psy6 stack, built on InfrastructureSystems (IS4 branch). Platform-wide conventions: the `sienna-psy6` skill. Workspace architecture: the psy6 workspace root `CLAUDE.md`.
+
+Open work order for the units rework: `.claude/plans/2026-07-units-management-review.md` (read it only when working that campaign — many items are marked superseded by PR #1714).
 
 **This branch has NO parsers.** `src/parsers/` was removed in the psy6 line; all Matpower/PSSE/table parsing lives in PowerFlowFileParser.jl (and PSB's parser wrappers). Do not re-add parsing here.
 
@@ -12,16 +14,16 @@ PNM, PF, POM, and PSB all consume PSY; SiennaSchemas mirrors PSY component field
 2. **clear PSB's `data/serialized_system/` cache** — it has no version-aware invalidation, and stale cached systems produce confusing deserialization failures downstream.
 3. if the change touched a component field also present in SiennaSchemas, flag the schema counterpart (example of real drift: `head_to_volume_factor` moved to `FunctionData` in PSY commit `ed30a682` while `SiennaSchemas/Operations/StaticInjection/HydroReservoir.json` still `$ref`s `ValueCurve`).
 
-## Source layout
+## Source layout — the non-obvious parts
 
-- `src/PowerSystems.jl` — module, include order, all exports (~560)
-- `src/base.jl` — `System` container and core methods
-- `src/definitions.jl` — enums/constants
-- `src/units/` — **the explicit-units engine**: `types.jl`, `conversions.jl`, `serialization.jl`; conversion entry points also in `src/models/components.jl`
-- `src/models/` — hand-written behavior over generated structs (validation, supplemental constructors/accessors/setters, custom `show`), `cost_functions/`, and `generated/` (**auto-generated, never edit**)
-- `src/descriptors/power_system_structs.json` — source of truth for generated structs (top-level key `auto_generated_structs`)
-- `src/deprecated.jl` — legacy 4.0.0-era constructor deprecations (predate the no-shims policy). Do not add to it; psy6 breaking changes get no shims.
-- `subsystems.jl`, `contingencies.jl`, `outages.jl`, `component_selector.jl`, `plant_attribute.jl`, `emissions_data.jl`, `utils/`
+- `src/units/` — **the explicit-units engine** (`types.jl`, `conversions.jl`, `serialization.jl`).
+  Conversion entry points *also* live in `src/models/components.jl`, which is easy to miss.
+- `src/models/` — hand-written behavior over generated structs; `generated/` is **auto-generated,
+  never edit**.
+- `src/descriptors/power_system_structs.json` — source of truth for generated structs (top-level
+  key `auto_generated_structs`).
+- `src/deprecated.jl` — legacy 4.0.0-era constructor deprecations that predate the no-shims policy.
+  Do not add to it; psy6 breaking changes get no shims.
 
 ## Generated code workflow
 
