@@ -316,6 +316,9 @@ end
         bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
+        # This system is round-tripped below, and deserialization runs `check(sys)`, which
+        # logs an error unless a reference bus is present.
+        i == 1 && set_bustype!(bus, ACBusTypes.REF)
         add_component!(sys, bus)
         gen = ThermalStandard(nothing)
         gen.bus = bus
@@ -354,6 +357,101 @@ end
     @test group2 !== nothing
     @test get_variable_cost(group2) isa CostCurve
     @test Set(get_name.(get_contributing_services(group2))) == Set(["RRSPFR", "RRSFFR"])
+end
+
+@testset "Test ReserveGroup supertype" begin
+    # Both group types share one supertype, so `get_components` and the `add_service!` /
+    # `set_contributing_services!` methods dispatch on `ReserveGroup` rather than a Union.
+    @test ConstantReserveGroup{ReserveUp} <: ReserveGroup
+    @test ReserveDemandCurveGroup{ReserveUp, IS.NaturalUnit} <: ReserveGroup
+    @test ReserveGroup <: Service
+    # Non-group services must not be caught by the supertype.
+    @test !(VariableReserve{ReserveUp} <: ReserveGroup)
+    @test !(ConstantReserveNonSpinning <: ReserveGroup)
+
+    sys = System(100.0)
+    crg = ConstantReserveGroup{ReserveDown}(nothing)
+    add_service!(sys, crg)
+    curve = make_market_bid_curve([0.0, 100.0], [15.0], 0.0;
+        power_units = IS.NaturalUnit())
+    rdcg = ReserveDemandCurveGroup{ReserveUp}(;
+        variable = curve, name = "RRS", available = true, time_frame = 10.0)
+    add_service!(sys, rdcg)
+    @test length(collect(get_components(ReserveGroup, sys))) == 2
+end
+
+@testset "Test hand-written services have validation descriptors" begin
+    # Types outside `auto_generated_structs` need an explicit `struct_validation_descriptors`
+    # entry, or `add_component!` logs "does not exist in validation configuration file,
+    # validation skipped" on a documented public workflow.
+    descriptors = IS.read_validation_descriptor(PSY.POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
+    described = Set(d["struct_name"] for d in descriptors)
+    for name in
+        ("ReserveDemandCurve", "ReserveDemandCurveGroup", "ReserveDemandTimeSeriesCurve")
+        @test name in described
+    end
+
+    # End-to-end: adding a group must not emit the validation warning.
+    sys = System(100.0)
+    curve = make_market_bid_curve([0.0, 100.0], [15.0], 0.0;
+        power_units = IS.NaturalUnit())
+    group = ReserveDemandCurveGroup{ReserveUp}(;
+        variable = curve, name = "RRS", available = true, time_frame = 10.0)
+    @test_logs min_level = Logging.Warn add_service!(sys, group)
+end
+
+@testset "Test ReserveGroup membership requires attachment" begin
+    sys = System(100.0)
+    devices = Vector{ThermalStandard}()
+    for i in 1:2
+        bus = ACBus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    curve = make_market_bid_curve([0.0, 100.0, 500.0], [5000.0, 15.0], 0.0;
+        power_units = IS.NaturalUnit())
+    group = ReserveDemandCurveGroup{ReserveUp}(;
+        variable = curve, name = "RRS", available = true, time_frame = 10.0)
+    add_service!(sys, group)
+
+    # There is no unchecked two-argument setter: membership can only be set through the
+    # `System` method, which validates attachment.
+    detached = VariableReserve{ReserveUp}(nothing)
+    detached.name = "DETACHED"
+    @test !hasmethod(
+        set_contributing_services!,
+        Tuple{ReserveDemandCurveGroup, Vector{Service}},
+    )
+    @test !hasmethod(
+        set_contributing_services!,
+        Tuple{ConstantReserveGroup, Vector{Service}},
+    )
+    @test_throws ArgumentError set_contributing_services!(
+        sys, group, Vector{Service}([detached]))
+    @test isempty(get_contributing_services(group))
+
+    # A concretely typed vector of an attached service is accepted (widened on assignment).
+    pfr = VariableReserve{ReserveUp}(nothing)
+    pfr.name = "RRSPFR"
+    add_service!(sys, pfr, devices)
+    set_contributing_services!(sys, group, [pfr])
+    @test get_contributing_services(group) isa Vector{Service}
+    @test get_name.(get_contributing_services(group)) == ["RRSPFR"]
+
+    # A contributing service cannot be removed while the group still references it.
+    @test_throws ArgumentError remove_component!(sys, pfr)
+    # The group itself is removable, and the member becomes removable afterwards.
+    remove_component!(sys, group)
+    remove_component!(sys, pfr)
+    @test isempty(collect(get_components(ReserveGroup, sys)))
+    @test isempty(collect(get_components(VariableReserve{ReserveUp}, sys)))
 end
 
 @testset "Test ConstantReserveGroup errors" begin

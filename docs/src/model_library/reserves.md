@@ -31,7 +31,16 @@ Private = false
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["generated/ReserveDemandCurve.jl"]
+Pages   = ["cost_functions/ReserveDemandCurve.jl"]
+Public = true
+Private = false
+```
+
+## Reserve Demand Curve Group
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["cost_functions/ReserveDemandCurveGroup.jl"]
 Public = true
 Private = false
 ```

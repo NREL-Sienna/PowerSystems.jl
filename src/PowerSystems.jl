@@ -354,6 +354,7 @@ export set_basis_and_energy_unit!
 
 export Service
 export AbstractReserve
+export ReserveGroup
 export Reserve
 export ReserveNonSpinning
 export ReserveDirection

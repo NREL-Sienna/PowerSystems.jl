@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct ConstantReserveGroup{T <: ReserveDirection} <: Service
+    mutable struct ConstantReserveGroup{T <: ReserveDirection} <: ReserveGroup
         name::String
         available::Bool
         requirement::Float64
@@ -28,7 +28,7 @@ This model has a constant procurement requirement, such as 3% of the system base
 - `contributing_services::Vector{Service}`: (default: `Vector{Service}()`) Services that contribute to this group requirement. Services must be added for this constraint to have an effect when conducting simulations in [`PowerSimulations.jl`](https://sienna-platform.github.io/PowerSimulations.jl/latest/)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct ConstantReserveGroup{T <: ReserveDirection} <: Service
+mutable struct ConstantReserveGroup{T <: ReserveDirection} <: ReserveGroup
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"

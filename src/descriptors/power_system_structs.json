@@ -6659,7 +6659,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "Service"
+            "supertype": "ReserveGroup"
         },
         {
             "struct_name": "VariableReserve",
@@ -19754,6 +19754,108 @@
                 },
                 {
                     "name": "states"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        },
+        {
+            "struct_name": "ReserveDemandCurve",
+            "docstring": "Hand-written struct; listed so validation resolves the type instead of warning.",
+            "fields": [
+                {
+                    "name": "variable"
+                },
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "available"
+                },
+                {
+                    "name": "time_frame"
+                },
+                {
+                    "name": "sustained_time"
+                },
+                {
+                    "name": "max_participation_factor"
+                },
+                {
+                    "name": "deployed_fraction"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        },
+        {
+            "struct_name": "ReserveDemandCurveGroup",
+            "docstring": "Hand-written struct; listed so validation resolves the type instead of warning.",
+            "fields": [
+                {
+                    "name": "variable"
+                },
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "available"
+                },
+                {
+                    "name": "time_frame"
+                },
+                {
+                    "name": "sustained_time"
+                },
+                {
+                    "name": "max_participation_factor"
+                },
+                {
+                    "name": "deployed_fraction"
+                },
+                {
+                    "name": "contributing_services"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        },
+        {
+            "struct_name": "ReserveDemandTimeSeriesCurve",
+            "docstring": "Hand-written struct; listed so validation resolves the type instead of warning.",
+            "fields": [
+                {
+                    "name": "variable"
+                },
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "available"
+                },
+                {
+                    "name": "time_frame"
+                },
+                {
+                    "name": "sustained_time"
+                },
+                {
+                    "name": "max_participation_factor"
+                },
+                {
+                    "name": "deployed_fraction"
                 },
                 {
                     "name": "ext"

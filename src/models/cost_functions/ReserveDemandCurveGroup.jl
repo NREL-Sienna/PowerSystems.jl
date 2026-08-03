@@ -19,7 +19,7 @@ The demand curve is a discretized set of `(Reserve capacity (MW), Price (\$/MWh)
 [`ReserveSymmetric`](@ref).
 """
 mutable struct ReserveDemandCurveGroup{T <: ReserveDirection, U <: IS.AbstractUnitSystem} <:
-               Service
+               ReserveGroup
     "Group Ancillary Service Demand Curve (ASDC)"
     variable::CostCurve{PiecewiseIncrementalCurve, U}
     "Name of the component"
@@ -149,8 +149,9 @@ set_max_participation_factor!(value::ReserveDemandCurveGroup, val) =
     value.max_participation_factor = val
 """Set [`ReserveDemandCurveGroup`](@ref) `deployed_fraction`."""
 set_deployed_fraction!(value::ReserveDemandCurveGroup, val) = value.deployed_fraction = val
-"""Set [`ReserveDemandCurveGroup`](@ref) `contributing_services`."""
-set_contributing_services!(value::ReserveDemandCurveGroup, val) =
-    value.contributing_services = val
+# `contributing_services` has no two-argument setter on purpose: membership must be set with
+# `set_contributing_services!(sys, group, val)`, which checks that every member is attached to
+# the system. `ConstantReserveGroup` suppresses the same setter via `exclude_setter` in the
+# struct descriptor.
 """Set [`ReserveDemandCurveGroup`](@ref) `ext`."""
 set_ext!(value::ReserveDemandCurveGroup, val) = value.ext = val

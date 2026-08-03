@@ -9,7 +9,20 @@ such as the sudden loss of a transmission line or generator.
 abstract type Service <: Component end
 
 """
-All PowerSystems [Service](@ref) types support time series. This can be overridden for custom 
+Supertype for reserve products whose requirement is met by a group of contributing services
+
+A reserve group aggregates other [`Service`](@ref) instances: the group carries the
+requirement (a constant one for [`ConstantReserveGroup`](@ref), an elastic demand curve for
+[`ReserveDemandCurveGroup`](@ref)) while the per-service caps and offers live on the
+contributing services themselves.
+
+Group members are set with [`set_contributing_services!`](@ref) and read with
+`get_contributing_services`.
+"""
+abstract type ReserveGroup <: Service end
+
+"""
+All PowerSystems [Service](@ref) types support time series. This can be overridden for custom
 types that do not support time series.
 """
 supports_time_series(::Service) = true

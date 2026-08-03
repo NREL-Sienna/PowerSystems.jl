@@ -826,15 +826,17 @@ function add_service!(device::Device, service::Service, sys::System)
 end
 
 """
-Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
+Similar to [`add_component!`](@ref) but for a [`ReserveGroup`](@ref).
+
+Every contributing service must already be attached to the system.
 
 # Arguments
 - `sys::System`: system
-- `service::ConstantReserveGroup`: service to add
+- `service::ReserveGroup`: reserve group to add
 """
 function add_service!(
     sys::System,
-    service::Union{ConstantReserveGroup, ReserveDemandCurveGroup};
+    service::ReserveGroup;
     skip_validation = false,
     kwargs...,
 )
@@ -849,10 +851,20 @@ function add_service!(
     return
 end
 
-"""Set a reserve group's `contributing_services`, checking each is attached to the system."""
+"""
+Set a [`ReserveGroup`](@ref)'s `contributing_services`, checking each is attached to the system.
+
+This is the only supported way to set group membership; the group types deliberately expose no
+unchecked two-argument setter.
+
+# Arguments
+- `sys::System`: system
+- `service::ReserveGroup`: reserve group to modify
+- `val::Vector{<:Service}`: contributing services, each already attached to `sys`
+"""
 function set_contributing_services!(
     sys::System,
-    service::Union{ConstantReserveGroup, ReserveDemandCurveGroup},
+    service::ReserveGroup,
     val::Vector{<:Service},
 )
     for _service in val
@@ -863,16 +875,16 @@ function set_contributing_services!(
 end
 
 """
-Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
+Similar to [`add_component!`](@ref) but for a [`ReserveGroup`](@ref).
 
 # Arguments
 - `sys::System`: system
-- `service::ConstantReserveGroup`: service to add
-- `contributing_services`: contributing services to the group
+- `service::ReserveGroup`: reserve group to add
+- `contributing_services`: contributing services to the group, each already attached to `sys`
 """
 function add_service!(
     sys::System,
-    service::Union{ConstantReserveGroup, ReserveDemandCurveGroup},
+    service::ReserveGroup,
     contributing_services::Vector{<:Service};
     skip_validation = false,
     kwargs...,
@@ -1129,19 +1141,15 @@ end
 """
 Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
-function check_component_removal(sys::System, service::T) where {T <: Service}
-    if T == ConstantReserveGroup
-        return
-    end
-    groupservices = get_components(ConstantReserveGroup, sys)
-    for groupservice in groupservices
+function check_component_removal(sys::System, service::Service)
+    for groupservice in get_components(ReserveGroup, sys)
         if service ∈ get_contributing_services(groupservice)
             throw(
                 ArgumentError(
-                    "service $(get_name(service)) cannot be removed with an attached ConstantReserveGroup",
+                    "service $(get_name(service)) cannot be removed while it contributes to " *
+                    "$(nameof(typeof(groupservice))) $(get_name(groupservice))",
                 ),
             )
-            return
         end
     end
 end
@@ -2462,21 +2470,22 @@ function deserialize_components!(sys::System, raw)
     # Most components have buses.
     # Static injection devices can contain dynamic injection devices.
     # StaticInjectionSubsystem instances have StaticInjection subcomponents.
+    # ReserveGroup instances reference other services, so they are deferred until last.
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AbstractReserve])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
         include_types = [Arc, Service],
-        skip_types = [ConstantReserveGroup],
+        skip_types = [ReserveGroup],
     )
     deserialize_and_add!(;
         include_types = [HydroTurbine, HydroPumpTurbine],
-        skip_types = [ConstantReserveGroup, HydroReservoir],
+        skip_types = [ReserveGroup, HydroReservoir],
     )
     deserialize_and_add!(; include_types = [HydroReservoir])
     deserialize_and_add!(; include_types = [Branch])
-    deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
+    deserialize_and_add!(; include_types = [ReserveGroup, DynamicInjection])
     deserialize_and_add!(; skip_types = [StaticInjectionSubsystem])
     deserialize_and_add!()
 
