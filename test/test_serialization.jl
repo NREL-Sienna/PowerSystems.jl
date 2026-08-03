@@ -337,3 +337,41 @@ end
     _, result = validate_serialization(sys)
     @test result
 end
+
+@testset "Test round-trip of explicitly-set SLACK bustype" begin
+    sys = System(100.0)
+    ref_bus = ACBus(nothing)
+    ref_bus.name = "bus1"
+    ref_bus.number = 1
+    # Satisfies slack_bus_check; SLACK is a distinct area-slack marker, not the system REF.
+    ref_bus.bustype = ACBusTypes.REF
+    add_component!(sys, ref_bus)
+    ref_gen = ThermalStandard(nothing)
+    ref_gen.bus = ref_bus
+    ref_gen.name = "gen1"
+    add_component!(sys, ref_gen)
+
+    bus = ACBus(nothing)
+    bus.name = "bus2"
+    bus.number = 2
+    bus.bustype = ACBusTypes.PV
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen2"
+    add_component!(sys, gen)
+
+    set_bustype!(bus, ACBusTypes.SLACK)
+    @test get_bustype(bus) == ACBusTypes.SLACK
+
+    tmpdir = mktempdir()
+    path = joinpath(tmpdir, "slack_bustype_roundtrip.json")
+    to_json(sys, path; force = true)
+    sys2 = System(path)
+    bus2 = get_component(ACBus, sys2, "bus2")
+    @test get_bustype(bus2) == ACBusTypes.SLACK
+
+    sys3 = deepcopy(sys)
+    bus3 = get_component(ACBus, sys3, "bus2")
+    @test get_bustype(bus3) == ACBusTypes.SLACK
+end
