@@ -834,7 +834,7 @@ Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 """
 function add_service!(
     sys::System,
-    service::ConstantReserveGroup;
+    service::Union{ConstantReserveGroup, ReserveDemandCurveGroup};
     skip_validation = false,
     kwargs...,
 )
@@ -849,10 +849,10 @@ function add_service!(
     return
 end
 
-"""Set ConstantReserveGroup contributing_services with check"""
+"""Set a reserve group's `contributing_services`, checking each is attached to the system."""
 function set_contributing_services!(
     sys::System,
-    service::ConstantReserveGroup,
+    service::Union{ConstantReserveGroup, ReserveDemandCurveGroup},
     val::Vector{<:Service},
 )
     for _service in val
@@ -872,7 +872,7 @@ Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 """
 function add_service!(
     sys::System,
-    service::ConstantReserveGroup,
+    service::Union{ConstantReserveGroup, ReserveDemandCurveGroup},
     contributing_services::Vector{<:Service};
     skip_validation = false,
     kwargs...,

@@ -364,6 +364,7 @@ export ConstantReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
+export ReserveDemandCurveGroup
 export ReserveDemandTimeSeriesCurve
 export ConstantReserveGroup
 export ConstantReserveNonSpinning
@@ -929,6 +930,7 @@ include("models/generated/includes.jl")
 include("models/transformer_circuits.jl")
 
 include("models/cost_functions/ReserveDemandCurve.jl")
+include("models/cost_functions/ReserveDemandCurveGroup.jl")
 include("models/cost_functions/ReserveDemandTimeSeriesCurve.jl")
 
 #Methods for devices

@@ -208,6 +208,7 @@ end
 # ── STATIC ReserveDemandCurve GETTERS ──────────────────────────────────────
 
 get_variable_cost(service::ReserveDemandCurve; kwargs...) = get_variable(service)
+get_variable_cost(service::ReserveDemandCurveGroup; kwargs...) = get_variable(service)
 
 # ── TIME-SERIES ReserveDemandTimeSeriesCurve GETTERS ──────────────────────
 
@@ -550,6 +551,16 @@ end
 function set_variable_cost!(
     ::System,
     component::ReserveDemandCurve,
+    data::CostCurve{PiecewiseIncrementalCurve, U},
+) where {U <: IS.AbstractUnitSystem}
+    name = get_name(component)
+    _validate_reserve_demand_curve(data, name)
+    set_variable!(component, data)
+end
+
+function set_variable_cost!(
+    ::System,
+    component::ReserveDemandCurveGroup,
     data::CostCurve{PiecewiseIncrementalCurve, U},
 ) where {U <: IS.AbstractUnitSystem}
     name = get_name(component)

@@ -309,6 +309,53 @@ end
     @test contributing_services == expected_contributing_services
 end
 
+@testset "Test ReserveDemandCurveGroup" begin
+    sys = System(100.0)
+    devices = Vector{ThermalStandard}()
+    for i in 1:2
+        bus = ACBus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    # Sub-type supply services that the group aggregates (e.g. RRS = PFR + FFR + ...).
+    pfr = VariableReserve{ReserveUp}(nothing)
+    pfr.name = "RRSPFR"
+    ffr = VariableReserve{ReserveUp}(nothing)
+    ffr.name = "RRSFFR"
+    add_service!(sys, pfr, devices)
+    add_service!(sys, ffr, devices)
+
+    # The group carries the demand curve (ASDC); the sub-services carry the supply.
+    curve = make_market_bid_curve([0.0, 100.0, 500.0], [5000.0, 15.0], 0.0;
+        power_units = IS.NaturalUnit())
+    group = ReserveDemandCurveGroup{ReserveUp}(;
+        variable = curve, name = "RRS", available = true, time_frame = 10.0)
+    add_service!(sys, group)
+
+    @test length(collect(get_components(ReserveDemandCurveGroup, sys))) == 1
+    @test get_component(ReserveDemandCurveGroup{ReserveUp}, sys, "RRS") === group
+    @test get_variable_cost(group) isa CostCurve
+
+    # System-checked setter + getter for the contributing services.
+    set_contributing_services!(sys, group, Vector{Service}([pfr, ffr]))
+    @test Set(get_name.(get_contributing_services(group))) == Set(["RRSPFR", "RRSFFR"])
+
+    # Serialize / deserialize round-trip: the group's curve and contributing services survive.
+    sys2, result = validate_serialization(sys)
+    @test result
+    group2 = get_component(ReserveDemandCurveGroup{ReserveUp}, sys2, "RRS")
+    @test group2 !== nothing
+    @test get_variable_cost(group2) isa CostCurve
+    @test Set(get_name.(get_contributing_services(group2))) == Set(["RRSPFR", "RRSFFR"])
+end
+
 @testset "Test ConstantReserveGroup errors" begin
     sys = System(100.0)
     bus = ACBus(nothing)
