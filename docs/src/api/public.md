@@ -74,6 +74,17 @@ Order = [:type, :function]
 Filter = t -> !(t isa Union) && nameof(t) in names(PowerSystems)
 ```
 
+## Curves with Units
+
+```@autodocs
+Modules = [IS]
+Pages   = ["value_curve_with_units.jl",
+            "loss_curve.jl",
+           ]
+Order = [:type, :function]
+Filter = t -> !(t isa Union) && nameof(t) in names(PowerSystems)
+```
+
 ## Time Series
 
 ```@autodocs

@@ -95,12 +95,13 @@ export get_points
 export get_x_coords
 export get_y_coords
 
-# from IS value_curve.jl, cost_aliases.jl, and production_variable_cost_curve.jl
+# from IS value_curve.jl, cost_aliases.jl, production_variable_cost_curve.jl, and loss_curve.jl
 export ValueCurve
 export InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
-export ProductionVariableCostCurve, CostCurve, FuelCurve
+export ValueCurveWithUnits, ProductionVariableCostCurve, CostCurve, FuelCurve
+export LossCurve
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
 
@@ -833,7 +834,9 @@ import InfrastructureSystems:
     get_initial_input,
     get_input_at_zero,
     get_average_rates,
+    ValueCurveWithUnits,
     ProductionVariableCostCurve,
+    LossCurve,
     CostCurve,
     FuelCurve,
     get_value_curve,

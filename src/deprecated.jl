@@ -125,7 +125,7 @@ function TwoTerminalHVDCLine(
     active_power_limits_to,
     reactive_power_limits_from,
     reactive_power_limits_to,
-    loss = LinearCurve(0.0),
+    loss = LossCurve(LinearCurve(0.0)),
     services = Device[],
     ext = Dict{String, Any}(),
 )
@@ -161,7 +161,7 @@ function TwoTerminalHVDCLine(;
     active_power_limits_to,
     reactive_power_limits_from,
     reactive_power_limits_to,
-    loss = LinearCurve(0.0),
+    loss = LossCurve(LinearCurve(0.0)),
     services = Device[],
     ext = Dict{String, Any}(),
     internal = InfrastructureSystemsInternal(),
