@@ -427,3 +427,64 @@ end
     @test get_base_power_12(t_full) == 15.0
     @test get_r_12(t_full, SU) ≈ 0.01 * (100.0 / 15.0)
 end
+
+@testset "SystemBasePower components track the system base, not 100 MVA" begin
+    system_base = 1000.0
+    sys = System(system_base)
+    b1 = ACBus(;
+        number = 1, name = "b1", available = true,
+        bustype = ACBusTypes.REF, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    b2 = ACBus(;
+        number = 2, name = "b2", available = true,
+        bustype = ACBusTypes.PQ, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys, b1)
+    add_component!(sys, b2)
+
+    ln = Line(;
+        name = "l1", available = true, active_power_flow = 0.0,
+        reactive_power_flow = 0.0, arc = Arc(; from = b1, to = b2),
+        r = 0.01, x = 0.1, b = (from = 0.0, to = 0.0), rating = 1.0,
+        angle_limits = (min = -1.5, max = 1.5),
+    )
+    add_component!(sys, ln)
+
+    area = Area(; name = "a1")
+    add_component!(sys, area)
+
+    # The descriptor's 100.0 default must not survive attachment: this is the
+    # bug being pinned. Both Line and Area are among the 12 types whose
+    # base_power field records the system base, not an independent device base.
+    @test PSY._get_base_power(ln) == system_base
+    @test PSY._get_base_power(area) == system_base
+
+    # DU is a pass-through (unaffected by system base); SU must scale by the
+    # true system base, not the stale 100.0 default.
+    @test get_rating(ln, DU) ≈ 1.0
+    @test get_rating(ln, SU) ≈ 1.0
+
+    # set_base_power! is disallowed for SystemBasePower types: the field has no
+    # meaning independent of the system it is attached to.
+    @test_throws ErrorException set_base_power!(ln, 50.0)
+    @test_throws ErrorException set_base_power!(area, 50.0)
+
+    # A detached component of this kind keeps the descriptor default and errors
+    # on any access that requires a defined system base, mirroring the behavior
+    # of components with no base_power field at all.
+    ln_detached = Line(;
+        name = "l2", available = true, active_power_flow = 0.0,
+        reactive_power_flow = 0.0, arc = Arc(ACBus(nothing), ACBus(nothing)),
+        r = 0.01, x = 0.1, b = (from = 0.0, to = 0.0), rating = 1.0,
+        angle_limits = (min = -1.5, max = 1.5),
+    )
+    @test PSY._get_base_power(ln_detached) == 100.0
+    @test get_rating(ln_detached, DU) ≈ 1.0
+    @test_throws ErrorException get_rating(ln_detached, SU)
+    # Detached, `base_power` reads back whatever was stated (a document records it per
+    # component); `add_component!` syncs it to the system base on attach. The wrong-base
+    # risk is covered by the SU throw above, not by guarding this read.
+    @test get_base_power(ln_detached) == 100.0
+end

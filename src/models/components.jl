@@ -10,10 +10,56 @@ field: the device base equals the system base.
 """
 _get_base_power(c::Component) = _get_system_base_power(c)
 
+# Holy trait distinguishing components whose `base_power` field is a genuine,
+# independently-set device base (generators, loads, storage, ...) from the dozen
+# arc/area-ish types below whose `base_power` field only exists because the
+# schema records the system base per-component "in lieu of a system-level table"
+# (see SiennaSchemas). `add_component!` uses this trait to keep that field in
+# sync with the system's base power; it must never be set independently.
+abstract type BasePowerKind end
+struct DeviceBasePower <: BasePowerKind end
+struct SystemBasePower <: BasePowerKind end
+
+base_power_kind(::Component) = DeviceBasePower()
+base_power_kind(::Area) = SystemBasePower()
+base_power_kind(::AreaInterchange) = SystemBasePower()
+base_power_kind(::DiscreteControlledACBranch) = SystemBasePower()
+base_power_kind(::GenericArcImpedance) = SystemBasePower()
+base_power_kind(::Line) = SystemBasePower()
+base_power_kind(::LoadZone) = SystemBasePower()
+base_power_kind(::MonitoredLine) = SystemBasePower()
+base_power_kind(::TModelHVDCLine) = SystemBasePower()
+base_power_kind(::TransmissionInterface) = SystemBasePower()
+base_power_kind(::TwoTerminalGenericHVDCLine) = SystemBasePower()
+base_power_kind(::TwoTerminalLCCLine) = SystemBasePower()
+base_power_kind(::TwoTerminalVSCLine) = SystemBasePower()
+
+"""
+Write the system's base power onto `component.base_power` for `SystemBasePower`
+types; a no-op for genuine device-base types. Called from `add_component!` so
+the field never drifts from the system it is recorded against.
+"""
+_sync_base_power!(::DeviceBasePower, component, system_base_power) = nothing
+function _sync_base_power!(::SystemBasePower, component, system_base_power)
+    component.base_power = system_base_power
+    return
+end
+
+# The single read path for a component's base power: both kinds read straight from
+# the field. For `SystemBasePower` types `add_component!` syncs the field to the
+# system base on attach, so an attached component always reads the system's value;
+# detached, the field is whatever a producer stated (a document records `base_power`
+# per component), which is real data and must not be discarded.
+#
+# Guarding detached access here would be redundant and lossy: the units engine
+# already errors on SU/NU for an unattached component, so a wrong base cannot reach
+# a per-unit conversion regardless of what this returns.
+_base_power_value(c::Component) = _get_base_power(c)
+
 # Conversion-engine component interface (see src/units/conversions.jl): the
 # engine resolves bases through these three functions, so every getter and
 # setter shares one base-power/base-voltage choice per component type.
-_get_device_base_power(c::Component) = _get_base_power(c)
+_get_device_base_power(c::Component) = _base_power_value(c)
 
 # TransformerCircuit is a self-contained explicit-units base provider (defined
 # in models/transformer_circuits.jl, included earlier): it carries its own
@@ -69,18 +115,18 @@ unit (e.g. `MW`, `MVA`). Per-unit bases (`SU`, `DU`) and non-power units error â
 `base_power` is only meaningful in absolute power. See
 [`get_base_power_unitful`](@ref) for the unit-bearing value.
 """
-get_base_power(c::Component) = _get_base_power(c)
+get_base_power(c::Component) = _base_power_value(c)
 get_base_power(c::Component, u) = IS._strip_units(get_base_power_unitful(c, u))
 
 """
 `base_power` as a unit-bearing quantity (MVA). See [`get_base_power`](@ref).
 """
-get_base_power_unitful(c::Component) = _get_base_power(c) * MVA
-get_base_power_unitful(c::Component, ::NaturalUnit) = _get_base_power(c) * MVA
+get_base_power_unitful(c::Component) = _base_power_value(c) * MVA
+get_base_power_unitful(c::Component, ::NaturalUnit) = _base_power_value(c) * MVA
 # Any power-dimensioned Unitful unit: `uconvert` does the scaling and throws a
 # `Unitful.DimensionError` for non-power units, so wrong units error for free.
 get_base_power_unitful(c::Component, u::Unitful.Units) =
-    Unitful.uconvert(u, _get_base_power(c) * MVA)
+    Unitful.uconvert(u, _base_power_value(c) * MVA)
 # Relative per-unit markers (`SU`, `DU`) are not natural units.
 get_base_power_unitful(::Component, u::AbstractRelativeUnit) =
     _base_power_units_error(u)
@@ -92,12 +138,21 @@ Accepts a bare `Float64` (interpreted as MVA) or a power-dimensioned
 `Unitful.Quantity` (e.g. `80.0 * MW`, `90.0 * MVA`). Per-unit inputs (`SU`, `DU`)
 and non-power units error: `base_power` is only meaningful in absolute power.
 """
-set_base_power!(c::Component, val::Float64) = (c.base_power = val)
+set_base_power!(c::Component, val::Float64) = _set_base_power!(base_power_kind(c), c, val)
 # `ustrip(MVA, val)` converts power units and throws for non-power units.
 set_base_power!(c::Component, val::Unitful.Quantity) =
-    (c.base_power = Unitful.ustrip(MVA, val))
+    _set_base_power!(base_power_kind(c), c, Unitful.ustrip(MVA, val))
 set_base_power!(::Component, ::RelativeQuantity{<:Any, U}) where {U} =
     _base_power_units_error(U())
+
+_set_base_power!(::DeviceBasePower, c, val::Float64) = (c.base_power = val)
+function _set_base_power!(::SystemBasePower, c, ::Float64)
+    error(
+        "$(typeof(c)) has no independent base_power: it always equals the system's " *
+        "base power. Change the system's base power instead of setting this field " *
+        "directly.",
+    )
+end
 
 """
 Reject any attempt to read/write `base_power` in non-natural units.

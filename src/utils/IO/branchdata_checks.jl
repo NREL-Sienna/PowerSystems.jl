@@ -85,31 +85,27 @@ const MVA_LIMITS_TRANSFORMERS = Dict(
     765.0 => (min = 2200.0, max = 6900.0), # This value is 3x the SIL value from https://neos-guide.org/wp-content/uploads/2022/04/line_flow_approximation.pdf
 )
 
-function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
+function check_rating_values(line::Union{Line, MonitoredLine}, ::Float64)
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
     voltage_levels = collect(keys(MVA_LIMITS_LINES))
     closestV_ix = findmin(abs.(voltage_levels .- vrated))
     closest_v_level = voltage_levels[closestV_ix[2]]
     closest_rate_range = MVA_LIMITS_LINES[closest_v_level]
+    device_base_power = _get_base_power(line)
 
-    getter_map = (
-        rating = get_rating,
-        rating_b = get_rating_b,
-        rating_c = get_rating_c,
-    )
-    for (field, getter) in pairs(getter_map)
-        rating_value = getter(line, SU)
+    for field in (:rating, :rating_b, :rating_c)
+        rating_value = getfield(line, field)
         if isnothing(rating_value)
-            @assert field ∈ [:rating_b, :rating_c]
+            @assert field ∈ (:rating_b, :rating_c)
             continue
         end
-        if (rating_value >= 2.0 * closest_rate_range.max / basemva)
-            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
+            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
-        elseif (rating_value >= closest_rate_range.max / basemva) ||
-               (rating_value <= closest_rate_range.min / basemva)
-            @info "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        elseif (rating_value * device_base_power >= closest_rate_range.max) ||
+               (rating_value * device_base_power <= closest_rate_range.min)
+            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         end
     end

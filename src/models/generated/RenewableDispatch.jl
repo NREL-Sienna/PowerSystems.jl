@@ -176,3 +176,71 @@ set_operation_cost!(value::RenewableDispatch, val) = value.operation_cost = val
 set_services!(value::RenewableDispatch, val) = value.services = val
 """Set [`RenewableDispatch`](@ref) `ext`."""
 set_ext!(value::RenewableDispatch, val) = value.ext = val
+
+
+
+function from_openapi(::Type{RenewableDispatch}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+    return RenewableDispatch(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
+        power_factor = po.power_factor,
+        operation_cost = convert_cost(po.operation_cost),
+        base_power = po.base_power,
+    )
+end
+
+function from_openapi(::Type{RenewableDispatch}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+    return RenewableDispatch(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
+        power_factor = po.power_factor,
+        operation_cost = convert_cost(po.operation_cost),
+        base_power = po.base_power,
+    )
+end
+
+function to_openapi(value::RenewableDispatch, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+    return PO.RenewableDispatch(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        power_factor = get_power_factor(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+    )
+end
+
+function to_openapi(value::RenewableDispatch, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+    return PO.RenewableDispatch(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        power_factor = get_power_factor(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+    )
+end
