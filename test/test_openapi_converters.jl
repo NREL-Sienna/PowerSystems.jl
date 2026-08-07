@@ -40,10 +40,11 @@ end
         @test get_load_zone(bus) === refs[2]
     end
 
-    # SLACK normalizes to REF at construction — round-trips through the converter.
+    # SLACK is a distinct area-slack marker, not the system REF: the converter must not
+    # collapse it.
     slack_po = _bus_po(6; bustype = "SLACK")
     slack_bus = PSY.from_openapi(ACBus, slack_po, refs, Val(:NATURAL_UNITS))
-    @test get_bustype(slack_bus) == ACBusTypes.REF
+    @test get_bustype(slack_bus) == ACBusTypes.SLACK
 
     @test_throws ErrorException PSY.from_openapi(
         ACBus, _bus_po(7; area = 999), refs, Val(:NATURAL_UNITS),

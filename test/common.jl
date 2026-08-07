@@ -396,8 +396,8 @@ const DocumentError = Union{ErrorException, PSY.PC.DocumentFormatError}
 """A minimal, internally-consistent OpenAPI document: Area/LoadZone, two buses, an arc, a
 thermal generator with a real cost curve, a load, and an online reserve the generator
 contributes to. Shared by test_openapi_document.jl and test_openapi_export.jl;
-`bus1_bustype = "SLACK"` exercises the SLACK->REF normalization the export round-trip
-asserts, and `include_fixed_admittance = false` drops the shunt row the export round-trip
+`bus1_bustype = "SLACK"` exercises SLACK surviving the round trip as a distinct enum value,
+and `include_fixed_admittance = false` drops the shunt row the export round-trip
 predates."""
 function make_openapi_test_doc(;
     bus1_bustype = "REF",

@@ -796,8 +796,8 @@ end
 
 # ── Round-trip assertions ─────────────────────────────────────────────────────────
 
-# Shared fixture from common.jl; SLACK exercises the SLACK->REF normalization asserted
-# below, and the round-trip testset predates the FixedAdmittance row.
+# Shared fixture from common.jl; SLACK exercises the bustype round trip asserted below,
+# and the round-trip testset predates the FixedAdmittance row.
 
 @testset "OpenAPI export: round-trip" begin
     doc = make_openapi_test_doc(; bus1_bustype = "SLACK", include_fixed_admittance = false)
@@ -829,11 +829,11 @@ end
         @test load_out.active_power ≈ load_in["active_power"] rtol = 1e-15
     end
 
-    @testset "bustype SLACK round-trips as REF" begin
+    @testset "bustype SLACK round-trips as SLACK" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
         out = PSY.to_openapi(sys; unit_system = :original)
         bus1_out = first(b for b in PSY.PC.get_components(out, "ACBus") if b.number == 1)
-        @test bus1_out.bustype == "REF"
+        @test bus1_out.bustype == "SLACK"
     end
 
     @testset "to_openapi with no ledger and unit_system=:original errors" begin
