@@ -147,7 +147,7 @@ Similar to adding energy market bids, for adding bids for ancillary services, us
 `set_service_bid!`.
 
 ```@repl market_bid_cost
-service = VariableReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)
+service = OnlineReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)
 add_service!(sys, service, get_component(ThermalStandard, sys, "Brighton"))
 
 psd3 = PiecewiseStepData([0.0, 10.0], [650.3])
