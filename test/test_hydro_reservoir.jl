@@ -85,9 +85,6 @@ end
 
     remove_component!(sys, turbine)
     @test_throws ArgumentError get_connected_head_reservoirs(sys, turbine)
-
-    _, result = validate_serialization(sys)
-    @test result
 end
 
 @testset "Test multiple `HydroTurbine` with single `HydroReservoir`" begin
@@ -121,9 +118,6 @@ end
     @test mapping isa TurbineConnectedDevicesMapping
     @test length(get_connected_head_reservoirs(sys, turbines[1])) == 1
 
-    _, result = validate_serialization(sys)
-    @test result
-
     remove_turbine!(hydro_reservoir, turbines[1])
     @test length(get_downstream_turbines(hydro_reservoir)) == 4
     clear_turbines!(hydro_reservoir)
@@ -150,7 +144,4 @@ end
     set_downstream_turbine!(hydro_reservoir_02, turbine)
     @test length(get_connected_head_reservoirs(sys, turbine)) == 2
     @test isempty(get_connected_tail_reservoirs(sys, turbine))
-
-    _, result = validate_serialization(sys)
-    @test result
 end

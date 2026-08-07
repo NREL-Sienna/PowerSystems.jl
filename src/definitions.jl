@@ -622,7 +622,6 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
 
 const DEFAULT_SYSTEM_FREQUENCY = 60.0
 
-const DEFAULT_BASE_MVA = 100.0
 # Accumulator type for MW-sum helpers in system_checks.jl. Bare `Float64`
 # because unit-aware getters now return bare numbers; the `MW` arg merely
 # selects the unit basis (see `_sum_or_zero`).
@@ -636,23 +635,10 @@ const INFINITE_COST = 1e8
 const INFINITE_BOUND = 1e6
 const BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL = 0.01
 
-const ZERO_IMPEDANCE_REACTANCE_THRESHOLD = 1e-4
-
 # Absolute threshold below which a shunt admittance component (conductance or
 # susceptance) is treated as zero for capability detection, so negligible
 # admittances do not force their host bus to be kept during network reduction.
 const ZERO_ADMITTANCE_THRESHOLD = 1e-4
-
-const WINDING_NAMES = Dict(
-    WindingCategory.PRIMARY_WINDING => "primary",
-    WindingCategory.SECONDARY_WINDING => "secondary",
-    WindingCategory.TERTIARY_WINDING => "tertiary",
-)
-
-const TRANSFORMER3W_PARAMETER_NAMES = [
-    "COD", "CONT", "NOMV", "WINDV", "RMA", "RMI",
-    "NTP", "VMA", "VMI", "RATA", "RATB", "RATC",
-]
 
 # Emissions enums
 
@@ -664,6 +650,8 @@ IS.@scoped_enum(
     N2O = 4,
     NOX = 10,
     SO2 = 11,
+    CO = 12,
+    VOC = 13,
     PM25 = 20,
     PM10 = 21,
     HG = 30,
@@ -680,6 +668,8 @@ Enumeration of pollutant types for emissions tracking.
 - `N2O = 4`: Nitrous oxide
 - `NOX = 10`: Nitrogen oxides
 - `SO2 = 11`: Sulfur dioxide
+- `CO = 12`: Carbon monoxide
+- `VOC = 13`: Volatile organic compounds
 - `PM25 = 20`: Particulate matter (2.5 μm)
 - `PM10 = 21`: Particulate matter (10 μm)
 - `HG = 30`: Mercury

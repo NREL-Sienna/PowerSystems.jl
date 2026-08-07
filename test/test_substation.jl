@@ -70,17 +70,35 @@ using PowerSystems
         )
         add_supplemental_attribute!(sys, bus1, substation)
 
-        mktempdir() do tmp
-            json_path = joinpath(tmp, "sys_substation.json")
-            to_json(sys, json_path; force = true)
-            sys2 = System(json_path)
-            attr = only(collect(get_supplemental_attributes(Substation, sys2)))
-            @test get_name(attr) == "SERSUB"
-            @test get_number(attr) == 3
-            @test get_grounding_resistance(attr) == 0.5
-            bus1_loaded = get_component(ACBus, sys2, "bus1")
-            @test has_supplemental_attributes(bus1_loaded)
-        end
+        attr = only(collect(get_supplemental_attributes(Substation, bus1)))
+        @test get_name(attr) == "SERSUB"
+        @test get_number(attr) == 3
+        @test get_grounding_resistance(attr) == 0.5
+        @test has_supplemental_attributes(bus1)
+    end
+
+    @testset "OpenAPI converter round trip" begin
+        # `Substation` now has a schema (SiennaSchemas Operations/SupplementalAttributes/
+        # Substation.json) and a hand-written converter (src/substation.jl — no descriptor
+        # entry, so no generated file to append to). A full `System`-level document round
+        # trip still needs the `attribute_type` dispatch entry in import_document.jl and the
+        # supplemental-attribute walk in export_document.jl, neither owned by this pass —
+        # this exercises the converter functions directly instead.
+        substation = Substation(;
+            name = "OASUB",
+            number = 11,
+            grounding_resistance = 0.33,
+        )
+        po = PowerSystems.to_openapi(substation, 5)
+        @test po.id == 5
+        @test po.name == "OASUB"
+        @test po.number == 11
+        @test po.grounding_resistance == 0.33
+
+        reimported = PowerSystems.from_openapi(Substation, po)
+        @test get_name(reimported) == get_name(substation)
+        @test get_number(reimported) == get_number(substation)
+        @test get_grounding_resistance(reimported) == get_grounding_resistance(substation)
     end
 end
 

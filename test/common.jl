@@ -350,50 +350,224 @@ function test_accessors(component)
     end
 end
 
-function validate_serialization(
-    sys::System;
-    time_series_read_only = false,
-    runchecks = nothing,
-    assign_new_uuids = false,
+"""
+Round-trip `sys` through a `to_file`/`from_file` bundle and return the rebuilt system.
+
+Replaces the old `validate_serialization`, which asserted on machinery that no longer exists:
+`DATA_FORMAT_VERSION`, UUID-preserving `compare_values`, and component `ext` surviving the
+write. A document carries component ids rather than UUIDs and does not carry component `ext`,
+so none of those are properties to check any more.
+
+The serde itself is tested once, in `test_openapi_file_io.jl`. Use this only where a test needs
+a restored system to check that some *component* survives conversion — that is converter
+coverage, which is this package's job.
+"""
+function roundtrip_system(sys::System; unit_system = :device_base, kwargs...)
+    dir = mktempdir()
+    bundle = joinpath(dir, "case")
+    to_file(sys, bundle; unit_system = unit_system, force = true)
+    return from_file(System, bundle; kwargs...)
+end
+
+"""Round-trip a PO/PC struct through JSON, the same shape `JSON.parsefile` would hand to
+`PowerCoreOpenAPIModels.document_from_json` — avoids hand-writing nested `oneOf` cost-curve
+JSON."""
+openapi_raw(po) = JSON.parse(JSON.json(po); dicttype = Dict{String, Any})
+
+"""
+Parse a JSON-shaped test document into the `SystemDocument` `from_openapi` takes.
+
+The fixtures build plain `Dict`s because that is the shape a document has on disk and it is
+easy to mutate for negative tests; this is the same step `from_file` performs via
+`read_document`.
+"""
+to_test_document(doc::AbstractDict) = PSY.PC.document_from_json(doc)
+
+"""
+Errors a malformed document can raise.
+
+Which one fires depends on where the defect is caught: `PowerCoreOpenAPIModels` raises
+`DocumentFormatError` for structural problems it can see on its own (an unregistered type name,
+an unresolved id, a duplicate id), while PowerSystems `error()`s for semantic ones only it can
+judge (a component type with no converter, an unmapped time series type or multiplier).
+"""
+const DocumentError = Union{ErrorException, PSY.PC.DocumentFormatError}
+
+"""A minimal, internally-consistent OpenAPI document: Area/LoadZone, two buses, an arc, a
+thermal generator with a real cost curve, a load, and an online reserve the generator
+contributes to. Shared by test_openapi_document.jl and test_openapi_export.jl;
+`bus1_bustype = "SLACK"` exercises the SLACK->REF normalization the export round-trip
+asserts, and `include_fixed_admittance = false` drops the shunt row the export round-trip
+predates."""
+function make_openapi_test_doc(;
+    bus1_bustype = "REF",
+    include_fixed_admittance = true,
 )
-    if runchecks === nothing
-        runchecks = PSY.get_runchecks(sys)
-    end
-    test_dir = mktempdir()
-    orig_dir = pwd()
-    cd(test_dir)
+    area_po = PSY.PO.Area(;
+        id = 1, name = "area1", peak_active_power = 100.0, peak_reactive_power = 20.0,
+        load_response = 0.0,
+    )
+    lz_po = PSY.PO.LoadZone(;
+        id = 2, name = "lz1", peak_active_power = 100.0, peak_reactive_power = 20.0,
+    )
+    bus1_po = PSY.PO.ACBus(;
+        id = 3, number = 1, name = "bus1", available = true, bustype = bus1_bustype,
+        angle = 0.0, magnitude = 1.0,
+        voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        base_voltage = 138.0, area = 1, load_zone = 2,
+    )
+    bus2_po = PSY.PO.ACBus(;
+        id = 4, number = 2, name = "bus2", available = true, bustype = "PQ",
+        angle = 0.0, magnitude = 1.0,
+        voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        base_voltage = 138.0, area = 1, load_zone = 2,
+    )
+    arc_po = PSY.PO.Arc(; id = 5, from_id = 3, to_id = 4)
 
-    try
-        path = joinpath(test_dir, "test_system_serialization.json")
-        @info "Serializing to $path"
-        sys_ext = get_ext(sys)
-        sys_ext["data"] = 5
-        ext_test_bus_name = ""
-        bus = collect(get_components(PSY.ACBus, sys))[1]
-        ext_test_bus_name = PSY.get_name(bus)
-        ext = PSY.get_ext(bus)
-        ext["test_field"] = 1
-        to_json(sys, path; force = true)
+    cost_po = PSY.PC.ThermalGenerationCost(;
+        fixed = 100.0, shut_down = 50.0, start_up = 200.0,
+        variable = PSY.PC.ProductionVariableCostCurve(
+            PSY.PC.CostCurve(;
+                power_units = "NATURAL_UNITS",
+                value_curve = PSY.PC.ValueCurve(
+                    PSY.PC.InputOutputCurve(;
+                        function_data = PSY.PC.InputOutputCurveFunctionData(
+                            PSY.PC.LinearFunctionData(;
+                                proportional_term = 10.0, constant_term = 5.0,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+    thermal_po = PSY.PO.ThermalStandard(;
+        id = 6, name = "gen1", available = true, status = true, bus = 4,
+        active_power = 50.0, reactive_power = 10.0, rating = 100.0,
+        active_power_limits = PSY.PC.MinMax(; min = 10.0, max = 100.0),
+        reactive_power_limits = PSY.PC.MinMax(; min = -50.0, max = 50.0),
+        ramp_limits = PSY.PC.UpDown(; up = 20.0, down = 20.0),
+        operation_cost = cost_po, base_power = 100.0,
+        time_limits = PSY.PC.UpDown(; up = 2.0, down = 2.0),
+        must_run = false, prime_mover_type = "OT", fuel = "NATURAL_GAS",
+        time_at_status = 100.0,
+    )
+    load_po = PSY.PO.PowerLoad(;
+        id = 7, name = "load1", available = true, bus = 4,
+        active_power = 30.0, reactive_power = 5.0, base_power = 100.0,
+        max_active_power = 50.0, max_reactive_power = 10.0, conformity = "CONFORMING",
+    )
+    reserve_po = PSY.PO.OnlineReserve(;
+        id = 8, name = "spin_up", available = true, time_frame = 10.0,
+        requirement = 100.0, variable = nothing, sustained_time = 60.0,
+        max_output_fraction = 1.0, max_participation_factor = 1.0,
+        deployed_fraction = 1.0, reserve_direction = "UP",
+    )
 
-        data = open(path, "r") do io
-            JSON.parse(io; dicttype = Dict{String, Any})
-        end
-        @test data["data_format_version"] == PSY.DATA_FORMAT_VERSION
-
-        sys2 = System(
-            path;
-            time_series_read_only = time_series_read_only,
-            runchecks = runchecks,
-            assign_new_uuids = assign_new_uuids,
+    components = Dict{String, Any}(
+        "Area" => [openapi_raw(area_po)],
+        "LoadZone" => [openapi_raw(lz_po)],
+        "ACBus" => [openapi_raw(bus1_po), openapi_raw(bus2_po)],
+        "Arc" => [openapi_raw(arc_po)],
+        "ThermalStandard" => [openapi_raw(thermal_po)],
+        "PowerLoad" => [openapi_raw(load_po)],
+        "OnlineReserve" => [openapi_raw(reserve_po)],
+    )
+    if include_fixed_admittance
+        shunt_po = PSY.PO.FixedAdmittance(;
+            id = 9, name = "shunt1", available = true, bus = 4,
+            admittance_units = "DEVICE_MVAR",
+            Y = PSY.PC.ComplexNumber(; real = 0.0, imag = -50.0),
         )
-        isempty(get_bus_numbers(sys2)) && return false
-        sys_ext2 = get_ext(sys2)
-        sys_ext2["data"] != 5 && return false
-        bus = PSY.get_component(PSY.ACBus, sys2, ext_test_bus_name)
-        ext = PSY.get_ext(bus)
-        ext["test_field"] != 1 && return false
-        return sys2, PSY.compare_values(sys, sys2; compare_uuids = !assign_new_uuids)
-    finally
-        cd(orig_dir)
+        components["FixedAdmittance"] = [openapi_raw(shunt_po)]
     end
+
+    # Every field the SystemDocument schema marks required is present, including the empty
+    # ones: a real producer always emits all of them, so a fixture that omits some would let
+    # a reader regress into tolerating incomplete documents.
+    return Dict{String, Any}(
+        "base_power" => 100.0,
+        "unit_system" => "NATURAL_UNITS",
+        "components" => components,
+        "supplemental_attributes" => [],
+        # D10: service membership is a row in the unified table, with attribute_id naming
+        # the service component (spin_up) and attribute_type its own type name.
+        "supplemental_attribute_associations" => [
+            Dict{String, Any}(
+                "attribute_id" => 8, "entity_id" => 6,
+                "attribute_type" => "OnlineReserve",
+            ),
+        ],
+        "time_series_associations" => [],
+        "ext" => Dict{String, Any}(),
+        "time_series_storage_file" => nothing,
+    )
+end
+
+"""
+A small System exercising every member of a serialized bundle: topology, an injector, a
+supplemental attribute, and (unless `with_time_series = false`) a time series so the HDF5
+sidecar is written.
+
+Shared by test_openapi_file_io.jl.
+"""
+function _file_io_fixture(; with_time_series = true)
+    sys = System(100.0)
+    PSY.set_name!(sys, "bundle-fixture")
+    PSY.set_description!(sys, "round-trip check")
+
+    area = Area(nothing)
+    area.name = "a1"
+    add_component!(sys, area)
+    zone = LoadZone(nothing)
+    zone.name = "z1"
+    add_component!(sys, zone)
+
+    bus = ACBus(nothing)
+    bus.name = "b1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    bus.base_voltage = 230.0
+    bus.area = area
+    bus.load_zone = zone
+    add_component!(sys, bus)
+
+    gen = ThermalStandard(nothing)
+    set_bus!(gen, bus)
+    gen.name = "g1"
+    add_component!(sys, gen)
+
+    add_supplemental_attribute!(
+        sys,
+        gen,
+        EmissionsData(;
+            name = "g1_CO2", pollutant = PollutantType.CO2,
+            emission_rate = IncrementalCurve(;
+                function_data = LinearFunctionData(0.0, 1.5), initial_input = 0.0,
+            ),
+            basis = EmissionBasis.FUEL_INPUT, start_up_adder = 0.0,
+            mass_unit = MassUnit.LB, energy_unit = EnergyUnit.MMBTU, gwp = 1.0,
+            available = true,
+        ),
+    )
+
+    if with_time_series
+        add_time_series!(
+            sys,
+            gen,
+            SingleTimeSeries(
+                "max_active_power",
+                TimeSeries.TimeArray(
+                    collect(
+                        Dates.DateTime(2024, 1, 1):Dates.Hour(1):Dates.DateTime(
+                            2024, 1, 1, 5,
+                        ),
+                    ),
+                    collect(0.1:0.1:0.6),
+                );
+                scaling_factor_multiplier = get_max_active_power,
+            ),
+        )
+    end
+    return sys
 end

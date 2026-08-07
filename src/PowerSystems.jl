@@ -355,19 +355,32 @@ export set_basis_and_energy_unit!
 export Service
 export AbstractReserve
 export Reserve
-export ReserveNonSpinning
 export ReserveDirection
 export ReserveUp
 export ReserveDown
 export ReserveSymmetric
-export ConstantReserve
-export VariableReserve
 export AGC
 export ReserveDemandCurve
 export ReserveDemandTimeSeriesCurve
-export ConstantReserveGroup
-export ConstantReserveNonSpinning
-export VariableReserveNonSpinning
+export OnlineReserve
+export OfflineReserve
+export GroupReserve
+export has_demand_curve
+export get_time_frame
+export set_time_frame!
+export get_requirement
+export get_requirement_unitful
+export set_requirement!
+export get_sustained_time
+export set_sustained_time!
+export get_max_output_fraction
+export set_max_output_fraction!
+export get_max_participation_factor
+export set_max_participation_factor!
+export get_deployed_fraction
+export set_deployed_fraction!
+export get_contributing_services
+export set_contributing_services!
 export TransmissionInterface
 
 export AngleUnits
@@ -654,6 +667,12 @@ export get_circuits
 export has_control
 export supports_services
 
+# OpenAPI serde
+export from_openapi
+export to_openapi
+export from_file
+export to_file
+
 #################################################################################
 # Imports
 
@@ -668,6 +687,12 @@ import JSON
 import Base.to_index
 import PrettyTables
 import Unitful
+import PowerCoreOpenAPIModels
+import PowerOperationsOpenAPIModels
+import OpenAPI
+import TimeZones
+const PC = PowerCoreOpenAPIModels
+const PO = PowerOperationsOpenAPIModels
 using Unitful: @u_str, @unit, Quantity, Units, uconvert, ustrip
 
 # Relative-unit primitives live in IS; PSY re-exports them for downstream
@@ -737,6 +762,7 @@ import InfrastructureSystems:
     set_name!,
     get_internal,
     set_internal!,
+    assign_new_uuid!,
     iterate_windows,
     get_time_series,
     has_time_series,
@@ -746,6 +772,7 @@ import InfrastructureSystems:
     get_time_series_values,
     get_time_series_keys,
     show_time_series,
+    read_time_series_file_metadata,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
@@ -765,6 +792,7 @@ import InfrastructureSystems:
     NormalizationFactor,
     NormalizationTypes,
     UnitSystem,
+    LOG_GROUP_PARSING,
     open_file_logger,
     make_logging_config_file,
     validate_struct,
@@ -854,6 +882,11 @@ using DocStringExtensions
 #################################################################################
 # Includes
 
+# PSY's own struct code generator (forked from InfrastructureSystems.jl). Self-contained
+# submodule — declares its own imports, emits Julia source as text, needs nothing from
+# PSY's types below, so it is included first. Call site: `StructGeneration.generate_structs`.
+include("generate_structs.jl")
+
 """
 Supertype for all PowerSystems components.
 All subtypes must include a InfrastructureSystemsInternal member.
@@ -921,8 +954,24 @@ include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
 include("models/cost_functions/HydroReservoirCost.jl")
 
+# OpenAPI serde: hand-written pieces the generated from_openapi/to_openapi methods
+# build on. Must precede the generated includes. The rest of src/openapi/ is included
+# further down, after base.jl defines `System`.
+include("openapi/refs.jl")
+include("openapi/cost_conversion.jl")
+
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
+
+# Hand-written OpenAPI converters for types the generator cannot reach: abstract-typed
+# references (Arc), fields with no device-level base_power (Line,
+# TwoTerminalGenericHVDCLine), unclassifiable field kinds (TwoWindingTransformer.magnetizing_shunt,
+# EnergyReservoirStorage.efficiency, HydroReservoir's Vector{HydroUnit}/Vector{Device}
+# fields), a PSY/PO field-name mismatch (TransformerCircuit.α vs po.alpha), semantic
+# (not unit) conversions (HydroReservoir), and the parametric reserves (OnlineReserve/
+# OfflineReserve/GroupReserve). Included after generated/includes.jl so those struct
+# types exist.
+include("openapi/import_handwritten.jl")
 
 # Hand-written methods on the generated `TransformerCircuit` type; included after
 # generated/includes.jl so the type is defined.
@@ -957,7 +1006,40 @@ include("emissions_data.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+
+# OpenAPI round-trip ledger (needs `System`, just defined in base.jl — see the note in
+# refs.jl for why this is a separate file from the rest of the OpenAPI serde code).
+include("openapi/ledger.jl")
+
 include("plant_attribute.jl")
+
+# OpenAPI document-level serde: dependency-ordered component pass + ServiceAssociation
+# membership + time series ingestion. Needs System (base.jl), the round-trip ledger
+# (ledger.jl), and the supplemental-attribute hand-written constructors (outages.jl,
+# emissions_data.jl, plant_attribute.jl) already defined, so it is included after all of them.
+include("openapi/import_document.jl")
+
+# OpenAPI serde: the id⇄UUID loaders that carry document association rows into IS's
+# two SQLite association stores. Not yet wired into `from_openapi(::Type{System}, doc)` —
+# see this file's docstrings for the call sites to switch once it is. Needs
+# `_attribute_from_openapi`, `_attach_attribute!`, `_attach_service_membership!`, and
+# `_read_time_series` from import_document.jl, so it is included right after it.
+include("openapi/sqlite_load.jl")
+
+# OpenAPI export direction: PSY → PO/PC reverse converters and the document-level
+# `to_openapi(sys; ...)` entry point. Included last among the OpenAPI serde files —
+# after every PSY component type, getter, cost/curve type, and the round-trip ledger exist —
+# since export reads existing components rather than constructing them from a dependency-ordered
+# document walk the way import does.
+include("openapi/export_cost_conversion.jl")
+include("openapi/export_generated_types.jl")
+include("openapi/export_handwritten.jl")
+include("openapi/export_document.jl")
+
+# `from_file`/`to_file`: the directory-bundle entry points over both document directions.
+# Included after both, since it drives each.
+include("openapi/file_io.jl")
+
 include("substation.jl")
 include("subsystems.jl")
 include("component_selector.jl")

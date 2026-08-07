@@ -179,10 +179,12 @@ end
 end
 
 @testset "Service Constructors" begin
-    tConstantReserve = ConstantReserve{ReserveUp}(nothing)
-    @test tConstantReserve isa PowerSystems.Service
-    tVariableReserve = VariableReserve{ReserveDown}(nothing)
-    @test tVariableReserve isa PowerSystems.Service
+    tOnlineReserve = OnlineReserve{ReserveUp}(nothing)
+    @test tOnlineReserve isa PowerSystems.Service
+    tOfflineReserve = OfflineReserve(nothing)
+    @test tOfflineReserve isa PowerSystems.Service
+    tGroupReserve = GroupReserve{ReserveDown}(nothing)
+    @test tGroupReserve isa PowerSystems.Service
 end
 
 @testset "TimeSeriesData Constructors" begin
