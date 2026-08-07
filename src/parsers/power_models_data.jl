@@ -1435,6 +1435,12 @@ function make_branch(
     branch_type_override::Union{DataType, Nothing} = nothing,
     kwargs...,
 )
+    if !isnothing(branch_type_override) &&
+       branch_type_override == TapTransformer &&
+       !haskey(d, "group_number")
+        _add_vector_control_group(d, "shift", "group_number")
+    end
+
     if !isnothing(branch_type_override)
         branch_type = branch_type_override
     elseif source_type == "matpower"

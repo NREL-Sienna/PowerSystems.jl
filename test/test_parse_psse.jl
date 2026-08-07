@@ -752,6 +752,59 @@ end
     @test PowerSystems.get_branch_type_psse(d) == TapTransformer
 end
 
+@testset "make_branch TapTransformer override fills missing group_number" begin
+    bus_f = ACBus(;
+        number = 1,
+        name = "bus_f",
+        available = true,
+        bustype = ACBusTypes.PQ,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+    bus_t = ACBus(;
+        number = 2,
+        name = "bus_t",
+        available = true,
+        bustype = ACBusTypes.PQ,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+
+    d = Dict{String, Any}(
+        "transformer" => true,
+        "tap" => 1.05,
+        "shift" => 0.0,
+        "br_status" => 1,
+        "br_r" => 0.01,
+        "br_x" => 0.05,
+        "g_fr" => 0.0,
+        "b_fr" => 0.0,
+        "rate_a" => 100.0,
+        "rate_b" => 100.0,
+        "rate_c" => 100.0,
+        "base_power" => 100.0,
+        "base_voltage_from" => 230.0,
+        "base_voltage_to" => 230.0,
+    )
+
+    value = PowerSystems.make_branch(
+        "xfr_1",
+        d,
+        bus_f,
+        bus_t,
+        "pti";
+        branch_type_override = TapTransformer,
+    )
+
+    @test value isa TapTransformer
+    @test haskey(d, "group_number")
+    @test d["group_number"] == WindingGroupNumber.GROUP_0
+end
+
 @testset "PSSE ISW area-slack bus assignment" begin
     # Benchmark_4ger_33_2015.RAW AREA DATA: area 1 (LEFT) ISW=1 -> bus 1 (raw IDE=2,
     # PV) is promoted to SLACK; area 2 (RIGHT) ISW=3 -> bus 3 (raw IDE=3, REF) is left
