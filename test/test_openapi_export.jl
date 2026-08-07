@@ -1,0 +1,1107 @@
+# Field-for-field tests for the OpenAPI export converters — the reverse of
+# test_openapi_converters.jl/test_openapi_document.jl. Each per-type testset builds a PSY
+# component directly (not via `from_openapi`), exports it, and asserts the resulting PO
+# struct's fields, including the exact inverted unit-conversion numbers. The round-trip
+# assertions follow the exact specification.
+
+_export_bus(; number = 1, area = nothing, load_zone = nothing, bustype = ACBusTypes.REF) =
+    ACBus(;
+        number = number, name = "bus$number", available = true, bustype = bustype,
+        angle = 0.0, magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 138.0, area = area, load_zone = load_zone,
+    )
+
+@testset "OpenAPI export converters: ACBus / Area / LoadZone / Arc" begin
+    area = Area(; name = "area1", peak_active_power = 2.5, peak_reactive_power = 0.5)
+    lz = LoadZone(; name = "lz1", peak_active_power = 2.5, peak_reactive_power = 0.5)
+    bus1 = _export_bus(; number = 1, area = area, load_zone = lz)
+    bus2 = _export_bus(; number = 2, area = area, load_zone = lz, bustype = ACBusTypes.PQ)
+
+    sys = System(100.0)
+    add_component!(sys, area)
+    add_component!(sys, lz)
+    add_component!(sys, bus1)
+    add_component!(sys, bus2)
+    arc = Arc(; from = bus1, to = bus2)
+    add_component!(sys, arc)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = area
+    refs[2] = lz
+    refs[3] = bus1
+    refs[4] = bus2
+    refs[5] = arc
+
+    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+        area_po = PSY.to_openapi(area, refs, val)
+        @test area_po.id == 1
+        @test area_po.name == "area1"
+        @test area_po.peak_active_power == 250.0
+        @test area_po.peak_reactive_power == 50.0
+        @test area_po.load_response == 0.0
+
+        lz_po = PSY.to_openapi(lz, refs, val)
+        @test lz_po.peak_active_power == 250.0
+        @test lz_po.peak_reactive_power == 50.0
+
+        bus_po = PSY.to_openapi(bus1, refs, val)
+        @test bus_po.id == 3
+        @test bus_po.number == 1
+        @test bus_po.bustype == "REF"
+        @test bus_po.area == 1
+        @test bus_po.load_zone == 2
+
+        arc_po = PSY.to_openapi(arc, refs, val)
+        @test arc_po.from_id == 3
+        @test arc_po.to_id == 4
+    end
+end
+
+@testset "OpenAPI export converters: Line" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    line = Line(;
+        name = "line1", available = true, active_power_flow = 0.1,
+        reactive_power_flow = 0.02,
+        arc = arc, r = 0.01, x = 0.1, b = (from = 0.001, to = 0.002), rating = 1.75,
+        angle_limits = (min = -1.57, max = 1.57), rating_b = 1.75, rating_c = nothing,
+        g = (from = 0.0, to = 0.0),
+    )
+    sys = System(100.0)
+    add_component!(sys, bus1)
+    add_component!(sys, bus2)
+    add_component!(sys, arc)
+    add_component!(sys, line)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = arc
+    refs[4] = line
+
+    device_po = PSY.to_openapi(line, refs, Val(:DEVICE_BASE))
+    @test device_po.rating == 1.75
+    @test device_po.active_power_flow == 0.1
+    @test device_po.base_power == 100.0
+    @test isnothing(device_po.rating_c)
+
+    natural_po = PSY.to_openapi(line, refs, Val(:NATURAL_UNITS))
+    @test natural_po.rating == 175.0
+    @test natural_po.active_power_flow == 10.0
+    @test natural_po.reactive_power_flow == 2.0
+    @test natural_po.rating_b == 175.0
+    @test isnothing(natural_po.rating_c)
+    @test natural_po.r == 0.01
+    @test natural_po.b.from == 0.001
+    @test natural_po.base_power == PSY.get_base_power(refs)
+end
+
+@testset "OpenAPI export converters: TransformerCircuit / TwoWindingTransformer" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    circuit = TransformerCircuit(;
+        available = true, arc = arc, tap = 1.0, α = 0.05, r = 0.01, x = 0.1,
+        control_objective = TransformerControlObjective.UNDEFINED,
+        regulated_bus_number = 0,
+        control_limits = (min = 0.9, max = 1.1),
+        controlled_quantity_limits = (min = 0.9, max = 1.1),
+        number_of_tap_positions = 33, rating = 2.0, rating_b = nothing,
+        rating_c = nothing,
+        active_power_flow = 0.1, reactive_power_flow = 0.02, base_power = 50.0,
+        base_voltage_primary = 138.0, base_voltage_secondary = 69.0,
+    )
+    xfmr = TwoWindingTransformer(;
+        name = "xfmr1", circuit = circuit,
+        magnetizing_shunt = Complex(0.01, 0.02),
+        shunt_location = TwoWindingTransformerShuntLocation.PRIMARY,
+    )
+    sys = System(100.0)
+    add_component!(sys, bus1)
+    add_component!(sys, bus2)
+    add_component!(sys, arc)
+    add_component!(sys, xfmr)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = arc
+    refs[4] = circuit
+    refs[5] = xfmr
+
+    circuit_natural = PSY.to_openapi(circuit, refs, Val(:NATURAL_UNITS))
+    @test circuit_natural.alpha == 0.05
+    @test circuit_natural.r == 0.01
+    @test circuit_natural.rating == 100.0
+    @test isnothing(circuit_natural.rating_b)
+    @test circuit_natural.active_power_flow == 5.0
+    @test circuit_natural.control_objective == "UNDEFINED"
+    @test circuit_natural.parameter_units == "DEVICE_BASE"
+
+    circuit_device = PSY.to_openapi(circuit, refs, Val(:DEVICE_BASE))
+    @test circuit_device.rating == 2.0
+    @test circuit_device.active_power_flow == 0.1
+
+    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+        xfmr_po = PSY.to_openapi(xfmr, refs, val)
+        @test xfmr_po.circuit == 4
+        @test xfmr_po.magnetizing_shunt.real == 0.01
+        @test xfmr_po.magnetizing_shunt.imag == 0.02
+        @test xfmr_po.shunt_location == "PRIMARY"
+    end
+end
+
+@testset "OpenAPI export converters: TransmissionInterface" begin
+    bus1 = _export_bus(; number = 1)
+    line = Line(;
+        name = "line1", available = true, active_power_flow = 0.1,
+        reactive_power_flow = 0.02, arc = Arc(; from = bus1, to = bus1), r = 0.01,
+        x = 0.1, b = (from = 0.0, to = 0.0), rating = 1.0,
+        angle_limits = (min = -1.57, max = 1.57),
+    )
+    tx = TransmissionInterface(; name = "iface1", available = true,
+        active_power_flow_limits = (min = -10.0, max = 10.0),
+        violation_penalty = 5000.0,
+        direction_mapping = Dict("line1" => 1),
+    )
+    sys = System(100.0)
+    add_component!(sys, bus1)
+    add_component!(sys, get_arc(line))
+    add_component!(sys, line)
+    add_service!(sys, tx, [line])
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = get_arc(line)
+    refs[3] = line
+    refs[4] = tx
+
+    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+        tx_po = PSY.to_openapi(tx, refs, val)
+        @test tx_po.id == 4
+        @test tx_po.active_power_flow_limits.min == -1000.0
+        @test tx_po.active_power_flow_limits.max == 1000.0
+        @test tx_po.violation_penalty == 5000.0
+        @test tx_po.direction_mapping == Dict("line1" => 1)
+
+        # Round-trip: import(export(x)) == x.
+        round_tripped = PSY.from_openapi(TransmissionInterface, tx_po, refs, val)
+        @test get_active_power_flow_limits(round_tripped, DU) ==
+              get_active_power_flow_limits(tx, DU)
+    end
+end
+
+@testset "OpenAPI export converters: ThreeWindingTransformer" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    bus3 = _export_bus(; number = 3, bustype = ACBusTypes.PQ)
+    star = _export_bus(; number = 901, bustype = ACBusTypes.PQ)
+    arc1 = Arc(; from = bus1, to = star)
+    arc2 = Arc(; from = bus2, to = star)
+    arc3 = Arc(; from = bus3, to = star)
+
+    t3w = ThreeWindingTransformer(nothing)
+    set_name!(t3w, "t3w1")
+    set_arc!(get_primary_circuit(t3w), arc1)
+    set_arc!(get_secondary_circuit(t3w), arc2)
+    set_arc!(get_tertiary_circuit(t3w), arc3)
+    foreach(c -> set_available!(c, true), get_circuits(t3w))
+    set_star_bus!(t3w, star)
+    set_r_12!(t3w, 0.01 * DU)
+    set_x_12!(t3w, 0.1 * DU)
+    set_r_23!(t3w, 0.015 * DU)
+    set_x_23!(t3w, 0.15 * DU)
+    set_r_31!(t3w, 0.02 * DU)
+    set_x_31!(t3w, 0.2 * DU)
+    set_base_power_12!(t3w, 100.0)
+    set_base_power_23!(t3w, 100.0)
+    set_base_power_31!(t3w, 100.0)
+    set_magnetizing_shunt!(t3w, (0.03 + 0.0im) * DU)
+    set_shunt_location!(t3w, ThreeWindingTransformerShuntLocation.STAR)
+
+    sys = System(100.0)
+    for b in (bus1, bus2, bus3, star)
+        add_component!(sys, b)
+    end
+    foreach(a -> add_component!(sys, a), (arc1, arc2, arc3))
+    add_component!(sys, t3w)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = bus3
+    refs[4] = star
+    refs[5] = arc1
+    refs[6] = arc2
+    refs[7] = arc3
+    refs[8] = get_primary_circuit(t3w)
+    refs[9] = get_secondary_circuit(t3w)
+    refs[10] = get_tertiary_circuit(t3w)
+    refs[11] = t3w
+
+    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+        t3w_po = PSY.to_openapi(t3w, refs, val)
+        @test t3w_po.primary_circuit == 8
+        @test t3w_po.secondary_circuit == 9
+        @test t3w_po.tertiary_circuit == 10
+        @test t3w_po.star_bus == 4
+        @test t3w_po.parameter_units == "DEVICE_BASE"
+        @test t3w_po.r_12 == 0.01
+        @test t3w_po.r_31 == 0.02
+        @test t3w_po.base_power_23 == 100.0
+        @test t3w_po.admittance_units == "DEVICE_BASE"
+        @test t3w_po.magnetizing_shunt.real == 0.03
+        @test t3w_po.shunt_location == "STAR"
+    end
+end
+
+@testset "OpenAPI export converters: FixedAdmittance" begin
+    bus1 = _export_bus(; number = 1)
+    shunt = FixedAdmittance(;
+        name = "shunt1", available = true, bus = bus1, Y = Complex(0.0, -1.0),
+    )
+    sys = System(100.0)
+    add_component!(sys, bus1)
+    add_component!(sys, shunt)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = shunt
+
+    # The wire enum has no system-base member, so PSY's system-base pu Y rides as
+    # DEVICE_MVAR (MVAr at unity voltage) scaled by the document's system base —
+    # the same value regardless of the document's unit_system.
+    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+        shunt_po = PSY.to_openapi(shunt, refs, val)
+        @test shunt_po.id == 2
+        @test shunt_po.bus == 1
+        @test shunt_po.admittance_units == "DEVICE_MVAR"
+        @test shunt_po.Y.real == 0.0
+        @test shunt_po.Y.imag == -100.0
+
+        # Round-trip: import(export(x)) == x.
+        round_tripped = PSY.from_openapi(FixedAdmittance, shunt_po, refs, val)
+        @test get_Y(round_tripped) == get_Y(shunt)
+    end
+end
+
+@testset "OpenAPI export converters: TwoTerminalGenericHVDCLine" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    hvdc = TwoTerminalGenericHVDCLine(;
+        name = "hvdc1", available = true, active_power_flow = 0.5, arc = arc,
+        active_power_limits_from = (min = -1.0, max = 1.0),
+        active_power_limits_to = (min = -1.0, max = 1.0),
+        reactive_power_limits_from = (min = -0.5, max = 0.5),
+        reactive_power_limits_to = (min = -0.5, max = 0.5),
+        loss = LinearCurve(0.01, 0.0),
+    )
+    sys = System(100.0)
+    add_component!(sys, bus1)
+    add_component!(sys, bus2)
+    add_component!(sys, arc)
+    add_component!(sys, hvdc)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = arc
+    refs[4] = hvdc
+
+    natural_po = PSY.to_openapi(hvdc, refs, Val(:NATURAL_UNITS))
+    @test natural_po.active_power_flow == 50.0
+    @test natural_po.active_power_limits_from.min == -100.0
+    @test natural_po.reactive_power_limits_to.max == 50.0
+    @test natural_po.loss.value.function_data.value.proportional_term == 0.01
+
+    device_po = PSY.to_openapi(hvdc, refs, Val(:DEVICE_BASE))
+    @test device_po.active_power_flow == 0.5
+    @test device_po.active_power_limits_from.min == -1.0
+end
+
+@testset "OpenAPI export converters: AreaInterchange (generated import, hand-written export)" begin
+    # Codegen emits only `from_openapi` (see export_generated_types.jl's header); `to_openapi`
+    # for this newly openapi_type-annotated struct is hand-written here to match exactly
+    # what such a generator would emit, same as every other generated-import type in
+    # export_generated_types.jl.
+    area1 = Area(; name = "area1")
+    area2 = Area(; name = "area2")
+    interchange = AreaInterchange(;
+        name = "flow12", available = true, active_power_flow = 0.25,
+        from_area = area1, to_area = area2,
+        flow_limits = (from_to = 1.0, to_from = -1.0),
+    )
+    sys = System(100.0)
+    add_component!(sys, area1)
+    add_component!(sys, area2)
+    add_component!(sys, interchange)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = area1
+    refs[2] = area2
+    refs[3] = interchange
+
+    device_po = PSY.to_openapi(interchange, refs, Val(:DEVICE_BASE))
+    @test device_po.active_power_flow == 0.25
+    @test device_po.flow_limits.from_to == 1.0
+    @test device_po.flow_limits.to_from == -1.0
+    @test device_po.base_power == 100.0
+
+    natural_po = PSY.to_openapi(interchange, refs, Val(:NATURAL_UNITS))
+    @test natural_po.active_power_flow == 25.0
+    @test natural_po.flow_limits.from_to == 100.0
+    @test natural_po.flow_limits.to_from == -100.0
+    @test natural_po.base_power == 100.0
+
+    # Round trip through the generated `from_openapi` reproduces the original component.
+    import_refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    import_refs[1] = area1
+    import_refs[2] = area2
+    reimported =
+        PSY.from_openapi(AreaInterchange, device_po, import_refs, Val(:DEVICE_BASE))
+    @test get_active_power_flow(reimported, PSY.DU) ==
+          get_active_power_flow(interchange, SU)
+    @test get_flow_limits(reimported, PSY.DU) == get_flow_limits(interchange, SU)
+end
+
+@testset "OpenAPI export converters: ThermalStandard / PowerLoad" begin
+    bus = _export_bus(; number = 1)
+    cost = ThermalGenerationCost(;
+        variable = CostCurve(;
+            value_curve = InputOutputCurve(LinearFunctionData(10.0, 5.0)),
+        ),
+        fixed = 100.0, start_up = 200.0, shut_down = 50.0,
+    )
+    gen = ThermalStandard(;
+        name = "gen1", available = true, status = true, bus = bus,
+        active_power = 0.25, reactive_power = 0.05, rating = 0.5,
+        active_power_limits = (min = 0.05, max = 0.5),
+        reactive_power_limits = (min = -0.25, max = 0.25),
+        ramp_limits = (up = 0.1, down = 0.1), operation_cost = cost, base_power = 200.0,
+        time_limits = (up = 2.0, down = 2.0), must_run = false,
+        prime_mover_type = PrimeMovers.OT, fuel = ThermalFuels.NATURAL_GAS,
+        time_at_status = 100.0,
+    )
+    load = PowerLoad(;
+        name = "load1", available = true, bus = bus, active_power = 0.3,
+        reactive_power = 0.05,
+        base_power = 100.0, max_active_power = 0.5, max_reactive_power = 0.1,
+        conformity = LoadConformity.CONFORMING,
+    )
+    sys = System(100.0)
+    add_component!(sys, bus)
+    add_component!(sys, gen)
+    add_component!(sys, load)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus
+    refs[2] = gen
+    refs[3] = load
+
+    gen_natural = PSY.to_openapi(gen, refs, Val(:NATURAL_UNITS))
+    @test gen_natural.active_power == 50.0
+    @test gen_natural.rating == 100.0
+    @test gen_natural.active_power_limits.min == 10.0
+    @test gen_natural.active_power_limits.max == 100.0
+    @test gen_natural.prime_mover_type == "OT"
+    @test gen_natural.fuel == "NATURAL_GAS"
+    @test gen_natural.operation_cost.fixed == 100.0
+
+    gen_device = PSY.to_openapi(gen, refs, Val(:DEVICE_BASE))
+    @test gen_device.active_power == 0.25
+    @test gen_device.rating == 0.5
+
+    load_natural = PSY.to_openapi(load, refs, Val(:NATURAL_UNITS))
+    @test load_natural.active_power == 30.0
+    @test load_natural.max_active_power == 50.0
+    @test load_natural.conformity == "CONFORMING"
+
+    load_device = PSY.to_openapi(load, refs, Val(:DEVICE_BASE))
+    @test load_device.active_power == 0.3
+end
+
+@testset "OpenAPI export converters: InterruptiblePowerLoad / ShiftablePowerLoad" begin
+    bus = _export_bus(; number = 1)
+    cost = LoadCost(CostCurve(LinearCurve(150.0)), 2400.0)
+    iload = InterruptiblePowerLoad(
+        "iload1", true, bus, 0.3, 0.05, 0.3, 0.05, 100.0, cost,
+    )
+    sload = ShiftablePowerLoad(
+        "sload1", true, bus, 0.3, (min = 0.03, max = 0.3), 0.05, 0.3, 0.05, 100.0, 24,
+        cost,
+    )
+    sys = System(100.0)
+    add_component!(sys, bus)
+    add_component!(sys, iload)
+    add_component!(sys, sload)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus
+    refs[2] = iload
+    refs[3] = sload
+
+    iload_natural = PSY.to_openapi(iload, refs, Val(:NATURAL_UNITS))
+    @test iload_natural.active_power == 30.0
+    @test iload_natural.max_active_power == 30.0
+    @test iload_natural.conformity == "UNDEFINED"
+    @test iload_natural.operation_cost.fixed == 2400.0
+
+    iload_device = PSY.to_openapi(iload, refs, Val(:DEVICE_BASE))
+    @test iload_device.active_power == 0.3
+
+    sload_natural = PSY.to_openapi(sload, refs, Val(:NATURAL_UNITS))
+    @test sload_natural.active_power == 30.0
+    @test sload_natural.active_power_limits.min == 3.0
+    @test sload_natural.active_power_limits.max == 30.0
+    @test sload_natural.load_balance_time_horizon == 24
+
+    sload_device = PSY.to_openapi(sload, refs, Val(:DEVICE_BASE))
+    @test sload_device.active_power_limits.min == 0.03
+end
+
+@testset "OpenAPI export converters: Hydro / Renewable / SynchronousCondenser / EnergyReservoirStorage" begin
+    bus = _export_bus(; number = 1)
+    hydro_cost = HydroGenerationCost(;
+        fixed = 1.0,
+        variable = CostCurve(;
+            value_curve = InputOutputCurve(LinearFunctionData(1.0, 0.0)),
+        ),
+    )
+    turbine = HydroTurbine(;
+        name = "turb1", available = true, bus = bus, active_power = 0.2,
+        reactive_power = 0.05,
+        rating = 0.5, active_power_limits = (min = 0.0, max = 0.5),
+        reactive_power_limits = (min = -0.2, max = 0.2), base_power = 100.0,
+        operation_cost = hydro_cost, powerhouse_elevation = 100.0,
+        ramp_limits = (up = 0.1, down = 0.1), time_limits = (up = 1.0, down = 1.0),
+        outflow_limits = (min = 0.0, max = 500.0), efficiency = 0.9,
+        turbine_type = HydroTurbineType.FRANCIS, conversion_factor = 1.0,
+        prime_mover_type = PrimeMovers.HY, travel_time = 5.0,
+    )
+    ror = HydroDispatch(;
+        name = "ror1", available = true, bus = bus, active_power = 0.15,
+        reactive_power = 0.03,
+        rating = 0.4, prime_mover_type = PrimeMovers.HY,
+        active_power_limits = (min = 0.0, max = 0.4),
+        reactive_power_limits = (min = -0.15, max = 0.15),
+        ramp_limits = (up = 0.1, down = 0.1), time_limits = (up = 1.0, down = 1.0),
+        base_power = 100.0, status = true, time_at_status = 50.0,
+        operation_cost = hydro_cost,
+    )
+    ren_cost = RenewableGenerationCost(;
+        variable = CostCurve(;
+            value_curve = InputOutputCurve(LinearFunctionData(0.0, 0.0)),
+        ),
+    )
+    wind = RenewableDispatch(;
+        name = "wind1", available = true, bus = bus, active_power = 0.25,
+        reactive_power = 0.05,
+        rating = 0.5, prime_mover_type = PrimeMovers.WT,
+        reactive_power_limits = (min = -0.2, max = 0.2), power_factor = 0.95,
+        operation_cost = ren_cost, base_power = 100.0,
+    )
+    solar = RenewableNonDispatch(;
+        name = "solar1", available = true, bus = bus, active_power = 0.15,
+        reactive_power = 0.02,
+        rating = 0.3, prime_mover_type = PrimeMovers.PVe, power_factor = 0.98,
+        base_power = 100.0,
+    )
+    condenser = SynchronousCondenser(;
+        name = "syncon1", available = true, bus = bus, reactive_power = 0.05,
+        rating = 0.2,
+        reactive_power_limits = (min = -0.2, max = 0.2), base_power = 100.0,
+        active_power_losses = 0.01,
+    )
+    storage_cost = StorageCost(; fixed = 0.0, shut_down = 0.0, start_up = 0.0)
+    storage = EnergyReservoirStorage(;
+        name = "storage1", available = true, bus = bus,
+        prime_mover_type = PrimeMovers.BA,
+        storage_technology_type = StorageTech.LIB, storage_capacity = 2.0,
+        storage_level_limits = (min = 0.0, max = 1.0),
+        initial_storage_capacity_level = 0.5,
+        rating = 0.5, active_power = 0.1,
+        input_active_power_limits = (min = 0.0, max = 0.5),
+        output_active_power_limits = (min = 0.0, max = 0.5),
+        efficiency = (in = 0.9, out = 0.9),
+        reactive_power = 0.025, reactive_power_limits = (min = -0.25, max = 0.25),
+        base_power = 200.0, operation_cost = storage_cost, conversion_factor = 1.0,
+        storage_target = 0.5, cycle_limits = 10000,
+        ramp_limits = (up = 0.5, down = 0.5),
+        self_discharge = 0.0, standing_loss = 0.01,
+    )
+
+    sys = System(100.0)
+    add_component!(sys, bus)
+    for c in (turbine, ror, wind, solar, condenser, storage)
+        add_component!(sys, c)
+    end
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus
+    refs[2] = turbine
+    refs[3] = ror
+    refs[4] = wind
+    refs[5] = solar
+    refs[6] = condenser
+    refs[7] = storage
+
+    turbine_natural = PSY.to_openapi(turbine, refs, Val(:NATURAL_UNITS))
+    @test turbine_natural.active_power == 20.0
+    @test turbine_natural.rating == 50.0
+    @test turbine_natural.turbine_type == "FRANCIS"
+    @test turbine_natural.operation_cost.fixed == 1.0
+
+    ror_natural = PSY.to_openapi(ror, refs, Val(:NATURAL_UNITS))
+    @test ror_natural.active_power == 15.0
+    @test ror_natural.rating == 40.0
+
+    wind_natural = PSY.to_openapi(wind, refs, Val(:NATURAL_UNITS))
+    @test wind_natural.active_power == 25.0
+    @test wind_natural.rating == 50.0
+    @test wind_natural.prime_mover_type == "WT"
+    @test wind_natural.power_factor == 0.95
+
+    solar_natural = PSY.to_openapi(solar, refs, Val(:NATURAL_UNITS))
+    @test solar_natural.active_power == 15.0
+    @test solar_natural.rating == 30.0
+
+    condenser_natural = PSY.to_openapi(condenser, refs, Val(:NATURAL_UNITS))
+    @test condenser_natural.reactive_power == 5.0
+    @test condenser_natural.rating == 20.0
+    @test condenser_natural.active_power_losses == 1.0
+
+    storage_natural = PSY.to_openapi(storage, refs, Val(:NATURAL_UNITS))
+    @test storage_natural.storage_capacity == 400.0
+    @test storage_natural.rating == 100.0
+    @test storage_natural.active_power == 20.0
+    @test storage_natural.input_active_power_limits.max == 100.0
+    @test storage_natural.reactive_power_limits.min == -50.0
+    @test storage_natural.ramp_limits.up == 100.0
+    @test storage_natural.standing_loss == 2.0
+    @test storage_natural.storage_technology_type == "LIB"
+    @test storage_natural.energy_units == "MWH"
+
+    storage_device = PSY.to_openapi(storage, refs, Val(:DEVICE_BASE))
+    @test storage_device.storage_capacity == 2.0
+    @test storage_device.rating == 0.5
+end
+
+@testset "OpenAPI export converters: HydroReservoir" begin
+    bus = _export_bus(; number = 1)
+    hydro_cost = HydroGenerationCost(;
+        fixed = 1.0,
+        variable = CostCurve(;
+            value_curve = InputOutputCurve(LinearFunctionData(1.0, 0.0)),
+        ),
+    )
+    turbine = HydroTurbine(;
+        name = "turb1", available = true, bus = bus, active_power = 0.2,
+        reactive_power = 0.05,
+        rating = 0.5, active_power_limits = (min = 0.0, max = 0.5),
+        reactive_power_limits = (min = -0.2, max = 0.2), base_power = 100.0,
+        operation_cost = hydro_cost,
+    )
+    reservoir = HydroReservoir(;
+        name = "reservoir1", available = true,
+        storage_level_limits = (min = 0.0, max = 1000.0),
+        initial_level = 0.5, spillage_limits = (min = 0.0, max = 100.0), inflow = 10.0,
+        outflow = 8.0, level_targets = 0.6, intake_elevation = 50.0,
+        head_to_volume_factor = LinearFunctionData(0.001, 0.0),
+        upstream_turbines = PSY.HydroUnit[turbine],
+        downstream_turbines = PSY.HydroUnit[],
+        upstream_reservoirs = Device[],
+        operation_cost = HydroReservoirCost(;
+            level_shortage_cost = 1.0, level_surplus_cost = 2.0, spillage_cost = 3.0,
+        ),
+        evaporative_loss = 0.0, level_data_type = ReservoirDataType.USABLE_VOLUME,
+    )
+    reservoir_no_assoc = HydroReservoir(;
+        name = "reservoir2", available = true,
+        storage_level_limits = (min = 0.0, max = 1000.0),
+        initial_level = 0.5, spillage_limits = nothing, inflow = 10.0, outflow = 8.0,
+        level_targets = nothing, intake_elevation = 50.0,
+        head_to_volume_factor = LinearFunctionData(0.001, 0.0),
+        operation_cost = HydroReservoirCost(nothing),
+    )
+
+    sys = System(100.0)
+    add_component!(sys, bus)
+    add_component!(sys, turbine)
+    add_component!(sys, reservoir)
+    add_component!(sys, reservoir_no_assoc)
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus
+    refs[2] = turbine
+    refs[3] = reservoir
+    refs[4] = reservoir_no_assoc
+
+    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+        po = PSY.to_openapi(reservoir, refs, val)
+        @test po.initial_level == 500.0
+        @test po.level_targets == 600.0
+        @test po.inflow == 10.0
+        @test po.upstream_turbines == [2]
+        @test po.level_data_type == "USABLE_VOLUME"
+        @test po.operation_cost.level_shortage_cost == 1.0
+
+        po_empty = PSY.to_openapi(reservoir_no_assoc, refs, val)
+        @test isnothing(po_empty.upstream_turbines)
+        @test isnothing(po_empty.upstream_reservoirs)
+        @test isnothing(po_empty.level_targets)
+        @test isnothing(po_empty.spillage_limits)
+    end
+end
+
+@testset "OpenAPI export converters: reserves" begin
+    up_reserve = OnlineReserve{ReserveUp}(;
+        name = "spin_up", available = true, time_frame = 10.0, requirement = 1.0,
+        variable = PSY.ZERO_OFFER_CURVE, sustained_time = 60.0,
+        max_output_fraction = 1.0,
+        max_participation_factor = 1.0, deployed_fraction = 1.0,
+    )
+    down_reserve = OnlineReserve{ReserveDown}(;
+        name = "spin_down", available = true, time_frame = 10.0, requirement = 0.5,
+        sustained_time = 60.0, max_output_fraction = 1.0,
+        max_participation_factor = 1.0,
+        deployed_fraction = 1.0,
+    )
+    offline_reserve = OfflineReserve(;
+        name = "nonspin", available = true, time_frame = 10.0, requirement = 0.5,
+        sustained_time = 60.0, max_output_fraction = 1.0,
+        max_participation_factor = 1.0,
+        deployed_fraction = 1.0,
+    )
+    group =
+        GroupReserve{ReserveUp}(; name = "group_up", available = true, requirement = 1.5)
+
+    ordc_reserve = OnlineReserve{ReserveUp}(;
+        name = "spin_ordc", available = true, time_frame = 10.0, requirement = 1.0,
+        variable = CostCurve(;
+            value_curve = IncrementalCurve(;
+                function_data = PiecewiseStepData([0.0, 100.0], [10.0]),
+                initial_input = 0.0,
+            ),
+        ),
+        sustained_time = 60.0, max_output_fraction = 1.0,
+        max_participation_factor = 1.0,
+        deployed_fraction = 1.0,
+    )
+
+    sys = System(100.0)
+    for r in (up_reserve, down_reserve, offline_reserve, group, ordc_reserve)
+        add_component!(sys, r)
+    end
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = up_reserve
+    refs[2] = down_reserve
+    refs[3] = offline_reserve
+    refs[4] = group
+    refs[5] = ordc_reserve
+
+    up_natural = PSY.to_openapi(up_reserve, refs, Val(:NATURAL_UNITS))
+    @test up_natural.requirement == 100.0
+    @test up_natural.reserve_direction == "UP"
+    @test isnothing(up_natural.variable)
+
+    up_device = PSY.to_openapi(up_reserve, refs, Val(:DEVICE_BASE))
+    @test up_device.requirement == 1.0
+
+    down_natural = PSY.to_openapi(down_reserve, refs, Val(:NATURAL_UNITS))
+    @test down_natural.reserve_direction == "DOWN"
+
+    offline_natural = PSY.to_openapi(offline_reserve, refs, Val(:NATURAL_UNITS))
+    @test offline_natural.requirement == 50.0
+
+    group_natural = PSY.to_openapi(group, refs, Val(:NATURAL_UNITS))
+    @test group_natural.requirement == 150.0
+    @test group_natural.reserve_direction == "UP"
+
+    ordc_natural = PSY.to_openapi(ordc_reserve, refs, Val(:NATURAL_UNITS))
+    @test !isnothing(ordc_natural.variable)
+end
+
+@testset "OpenAPI export: GroupReserve contributing services round-trip" begin
+    contributing = OnlineReserve{ReserveUp}(;
+        name = "spin_up_member", available = true, time_frame = 10.0,
+        requirement = 1.0, variable = PSY.ZERO_OFFER_CURVE, sustained_time = 60.0,
+        max_output_fraction = 1.0, max_participation_factor = 1.0,
+        deployed_fraction = 1.0,
+    )
+    group = GroupReserve{ReserveUp}(;
+        name = "group_up_member", available = true, requirement = 1.5,
+    )
+    sys = System(100.0)
+    add_component!(sys, contributing)
+    add_component!(sys, group)
+    push!(get_contributing_services(group), contributing)
+
+    # to_openapi's output is from_openapi's input directly: both sides speak SystemDocument,
+    # so the round-trip needs no re-serialization through JSON.
+    out = PSY.to_openapi(sys; unit_system = :device_base)
+    sys2 = PSY.from_openapi(System, out)
+    group2 = only(get_components(GroupReserve, sys2))
+    @test get_name.(get_contributing_services(group2)) == ["spin_up_member"]
+end
+
+@testset "OpenAPI export: supplemental attribute converters" begin
+    emissions = EmissionsData(;
+        name = "gen1_CO2", pollutant = PollutantType.CO2,
+        emission_rate = IncrementalCurve(;
+            function_data = LinearFunctionData(0.0, 1.5), initial_input = 0.0,
+        ),
+        basis = EmissionBasis.FUEL_INPUT, start_up_adder = 0.0, mass_unit = MassUnit.LB,
+        energy_unit = EnergyUnit.MMBTU, gwp = 1.0, available = true,
+    )
+    po = PSY.to_openapi(emissions, 1)
+    @test po.pollutant == "CO2"
+    @test po.basis == "FUEL_INPUT"
+    @test po.mass_unit == "LB"
+    @test po.energy_unit == "MMBTU"
+
+    geo = GeographicInfo(; geo_json = Dict{String, Any}("type" => "Point"))
+    geo_po = PSY.to_openapi(geo, 2)
+    @test geo_po.geo_json["type"] == "Point"
+
+    cc_block = CombinedCycleBlock(;
+        name = "cc1",
+        configuration = CombinedCycleConfiguration.SingleShaftCombustionSteam,
+        heat_recovery_to_steam_factor = 0.5,
+    )
+    cc_po = PSY.to_openapi(cc_block, 3)
+    @test cc_po.configuration == "SingleShaftCombustionSteam"
+    @test cc_po.heat_recovery_to_steam_factor == 0.5
+
+    plant = ThermalPowerPlant(; name = "plant1")
+    plant_po = PSY.to_openapi(plant, 4)
+    @test plant_po.name == "plant1"
+
+    # Substation: no descriptor entry at all (no PSY struct field list for codegen to
+    # read), so both directions are hand-written directly in src/substation.jl rather than
+    # here — see that file's header for why. Still exercised alongside its siblings.
+    substation = Substation(; name = "SUB1", number = 7, grounding_resistance = 0.25)
+    substation_po = PSY.to_openapi(substation, 5)
+    @test substation_po.id == 5
+    @test substation_po.name == "SUB1"
+    @test substation_po.number == 7
+    @test substation_po.grounding_resistance == 0.25
+    reimported = PSY.from_openapi(Substation, substation_po)
+    @test get_name(reimported) == get_name(substation)
+    @test get_number(reimported) == get_number(substation)
+    @test get_grounding_resistance(reimported) == get_grounding_resistance(substation)
+end
+
+# ── Round-trip assertions ─────────────────────────────────────────────────────────
+
+# Shared fixture from common.jl; SLACK exercises the SLACK->REF normalization asserted
+# below, and the round-trip testset predates the FixedAdmittance row.
+
+@testset "OpenAPI export: round-trip" begin
+    doc = make_openapi_test_doc(; bus1_bustype = "SLACK", include_fixed_admittance = false)
+
+    @testset "DEVICE_BASE -> PSY -> DEVICE_BASE is exact" begin
+        device_doc = deepcopy(doc)
+        device_doc["unit_system"] = "DEVICE_BASE"
+        sys = PSY.from_openapi(System, to_test_document(device_doc))
+        out = PSY.to_openapi(sys; unit_system = :original)
+        @test PSY.PC.get_unit_system(out) == "DEVICE_BASE"
+        gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
+        @test gen_out.active_power == 50.0
+        @test gen_out.rating == 100.0
+        gen_in = only(device_doc["components"]["ThermalStandard"])
+        @test gen_out.active_power === gen_in["active_power"]
+        @test gen_out.rating === gen_in["rating"]
+    end
+
+    @testset "NATURAL_UNITS -> PSY -> NATURAL_UNITS is approximate only" begin
+        sys = PSY.from_openapi(System, to_test_document(doc))
+        out = PSY.to_openapi(sys; unit_system = :original)
+        @test PSY.PC.get_unit_system(out) == "NATURAL_UNITS"
+        gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
+        gen_in = only(doc["components"]["ThermalStandard"])
+        @test gen_out.active_power ≈ gen_in["active_power"] rtol = 1e-15
+        @test gen_out.rating ≈ gen_in["rating"] rtol = 1e-15
+        load_out = only(PSY.PC.get_components(out, "PowerLoad"))
+        load_in = only(doc["components"]["PowerLoad"])
+        @test load_out.active_power ≈ load_in["active_power"] rtol = 1e-15
+    end
+
+    @testset "bustype SLACK round-trips as REF" begin
+        sys = PSY.from_openapi(System, to_test_document(doc))
+        out = PSY.to_openapi(sys; unit_system = :original)
+        bus1_out = first(b for b in PSY.PC.get_components(out, "ACBus") if b.number == 1)
+        @test bus1_out.bustype == "REF"
+    end
+
+    @testset "to_openapi with no ledger and unit_system=:original errors" begin
+        sys = System(100.0)
+        add_component!(sys, ACBus(nothing))
+        @test_throws ErrorException PSY.to_openapi(sys; unit_system = :original)
+    end
+
+    @testset "Line.base_power on export == get_base_power(sys) exactly" begin
+        sys = System(100.0)
+        bus1 = _export_bus(; number = 1)
+        bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+        add_component!(sys, bus1)
+        add_component!(sys, bus2)
+        arc = Arc(; from = bus1, to = bus2)
+        add_component!(sys, arc)
+        line = Line(;
+            name = "line1", available = true, active_power_flow = 0.1,
+            reactive_power_flow = 0.02, arc = arc, r = 0.01, x = 0.1,
+            b = (from = 0.0, to = 0.0), rating = 1.0,
+            angle_limits = (min = -1.57, max = 1.57),
+        )
+        add_component!(sys, line)
+        out = PSY.to_openapi(sys; unit_system = :natural_units)
+        line_out = only(PSY.PC.get_components(out, "Line"))
+        @test line_out.base_power == PSY.get_base_power(sys)
+    end
+end
+
+@testset "OpenAPI export: fresh System (never round-tripped) is exportable" begin
+    bus = _export_bus(; number = 1)
+    sys = System(100.0)
+    add_component!(sys, bus)
+    load = PowerLoad(;
+        name = "load1", available = true, bus = bus, active_power = 0.3,
+        reactive_power = 0.05,
+        base_power = 100.0, max_active_power = 0.5, max_reactive_power = 0.1,
+    )
+    add_component!(sys, load)
+
+    @test !PSY.has_ledger(sys)
+    out_device = PSY.to_openapi(sys; unit_system = :device_base)
+    @test PSY.PC.get_unit_system(out_device) == "DEVICE_BASE"
+    load_out = only(PSY.PC.get_components(out_device, "PowerLoad"))
+    @test load_out.active_power == 0.3
+
+    out_natural = PSY.to_openapi(sys; unit_system = :natural_units)
+    load_out_nat = only(PSY.PC.get_components(out_natural, "PowerLoad"))
+    @test load_out_nat.active_power == 30.0
+end
+
+@testset "OpenAPI export: multi-type synthetic round trip (component + reserve + time series + attribute)" begin
+    mktempdir() do dir
+        area_po = PSY.PO.Area(;
+            id = 1, name = "area1", peak_active_power = 100.0,
+            peak_reactive_power = 20.0,
+            load_response = 0.0,
+        )
+        lz_po = PSY.PO.LoadZone(;
+            id = 2, name = "lz1", peak_active_power = 100.0, peak_reactive_power = 20.0,
+        )
+        bus1_po = PSY.PO.ACBus(;
+            id = 3, number = 1, name = "bus1", available = true, bustype = "REF",
+            angle = 0.0, magnitude = 1.0,
+            voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+            base_voltage = 138.0, area = 1, load_zone = 2,
+        )
+        bus2_po = PSY.PO.ACBus(;
+            id = 4, number = 2, name = "bus2", available = true, bustype = "PQ",
+            angle = 0.0, magnitude = 1.0,
+            voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+            base_voltage = 138.0, area = 1, load_zone = 2,
+        )
+        arc_po = PSY.PO.Arc(; id = 5, from_id = 3, to_id = 4)
+        line_po = PSY.PO.Line(;
+            id = 6, name = "line1", available = true, active_power_flow = 10.0,
+            reactive_power_flow = 2.0, arc = 5, r = 0.01, x = 0.1, base_power = 100.0,
+            b = PSY.PC.FromTo(; from = 0.0, to = 0.0), rating = 175.0,
+            angle_limits = PSY.PC.MinMax(; min = -1.57, max = 1.57),
+            g = PSY.PC.FromTo(; from = 0.0, to = 0.0),
+        )
+        load_po = PSY.PO.PowerLoad(;
+            id = 7, name = "load1", available = true, bus = 4,
+            active_power = 30.0, reactive_power = 5.0, base_power = 100.0,
+            max_active_power = 50.0, max_reactive_power = 10.0,
+            conformity = "CONFORMING",
+        )
+        reserve_po = PSY.PO.OnlineReserve(;
+            id = 8, name = "spin_up", available = true, time_frame = 10.0,
+            requirement = 100.0, variable = nothing, sustained_time = 60.0,
+            max_output_fraction = 1.0, max_participation_factor = 1.0,
+            deployed_fraction = 1.0, reserve_direction = "UP",
+        )
+        emissions_po = PSY.PO.EmissionsData(;
+            id = 9, name = "load1_CO2", pollutant = "CO2",
+            emission_rate = PSY.PC.ValueCurve(
+                PSY.PC.IncrementalCurve(;
+                    function_data = PSY.PC.IncrementalCurveFunctionData(
+                        PSY.PC.LinearFunctionData(;
+                            proportional_term = 0.0, constant_term = 1.5,
+                        ),
+                    ),
+                    initial_input = 0.0,
+                ),
+            ),
+            basis = "FUEL_INPUT", start_up_adder = 0.0, mass_unit = "LB",
+            energy_unit = "MMBTU", gwp = 1.0, available = true,
+        )
+        doc = Dict{String, Any}(
+            "base_power" => 100.0,
+            "unit_system" => "NATURAL_UNITS",
+            "components" => Dict{String, Any}(
+                "Area" => [openapi_raw(area_po)],
+                "LoadZone" => [openapi_raw(lz_po)],
+                "ACBus" => [openapi_raw(bus1_po), openapi_raw(bus2_po)],
+                "Arc" => [openapi_raw(arc_po)],
+                "Line" => [openapi_raw(line_po)],
+                "PowerLoad" => [openapi_raw(load_po)],
+                "OnlineReserve" => [openapi_raw(reserve_po)],
+            ),
+            # D10: service membership is a row in the unified table, alongside the plain
+            # EmissionsData association below — attribute_id names the service component
+            # (spin_up) and attribute_type its own type name.
+            "supplemental_attributes" => [openapi_raw(emissions_po)],
+            "supplemental_attribute_associations" => [
+                Dict{String, Any}(
+                    "attribute_id" => 9, "entity_id" => 7,
+                    "attribute_type" => "EmissionsData",
+                ),
+                Dict{String, Any}(
+                    "attribute_id" => 8, "entity_id" => 7,
+                    "attribute_type" => "OnlineReserve",
+                ),
+            ],
+            "time_series_associations" => [],
+            "ext" => Dict{String, Any}(),
+            "time_series_storage_file" => nothing,
+        )
+
+        sys = PSY.from_openapi(System, to_test_document(doc))
+        load = get_component(PowerLoad, sys, "load1")
+        ta = TimeSeries.TimeArray(
+            [Dates.DateTime(2024, 1, 1, h) for h in 0:2], [0.5, 0.6, 0.7],
+        )
+        series = SingleTimeSeries(;
+            name = "max_active_power", data = ta,
+            scaling_factor_multiplier = get_max_active_power,
+        )
+        add_time_series!(sys, load, series)
+
+        ts_out_path = joinpath(dir, "export_time_series_storage.h5")
+        out = PSY.to_openapi(
+            sys;
+            unit_system = :original,
+            time_series_storage_path = ts_out_path,
+        )
+
+        @test PSY.PC.get_unit_system(out) == "NATURAL_UNITS"
+        @test length(PSY.PC.get_components(out, "ACBus")) == 2
+        @test length(only(PSY.PC.get_components(out, "Line")) |> x -> [x]) == 1
+        @test length(PSY.PC.get_components(out, "OnlineReserve")) == 1
+        @test length(out.supplemental_attributes) == 1
+        # D10: the unified table carries both the plain EmissionsData association and the
+        # service-membership row, distinguished only by attribute_type.
+        @test length(out.supplemental_attribute_associations) == 2
+        assoc = only(
+            filter(
+                a -> a.attribute_type == "EmissionsData",
+                out.supplemental_attribute_associations,
+            ),
+        )
+        @test assoc.attribute_type == "EmissionsData"
+        service_assoc = only(
+            filter(
+                a -> a.attribute_type == "OnlineReserve",
+                out.supplemental_attribute_associations,
+            ),
+        )
+        @test service_assoc.entity_id == PSY.component_id(
+            PSY._build_export_refs(
+                sys, "NATURAL_UNITS", PSY._ledger_uuid_to_id(PSY.load_ledger(sys)),
+            ),
+            load,
+        )
+        @test length(out.time_series_associations) == 1
+        ts_assoc = only(out.time_series_associations)
+        @test ts_assoc.name == "max_active_power"
+        @test ts_assoc.scaling_factor_multiplier == "get_max_active_power"
+        @test isfile(ts_out_path)
+    end
+end
+
+@testset "OpenAPI export/import: forecast time series round trip" begin
+    mktempdir() do dir
+        bus = _export_bus(; number = 1)
+        sys = System(100.0)
+        add_component!(sys, bus)
+        load = PowerLoad(;
+            name = "load1", available = true, bus = bus, active_power = 0.3,
+            reactive_power = 0.05,
+            base_power = 100.0, max_active_power = 0.5, max_reactive_power = 0.1,
+        )
+        add_component!(sys, load)
+
+        resolution = Dates.Hour(1)
+        initial_timestamp = Dates.DateTime(2024, 1, 1, 0)
+        sts = SingleTimeSeries(;
+            name = "load_hist",
+            data = TimeSeries.TimeArray(
+                [initial_timestamp + resolution * (i - 1) for i in 1:4],
+                [0.11, 0.12, 0.13, 0.14],
+            ),
+        )
+        add_time_series!(sys, load, sts)
+        transform_single_time_series!(sys, Dates.Hour(2), Dates.Hour(1))
+
+        det_data = SortedDict(
+            initial_timestamp + Dates.Hour(i - 1) => [0.1 * i, 0.2 * i] for i in 1:3
+        )
+        deterministic = Deterministic(;
+            name = "max_active_power", data = det_data, resolution = resolution,
+            interval = Dates.Hour(1),
+        )
+        add_time_series!(sys, load, deterministic)
+
+        counts_before = get_time_series_counts(sys)
+        @test counts_before.forecast_count == 2
+
+        ts_out_path = joinpath(dir, "forecast_time_series_storage.h5")
+        doc = PSY.to_openapi(
+            sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+        )
+        # 3 rows: the surviving "load_hist" SingleTimeSeries, its DeterministicSingleTimeSeries
+        # transform (same UUID, one HDF5 write — see `_hdf5_series`), and the real Deterministic.
+        @test length(doc.time_series_associations) == 3
+        det_assoc = only(
+            filter(
+                a -> a.time_series_type == "Deterministic",
+                doc.time_series_associations,
+            ),
+        )
+        @test det_assoc.horizon == "PT7200S"
+        @test det_assoc.interval == "PT3600S"
+        @test det_assoc.window_count == 3
+        dsts_assoc = only(
+            filter(
+                a -> a.time_series_type == "DeterministicSingleTimeSeries",
+                doc.time_series_associations,
+            ),
+        )
+        @test dsts_assoc.horizon == "PT7200S"
+        @test dsts_assoc.window_count == 3
+
+        sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
+        load2 = get_component(PowerLoad, sys2, "load1")
+        counts_after = get_time_series_counts(sys2)
+        @test counts_after.forecast_count == 2
+
+        det2 = get_time_series(Deterministic, load2, "max_active_power")
+        @test get_horizon(det2) == Dates.Hour(2)
+        @test IS.get_interval(det2) == Dates.Hour(1)
+        @test IS.get_count(det2) == 3
+        @test collect(values(get_data(det2))) == collect(values(det_data))
+
+        dsts2 = get_time_series(DeterministicSingleTimeSeries, load2, "load_hist")
+        @test get_horizon(dsts2) == Dates.Hour(2)
+        @test IS.get_count(dsts2) == 3
+        @test TimeSeries.values(get_data(IS.get_single_time_series(dsts2))) ==
+              [0.11, 0.12, 0.13, 0.14]
+    end
+end
