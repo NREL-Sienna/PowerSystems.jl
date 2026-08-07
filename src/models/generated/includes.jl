@@ -43,11 +43,6 @@ include("SynchronousCondenser.jl")
 include("ThermalMultiStart.jl")
 include("EnergyReservoirStorage.jl")
 include("HybridSystem.jl")
-include("ConstantReserve.jl")
-include("ConstantReserveNonSpinning.jl")
-include("ConstantReserveGroup.jl")
-include("VariableReserve.jl")
-include("VariableReserveNonSpinning.jl")
 include("AGC.jl")
 include("AVRFixed.jl")
 include("AVRSimple.jl")
@@ -535,7 +530,6 @@ export get_constant_active_power
 export get_constant_active_power_unitful
 export get_constant_reactive_power
 export get_constant_reactive_power_unitful
-export get_contributing_services
 export get_control_limits
 export get_control_mode
 export get_control_objective
@@ -568,7 +562,6 @@ export get_dc_voltage_droop
 export get_dc_voltage_droop_from
 export get_dc_voltage_droop_to
 export get_delta_t
-export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
 export get_downstream_turbines
@@ -694,8 +687,6 @@ export get_max_impedance_active_power
 export get_max_impedance_active_power_unitful
 export get_max_impedance_reactive_power
 export get_max_impedance_reactive_power_unitful
-export get_max_output_fraction
-export get_max_participation_factor
 export get_max_reactive_power
 export get_max_reactive_power_unitful
 export get_max_shunt_current
@@ -789,8 +780,6 @@ export get_remote_bus_control_2
 export get_remote_bus_control_from
 export get_remote_bus_control_to
 export get_renewable_unit
-export get_requirement
-export get_requirement_unitful
 export get_reserves
 export get_rf
 export get_rg
@@ -822,7 +811,6 @@ export get_storage_capacity_unitful
 export get_storage_level_limits
 export get_storage_target
 export get_storage_technology_type
-export get_sustained_time
 export get_switch
 export get_switch_mode_voltage
 export get_tF_delay
@@ -833,7 +821,6 @@ export get_tfh
 export get_tfl
 export get_thermal_unit
 export get_time_at_status
-export get_time_frame
 export get_time_limits
 export get_to
 export get_to_area
@@ -1268,7 +1255,6 @@ export set_compounding_resistance!
 export set_conformity!
 export set_constant_active_power!
 export set_constant_reactive_power!
-export set_contributing_services!
 export set_control_limits!
 export set_control_mode!
 export set_control_objective!
@@ -1298,7 +1284,6 @@ export set_dc_voltage_droop!
 export set_dc_voltage_droop_from!
 export set_dc_voltage_droop_to!
 export set_delta_t!
-export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
 export set_downstream_turbines!
@@ -1408,8 +1393,6 @@ export set_max_dc_current_to!
 export set_max_flow!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
-export set_max_output_fraction!
-export set_max_participation_factor!
 export set_max_reactive_power!
 export set_max_shunt_current!
 export set_min_compounding_voltage!
@@ -1481,7 +1464,6 @@ export set_remote_bus_control_2!
 export set_remote_bus_control_from!
 export set_remote_bus_control_to!
 export set_renewable_unit!
-export set_requirement!
 export set_reserves!
 export set_rf!
 export set_rg!
@@ -1511,7 +1493,6 @@ export set_storage_capacity!
 export set_storage_level_limits!
 export set_storage_target!
 export set_storage_technology_type!
-export set_sustained_time!
 export set_switch!
 export set_switch_mode_voltage!
 export set_tF_delay!
@@ -1522,7 +1503,6 @@ export set_tfh!
 export set_tfl!
 export set_thermal_unit!
 export set_time_at_status!
-export set_time_frame!
 export set_time_limits!
 export set_to!
 export set_to_area!
