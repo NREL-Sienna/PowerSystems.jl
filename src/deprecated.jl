@@ -23,19 +23,19 @@ function TwoTerminalHVDCLine(
     @warn(
         "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
          This constructor will be removed in a future version.",)
-    TwoTerminalGenericHVDCLine(
-        name,
-        available,
-        active_power_flow,
-        arc,
-        active_power_limits_from,
-        active_power_limits_to,
-        reactive_power_limits_from,
-        reactive_power_limits_to,
-        new_loss,
-        services,
-        ext,
-        internal,
+    TwoTerminalGenericHVDCLine(;
+        name = name,
+        available = available,
+        active_power_flow = active_power_flow,
+        arc = arc,
+        active_power_limits_from = active_power_limits_from,
+        active_power_limits_to = active_power_limits_to,
+        reactive_power_limits_from = reactive_power_limits_from,
+        reactive_power_limits_to = reactive_power_limits_to,
+        loss = new_loss,
+        services = services,
+        ext = ext,
+        internal = internal,
     )
 end
 
@@ -60,19 +60,19 @@ function TwoTerminalHVDCLine(
         "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
          This constructor will be removed in a future version.",)
     new_loss = LinearCurve(loss.l0, loss.l1)
-    TwoTerminalGenericHVDCLine(
-        name,
-        available,
-        active_power_flow,
-        arc,
-        active_power_limits_from,
-        active_power_limits_to,
-        reactive_power_limits_from,
-        reactive_power_limits_to,
-        new_loss,
-        services,
-        ext,
-        InfrastructureSystemsInternal(),
+    TwoTerminalGenericHVDCLine(;
+        name = name,
+        available = available,
+        active_power_flow = active_power_flow,
+        arc = arc,
+        active_power_limits_from = active_power_limits_from,
+        active_power_limits_to = active_power_limits_to,
+        reactive_power_limits_from = reactive_power_limits_from,
+        reactive_power_limits_to = reactive_power_limits_to,
+        loss = new_loss,
+        services = services,
+        ext = ext,
+        internal = InfrastructureSystemsInternal(),
     )
 end
 
@@ -96,19 +96,19 @@ function TwoTerminalHVDCLine(
     @warn(
         "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
          This constructor will be removed in a future version.",)
-    return TwoTerminalGenericHVDCLine(
-        name,
-        available,
-        active_power_flow,
-        arc,
-        active_power_limits_from,
-        active_power_limits_to,
-        reactive_power_limits_from,
-        reactive_power_limits_to,
-        loss,
-        services,
-        ext,
-        InfrastructureSystemsInternal(),
+    return TwoTerminalGenericHVDCLine(;
+        name = name,
+        available = available,
+        active_power_flow = active_power_flow,
+        arc = arc,
+        active_power_limits_from = active_power_limits_from,
+        active_power_limits_to = active_power_limits_to,
+        reactive_power_limits_from = reactive_power_limits_from,
+        reactive_power_limits_to = reactive_power_limits_to,
+        loss = loss,
+        services = services,
+        ext = ext,
+        internal = InfrastructureSystemsInternal(),
     )
 end
 
@@ -132,19 +132,19 @@ function TwoTerminalHVDCLine(
     @warn(
         "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
          This constructor will be removed in a future version.",)
-    TwoTerminalGenericHVDCLine(
-        name,
-        available,
-        active_power_flow,
-        arc,
-        active_power_limits_from,
-        active_power_limits_to,
-        reactive_power_limits_from,
-        reactive_power_limits_to,
-        loss,
-        services,
-        ext,
-        InfrastructureSystemsInternal(),
+    TwoTerminalGenericHVDCLine(;
+        name = name,
+        available = available,
+        active_power_flow = active_power_flow,
+        arc = arc,
+        active_power_limits_from = active_power_limits_from,
+        active_power_limits_to = active_power_limits_to,
+        reactive_power_limits_from = reactive_power_limits_from,
+        reactive_power_limits_to = reactive_power_limits_to,
+        loss = loss,
+        services = services,
+        ext = ext,
+        internal = InfrastructureSystemsInternal(),
     )
 end
 
@@ -169,19 +169,19 @@ function TwoTerminalHVDCLine(;
     @warn(
         "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
          This constructor will be removed in a future version.",)
-    TwoTerminalGenericHVDCLine(
-        name,
-        available,
-        active_power_flow,
-        arc,
-        active_power_limits_from,
-        active_power_limits_to,
-        reactive_power_limits_from,
-        reactive_power_limits_to,
-        loss,
-        services,
-        ext,
-        internal,
+    TwoTerminalGenericHVDCLine(;
+        name = name,
+        available = available,
+        active_power_flow = active_power_flow,
+        arc = arc,
+        active_power_limits_from = active_power_limits_from,
+        active_power_limits_to = active_power_limits_to,
+        reactive_power_limits_from = reactive_power_limits_from,
+        reactive_power_limits_to = reactive_power_limits_to,
+        loss = loss,
+        services = services,
+        ext = ext,
+        internal = internal,
     )
 end
 

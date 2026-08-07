@@ -75,9 +75,10 @@ end
             LoadCost(CostCurve(LinearCurve(150.0)), 2400.0),
         ),
     )
-    dir_path = mktempdir()
-    to_json(sys, joinpath(dir_path, "test_RTS_GMLC_sys.json"))
-    sys2 = System(joinpath(dir_path, "test_RTS_GMLC_sys.json"))
+    # Round-trip through a document: both `ShiftablePowerLoad` and `InterruptiblePowerLoad`
+    # are now in `DOCUMENT_PLAN`. DEVICE_BASE is an exact pass-through, so the DU values
+    # below survive unchanged.
+    sys2 = roundtrip_system(sys)
     @test get_active_power(
         get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"), DU) == 0.10
     @test get_active_power(

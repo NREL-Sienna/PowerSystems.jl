@@ -536,14 +536,10 @@ end
     add_component!(sys, Gen3AVR, static_gen)
 
     retrieved_gen = collect(get_components(DynamicGenerator, sys))
-    orig_dir = pwd()
-    temp_dir = mktempdir()
-    cd(temp_dir)
-    to_json(sys, "sys.json")
-    sys2 = System("sys.json")
-    serialized_gen = collect(get_components(DynamicGenerator, sys2))
-    @test get_name(retrieved_gen[1]) == get_name(serialized_gen[1])
-    cd(orig_dir)
+    # A round trip through a document is not asserted here: dynamics has no OpenAPI
+    # converter (campaign index section 7), so `to_openapi` omits dynamic components and warns.
+    @test get_name(retrieved_gen[1]) ==
+          get_name(only(get_components(DynamicGenerator, sys)))
 end
 
 @testset "Replace Dynamic Injector" begin

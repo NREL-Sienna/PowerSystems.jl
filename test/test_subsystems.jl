@@ -691,7 +691,7 @@ end
     device = nothing
     service = nothing
     for dev in get_components(Device, c_sys5; subsystem_name = "subsystem_1")
-        res = VariableReserve{ReserveUp}("REG1", true, 5.0, 0.1)
+        res = OnlineReserve{ReserveUp}("REG1", true, 5.0, 0.1)
         add_service!(c_sys5, res, dev)
         services = get_services(dev)
         if !isempty(services)

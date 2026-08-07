@@ -90,11 +90,9 @@ checksys = false
     clear_components!(sys14b)
 end
 
-@testset "Test System constructor rejects non-JSON files" begin
-    @test_throws IS.DataFormatError System("some_file.m")
-    @test_throws IS.DataFormatError System("some_file.raw")
-    @test_throws IS.DataFormatError System("some_file.txt")
-end
+# Removed with `System(::AbstractString)`: a serialized System is now a bundle directory read by
+# `from_file`, which rejects a directory lacking `system.json` (asserted in
+# test_openapi_file_io.jl) rather than dispatching on a file extension.
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin
     # If this test fails because a type doesn't have a constructor that takes nothing,
