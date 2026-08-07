@@ -2,8 +2,6 @@
 
 The Sienna power-system **data model**: the `System` container plus ~210 component types (buses, branches, generators, storage, loads, services, dynamic models), operational cost structures, time series, and the **explicit-units engine**. Layer 1 of the psy6 stack, built on InfrastructureSystems (IS4 branch). Platform-wide conventions: the `sienna-psy6` skill. Workspace architecture: the psy6 workspace root `CLAUDE.md`.
 
-Open work order for the units rework: `.claude/plans/2026-07-units-management-review.md` (read it only when working that campaign — many items are marked superseded by PR #1714).
-
 **This branch has NO parsers.** `src/parsers/` was removed in the psy6 line; all Matpower/PSSE/table parsing lives in PowerFlowFileParser.jl (and PSB's parser wrappers). Do not re-add parsing here.
 
 ## Downstream blast radius
@@ -27,15 +25,24 @@ PNM, PF, POM, and PSB all consume PSY; SiennaSchemas mirrors PSY component field
 
 ## Generated code workflow
 
-Edit the descriptor, then regenerate — never hand-edit `src/models/generated/`:
+PSY owns its own struct generator — `src/generate_structs.jl`, module `PowerSystems.StructGeneration`
+(forked from InfrastructureSystems.jl so PSY's OpenAPI-converter emission doesn't live in IS; IS keeps
+a trimmed generic copy for its own 3 metadata structs). Edit the descriptor, then regenerate — never
+hand-edit `src/models/generated/`:
 
 ```sh
-julia --project=test -e "using InfrastructureSystems; InfrastructureSystems.generate_structs(\"./src/descriptors/power_system_structs.json\", \"./src/models/generated\")"
+julia --project=test -e "using PowerSystems; PowerSystems.StructGeneration.generate_structs(\"./src/descriptors/power_system_structs.json\", \"./src/models/generated\")"
 ```
 
 - Generated signatures use exact types (`::Type{ExponentialLoad}`), never `Type{<:X}`.
 - Hand-written behavior (validation, extra constructors, custom show) goes in non-generated `src/models/*.jl`.
-- `test/test_generate_structs.jl` checks descriptor↔generated consistency — inspect the regenerated diff for intent.
+- **Nothing currently checks descriptor↔generated consistency.** `test/test_generate_structs.jl`'s
+  byte-compare testset is disabled: its helper paired files and lines with `zip`, which truncates,
+  so appended content was never compared. Until it is rewritten, **inspect the regenerated diff by
+  hand** for intent. The rewrite should check generated output against both the descriptor's struct
+  definitions and SiennaSchemas' field data.
+- `StructGeneration` is not exported from `PowerSystems`; it is a dev-tool entry point, always called
+  module-qualified.
 
 ### Recipe: add or change a component field (end-to-end)
 
@@ -75,7 +82,7 @@ Five concrete transformer types became two, and series data moved onto a nested 
 
 ### Known audit items (do not silently "fix"; coordinate)
 
-- `check_rating_values(::Union{Line,MonitoredLine}, basemva)` at `src/utils/IO/branchdata_checks.jl:88` reads raw DU `getfield(line, :rating)` against a system-base threshold — numerically correct today only because Line/MonitoredLine lack `base_power` (DU==SU). Latent trap if `base_power` is ever added; the transformer sibling — `check_rating_values(::TwoWindingTransformer, ::Float64)` at `branchdata_checks.jl:284`, which takes `device_base_power = _get_base_power(xfrm)` and reads the rating fields off `get_circuit(xfrm)` — is the correct pattern.
+- **Resolved**: `check_rating_values(::Union{Line,MonitoredLine}, ::Float64)` at `src/utils/IO/branchdata_checks.jl` now mirrors its transformer sibling — it reads `device_base_power = _get_base_power(line)` and scales the raw DU rating fields through that, ignoring the passed `basemva`, instead of dividing the MW thresholds by a caller-supplied base. This closed the latent trap the previous note warned about: `base_power` was added to `Line`/`MonitoredLine` (and 10 other types whose base *is* the system base — see `base_power_kind`/`BasePowerKind` trait in `src/models/components.jl`), and `add_component!` now keeps that field synced to the system's base power on attachment.
 - `_set_units_base!` at `src/base.jl:574` — `IS.get_units_info` is nothing-unguarded for detached components on the display path; wants the `isnothing(...) && error(...)` guard matching `_get_system_base_power` (`src/models/components.jl`).
 - `src/base.jl:~3290` — copy-paste bug: `old_load.max_active_power` copied into `max_constant_reactive_power`. Known, pending a separate fix.
 - Setters bypass validation and `set_bus!` does not maintain `sys.bus_numbers` — mutation after `add_component!` is convention-trusted.
