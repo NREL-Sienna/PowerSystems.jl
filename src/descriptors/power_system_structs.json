@@ -38,6 +38,20 @@
                     "default": "0.0"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
@@ -56,6 +70,8 @@
         },
         {
             "struct_name": "AreaInterchange",
+            "openapi_type": "AreaInterchange",
+            "openapi_export_base_kind": "system",
             "docstring": "Flow exchanged between Areas. This Interchange is agnostic to the lines connecting the areas. It does not substitute Interface which is the total flow across a group of lines",
             "fields": [
                 {
@@ -98,6 +114,20 @@
                     "data_type": "FromTo_ToFrom",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "services",
@@ -149,6 +179,20 @@
                     "data_type": "Float64",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "ext",
@@ -207,6 +251,20 @@
                     "default": "Dict{String, Int}()"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "internal",
                     "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
                     "data_type": "InfrastructureSystemsInternal",
@@ -218,6 +276,7 @@
         },
         {
             "struct_name": "ACBus",
+            "openapi_type": "ACBus",
             "docstring": "An AC bus",
             "inner_constructor_check": "check_bus_params",
             "fields": [
@@ -729,6 +788,20 @@
                     "default": "Device[]"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
@@ -807,6 +880,20 @@
                     "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "needs_conversion": true,
                     "conversion_unit": ":ohm"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "ext",
@@ -919,6 +1006,20 @@
                     "null_value": "DiscreteControlledBranchStatus.CLOSED",
                     "data_type": "DiscreteControlledBranchStatus",
                     "default": "DiscreteControlledBranchStatus.CLOSED"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "ext",
@@ -1076,6 +1177,20 @@
                     "comment": "Services that this device contributes to",
                     "null_value": "Device[]",
                     "default": "Device[]"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "ext",
@@ -1436,6 +1551,20 @@
                     "default": "Device[]"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
@@ -1770,6 +1899,20 @@
                     "default": "Device[]"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
@@ -2058,6 +2201,20 @@
                     "default": "Device[]"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
@@ -2147,6 +2304,20 @@
                     "default": "Device[]"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
@@ -2165,6 +2336,7 @@
         },
         {
             "struct_name": "InterruptiblePowerLoad",
+            "openapi_type": "InterruptiblePowerLoad",
             "docstring": "A [static](@ref S) power load that can be compensated for temporary or continuous interruptions to its requested demand.\n\n These loads are most commonly used for operational optimizations and can be used to model, for example, large commercial and industrial customers enrolled in demand response programs. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation) that can be reduced to satisfy other system needs. For simpler loads without an operating cost for demand response, see [`PowerLoad`](@ref)",
             "fields": [
                 {
@@ -2465,6 +2637,7 @@
         },
         {
             "struct_name": "ShiftablePowerLoad",
+            "openapi_type": "ShiftablePowerLoad",
             "docstring": "A [static](@ref S) power load that can be partially or completed shifted to later time periods.\n\n These loads are used to model demand response. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation). Load in the profile can be shifted to later time periods to aid in satisfying other system needs; however, any shifted load must be served within a designated time horizon (e.g., 24 hours), which is set by `load_balance_time_horizon`.",
             "fields": [
                 {
@@ -2853,6 +3026,7 @@
         },
         {
             "struct_name": "PowerLoad",
+            "openapi_type": "PowerLoad",
             "docstring": "A [static](@ref S) power load, most commonly used for operational models such as power flow and operational optimizations.\n\nThis load consumes a set amount of power (set by `active_power` for a power flow simulation or a `max_active_power` time series for an operational simulation). For loads that can be compensated for load interruptions through demand response programs, see [`InterruptiblePowerLoad`](@ref). For voltage-dependent loads used in [dynamics](@ref D) modeling, see [`StandardLoad`](@ref)",
             "fields": [
                 {
@@ -4428,6 +4602,7 @@
         },
         {
             "struct_name": "HydroDispatch",
+            "openapi_type": "HydroDispatch",
             "docstring": "A hydropower generator without a reservoir, suitable for modeling run-of-river hydropower.\n\nFor hydro generators with an upper reservoir, see [`HydroReservoir`](@ref)",
             "fields": [
                 {
@@ -4601,6 +4776,7 @@
         },
         {
             "struct_name": "HydroTurbine",
+            "openapi_type": "HydroTurbine",
             "docstring": "A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suitable for modeling independent turbines and reservoirs.",
             "fields": [
                 {
@@ -5202,6 +5378,7 @@
         },
         {
             "struct_name": "RenewableDispatch",
+            "openapi_type": "RenewableDispatch",
             "docstring": "A renewable (e.g., wind or solar) generator whose output can be curtailed to satisfy power system constraints.\n\nThese generators can also participate in reserves markets, including upwards reserves by proactively curtailing some available power (based on its [`max_active_power` time series](@ref ts_data)). Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableNonDispatch`](@ref).\n\nRenewable generators do not have a `max_active_power` parameter, which is instead calculated when calling [`get_max_active_power()`](@ref get_max_active_power(d::T) where {T <: RenewableGen})",
             "fields": [
                 {
@@ -5331,6 +5508,7 @@
         },
         {
             "struct_name": "RenewableNonDispatch",
+            "openapi_type": "RenewableNonDispatch",
             "docstring": "A non-dispatchable (i.e., non-curtailable or must-take) renewable generator.\n\nIts output is equal to its [`max_active_power` time series](@ref ts_data) by default. Example use: an aggregation of behind-the-meter distributed energy resources like rooftop solar. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).\n\nRenewable generators do not have a `max_active_power` parameter, which is instead calculated when calling [`get_max_active_power()`](@ref get_max_active_power(d::T) where {T <: RenewableGen})",
             "fields": [
                 {
@@ -5446,6 +5624,7 @@
         },
         {
             "struct_name": "ThermalStandard",
+            "openapi_type": "ThermalStandard",
             "docstring": "A thermal generator, such as a fossil fuel and nuclear generator.\n\nThis is a standard representation with options to include a minimum up time, minimum down time, and ramp limits. For a more detailed representation the start-up and shut-down processes, including hot starts, see [`ThermalMultiStart`](@ref)",
             "fields": [
                 {
@@ -5634,6 +5813,7 @@
         },
         {
             "struct_name": "SynchronousCondenser",
+            "openapi_type": "SynchronousCondenser",
             "docstring": "A Synchronous Machine connected to the system to provide inertia or reactive power support",
             "fields": [
                 {
@@ -6391,478 +6571,6 @@
                 }
             ],
             "supertype": "StaticInjectionSubsystem"
-        },
-        {
-            "struct_name": "ConstantReserve",
-            "docstring": "A reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nThis reserve product includes online generators that can respond right away after an unexpected contingency, such as a transmission line or generator outage. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref)",
-            "parametric": "ReserveDirection",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "time_frame",
-                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "sustained_time",
-                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "default": "60.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_output_fraction",
-                    "comment": "the maximum fraction of each device's output that can be assigned to the service",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_participation_factor",
-                    "comment": "the maximum portion [0, 1.0] of the reserve that can be contributed per device",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "deployed_fraction",
-                    "comment": "Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "0.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "Reserve{T}"
-        },
-        {
-            "struct_name": "ConstantReserveNonSpinning",
-            "docstring": "A non-spinning reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`ConstantReserve`](@ref)",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "time_frame",
-                    "comment": "the saturation time frame in minutes that a participating device must provide its reserve contribution",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "sustained_time",
-                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "default": "60.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_output_fraction",
-                    "comment": "the maximum fraction of each device's output that can be assigned to the service",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_participation_factor",
-                    "comment": "the maximum portion [0, 1.0] of the reserve that can be contributed per device",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "deployed_fraction",
-                    "comment": "Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "0.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "ReserveNonSpinning"
-        },
-        {
-            "struct_name": "ConstantReserveGroup",
-            "docstring": "A reserve product met by a group of individual reserves.\n\nThe group reserve requirement is added in addition to any individual reserve requirements, and devices that contribute to individual reserves within the group can also contribute to the overarching group reserve requirement. Example: A group of spinning and non-spinning reserves, where online generators providing spinning reserves can also contribute to the non-spinning reserve requirement.\n\nThis model has a constant procurement requirement, such as 3% of the system base power at all times. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref)",
-            "parametric": "ReserveDirection",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "contributing_services",
-                    "comment": "Services that contribute to this group requirement. Services must be added for this constraint to have an effect when conducting simulations in [`PowerSimulations.jl`](https://sienna-platform.github.io/PowerSimulations.jl/latest/)",
-                    "data_type": "Vector{Service}",
-                    "null_value": "Vector{Service}()",
-                    "default": "Vector{Service}()",
-                    "exclude_setter": true
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "Service"
-        },
-        {
-            "struct_name": "VariableReserve",
-            "docstring": "A reserve product with a time-varying procurement requirement, such as a higher requirement during hours with an expected high load or high ramp.\n\nThis reserve product includes online generators that can respond right away after an unexpected contingency, such as a transmission line or generator outage. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref). To model the time varying requirement, a [\"`requirement`\" time series should be added](@ref ts_data) to this reserve",
-            "parametric": "ReserveDirection",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "time_frame",
-                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the required quantity of the product in p.u. ([`SYSTEM_BASE`](@ref per_unit)), to be scaled by a TimeSeriesData",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "sustained_time",
-                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "default": "60.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_output_fraction",
-                    "comment": "the maximum fraction of each device's output that can be assigned to the service",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_participation_factor",
-                    "comment": "the maximum portion [0, 1.0] of the reserve that can be contributed per device",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "deployed_fraction",
-                    "comment": "Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "0.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "Reserve{T}"
-        },
-        {
-            "struct_name": "VariableReserveNonSpinning",
-            "docstring": "A non-spinning reserve product with a time-varying procurement requirement, such as a higher requirement during hours with an expected high load or high ramp.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. To model the time varying requirement, a [\"`requirement`\" time series should be added](@ref ts_data) to this reserve.\n\nThis is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`VariableReserve`](@ref)",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "time_frame",
-                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "sustained_time",
-                    "comment": "the time in minutes reserve contribution must sustained at a specified level",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "default": "240.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_output_fraction",
-                    "comment": "the maximum fraction of each device's output that can be assigned to the service",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "max_participation_factor",
-                    "comment": "the maximum portion [0, 1.0] of the reserve that can be contributed per device",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "deployed_fraction",
-                    "comment": "Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "0.0",
-                    "validation_action": "error"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "ReserveNonSpinning"
         },
         {
             "struct_name": "AGC",
@@ -19757,6 +19465,205 @@
                 },
                 {
                     "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        },
+        {
+            "struct_name": "OnlineReserve",
+            "docstring": "",
+            "fields": [
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "available"
+                },
+                {
+                    "name": "time_frame",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "requirement",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "variable"
+                },
+                {
+                    "name": "sustained_time",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_output_fraction",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_participation_factor",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "deployed_fraction",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        },
+        {
+            "struct_name": "OfflineReserve",
+            "docstring": "",
+            "fields": [
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "available"
+                },
+                {
+                    "name": "time_frame",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "requirement",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "variable"
+                },
+                {
+                    "name": "sustained_time",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_output_fraction",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_participation_factor",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "deployed_fraction",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        },
+        {
+            "struct_name": "GroupReserve",
+            "docstring": "",
+            "fields": [
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "available"
+                },
+                {
+                    "name": "requirement",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "contributing_services"
                 },
                 {
                     "name": "internal"

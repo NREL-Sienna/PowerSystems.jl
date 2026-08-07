@@ -16,6 +16,7 @@ This file is auto-generated. Do not edit.
         active_power_limits_from::MinMax
         active_power_limits_to::MinMax
         services::Vector{Service}
+        base_power::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -35,6 +36,7 @@ This line must be connected to a [`DCBus`](@ref) on each end. It uses a T-Model 
 - `active_power_limits_from::MinMax`: Minimum and maximum active power flows to the FROM node (MW)
 - `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -59,18 +61,20 @@ mutable struct TModelHVDCLine <: DCBranch
     active_power_limits_to::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services=Device[], ext=Dict{String, Any}(), )
-    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services, ext, InfrastructureSystemsInternal(), )
+function TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services=Device[], base_power=100.0, ext=Dict{String, Any}(), )
+    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services, base_power, ext, InfrastructureSystemsInternal(), )
 end
 
-function TModelHVDCLine(; name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services, ext, internal, )
+function TModelHVDCLine(; name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services=Device[], base_power=100.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services, base_power, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,6 +90,7 @@ function TModelHVDCLine(::Nothing)
         active_power_limits_from=(min=0.0, max=0.0),
         active_power_limits_to=(min=0.0, max=0.0),
         services=Device[],
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -122,6 +127,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_to), ::
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_to_unitful), ::Type{TModelHVDCLine}) = InfrastructureSystems.SU
 """Get [`TModelHVDCLine`](@ref) `services`."""
 get_services(value::TModelHVDCLine) = value.services
+
+_get_base_power(value::TModelHVDCLine) = value.base_power
 """Get [`TModelHVDCLine`](@ref) `ext`."""
 get_ext(value::TModelHVDCLine) = value.ext
 """Get [`TModelHVDCLine`](@ref) `internal`."""

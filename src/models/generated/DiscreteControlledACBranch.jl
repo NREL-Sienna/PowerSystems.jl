@@ -17,6 +17,7 @@ This file is auto-generated. Do not edit.
         discrete_branch_type::DiscreteControlledBranchType
         branch_status::DiscreteControlledBranchStatus
         normal_branch_status::DiscreteControlledBranchStatus
+        base_power::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -35,6 +36,7 @@ Used to represent switches and breakers connecting AC Buses
 - `discrete_branch_type::DiscreteControlledBranchType`: (default: `DiscreteControlledBranchType.OTHER`) Type of discrete control
 - `branch_status::DiscreteControlledBranchStatus`: (default: `DiscreteControlledBranchStatus.CLOSED`) Open or Close status
 - `normal_branch_status::DiscreteControlledBranchStatus`: (default: `DiscreteControlledBranchStatus.CLOSED`) Normal (as-designed) open or close status of the device
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -61,18 +63,20 @@ mutable struct DiscreteControlledACBranch <: ACTransmission
     branch_status::DiscreteControlledBranchStatus
     "Normal (as-designed) open or close status of the device"
     normal_branch_status::DiscreteControlledBranchStatus
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function DiscreteControlledACBranch(name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type=DiscreteControlledBranchType.OTHER, branch_status=DiscreteControlledBranchStatus.CLOSED, normal_branch_status=DiscreteControlledBranchStatus.CLOSED, ext=Dict{String, Any}(), )
-    DiscreteControlledACBranch(name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type, branch_status, normal_branch_status, ext, InfrastructureSystemsInternal(), )
+function DiscreteControlledACBranch(name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type=DiscreteControlledBranchType.OTHER, branch_status=DiscreteControlledBranchStatus.CLOSED, normal_branch_status=DiscreteControlledBranchStatus.CLOSED, base_power=100.0, ext=Dict{String, Any}(), )
+    DiscreteControlledACBranch(name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type, branch_status, normal_branch_status, base_power, ext, InfrastructureSystemsInternal(), )
 end
 
-function DiscreteControlledACBranch(; name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type=DiscreteControlledBranchType.OTHER, branch_status=DiscreteControlledBranchStatus.CLOSED, normal_branch_status=DiscreteControlledBranchStatus.CLOSED, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    DiscreteControlledACBranch(name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type, branch_status, normal_branch_status, ext, internal, )
+function DiscreteControlledACBranch(; name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type=DiscreteControlledBranchType.OTHER, branch_status=DiscreteControlledBranchStatus.CLOSED, normal_branch_status=DiscreteControlledBranchStatus.CLOSED, base_power=100.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    DiscreteControlledACBranch(name, available, active_power_flow, reactive_power_flow, arc, r, x, rating, discrete_branch_type, branch_status, normal_branch_status, base_power, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,6 +93,7 @@ function DiscreteControlledACBranch(::Nothing)
         discrete_branch_type=DiscreteControlledBranchType.BREAKER,
         branch_status=DiscreteControlledBranchStatus.CLOSED,
         normal_branch_status=DiscreteControlledBranchStatus.CLOSED,
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -135,6 +140,8 @@ get_discrete_branch_type(value::DiscreteControlledACBranch) = value.discrete_bra
 get_branch_status(value::DiscreteControlledACBranch) = value.branch_status
 """Get [`DiscreteControlledACBranch`](@ref) `normal_branch_status`."""
 get_normal_branch_status(value::DiscreteControlledACBranch) = value.normal_branch_status
+
+_get_base_power(value::DiscreteControlledACBranch) = value.base_power
 """Get [`DiscreteControlledACBranch`](@ref) `ext`."""
 get_ext(value::DiscreteControlledACBranch) = value.ext
 """Get [`DiscreteControlledACBranch`](@ref) `internal`."""

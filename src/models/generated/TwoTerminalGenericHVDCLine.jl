@@ -16,6 +16,7 @@ This file is auto-generated. Do not edit.
         reactive_power_limits_to::MinMax
         loss::Union{LinearCurve, PiecewiseIncrementalCurve}
         services::Vector{Service}
+        base_power::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -35,6 +36,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `reactive_power_limits_to::MinMax`: Minimum and maximum reactive power limits to the TO node (MVAR)
 - `loss::Union{LinearCurve, PiecewiseIncrementalCurve}`: (default: `LinearCurve(0.0)`) Loss model coefficients. It accepts a linear model with a constant loss (MW) and a proportional loss rate (MW of loss per MW of flow). It also accepts a Piecewise loss, with N segments to specify different proportional losses for different segments.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -59,18 +61,20 @@ mutable struct TwoTerminalGenericHVDCLine <: TwoTerminalHVDC
     loss::Union{LinearCurve, PiecewiseIncrementalCurve}
     "Services that this device contributes to"
     services::Vector{Service}
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
+function TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], base_power=100.0, ext=Dict{String, Any}(), )
+    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, base_power, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalGenericHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
+function TwoTerminalGenericHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], base_power=100.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, base_power, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,6 +90,7 @@ function TwoTerminalGenericHVDCLine(::Nothing)
         reactive_power_limits_to=(min=0.0, max=0.0),
         loss=LinearCurve(0.0),
         services=Device[],
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -130,6 +135,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_to_un
 get_loss(value::TwoTerminalGenericHVDCLine) = value.loss
 """Get [`TwoTerminalGenericHVDCLine`](@ref) `services`."""
 get_services(value::TwoTerminalGenericHVDCLine) = value.services
+
+_get_base_power(value::TwoTerminalGenericHVDCLine) = value.base_power
 """Get [`TwoTerminalGenericHVDCLine`](@ref) `ext`."""
 get_ext(value::TwoTerminalGenericHVDCLine) = value.ext
 """Get [`TwoTerminalGenericHVDCLine`](@ref) `internal`."""

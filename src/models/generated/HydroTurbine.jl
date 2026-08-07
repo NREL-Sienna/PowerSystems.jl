@@ -252,3 +252,105 @@ set_travel_time!(value::HydroTurbine, val) = value.travel_time = val
 set_services!(value::HydroTurbine, val) = value.services = val
 """Set [`HydroTurbine`](@ref) `ext`."""
 set_ext!(value::HydroTurbine, val) = value.ext = val
+
+
+const HYDROTURBINETYPE_FROM_STRING = Dict{String, HydroTurbineType}(string(m) => m for m in instances(HydroTurbineType))
+const HYDROTURBINETYPE_TO_STRING = Dict{ HydroTurbineType, String}(m => string(m) for m in instances(HydroTurbineType))
+
+function from_openapi(::Type{HydroTurbine}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+    return HydroTurbine(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        powerhouse_elevation = po.powerhouse_elevation,
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up, down = po.ramp_limits.down); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        outflow_limits = (if isnothing(po.outflow_limits); nothing; else; (min = po.outflow_limits.min, max = po.outflow_limits.max); end),
+        efficiency = po.efficiency,
+        turbine_type = HYDROTURBINETYPE_FROM_STRING[po.turbine_type],
+        conversion_factor = po.conversion_factor,
+        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        travel_time = po.travel_time,
+    )
+end
+
+function from_openapi(::Type{HydroTurbine}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+    return HydroTurbine(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        powerhouse_elevation = po.powerhouse_elevation,
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up / po.base_power, down = po.ramp_limits.down / po.base_power); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        outflow_limits = (if isnothing(po.outflow_limits); nothing; else; (min = po.outflow_limits.min, max = po.outflow_limits.max); end),
+        efficiency = po.efficiency,
+        turbine_type = HYDROTURBINETYPE_FROM_STRING[po.turbine_type],
+        conversion_factor = po.conversion_factor,
+        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        travel_time = po.travel_time,
+    )
+end
+
+function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+    return PO.HydroTurbine(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        powerhouse_elevation = get_powerhouse_elevation(value),
+        ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
+        efficiency = get_efficiency(value),
+        turbine_type = HYDROTURBINETYPE_TO_STRING[get_turbine_type(value)],
+        conversion_factor = get_conversion_factor(value),
+        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        travel_time = get_travel_time(value),
+    )
+end
+
+function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+    return PO.HydroTurbine(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        powerhouse_elevation = get_powerhouse_elevation(value),
+        ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
+        efficiency = get_efficiency(value),
+        turbine_type = HYDROTURBINETYPE_TO_STRING[get_turbine_type(value)],
+        conversion_factor = get_conversion_factor(value),
+        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        travel_time = get_travel_time(value),
+    )
+end

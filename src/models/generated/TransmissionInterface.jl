@@ -11,6 +11,7 @@ This file is auto-generated. Do not edit.
         active_power_flow_limits::MinMax
         violation_penalty::Float64
         direction_mapping::Dict{String, Int}
+        base_power::Float64
         internal::InfrastructureSystemsInternal
     end
 
@@ -24,6 +25,7 @@ The interface can be used to constrain the power flow across it
 - `active_power_flow_limits::MinMax`: Minimum and maximum active power flow limits on the interface (MW)
 - `violation_penalty::Float64`: (default: `INFINITE_COST`) Penalty cost for violating the flow limits in the interface
 - `direction_mapping::Dict{String, Int}`: (default: `Dict{String, Int}()`) Dictionary of the line `name`s in the interface and their direction of flow (1 or -1) relative to the flow of the interface
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct TransmissionInterface <: Service
@@ -37,16 +39,18 @@ mutable struct TransmissionInterface <: Service
     violation_penalty::Float64
     "Dictionary of the line `name`s in the interface and their direction of flow (1 or -1) relative to the flow of the interface"
     direction_mapping::Dict{String, Int}
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function TransmissionInterface(name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), )
-    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, InfrastructureSystemsInternal(), )
+function TransmissionInterface(name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), base_power=100.0, )
+    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, base_power, InfrastructureSystemsInternal(), )
 end
 
-function TransmissionInterface(; name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), internal=InfrastructureSystemsInternal(), )
-    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, internal, )
+function TransmissionInterface(; name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), base_power=100.0, internal=InfrastructureSystemsInternal(), )
+    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, base_power, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -57,6 +61,7 @@ function TransmissionInterface(::Nothing)
         active_power_flow_limits=(min=0.0, max=0.0),
         violation_penalty=0.0,
         direction_mapping=Dict{String, Int}(),
+        base_power=100.0,
     )
 end
 
@@ -74,6 +79,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_limits_un
 get_violation_penalty(value::TransmissionInterface) = value.violation_penalty
 """Get [`TransmissionInterface`](@ref) `direction_mapping`."""
 get_direction_mapping(value::TransmissionInterface) = value.direction_mapping
+
+_get_base_power(value::TransmissionInterface) = value.base_power
 """Get [`TransmissionInterface`](@ref) `internal`."""
 get_internal(value::TransmissionInterface) = value.internal
 

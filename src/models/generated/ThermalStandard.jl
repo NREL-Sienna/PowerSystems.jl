@@ -236,3 +236,97 @@ set_services!(value::ThermalStandard, val) = value.services = val
 set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 """Set [`ThermalStandard`](@ref) `ext`."""
 set_ext!(value::ThermalStandard, val) = value.ext = val
+
+
+const THERMALFUELS_FROM_STRING = Dict{String, ThermalFuels}(string(m) => m for m in instances(ThermalFuels))
+const THERMALFUELS_TO_STRING = Dict{ ThermalFuels, String}(m => string(m) for m in instances(ThermalFuels))
+
+function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+    return ThermalStandard(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up, down = po.ramp_limits.down); end),
+        operation_cost = convert_cost(po.operation_cost),
+        base_power = po.base_power,
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        must_run = po.must_run,
+        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        fuel = THERMALFUELS_FROM_STRING[po.fuel],
+        time_at_status = po.time_at_status,
+    )
+end
+
+function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+    return ThermalStandard(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up / po.base_power, down = po.ramp_limits.down / po.base_power); end),
+        operation_cost = convert_cost(po.operation_cost),
+        base_power = po.base_power,
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        must_run = po.must_run,
+        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        fuel = THERMALFUELS_FROM_STRING[po.fuel],
+        time_at_status = po.time_at_status,
+    )
+end
+
+function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+    return PO.ThermalStandard(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        status = get_status(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        must_run = get_must_run(value),
+        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        fuel = THERMALFUELS_TO_STRING[get_fuel(value)],
+        time_at_status = get_time_at_status(value),
+    )
+end
+
+function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+    return PO.ThermalStandard(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        status = get_status(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        must_run = get_must_run(value),
+        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        fuel = THERMALFUELS_TO_STRING[get_fuel(value)],
+        time_at_status = get_time_at_status(value),
+    )
+end
