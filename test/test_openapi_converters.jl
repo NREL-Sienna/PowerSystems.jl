@@ -18,18 +18,18 @@ function _refs_with_area_bus(unit_system = "NATURAL_UNITS"; base_power = 100.0)
     lz_po = PSY.PO.LoadZone(;
         id = 2, name = "lz1", peak_active_power = 100.0, peak_reactive_power = 20.0,
     )
-    refs[1] = PSY.from_openapi(Area, area_po, refs, Val(:NATURAL_UNITS))
-    refs[2] = PSY.from_openapi(LoadZone, lz_po, refs, Val(:NATURAL_UNITS))
-    refs[3] = PSY.from_openapi(ACBus, _bus_po(3), refs, Val(:NATURAL_UNITS))
-    refs[4] = PSY.from_openapi(ACBus, _bus_po(4; bustype = "PQ"), refs, Val(:NATURAL_UNITS))
+    refs[1] = PSY.from_openapi(Area, area_po, refs, NU)
+    refs[2] = PSY.from_openapi(LoadZone, lz_po, refs, NU)
+    refs[3] = PSY.from_openapi(ACBus, _bus_po(3), refs, NU)
+    refs[4] = PSY.from_openapi(ACBus, _bus_po(4; bustype = "PQ"), refs, NU)
     return refs
 end
 
 @testset "OpenAPI converters: ACBus" begin
     refs = _refs_with_area_bus()
     bus_po = _bus_po(5)
-    bus_device = PSY.from_openapi(ACBus, bus_po, refs, Val(:DEVICE_BASE))
-    bus_natural = PSY.from_openapi(ACBus, bus_po, refs, Val(:NATURAL_UNITS))
+    bus_device = PSY.from_openapi(ACBus, bus_po, refs, DU)
+    bus_natural = PSY.from_openapi(ACBus, bus_po, refs, NU)
 
     for bus in (bus_device, bus_natural)
         @test get_number(bus) == 5
@@ -43,24 +43,24 @@ end
     # SLACK is a distinct area-slack marker, not the system REF: the converter must not
     # collapse it.
     slack_po = _bus_po(6; bustype = "SLACK")
-    slack_bus = PSY.from_openapi(ACBus, slack_po, refs, Val(:NATURAL_UNITS))
+    slack_bus = PSY.from_openapi(ACBus, slack_po, refs, NU)
     @test get_bustype(slack_bus) == ACBusTypes.SLACK
 
     @test_throws ErrorException PSY.from_openapi(
-        ACBus, _bus_po(7; area = 999), refs, Val(:NATURAL_UNITS),
+        ACBus, _bus_po(7; area = 999), refs, NU,
     )
 end
 
 @testset "OpenAPI converters: Arc" begin
     refs = _refs_with_area_bus()
     arc_po = PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4)
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         arc = PSY.from_openapi(Arc, arc_po, refs, val)
         @test get_from(arc) === refs[3]
         @test get_to(arc) === refs[4]
     end
     @test_throws ErrorException PSY.from_openapi(
-        Arc, PSY.PO.Arc(; id = 11, from_id = 999, to_id = 4), refs, Val(:NATURAL_UNITS),
+        Arc, PSY.PO.Arc(; id = 11, from_id = 999, to_id = 4), refs, NU,
     )
 end
 
@@ -70,7 +70,7 @@ end
     # natural, so the conversion by the document base is the same in BOTH unit-system
     # methods (mirrors reserve `requirement`, x-unit MW).
     refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
-    for (i, val) in enumerate((Val(:DEVICE_BASE), Val(:NATURAL_UNITS)))
+    for (i, val) in enumerate((DU, NU))
         area_po = PSY.PO.Area(;
             id = 1, name = "area$i", peak_active_power = 250.0,
             peak_reactive_power = 50.0, load_response = 12.5,
@@ -113,8 +113,8 @@ end
         peak_reactive_power = 50.0,
         base_power = 250.0,
     )
-    area = PSY.from_openapi(Area, area_po, refs, Val(:NATURAL_UNITS))
-    lz = PSY.from_openapi(LoadZone, lz_po, refs, Val(:NATURAL_UNITS))
+    area = PSY.from_openapi(Area, area_po, refs, NU)
+    lz = PSY.from_openapi(LoadZone, lz_po, refs, NU)
     @test get_base_power(area) == 250.0
     @test get_base_power(lz) == 250.0
 end
@@ -128,7 +128,7 @@ end
     # `base_power` (PowerTableDataParser does not emit it yet), exercising the
     # `_resolve_base_power` fallback to `get_base_power(refs)`.
     refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
-    for (i, val) in enumerate((Val(:DEVICE_BASE), Val(:NATURAL_UNITS)))
+    for (i, val) in enumerate((DU, NU))
         sys = System(100.0)
         tx_po = PSY.PO.TransmissionInterface(;
             id = 1, name = "iface$i", available = true,
@@ -148,7 +148,7 @@ end
 @testset "OpenAPI converters: Line" begin
     refs = _refs_with_area_bus()
     arc_po = PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4)
-    arc = PSY.from_openapi(Arc, arc_po, refs, Val(:NATURAL_UNITS))
+    arc = PSY.from_openapi(Arc, arc_po, refs, NU)
     refs[10] = arc
 
     line_po = PSY.PO.Line(;
@@ -167,7 +167,7 @@ end
     add_component!(sys, refs[3])
     add_component!(sys, refs[4])
 
-    line_natural = PSY.from_openapi(Line, line_po, refs, Val(:NATURAL_UNITS))
+    line_natural = PSY.from_openapi(Line, line_po, refs, NU)
     add_component!(sys, line_natural)
     @test get_rating(line_natural, SU) == 1.75
     @test get_active_power_flow(line_natural, SU) == 0.1
@@ -190,7 +190,7 @@ end
         angle_limits = PSY.PC.MinMax(; min = -1.57, max = 1.57),
         g = PSY.PC.FromTo(; from = 0.0, to = 0.0),
     )
-    line_device = PSY.from_openapi(Line, line_po_device, refs, Val(:DEVICE_BASE))
+    line_device = PSY.from_openapi(Line, line_po_device, refs, DU)
     add_component!(sys, line_device)
     @test get_rating(line_device, SU) == 175.0
     @test get_active_power_flow(line_device, SU) == 10.0
@@ -212,7 +212,7 @@ end
         g = PSY.PC.FromTo(; from = 0.0, to = 0.0),
     )
     @test isnothing(line_po_omitted.base_power)
-    line_omitted = PSY.from_openapi(Line, line_po_omitted, refs, Val(:NATURAL_UNITS))
+    line_omitted = PSY.from_openapi(Line, line_po_omitted, refs, NU)
     add_component!(sys, line_omitted)
     @test get_base_power(line_omitted) == 100.0
     @test get_rating(line_omitted, SU) == 1.75
@@ -221,7 +221,7 @@ end
 @testset "OpenAPI converters: TransformerCircuit / TwoWindingTransformer" begin
     refs = _refs_with_area_bus()
     arc_po = PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4)
-    refs[10] = PSY.from_openapi(Arc, arc_po, refs, Val(:NATURAL_UNITS))
+    refs[10] = PSY.from_openapi(Arc, arc_po, refs, NU)
 
     circuit_po = PSY.PO.TransformerCircuit(;
         id = 20, available = true, arc = 10, tap = 1.0, alpha = 0.05,
@@ -235,7 +235,7 @@ end
         base_power = 50.0, base_voltage_primary = 138.0, base_voltage_secondary = 69.0,
     )
     circuit_natural =
-        PSY.from_openapi(TransformerCircuit, circuit_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(TransformerCircuit, circuit_po, refs, NU)
     @test get_α(circuit_natural) == 0.05
     @test get_r(circuit_natural, DU) == 0.01
     @test get_x(circuit_natural, DU) == 0.1
@@ -246,7 +246,7 @@ end
     @test get_control_objective(circuit_natural) == TransformerControlObjective.UNDEFINED
 
     circuit_device =
-        PSY.from_openapi(TransformerCircuit, circuit_po, refs, Val(:DEVICE_BASE))
+        PSY.from_openapi(TransformerCircuit, circuit_po, refs, DU)
     @test get_rating(circuit_device, DU) == 100.0
     @test get_active_power_flow(circuit_device, DU) == 5.0
     @test get_reactive_power_flow(circuit_device, DU) == 1.0
@@ -263,7 +263,7 @@ end
         base_power = 50.0, base_voltage_primary = 138.0, base_voltage_secondary = 69.0,
     )
     @test_throws ErrorException PSY.from_openapi(
-        TransformerCircuit, bad_circuit_po, refs, Val(:NATURAL_UNITS),
+        TransformerCircuit, bad_circuit_po, refs, NU,
     )
 
     refs[20] = circuit_natural
@@ -272,7 +272,7 @@ end
         magnetizing_shunt = PSY.PC.ComplexNumber(; real = 0.01, imag = 0.02),
         shunt_location = "PRIMARY",
     )
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         xfmr = PSY.from_openapi(TwoWindingTransformer, xfmr_po, refs, val)
         @test get_magnetizing_shunt(xfmr, DU) == Complex(0.01, 0.02)
         @test get_shunt_location(xfmr) == TwoWindingTransformerShuntLocation.PRIMARY
@@ -285,21 +285,21 @@ end
         shunt_location = "PRIMARY",
     )
     @test_throws ErrorException PSY.from_openapi(
-        TwoWindingTransformer, bad_xfmr_po, refs, Val(:DEVICE_BASE),
+        TwoWindingTransformer, bad_xfmr_po, refs, DU,
     )
 end
 
 @testset "OpenAPI converters: ThreeWindingTransformer" begin
     refs = _refs_with_area_bus()
     star_po = _bus_po(5; area = 1, load_zone = 2, bustype = "PQ")
-    refs[5] = PSY.from_openapi(ACBus, star_po, refs, Val(:NATURAL_UNITS))
+    refs[5] = PSY.from_openapi(ACBus, star_po, refs, NU)
 
     arc1_po = PSY.PO.Arc(; id = 10, from_id = 3, to_id = 5)
     arc2_po = PSY.PO.Arc(; id = 11, from_id = 4, to_id = 5)
     arc3_po = PSY.PO.Arc(; id = 12, from_id = 3, to_id = 5)
-    refs[10] = PSY.from_openapi(Arc, arc1_po, refs, Val(:NATURAL_UNITS))
-    refs[11] = PSY.from_openapi(Arc, arc2_po, refs, Val(:NATURAL_UNITS))
-    refs[12] = PSY.from_openapi(Arc, arc3_po, refs, Val(:NATURAL_UNITS))
+    refs[10] = PSY.from_openapi(Arc, arc1_po, refs, NU)
+    refs[11] = PSY.from_openapi(Arc, arc2_po, refs, NU)
+    refs[12] = PSY.from_openapi(Arc, arc3_po, refs, NU)
 
     _circuit_po(id, arc) = PSY.PO.TransformerCircuit(;
         id = id, available = true, arc = arc, tap = 1.0, alpha = 0.0,
@@ -313,13 +313,13 @@ end
         base_power = 100.0, base_voltage_primary = 138.0, base_voltage_secondary = 138.0,
     )
     refs[20] = PSY.from_openapi(
-        TransformerCircuit, _circuit_po(20, 10), refs, Val(:NATURAL_UNITS),
+        TransformerCircuit, _circuit_po(20, 10), refs, NU,
     )
     refs[21] = PSY.from_openapi(
-        TransformerCircuit, _circuit_po(21, 11), refs, Val(:NATURAL_UNITS),
+        TransformerCircuit, _circuit_po(21, 11), refs, NU,
     )
     refs[22] = PSY.from_openapi(
-        TransformerCircuit, _circuit_po(22, 12), refs, Val(:NATURAL_UNITS),
+        TransformerCircuit, _circuit_po(22, 12), refs, NU,
     )
 
     t3w_po = PSY.PO.ThreeWindingTransformer(;
@@ -331,7 +331,7 @@ end
         magnetizing_shunt = PSY.PC.ComplexNumber(; real = 0.03, imag = 0.0),
         shunt_location = "STAR",
     )
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         t3w = PSY.from_openapi(ThreeWindingTransformer, t3w_po, refs, val)
         @test get_primary_circuit(t3w) === refs[20]
         @test get_secondary_circuit(t3w) === refs[21]
@@ -354,7 +354,7 @@ end
         shunt_location = "STAR",
     )
     @test_throws ErrorException PSY.from_openapi(
-        ThreeWindingTransformer, bad_t3w_po, refs, Val(:DEVICE_BASE),
+        ThreeWindingTransformer, bad_t3w_po, refs, DU,
     )
 end
 
@@ -389,7 +389,7 @@ end
         time_at_status = 100.0,
     )
 
-    gen_natural = PSY.from_openapi(ThermalStandard, thermal_po, refs, Val(:NATURAL_UNITS))
+    gen_natural = PSY.from_openapi(ThermalStandard, thermal_po, refs, NU)
     @test get_active_power(gen_natural, DU) == 0.25
     @test get_reactive_power(gen_natural, DU) == 0.05
     @test get_rating(gen_natural, DU) == 0.5
@@ -401,7 +401,7 @@ end
     @test get_fixed(get_operation_cost(gen_natural)) == 100.0
     @test get_bus(gen_natural) === refs[3]
 
-    gen_device = PSY.from_openapi(ThermalStandard, thermal_po, refs, Val(:DEVICE_BASE))
+    gen_device = PSY.from_openapi(ThermalStandard, thermal_po, refs, DU)
     @test get_active_power(gen_device, DU) == 50.0
     @test get_rating(gen_device, DU) == 100.0
     @test get_active_power_limits(gen_device, DU) == (min = 10.0, max = 100.0)
@@ -414,7 +414,7 @@ end
         active_power = 30.0, reactive_power = 5.0, base_power = 100.0,
         max_active_power = 50.0, max_reactive_power = 10.0, conformity = "CONFORMING",
     )
-    load_natural = PSY.from_openapi(PowerLoad, load_po, refs, Val(:NATURAL_UNITS))
+    load_natural = PSY.from_openapi(PowerLoad, load_po, refs, NU)
     @test get_active_power(load_natural, DU) == 0.3
     @test get_reactive_power(load_natural, DU) == 0.05
     @test get_max_active_power(load_natural, DU) == 0.5
@@ -422,7 +422,7 @@ end
     @test get_conformity(load_natural) == LoadConformity.CONFORMING
     @test get_bus(load_natural) === refs[4]
 
-    load_device = PSY.from_openapi(PowerLoad, load_po, refs, Val(:DEVICE_BASE))
+    load_device = PSY.from_openapi(PowerLoad, load_po, refs, DU)
     @test get_active_power(load_device, DU) == 30.0
     @test get_max_active_power(load_device, DU) == 50.0
 end
@@ -451,7 +451,7 @@ end
         conformity = "CONFORMING",
     )
     iload_natural =
-        PSY.from_openapi(InterruptiblePowerLoad, iload_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(InterruptiblePowerLoad, iload_po, refs, NU)
     @test get_active_power(iload_natural, DU) == 0.3
     @test get_max_active_power(iload_natural, DU) == 0.3
     @test get_conformity(iload_natural) == LoadConformity.CONFORMING
@@ -459,7 +459,7 @@ end
     @test get_fixed(get_operation_cost(iload_natural)) == 2400.0
 
     iload_device =
-        PSY.from_openapi(InterruptiblePowerLoad, iload_po, refs, Val(:DEVICE_BASE))
+        PSY.from_openapi(InterruptiblePowerLoad, iload_po, refs, DU)
     @test get_active_power(iload_device, DU) == 30.0
 
     sload_po = PSY.PO.ShiftablePowerLoad(;
@@ -470,14 +470,14 @@ end
         base_power = 100.0, load_balance_time_horizon = 24, operation_cost = cost_po,
     )
     sload_natural =
-        PSY.from_openapi(ShiftablePowerLoad, sload_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(ShiftablePowerLoad, sload_po, refs, NU)
     @test get_active_power(sload_natural, DU) == 0.3
     @test get_active_power_limits(sload_natural, DU) == (min = 0.03, max = 0.3)
     @test get_load_balance_time_horizon(sload_natural) == 24
     @test get_bus(sload_natural) === refs[4]
 
     sload_device =
-        PSY.from_openapi(ShiftablePowerLoad, sload_po, refs, Val(:DEVICE_BASE))
+        PSY.from_openapi(ShiftablePowerLoad, sload_po, refs, DU)
     @test get_active_power_limits(sload_device, DU) == (min = 3.0, max = 30.0)
 end
 
@@ -492,7 +492,7 @@ end
         admittance_units = "DEVICE_MVAR",
         Y = PSY.PC.ComplexNumber(; real = 0.0, imag = -100.0),
     )
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         shunt = PSY.from_openapi(FixedAdmittance, mvar_po, refs, val)
         @test get_Y(shunt) == Complex(0.0, -1.0)
         @test get_bus(shunt) === refs[4]
@@ -500,9 +500,9 @@ end
     end
 
     # Round-trip on the DEVICE_MVAR wire contract: import(export(x)) == x.
-    registered = PSY.from_openapi(FixedAdmittance, mvar_po, refs, Val(:DEVICE_BASE))
+    registered = PSY.from_openapi(FixedAdmittance, mvar_po, refs, DU)
     refs[20] = registered
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         exported = PSY.to_openapi(registered, refs, val)
         @test exported.admittance_units == "DEVICE_MVAR"
         @test exported.Y.imag == -100.0
@@ -519,7 +519,7 @@ end
         Y = PSY.PC.ComplexNumber(; real = 0.0, imag = 0.0),
     )
     @test_throws ErrorException PSY.from_openapi(
-        FixedAdmittance, bad_po, refs, Val(:DEVICE_BASE),
+        FixedAdmittance, bad_po, refs, DU,
     )
 end
 
@@ -555,7 +555,7 @@ end
         efficiency = 0.9, turbine_type = "FRANCIS", conversion_factor = 1.0,
         prime_mover_type = "HY", travel_time = 5.0,
     )
-    turbine = PSY.from_openapi(HydroTurbine, turbine_po, refs, Val(:NATURAL_UNITS))
+    turbine = PSY.from_openapi(HydroTurbine, turbine_po, refs, NU)
     @test get_active_power(turbine, DU) == 0.2
     @test get_rating(turbine, DU) == 0.5
     @test get_turbine_type(turbine) == HydroTurbineType.FRANCIS
@@ -579,7 +579,7 @@ end
         ),
         evaporative_loss = 0.0, level_data_type = "USABLE_VOLUME",
     )
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         reservoir = PSY.from_openapi(HydroReservoir, reservoir_po, refs, val)
         # Absolute -> fraction-of-max, identical in both unit systems (semantic, not unit).
         @test get_initial_level(reservoir) == 0.5
@@ -611,7 +611,7 @@ end
         ),
         evaporative_loss = 0.0, level_data_type = "USABLE_VOLUME",
     )
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         reservoir_head = PSY.from_openapi(HydroReservoir, reservoir_head_po, refs, val)
         @test get_upstream_turbines(reservoir_head) == PSY.HydroUnit[]
         @test get_upstream_reservoirs(reservoir_head) == Device[]
@@ -629,10 +629,10 @@ end
         base_power = 100.0, status = true, time_at_status = 50.0,
         operation_cost = hydro_cost_po,
     )
-    ror_natural = PSY.from_openapi(HydroDispatch, ror_po, refs, Val(:NATURAL_UNITS))
+    ror_natural = PSY.from_openapi(HydroDispatch, ror_po, refs, NU)
     @test get_active_power(ror_natural, DU) == 0.15
     @test get_rating(ror_natural, DU) == 0.4
-    ror_device = PSY.from_openapi(HydroDispatch, ror_po, refs, Val(:DEVICE_BASE))
+    ror_device = PSY.from_openapi(HydroDispatch, ror_po, refs, DU)
     @test get_active_power(ror_device, DU) == 15.0
 end
 
@@ -662,7 +662,7 @@ end
         reactive_power_limits = PSY.PC.MinMax(; min = -20.0, max = 20.0),
         power_factor = 0.95, operation_cost = ren_cost_po, base_power = 100.0,
     )
-    wind = PSY.from_openapi(RenewableDispatch, wind_po, refs, Val(:NATURAL_UNITS))
+    wind = PSY.from_openapi(RenewableDispatch, wind_po, refs, NU)
     @test get_active_power(wind, DU) == 0.25
     @test get_rating(wind, DU) == 0.5
     @test get_prime_mover_type(wind) == PrimeMovers.WT
@@ -673,7 +673,7 @@ end
         active_power = 15.0, reactive_power = 2.0, rating = 30.0,
         prime_mover_type = "PVe", power_factor = 0.98, base_power = 100.0,
     )
-    solar = PSY.from_openapi(RenewableNonDispatch, solar_po, refs, Val(:NATURAL_UNITS))
+    solar = PSY.from_openapi(RenewableNonDispatch, solar_po, refs, NU)
     @test get_active_power(solar, DU) == 0.15
     @test get_rating(solar, DU) == 0.3
 
@@ -684,7 +684,7 @@ end
         base_power = 100.0, active_power_losses = 1.0,
     )
     condenser =
-        PSY.from_openapi(SynchronousCondenser, condenser_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(SynchronousCondenser, condenser_po, refs, NU)
     @test get_reactive_power(condenser, DU) == 0.05
     @test get_rating(condenser, DU) == 0.2
     @test get_active_power_losses(condenser, DU) == 0.01
@@ -715,7 +715,7 @@ end
         self_discharge = 0.0, standing_loss = 2.0,
     )
     storage_natural =
-        PSY.from_openapi(EnergyReservoirStorage, storage_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(EnergyReservoirStorage, storage_po, refs, NU)
     @test get_storage_capacity(storage_natural, DU) == 2.0
     @test get_rating(storage_natural, DU) == 0.5
     @test get_active_power(storage_natural, DU) == 0.1
@@ -728,7 +728,7 @@ end
     @test get_storage_level_limits(storage_natural) == (min = 0.0, max = 1.0)
 
     storage_device =
-        PSY.from_openapi(EnergyReservoirStorage, storage_po, refs, Val(:DEVICE_BASE))
+        PSY.from_openapi(EnergyReservoirStorage, storage_po, refs, DU)
     @test get_storage_capacity(storage_device, DU) == 400.0
     @test get_rating(storage_device, DU) == 100.0
 
@@ -750,14 +750,14 @@ end
         self_discharge = 0.0, standing_loss = 2.0,
     )
     @test_throws ErrorException PSY.from_openapi(
-        EnergyReservoirStorage, bad_storage_po, refs, Val(:NATURAL_UNITS),
+        EnergyReservoirStorage, bad_storage_po, refs, NU,
     )
 end
 
 @testset "OpenAPI converters: TwoTerminalGenericHVDCLine" begin
     refs = _refs_with_area_bus(; base_power = 100.0)
     arc_po = PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4)
-    refs[10] = PSY.from_openapi(Arc, arc_po, refs, Val(:NATURAL_UNITS))
+    refs[10] = PSY.from_openapi(Arc, arc_po, refs, NU)
 
     hvdc_po = PSY.PO.TwoTerminalGenericHVDCLine(;
         id = 20, name = "hvdc1", available = true, active_power_flow = 50.0, arc = 10,
@@ -783,7 +783,7 @@ end
     add_component!(sys, refs[4])
 
     hvdc_natural =
-        PSY.from_openapi(TwoTerminalGenericHVDCLine, hvdc_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(TwoTerminalGenericHVDCLine, hvdc_po, refs, NU)
     add_component!(sys, hvdc_natural)
     @test get_active_power_flow(hvdc_natural, SU) == 0.5
     @test get_active_power_limits_from(hvdc_natural, SU) == (min = -1.0, max = 1.0)
@@ -815,7 +815,7 @@ end
         TwoTerminalGenericHVDCLine,
         hvdc_po_device,
         refs,
-        Val(:DEVICE_BASE),
+        DU,
     )
     add_component!(sys, hvdc_device)
     @test get_active_power_flow(hvdc_device, SU) == 50.0
@@ -837,7 +837,7 @@ end
         id = 20, name = "area2", peak_active_power = 50.0, peak_reactive_power = 10.0,
         load_response = 0.0,
     )
-    refs[20] = PSY.from_openapi(Area, area2_po, refs, Val(:NATURAL_UNITS))
+    refs[20] = PSY.from_openapi(Area, area2_po, refs, NU)
 
     interchange_po = PSY.PO.AreaInterchange(;
         id = 10, name = "flow12", available = true, active_power_flow = 25.0,
@@ -845,14 +845,14 @@ end
         flow_limits = PSY.PC.FromToToFrom(; from_to = 100.0, to_from = -100.0),
         base_power = 100.0,
     )
-    device = PSY.from_openapi(AreaInterchange, interchange_po, refs, Val(:DEVICE_BASE))
+    device = PSY.from_openapi(AreaInterchange, interchange_po, refs, DU)
     @test get_active_power_flow(device, PSY.DU) == 25.0
     @test get_flow_limits(device, PSY.DU) == (from_to = 100.0, to_from = -100.0)
     @test get_from_area(device) === refs[1]
     @test get_to_area(device) === refs[20]
     @test get_base_power(device) == 100.0
 
-    natural = PSY.from_openapi(AreaInterchange, interchange_po, refs, Val(:NATURAL_UNITS))
+    natural = PSY.from_openapi(AreaInterchange, interchange_po, refs, NU)
     @test get_active_power_flow(natural, PSY.DU) == 0.25
     @test get_flow_limits(natural, PSY.DU) == (from_to = 1.0, to_from = -1.0)
     @test get_base_power(natural) == 100.0
@@ -866,7 +866,7 @@ end
             base_power = 100.0,
         ),
         refs,
-        Val(:DEVICE_BASE),
+        DU,
     )
 end
 
@@ -893,7 +893,7 @@ end
         max_output_fraction = 1.0, max_participation_factor = 1.0,
         deployed_fraction = 1.0, reserve_direction = "UP",
     )
-    online_natural = PSY.from_openapi(OnlineReserve, online_po, refs, Val(:NATURAL_UNITS))
+    online_natural = PSY.from_openapi(OnlineReserve, online_po, refs, NU)
     add_component!(sys, online_natural)
     @test online_natural isa OnlineReserve{ReserveUp}
     @test get_requirement(online_natural, SU) == 1.0
@@ -906,7 +906,7 @@ end
         deployed_fraction = 1.0, reserve_direction = "UP",
     )
     online_device =
-        PSY.from_openapi(OnlineReserve, online_po_device, refs, Val(:DEVICE_BASE))
+        PSY.from_openapi(OnlineReserve, online_po_device, refs, DU)
     add_component!(sys, online_device)
     @test get_requirement(online_device, SU) == 100.0
 
@@ -916,7 +916,7 @@ end
         max_output_fraction = 1.0, max_participation_factor = 1.0,
         deployed_fraction = 1.0, reserve_direction = "DOWN",
     )
-    @test PSY.from_openapi(OnlineReserve, down_po, refs, Val(:NATURAL_UNITS)) isa
+    @test PSY.from_openapi(OnlineReserve, down_po, refs, NU) isa
           OnlineReserve{ReserveDown}
 
     sym_po = PSY.PO.OnlineReserve(;
@@ -925,7 +925,7 @@ end
         max_output_fraction = 1.0, max_participation_factor = 1.0,
         deployed_fraction = 1.0, reserve_direction = "SYMMETRIC",
     )
-    @test PSY.from_openapi(OnlineReserve, sym_po, refs, Val(:NATURAL_UNITS)) isa
+    @test PSY.from_openapi(OnlineReserve, sym_po, refs, NU) isa
           OnlineReserve{ReserveSymmetric}
 
     # The PO layer's own OpenAPI-generated enum validation rejects an unmapped
@@ -958,7 +958,7 @@ end
         deployed_fraction = 1.0, reserve_direction = "UP",
     )
     ordc_reserve =
-        PSY.from_openapi(OnlineReserve, ordc_reserve_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(OnlineReserve, ordc_reserve_po, refs, NU)
     @test get_variable(ordc_reserve) isa CostCurve{PiecewiseIncrementalCurve}
 
     offline_po = PSY.PO.OfflineReserve(;
@@ -968,7 +968,7 @@ end
         deployed_fraction = 1.0,
     )
     offline_natural =
-        PSY.from_openapi(OfflineReserve, offline_po, refs, Val(:NATURAL_UNITS))
+        PSY.from_openapi(OfflineReserve, offline_po, refs, NU)
     add_component!(sys, offline_natural)
     @test get_requirement(offline_natural, SU) == 0.5
 
@@ -979,7 +979,7 @@ end
         deployed_fraction = 1.0,
     )
     offline_device =
-        PSY.from_openapi(OfflineReserve, offline_po_device, refs, Val(:DEVICE_BASE))
+        PSY.from_openapi(OfflineReserve, offline_po_device, refs, DU)
     add_component!(sys, offline_device)
     @test get_requirement(offline_device, SU) == 50.0
 
@@ -987,7 +987,7 @@ end
         id = 7, name = "group_up", available = true, requirement = 150.0,
         reserve_direction = "UP",
     )
-    group_natural = PSY.from_openapi(GroupReserve, group_po, refs, Val(:NATURAL_UNITS))
+    group_natural = PSY.from_openapi(GroupReserve, group_po, refs, NU)
     add_component!(sys, group_natural)
     @test group_natural isa GroupReserve{ReserveUp}
     @test get_requirement(group_natural, SU) == 1.5
@@ -996,7 +996,7 @@ end
         id = 7, name = "group_up_device", available = true, requirement = 150.0,
         reserve_direction = "UP",
     )
-    group_device = PSY.from_openapi(GroupReserve, group_po_device, refs, Val(:DEVICE_BASE))
+    group_device = PSY.from_openapi(GroupReserve, group_po_device, refs, DU)
     add_component!(sys, group_device)
     @test get_requirement(group_device, SU) == 150.0
 end

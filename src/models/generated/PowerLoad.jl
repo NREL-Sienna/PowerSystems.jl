@@ -159,7 +159,7 @@ set_ext!(value::PowerLoad, val) = value.ext = val
 
 
 
-function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PowerLoad(;
         name = po.name,
         available = po.available,
@@ -169,11 +169,11 @@ function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BA
         base_power = po.base_power,
         max_active_power = po.max_active_power,
         max_reactive_power = po.max_reactive_power,
-        conformity = LOADCONFORMITY_FROM_STRING[po.conformity],
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
     )
 end
 
-function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return PowerLoad(;
         name = po.name,
         available = po.available,
@@ -183,11 +183,11 @@ function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::Val{:NATURAL_U
         base_power = po.base_power,
         max_active_power = po.max_active_power / po.base_power,
         max_reactive_power = po.max_reactive_power / po.base_power,
-        conformity = LOADCONFORMITY_FROM_STRING[po.conformity],
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
     )
 end
 
-function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.PowerLoad(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -198,11 +198,11 @@ function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
         base_power = _get_base_power(value),
         max_active_power = get_max_active_power(value, DU),
         max_reactive_power = get_max_reactive_power(value, DU),
-        conformity = LOADCONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
     )
 end
 
-function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.PowerLoad(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -213,6 +213,6 @@ function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
         base_power = _get_base_power(value),
         max_active_power = get_max_active_power(value, DU) * _get_base_power(value),
         max_reactive_power = get_max_reactive_power(value, DU) * _get_base_power(value),
-        conformity = LOADCONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
     )
 end

@@ -15,12 +15,12 @@
 # back in) is derived from it, via `string(nameof(typeof(attr)))`, matching
 # PowerTableDataParser.jl/src/openapi/container.jl's own convention exactly.
 
-const POLLUTANTTYPE_TO_STRING = Dict(v => k for (k, v) in POLLUTANTTYPE_FROM_STRING)
-const EMISSIONBASIS_TO_STRING = Dict(v => k for (k, v) in EMISSIONBASIS_FROM_STRING)
-const MASSUNIT_TO_STRING = Dict(v => k for (k, v) in MASSUNIT_FROM_STRING)
-const ENERGYUNIT_TO_STRING = Dict(v => k for (k, v) in ENERGYUNIT_FROM_STRING)
-const COMBINEDCYCLECONFIGURATION_TO_STRING =
-    Dict(v => k for (k, v) in COMBINEDCYCLECONFIGURATION_FROM_STRING)
+const POLLUTANT_TYPE_TO_STRING = Dict(v => k for (k, v) in POLLUTANT_TYPE_FROM_STRING)
+const EMISSION_BASIS_TO_STRING = Dict(v => k for (k, v) in EMISSION_BASIS_FROM_STRING)
+const MASS_UNIT_TO_STRING = Dict(v => k for (k, v) in MASS_UNIT_FROM_STRING)
+const ENERGY_UNIT_TO_STRING = Dict(v => k for (k, v) in ENERGY_UNIT_FROM_STRING)
+const COMBINED_CYCLE_CONFIGURATION_TO_STRING =
+    Dict(v => k for (k, v) in COMBINED_CYCLE_CONFIGURATION_FROM_STRING)
 
 """Resolve monitored-component UUIDs (an `Outage`'s own storage) back to document ids via
 `uuid_to_component` (built once per export from every already-registered component) plus
@@ -41,12 +41,12 @@ function to_openapi(attr::EmissionsData, id::Int)
     return PO.EmissionsData(;
         id = id,
         name = get_name(attr),
-        pollutant = POLLUTANTTYPE_TO_STRING[get_pollutant(attr)],
+        pollutant = POLLUTANT_TYPE_TO_STRING[get_pollutant(attr)],
         emission_rate = PC.ValueCurve(convert_cost_to_openapi(get_emission_rate(attr))),
-        basis = EMISSIONBASIS_TO_STRING[get_basis(attr)],
+        basis = EMISSION_BASIS_TO_STRING[get_basis(attr)],
         start_up_adder = get_start_up_adder(attr),
-        mass_unit = MASSUNIT_TO_STRING[get_mass_unit(attr)],
-        energy_unit = ENERGYUNIT_TO_STRING[get_energy_unit(attr)],
+        mass_unit = MASS_UNIT_TO_STRING[get_mass_unit(attr)],
+        energy_unit = ENERGY_UNIT_TO_STRING[get_energy_unit(attr)],
         gwp = get_gwp(attr),
         available = get_available(attr),
     )
@@ -109,7 +109,7 @@ function to_openapi(block::CombinedCycleBlock, id::Int)
     return PO.CombinedCycleBlock(;
         id = id,
         name = get_name(block),
-        configuration = COMBINEDCYCLECONFIGURATION_TO_STRING[get_configuration(block)],
+        configuration = COMBINED_CYCLE_CONFIGURATION_TO_STRING[get_configuration(block)],
         heat_recovery_to_steam_factor = get_heat_recovery_to_steam_factor(block),
     )
 end
@@ -118,7 +118,7 @@ function to_openapi(frac::CombinedCycleFractional, id::Int)
     return PO.CombinedCycleFractional(;
         id = id,
         name = get_name(frac),
-        configuration = COMBINEDCYCLECONFIGURATION_TO_STRING[get_configuration(frac)],
+        configuration = COMBINED_CYCLE_CONFIGURATION_TO_STRING[get_configuration(frac)],
     )
 end
 
@@ -310,7 +310,7 @@ function _export_components!(
     doc::PC.SystemDocument,
     refs::OpenAPIRefs,
     sys::System,
-    val::Val,
+    val::IS.AbstractUnitSystem,
 )
     for (po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)

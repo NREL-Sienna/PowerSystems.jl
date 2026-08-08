@@ -238,10 +238,10 @@ set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 set_ext!(value::ThermalStandard, val) = value.ext = val
 
 
-const THERMALFUELS_FROM_STRING = Dict{String, ThermalFuels}(string(m) => m for m in instances(ThermalFuels))
-const THERMALFUELS_TO_STRING = Dict{ ThermalFuels, String}(m => string(m) for m in instances(ThermalFuels))
+const THERMAL_FUELS_FROM_STRING = Dict{String, ThermalFuels}(string(m) => m for m in instances(ThermalFuels))
+const THERMAL_FUELS_TO_STRING = Dict{ ThermalFuels, String}(m => string(m) for m in instances(ThermalFuels))
 
-function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ThermalStandard(;
         name = po.name,
         available = po.available,
@@ -257,13 +257,13 @@ function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::Val{:DEV
         base_power = po.base_power,
         time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
         must_run = po.must_run,
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
-        fuel = THERMALFUELS_FROM_STRING[po.fuel],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
         time_at_status = po.time_at_status,
     )
 end
 
-function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return ThermalStandard(;
         name = po.name,
         available = po.available,
@@ -279,13 +279,13 @@ function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::Val{:NAT
         base_power = po.base_power,
         time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
         must_run = po.must_run,
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
-        fuel = THERMALFUELS_FROM_STRING[po.fuel],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
         time_at_status = po.time_at_status,
     )
 end
 
-function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.ThermalStandard(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -302,13 +302,13 @@ function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::Val{:DEVICE_BAS
         base_power = _get_base_power(value),
         time_limits = _updown_po_optional(get_time_limits(value)),
         must_run = get_must_run(value),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
-        fuel = THERMALFUELS_TO_STRING[get_fuel(value)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
         time_at_status = get_time_at_status(value),
     )
 end
 
-function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.ThermalStandard(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -325,8 +325,8 @@ function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::Val{:NATURAL_UN
         base_power = _get_base_power(value),
         time_limits = _updown_po_optional(get_time_limits(value)),
         must_run = get_must_run(value),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
-        fuel = THERMALFUELS_TO_STRING[get_fuel(value)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
         time_at_status = get_time_at_status(value),
     )
 end

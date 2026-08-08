@@ -179,8 +179,8 @@ end
     # The generated code must parse as valid Julia syntax.
     @test Meta.parse("begin\n" * gen * "\nend") isa Expr
 
-    device_start = findfirst("Val{:DEVICE_BASE}", gen)
-    natural_start = findfirst("Val{:NATURAL_UNITS}", gen)
+    device_start = findfirst("DeviceBaseUnit", gen)
+    natural_start = findfirst("NaturalUnit", gen)
     @test !isnothing(device_start)
     @test !isnothing(natural_start)
     device_body = gen[first(device_start):(first(natural_start) - 1)]
@@ -188,11 +188,11 @@ end
 
     # Enum table: emitted once, ahead of both methods, looked up (not `getproperty`).
     @test occursin(
-        "const OATESTSTATUS_FROM_STRING = Dict{String, OATestStatus}(string(m) => m for m in instances(OATestStatus))",
+        "const OA_TEST_STATUS_FROM_STRING = Dict{String, OATestStatus}(string(m) => m for m in instances(OATestStatus))",
         gen,
     )
-    @test occursin("status = OATESTSTATUS_FROM_STRING[po.status],", device_body)
-    @test occursin("status = OATESTSTATUS_FROM_STRING[po.status],", natural_body)
+    @test occursin("status = OA_TEST_STATUS_FROM_STRING[po.status],", device_body)
+    @test occursin("status = OA_TEST_STATUS_FROM_STRING[po.status],", natural_body)
 
     # Reference: `resolve_ref(refs, po.<name>)`, identical in both methods. Not `refs[po.<name>]`
     # — a schema-optional reference the document omits arrives as `nothing`, and `refs[nothing]`
@@ -281,8 +281,8 @@ end
     gen = read(joinpath(outdir, "OATestPuDevice.jl"), String)
     @test Meta.parse("begin\n" * gen * "\nend") isa Expr
 
-    device_start = findfirst("Val{:DEVICE_BASE}", gen)
-    natural_start = findfirst("Val{:NATURAL_UNITS}", gen)
+    device_start = findfirst("DeviceBaseUnit", gen)
+    natural_start = findfirst("NaturalUnit", gen)
     device_body = gen[first(device_start):(first(natural_start) - 1)]
     natural_body = gen[first(natural_start):end]
 

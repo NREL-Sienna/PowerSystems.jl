@@ -21,7 +21,7 @@ const STORAGETECH_TO_STRING = _invert(STORAGETECH_FROM_STRING)
 # ── Arc ─────────────────────────────────────────────────────────────────────────
 # No unit-converted fields; both unit-system methods identical (mirrors import).
 
-function to_openapi(arc::Arc, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(arc::Arc, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.Arc(;
         id = component_id(refs, arc),
         from_id = component_id(refs, get_from(arc)),
@@ -29,8 +29,8 @@ function to_openapi(arc::Arc, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function to_openapi(arc::Arc, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(arc, refs, Val(:DEVICE_BASE))
+function to_openapi(arc::Arc, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(arc, refs, DU)
 end
 
 # ── Area / LoadZone ─────────────────────────────────────────────────────────────
@@ -39,7 +39,7 @@ end
 # exact point) — multiply by `get_base_power(refs)` in BOTH methods. `load_response` has no
 # `conversion_unit` and passes through unconverted in both.
 
-function to_openapi(area::Area, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(area::Area, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.Area(;
         id = component_id(refs, area),
         name = get_name(area),
@@ -50,11 +50,11 @@ function to_openapi(area::Area, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function to_openapi(area::Area, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(area, refs, Val(:DEVICE_BASE))
+function to_openapi(area::Area, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(area, refs, DU)
 end
 
-function to_openapi(lz::LoadZone, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(lz::LoadZone, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.LoadZone(;
         id = component_id(refs, lz),
         name = get_name(lz),
@@ -64,8 +64,8 @@ function to_openapi(lz::LoadZone, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function to_openapi(lz::LoadZone, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(lz, refs, Val(:DEVICE_BASE))
+function to_openapi(lz::LoadZone, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(lz, refs, DU)
 end
 
 # ── TransmissionInterface ───────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ end
 # `violation_penalty`/`direction_mapping` have no `conversion_unit` and pass through
 # unconverted in both.
 
-function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.TransmissionInterface(;
         id = component_id(refs, tx),
         name = get_name(tx),
@@ -89,8 +89,8 @@ function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::Val{:DEVICE_
     )
 end
 
-function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(tx, refs, Val(:DEVICE_BASE))
+function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(tx, refs, DU)
 end
 
 # ── Line ────────────────────────────────────────────────────────────────────────
@@ -99,7 +99,7 @@ end
 # `base_power` on export is `get_base_power(refs)` exactly — the document's per-line
 # base_power is the denormalized system base, not reconstructed.
 
-function to_openapi(line::Line, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(line::Line, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.Line(;
         id = component_id(refs, line),
         name = get_name(line),
@@ -119,7 +119,7 @@ function to_openapi(line::Line, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function to_openapi(line::Line, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(line::Line, refs::OpenAPIRefs, ::NaturalUnit)
     sbp = get_base_power(refs)
     return PO.Line(;
         id = component_id(refs, line),
@@ -149,7 +149,7 @@ end
 # System component (no `addable` entry of its own), so this method is called directly on the
 # `TransformerCircuit` object the document walk already resolved to an id.
 
-function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.TransformerCircuit(;
         id = component_id(refs, circuit),
         available = get_available(circuit),
@@ -177,7 +177,7 @@ function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::Val{:DEVIC
     )
 end
 
-function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::NaturalUnit)
     dbp = get_base_power(circuit)
     return PO.TransformerCircuit(;
         id = component_id(refs, circuit),
@@ -213,7 +213,7 @@ end
 # converter consumes an inline `po.circuit` rather than a reference (verified against
 # import_handwritten.jl before assuming, per the task brief).
 
-function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::DeviceBaseUnit)
     circuit = get_circuit(xfmr)
     shunt = get_magnetizing_shunt(xfmr, DU)
     return PO.TwoWindingTransformer(;
@@ -228,8 +228,8 @@ function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::Val{:DEVIC
     )
 end
 
-function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(xfmr, refs, Val(:DEVICE_BASE))
+function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(xfmr, refs, DU)
 end
 
 # ── ThreeWindingTransformer ──────────────────────────────────────────────────────
@@ -245,7 +245,7 @@ end
 const THREEWINDINGTRANSFORMERSHUNTLOCATION_TO_STRING =
     _invert(THREEWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING)
 
-function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::DeviceBaseUnit)
     shunt = get_magnetizing_shunt(xfmr, DU)
     return PO.ThreeWindingTransformer(;
         id = component_id(refs, xfmr),
@@ -272,8 +272,8 @@ function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::Val{:DEV
     )
 end
 
-function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(xfmr, refs, Val(:DEVICE_BASE))
+function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(xfmr, refs, DU)
 end
 
 # ── FixedAdmittance ─────────────────────────────────────────────────────────────
@@ -285,7 +285,7 @@ end
 # the document was originally imported from, mirroring TwoWindingTransformer's
 # always-"DEVICE_BASE" export above.
 
-function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     y = get_Y(shunt) * get_base_power(refs)
     return PO.FixedAdmittance(;
         id = component_id(refs, shunt),
@@ -297,8 +297,8 @@ function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::Val{:DEVICE_BAS
     )
 end
 
-function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(shunt, refs, Val(:DEVICE_BASE))
+function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(shunt, refs, DU)
 end
 
 # ── TwoTerminalGenericHVDCLine ──────────────────────────────────────────────────
@@ -315,7 +315,7 @@ _hvdc_loss_to_openapi(curve::Union{InputOutputCurve, IncrementalCurve}) =
 function to_openapi(
     hvdc::TwoTerminalGenericHVDCLine,
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 )
     return PO.TwoTerminalGenericHVDCLine(;
         id = component_id(refs, hvdc),
@@ -335,7 +335,7 @@ end
 function to_openapi(
     hvdc::TwoTerminalGenericHVDCLine,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
     sbp = get_base_power(refs)
     return PO.TwoTerminalGenericHVDCLine(;
@@ -386,7 +386,7 @@ function _hydro_unit_ids(refs::OpenAPIRefs, units::AbstractVector)
     return Int[component_id(refs, u) for u in units]
 end
 
-function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit)
     limits = get_storage_level_limits(res)
     return PO.HydroReservoir(;
         id = component_id(refs, res),
@@ -411,8 +411,8 @@ function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return to_openapi(res, refs, Val(:DEVICE_BASE))
+function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(res, refs, DU)
 end
 
 # ── EnergyReservoirStorage ──────────────────────────────────────────────────────
@@ -423,13 +423,13 @@ end
 # emitted as "MWH" (the only basis this pass implements on either side, per import's
 # `_check_energy_units`).
 
-function to_openapi(storage::EnergyReservoirStorage, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(storage::EnergyReservoirStorage, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.EnergyReservoirStorage(;
         id = component_id(refs, storage),
         name = get_name(storage),
         available = get_available(storage),
         bus = component_id(refs, get_bus(storage)),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(storage)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(storage)],
         storage_technology_type = STORAGETECH_TO_STRING[get_storage_technology_type(
             storage,
         )],
@@ -460,7 +460,7 @@ end
 function to_openapi(
     storage::EnergyReservoirStorage,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
     base = _get_base_power(storage)
     return PO.EnergyReservoirStorage(;
@@ -468,7 +468,7 @@ function to_openapi(
         name = get_name(storage),
         available = get_available(storage),
         bus = component_id(refs, get_bus(storage)),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(storage)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(storage)],
         storage_technology_type = STORAGETECH_TO_STRING[get_storage_technology_type(
             storage,
         )],
@@ -510,7 +510,7 @@ const RESERVE_DIRECTION_TO_STRING = _invert(RESERVE_DIRECTION)
 function to_openapi(
     reserve::OnlineReserve{T, U},
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 ) where {T <: ReserveDirection, U}
     return PO.OnlineReserve(;
         id = component_id(refs, reserve),
@@ -530,7 +530,7 @@ end
 function to_openapi(
     reserve::OnlineReserve{T, U},
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 ) where {T <: ReserveDirection, U}
     return PO.OnlineReserve(;
         id = component_id(refs, reserve),
@@ -550,7 +550,7 @@ end
 function to_openapi(
     reserve::OfflineReserve{U},
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 ) where {U}
     return PO.OfflineReserve(;
         id = component_id(refs, reserve),
@@ -569,7 +569,7 @@ end
 function to_openapi(
     reserve::OfflineReserve{U},
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 ) where {U}
     return PO.OfflineReserve(;
         id = component_id(refs, reserve),
@@ -588,7 +588,7 @@ end
 function to_openapi(
     reserve::GroupReserve{T},
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 ) where {T <: ReserveDirection}
     return PO.GroupReserve(;
         id = component_id(refs, reserve),
@@ -602,7 +602,7 @@ end
 function to_openapi(
     reserve::GroupReserve{T},
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 ) where {T <: ReserveDirection}
     return PO.GroupReserve(;
         id = component_id(refs, reserve),

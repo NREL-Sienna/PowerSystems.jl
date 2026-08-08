@@ -366,6 +366,6 @@ end
         mass_unit = "LB", energy_unit = "MMBTU",
     )
     @test_throws ErrorException PSY._enum_from_string(
-        PSY.POLLUTANTTYPE_FROM_STRING, "BOGUS", "pollutant",
+        PSY.POLLUTANT_TYPE_FROM_STRING, "BOGUS", "pollutant",
     )
 end

@@ -124,7 +124,7 @@ set_ext!(value::AreaInterchange, val) = value.ext = val
 
 
 
-function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return AreaInterchange(;
         name = po.name,
         available = po.available,
@@ -136,7 +136,7 @@ function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::Val{:DEV
     )
 end
 
-function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return AreaInterchange(;
         name = po.name,
         available = po.available,
@@ -148,7 +148,7 @@ function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::Val{:NAT
     )
 end
 
-function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.AreaInterchange(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -161,7 +161,7 @@ function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::Val{:DEVICE_BAS
     )
 end
 
-function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.AreaInterchange(;
         id = component_id(refs, value),
         name = get_name(value),

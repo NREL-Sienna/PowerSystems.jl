@@ -220,10 +220,10 @@ set_services!(value::HydroDispatch, val) = value.services = val
 set_ext!(value::HydroDispatch, val) = value.ext = val
 
 
-const PRIMEMOVERS_FROM_STRING = Dict{String, PrimeMovers}(string(m) => m for m in instances(PrimeMovers))
-const PRIMEMOVERS_TO_STRING = Dict{ PrimeMovers, String}(m => string(m) for m in instances(PrimeMovers))
+const PRIME_MOVERS_FROM_STRING = Dict{String, PrimeMovers}(string(m) => m for m in instances(PrimeMovers))
+const PRIME_MOVERS_TO_STRING = Dict{ PrimeMovers, String}(m => string(m) for m in instances(PrimeMovers))
 
-function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return HydroDispatch(;
         name = po.name,
         available = po.available,
@@ -231,7 +231,7 @@ function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::Val{:DEVIC
         active_power = po.active_power,
         reactive_power = po.reactive_power,
         rating = po.rating,
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
         active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
         reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
         ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up, down = po.ramp_limits.down); end),
@@ -243,7 +243,7 @@ function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::Val{:DEVIC
     )
 end
 
-function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return HydroDispatch(;
         name = po.name,
         available = po.available,
@@ -251,7 +251,7 @@ function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::Val{:NATUR
         active_power = po.active_power / po.base_power,
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
         active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
         reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
         ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up / po.base_power, down = po.ramp_limits.down / po.base_power); end),
@@ -263,7 +263,7 @@ function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::Val{:NATUR
     )
 end
 
-function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.HydroDispatch(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -272,7 +272,7 @@ function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::Val{:DEVICE_BASE}
         active_power = get_active_power(value, DU),
         reactive_power = get_reactive_power(value, DU),
         rating = get_rating(value, DU),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
         active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
         ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
@@ -284,7 +284,7 @@ function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::Val{:DEVICE_BASE}
     )
 end
 
-function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.HydroDispatch(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -293,7 +293,7 @@ function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::Val{:NATURAL_UNIT
         active_power = get_active_power(value, DU) * _get_base_power(value),
         reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
         rating = get_rating(value, DU) * _get_base_power(value),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
         active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
         reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
         ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),

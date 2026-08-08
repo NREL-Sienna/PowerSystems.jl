@@ -1020,10 +1020,11 @@ include("plant_attribute.jl")
 include("openapi/import_document.jl")
 
 # OpenAPI serde: the id⇄UUID loaders that carry document association rows into IS's
-# two SQLite association stores. Not yet wired into `from_openapi(::Type{System}, doc)` —
-# see this file's docstrings for the call sites to switch once it is. Needs
-# `_attribute_from_openapi`, `_attach_attribute!`, `_attach_service_membership!`, and
-# `_read_time_series` from import_document.jl, so it is included right after it.
+# two SQLite association stores. Wired into `from_openapi(::Type{System}, doc)`
+# (import_document.jl calls `load_supplemental_attribute_associations!` and
+# `load_time_series_associations!` directly). Needs `_attribute_from_openapi`,
+# `_attach_attribute!`, `_attach_service_membership!`, and `_materialize_time_series!` from
+# import_document.jl, so it is included right after it.
 include("openapi/sqlite_load.jl")
 
 # OpenAPI export direction: PSY → PO/PC reverse converters and the document-level

@@ -3,13 +3,9 @@
 # `IS.TimeSeriesMetadataStore`). The document and IS's stores are the same shape except for
 # id vs UUID, so this is the id⇄UUID bridge.
 #
-# NOT YET WIRED into `from_openapi(::Type{System}, doc)` in `src/openapi/import_document.jl` —
-# see the docstrings below for the exact call sites to switch once it is:
-#   - `_attach_supplemental_attribute_associations!` (import_document.jl) →
-#     `load_supplemental_attribute_associations!` (this file)
-#   - `_attach_time_series!` (import_document.jl) → `load_time_series_associations!`
-#     (this file); this closes the owner_category=SupplementalAttribute gap the current
-#     function errors on rather than reproducing it.
+# WIRED into `from_openapi(::Type{System}, doc)` in `src/openapi/import_document.jl`, which
+# calls `load_supplemental_attribute_associations!` and `load_time_series_associations!`
+# (both this file) directly.
 #
 # Reuses, rather than duplicates, import_document.jl's per-type attribute conversion
 # (`_attribute_from_openapi`), group-index attach dispatch (`_attach_attribute!`), and
@@ -141,6 +137,10 @@ regardless of which). A `SupplementalAttribute` owner resolves only once
 [`load_supplemental_attribute_associations!`](@ref) has registered it under its id — call
 that function first for a document carrying both kinds of association.
 
+A series referenced by more than one owner row is read off `time_series_storage_path` once,
+via [`_materialize_time_series!`](@ref)'s `Base.UUID`-keyed cache, rather than once per row —
+every owner row still gets its own attach call.
+
 Requires `time_series_storage_path` whenever the document declares any association — no
 silent loss of the document's time series. Errors, naming the association or id, on: an
 unresolved `owner_id`, a declared `owner_category` absent or mismatched with what `owner_id`
@@ -161,6 +161,10 @@ function load_time_series_associations!(
         "time_series_associations row(s) but no time_series_storage_path was given",
     )
     storage = IS.Hdf5TimeSeriesStorage(false; filename = String(time_series_storage_path))
+    # Shared across every row in this call: a series referenced by N owner rows (e.g. RTS's
+    # zone/area load fan-out) is read off `storage` once via `_materialize_time_series!`,
+    # not N times. Every owner row still gets its own attach call.
+    materialized = Dict{Base.UUID, TimeSeriesData}()
     for assoc in rows
         owner_id = Int(assoc.owner_id)
         has_ref(refs, owner_id) || error(
@@ -172,6 +176,7 @@ function load_time_series_associations!(
         _attach_time_series_row!(
             _resolve_time_series_type(assoc),
             sys,
+            materialized,
             storage,
             owner,
             assoc,

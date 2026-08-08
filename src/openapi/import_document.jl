@@ -15,42 +15,119 @@
 # carried by a `supplemental_attribute_associations` row like the reserves) is placed after
 # them for that reason, though it has no forward references of its own.
 const DOCUMENT_PLAN = [
-    (PO.Area, Area, "Area", true),
-    (PO.LoadZone, LoadZone, "LoadZone", true),
-    (PO.ACBus, ACBus, "ACBus", true),
-    (PO.Arc, Arc, "Arc", true),
-    (PO.Line, Line, "Line", true),
-    (PO.TransformerCircuit, TransformerCircuit, "TransformerCircuit", false),
-    (PO.TwoWindingTransformer, TwoWindingTransformer, "TwoWindingTransformer", true),
-    (PO.ThreeWindingTransformer, ThreeWindingTransformer, "ThreeWindingTransformer", true),
+    (po_type = PO.Area, psy_type = Area, key = "Area", addable = true),
+    (po_type = PO.LoadZone, psy_type = LoadZone, key = "LoadZone", addable = true),
+    (po_type = PO.ACBus, psy_type = ACBus, key = "ACBus", addable = true),
+    (po_type = PO.Arc, psy_type = Arc, key = "Arc", addable = true),
+    (po_type = PO.Line, psy_type = Line, key = "Line", addable = true),
+    (
+        po_type = PO.TransformerCircuit, psy_type = TransformerCircuit,
+        key = "TransformerCircuit", addable = false,
+    ),
+    (
+        po_type = PO.TwoWindingTransformer, psy_type = TwoWindingTransformer,
+        key = "TwoWindingTransformer", addable = true,
+    ),
+    (
+        po_type = PO.ThreeWindingTransformer, psy_type = ThreeWindingTransformer,
+        key = "ThreeWindingTransformer", addable = true,
+    ),
     # After Area: its only references are `from_area`/`to_area`.
-    (PO.AreaInterchange, AreaInterchange, "AreaInterchange", true),
-    (PO.ThermalStandard, ThermalStandard, "ThermalStandard", true),
-    (PO.PowerLoad, PowerLoad, "PowerLoad", true),
     (
-        PO.InterruptiblePowerLoad, InterruptiblePowerLoad, "InterruptiblePowerLoad",
-        true,
+        po_type = PO.AreaInterchange, psy_type = AreaInterchange,
+        key = "AreaInterchange",
+        addable = true,
     ),
-    (PO.ShiftablePowerLoad, ShiftablePowerLoad, "ShiftablePowerLoad", true),
-    (PO.FixedAdmittance, FixedAdmittance, "FixedAdmittance", true),
-    (PO.HydroTurbine, HydroTurbine, "HydroTurbine", true),
-    (PO.HydroReservoir, HydroReservoir, "HydroReservoir", true),
-    (PO.HydroDispatch, HydroDispatch, "HydroDispatch", true),
-    (PO.RenewableDispatch, RenewableDispatch, "RenewableDispatch", true),
-    (PO.RenewableNonDispatch, RenewableNonDispatch, "RenewableNonDispatch", true),
-    (PO.SynchronousCondenser, SynchronousCondenser, "SynchronousCondenser", true),
-    (PO.EnergyReservoirStorage, EnergyReservoirStorage, "EnergyReservoirStorage", true),
     (
-        PO.TwoTerminalGenericHVDCLine, TwoTerminalGenericHVDCLine,
-        "TwoTerminalGenericHVDCLine", true,
+        po_type = PO.ThermalStandard, psy_type = ThermalStandard,
+        key = "ThermalStandard",
+        addable = true,
     ),
-    (PO.OnlineReserve, OnlineReserve, "OnlineReserve", true),
-    (PO.OfflineReserve, OfflineReserve, "OfflineReserve", true),
-    (PO.GroupReserve, GroupReserve, "GroupReserve", true),
-    (PO.TransmissionInterface, TransmissionInterface, "TransmissionInterface", true),
+    (po_type = PO.PowerLoad, psy_type = PowerLoad, key = "PowerLoad", addable = true),
+    (
+        po_type = PO.InterruptiblePowerLoad, psy_type = InterruptiblePowerLoad,
+        key = "InterruptiblePowerLoad", addable = true,
+    ),
+    (
+        po_type = PO.ShiftablePowerLoad, psy_type = ShiftablePowerLoad,
+        key = "ShiftablePowerLoad", addable = true,
+    ),
+    (
+        po_type = PO.FixedAdmittance, psy_type = FixedAdmittance,
+        key = "FixedAdmittance",
+        addable = true,
+    ),
+    (
+        po_type = PO.HydroTurbine, psy_type = HydroTurbine, key = "HydroTurbine",
+        addable = true,
+    ),
+    (
+        po_type = PO.HydroReservoir, psy_type = HydroReservoir, key = "HydroReservoir",
+        addable = true,
+    ),
+    (
+        po_type = PO.HydroDispatch, psy_type = HydroDispatch, key = "HydroDispatch",
+        addable = true,
+    ),
+    (
+        po_type = PO.RenewableDispatch, psy_type = RenewableDispatch,
+        key = "RenewableDispatch", addable = true,
+    ),
+    (
+        po_type = PO.RenewableNonDispatch, psy_type = RenewableNonDispatch,
+        key = "RenewableNonDispatch", addable = true,
+    ),
+    (
+        po_type = PO.SynchronousCondenser, psy_type = SynchronousCondenser,
+        key = "SynchronousCondenser", addable = true,
+    ),
+    (
+        po_type = PO.EnergyReservoirStorage, psy_type = EnergyReservoirStorage,
+        key = "EnergyReservoirStorage", addable = true,
+    ),
+    (
+        po_type = PO.TwoTerminalGenericHVDCLine, psy_type = TwoTerminalGenericHVDCLine,
+        key = "TwoTerminalGenericHVDCLine", addable = true,
+    ),
+    (
+        po_type = PO.OnlineReserve, psy_type = OnlineReserve, key = "OnlineReserve",
+        addable = true,
+    ),
+    (
+        po_type = PO.OfflineReserve, psy_type = OfflineReserve, key = "OfflineReserve",
+        addable = true,
+    ),
+    (
+        po_type = PO.GroupReserve, psy_type = GroupReserve, key = "GroupReserve",
+        addable = true,
+    ),
+    (
+        po_type = PO.TransmissionInterface, psy_type = TransmissionInterface,
+        key = "TransmissionInterface", addable = true,
+    ),
 ]
 
-const DOCUMENT_PLAN_KEYS = Set(p[3] for p in DOCUMENT_PLAN)
+"""
+`DOCUMENT_PLAN`'s document-facing key must be unique — two entries sharing a key would make
+[`_check_no_unconverted_component_types`](@ref)'s membership test and the dependency-ordered
+component pass ambiguous about which converter owns that key. Checked with `allunique` before
+being wrapped in a `Set` (rather than letting the `Set` construction silently collapse a
+duplicate) so a future entry that copy-pastes an existing key errors, naming the offender,
+instead of quietly losing one type's converter.
+"""
+function _document_plan_keys(plan)
+    keys_in_order = [p.key for p in plan]
+    if !allunique(keys_in_order)
+        duplicate = first(k for k in keys_in_order if count(==(k), keys_in_order) > 1)
+        error(
+            "DOCUMENT_PLAN: duplicate key \"$duplicate\" — every entry must have a unique " *
+            "document-facing key",
+        )
+    end
+    return Set(keys_in_order)
+end
+
+const DOCUMENT_PLAN_KEYS = _document_plan_keys(DOCUMENT_PLAN)
 
 """
 Whether a component type can be written to an OpenAPI document.
@@ -73,8 +150,8 @@ for (_po_type, psy_type, _key, _addable) in DOCUMENT_PLAN
 end
 
 function _unit_val(unit_system::AbstractString)
-    unit_system == "NATURAL_UNITS" && return Val(:NATURAL_UNITS)
-    unit_system == "DEVICE_BASE" && return Val(:DEVICE_BASE)
+    unit_system == "NATURAL_UNITS" && return NU
+    unit_system == "DEVICE_BASE" && return DU
     error(
         "from_openapi(System, doc): unmapped unit_system \"$unit_system\" — expected " *
         "NATURAL_UNITS or DEVICE_BASE",
@@ -335,8 +412,57 @@ function _read_time_series(
 end
 
 """
+Materialize (read off the HDF5 sidecar) the time series identified by `assoc`'s own
+`time_series_uuid`, memoized in `materialized` so a series shared by N owner rows — e.g.
+RTS's zone/area load fan-out, the same case `_export_time_series!`'s own `written::Set{
+Base.UUID}` dedups on the export side (`src/openapi/export_document.jl`) — is read once
+rather than N times. Every owner row still gets its own [`_attach_time_series_row!`](@ref)
+call; only this read (and, for the ordinary dispatch, the downstream `add_time_series!`
+re-serialize it feeds) is skipped on a cache hit.
+
+`DeterministicSingleTimeSeries` shares its `time_series_uuid` with the wrapped
+`SingleTimeSeries` it views, so a mix of rows for the same uuid (one `SingleTimeSeries` row
+plus several `DeterministicSingleTimeSeries` rows) all resolve to the one cache entry
+regardless of which row reads it first.
+"""
+function _materialize_time_series!(
+    materialized::Dict{Base.UUID, TimeSeriesData},
+    ::Type{T},
+    storage::IS.Hdf5TimeSeriesStorage,
+    assoc::PC.TimeSeriesAssociation,
+) where {T}
+    uuid = Base.UUID(assoc.time_series_uuid)
+    return get!(materialized, uuid) do
+        _read_time_series(T, storage, assoc)
+    end
+end
+function _materialize_time_series!(
+    materialized::Dict{Base.UUID, TimeSeriesData},
+    ::Type{DeterministicSingleTimeSeries},
+    storage::IS.Hdf5TimeSeriesStorage,
+    assoc::PC.TimeSeriesAssociation,
+)
+    uuid = Base.UUID(assoc.time_series_uuid)
+    return get!(materialized, uuid) do
+        metadata = _deterministic_metadata(assoc, DeterministicSingleTimeSeries)
+        single_metadata = IS.SingleTimeSeriesMetadata(;
+            name = get_name(metadata),
+            resolution = get_resolution(metadata),
+            initial_timestamp = IS.get_initial_timestamp(metadata),
+            time_series_uuid = IS.get_time_series_uuid(metadata),
+            length = Int(assoc.length),
+            scaling_factor_multiplier = IS.get_scaling_factor_multiplier(metadata),
+        )
+        IS.deserialize_time_series(
+            SingleTimeSeries, storage, single_metadata, 1:Int(assoc.length), 1:1,
+        )
+    end
+end
+
+"""
 Attach a `DeterministicSingleTimeSeries` association row directly to `entity`'s time-series
-manager rather than through `_read_time_series` + `add_time_series!`.
+manager rather than through `add_time_series!`, given the already-materialized `single_ts`
+it wraps ([`_materialize_time_series!`](@ref)).
 
 `DeterministicSingleTimeSeries` has no `IS.get_data` method — it is a view over its wrapped
 `SingleTimeSeries`, not an independently-materializable series — so `add_time_series!`'s
@@ -347,22 +473,11 @@ same series' own `SingleTimeSeries` association row) and registers an `IS.Determ
 row directly via `IS.add_metadata!`. This mirrors that.
 """
 function _attach_deterministic_single_time_series!(
-    external_storage::IS.Hdf5TimeSeriesStorage,
     entity,
     assoc::PC.TimeSeriesAssociation,
+    single_ts::SingleTimeSeries,
 )
     metadata = _deterministic_metadata(assoc, DeterministicSingleTimeSeries)
-    single_metadata = IS.SingleTimeSeriesMetadata(;
-        name = get_name(metadata),
-        resolution = get_resolution(metadata),
-        initial_timestamp = IS.get_initial_timestamp(metadata),
-        time_series_uuid = IS.get_time_series_uuid(metadata),
-        length = Int(assoc.length),
-        scaling_factor_multiplier = IS.get_scaling_factor_multiplier(metadata),
-    )
-    single_ts = IS.deserialize_time_series(
-        SingleTimeSeries, external_storage, single_metadata, 1:Int(assoc.length), 1:1,
-    )
     IS.serialize_time_series!(IS.get_time_series_storage(entity), single_ts)
     IS.add_metadata!(
         IS.get_metadata_store(IS.get_time_series_manager(entity)), entity, metadata,
@@ -371,27 +486,36 @@ function _attach_deterministic_single_time_series!(
 end
 
 """Attach one `time_series_associations` row to `entity`. Dispatched on the resolved type —
-every type but `DeterministicSingleTimeSeries` materializes via `_read_time_series` and the
-ordinary `add_time_series!`; see `_attach_deterministic_single_time_series!` for why that one
-is different."""
+every type but `DeterministicSingleTimeSeries` materializes via
+[`_materialize_time_series!`](@ref) and the ordinary `add_time_series!`; see
+`_attach_deterministic_single_time_series!` for why that one is different."""
 function _attach_time_series_row!(
     ::Type{T},
     sys::System,
+    materialized::Dict{Base.UUID, TimeSeriesData},
     storage::IS.Hdf5TimeSeriesStorage,
     entity,
     assoc::PC.TimeSeriesAssociation,
 ) where {T}
-    add_time_series!(sys, entity, _read_time_series(T, storage, assoc))
+    add_time_series!(
+        sys,
+        entity,
+        _materialize_time_series!(materialized, T, storage, assoc),
+    )
     return nothing
 end
 function _attach_time_series_row!(
     ::Type{DeterministicSingleTimeSeries},
     ::System,
+    materialized::Dict{Base.UUID, TimeSeriesData},
     storage::IS.Hdf5TimeSeriesStorage,
     entity,
     assoc::PC.TimeSeriesAssociation,
 )
-    _attach_deterministic_single_time_series!(storage, entity, assoc)
+    single_ts = _materialize_time_series!(
+        materialized, DeterministicSingleTimeSeries, storage, assoc,
+    )
+    _attach_deterministic_single_time_series!(entity, assoc, single_ts)
     return nothing
 end
 
@@ -408,15 +532,15 @@ end
 # take no `Val{unit_system}`; only the three `Outage` types need `refs`, to resolve
 # document-id `monitored_components` into the UUIDs PSY stores.
 
-const POLLUTANTTYPE_FROM_STRING =
+const POLLUTANT_TYPE_FROM_STRING =
     Dict{String, PollutantType}(string(m) => m for m in instances(PollutantType))
-const EMISSIONBASIS_FROM_STRING =
+const EMISSION_BASIS_FROM_STRING =
     Dict{String, EmissionBasis}(string(m) => m for m in instances(EmissionBasis))
-const MASSUNIT_FROM_STRING =
+const MASS_UNIT_FROM_STRING =
     Dict{String, MassUnit}(string(m) => m for m in instances(MassUnit))
-const ENERGYUNIT_FROM_STRING =
+const ENERGY_UNIT_FROM_STRING =
     Dict{String, EnergyUnit}(string(m) => m for m in instances(EnergyUnit))
-const COMBINEDCYCLECONFIGURATION_FROM_STRING = Dict{String, CombinedCycleConfiguration}(
+const COMBINED_CYCLE_CONFIGURATION_FROM_STRING = Dict{String, CombinedCycleConfiguration}(
     string(m) => m for m in instances(CombinedCycleConfiguration)
 )
 
@@ -438,13 +562,17 @@ end
 function from_openapi(::Type{EmissionsData}, po::PO.EmissionsData)
     return EmissionsData(;
         name = po.name,
-        pollutant = _enum_from_string(POLLUTANTTYPE_FROM_STRING, po.pollutant, "pollutant"),
+        pollutant = _enum_from_string(
+            POLLUTANT_TYPE_FROM_STRING,
+            po.pollutant,
+            "pollutant",
+        ),
         emission_rate = convert_cost(po.emission_rate),
-        basis = _enum_from_string(EMISSIONBASIS_FROM_STRING, po.basis, "basis"),
+        basis = _enum_from_string(EMISSION_BASIS_FROM_STRING, po.basis, "basis"),
         start_up_adder = po.start_up_adder,
-        mass_unit = _enum_from_string(MASSUNIT_FROM_STRING, po.mass_unit, "mass_unit"),
+        mass_unit = _enum_from_string(MASS_UNIT_FROM_STRING, po.mass_unit, "mass_unit"),
         energy_unit = _enum_from_string(
-            ENERGYUNIT_FROM_STRING,
+            ENERGY_UNIT_FROM_STRING,
             po.energy_unit,
             "energy_unit",
         ),
@@ -494,7 +622,7 @@ function from_openapi(::Type{CombinedCycleBlock}, po::PO.CombinedCycleBlock)
     return CombinedCycleBlock(;
         name = po.name,
         configuration = _enum_from_string(
-            COMBINEDCYCLECONFIGURATION_FROM_STRING, po.configuration, "configuration",
+            COMBINED_CYCLE_CONFIGURATION_FROM_STRING, po.configuration, "configuration",
         ),
         heat_recovery_to_steam_factor = po.heat_recovery_to_steam_factor,
     )
@@ -504,7 +632,7 @@ function from_openapi(::Type{CombinedCycleFractional}, po::PO.CombinedCycleFract
     return CombinedCycleFractional(;
         name = po.name,
         configuration = _enum_from_string(
-            COMBINEDCYCLECONFIGURATION_FROM_STRING, po.configuration, "configuration",
+            COMBINED_CYCLE_CONFIGURATION_FROM_STRING, po.configuration, "configuration",
         ),
     )
 end

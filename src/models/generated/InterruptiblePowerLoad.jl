@@ -167,10 +167,10 @@ set_services!(value::InterruptiblePowerLoad, val) = value.services = val
 set_ext!(value::InterruptiblePowerLoad, val) = value.ext = val
 
 
-const LOADCONFORMITY_FROM_STRING = Dict{String, LoadConformity}(string(m) => m for m in instances(LoadConformity))
-const LOADCONFORMITY_TO_STRING = Dict{ LoadConformity, String}(m => string(m) for m in instances(LoadConformity))
+const LOAD_CONFORMITY_FROM_STRING = Dict{String, LoadConformity}(string(m) => m for m in instances(LoadConformity))
+const LOAD_CONFORMITY_TO_STRING = Dict{ LoadConformity, String}(m => string(m) for m in instances(LoadConformity))
 
-function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return InterruptiblePowerLoad(;
         name = po.name,
         available = po.available,
@@ -181,11 +181,11 @@ function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::V
         max_reactive_power = po.max_reactive_power,
         base_power = po.base_power,
         operation_cost = convert_cost(po.operation_cost),
-        conformity = LOADCONFORMITY_FROM_STRING[po.conformity],
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
     )
 end
 
-function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return InterruptiblePowerLoad(;
         name = po.name,
         available = po.available,
@@ -196,11 +196,11 @@ function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::V
         max_reactive_power = po.max_reactive_power / po.base_power,
         base_power = po.base_power,
         operation_cost = convert_cost(po.operation_cost),
-        conformity = LOADCONFORMITY_FROM_STRING[po.conformity],
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
     )
 end
 
-function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.InterruptiblePowerLoad(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -212,11 +212,11 @@ function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::Val{:DEV
         max_reactive_power = get_max_reactive_power(value, DU),
         base_power = _get_base_power(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
-        conformity = LOADCONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
     )
 end
 
-function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.InterruptiblePowerLoad(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -228,6 +228,6 @@ function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::Val{:NAT
         max_reactive_power = get_max_reactive_power(value, DU) * _get_base_power(value),
         base_power = _get_base_power(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
-        conformity = LOADCONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
     )
 end

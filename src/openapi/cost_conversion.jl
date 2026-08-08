@@ -10,8 +10,16 @@
 # `PC`/`PO` are the `PowerCoreOpenAPIModels`/`PowerOperationsOpenAPIModels` aliases set up
 # in `src/PowerSystems.jl`. Several PO fields are "oneOf" wrapper structs (`.value` holds
 # the concrete resolved instance, chosen by the document's discriminator field at deserialize
-# time) — `convert_cost` has one unwrapping method per such wrapper so callers never need to
-# spell `.value` themselves.
+# time) — every such wrapper subtypes `OpenAPI.OneOfAPIModel` and holds nothing but that one
+# `value` field, so one generic method below unwraps all of them; callers never need to spell
+# `.value` themselves.
+
+"""Every `OpenAPI.jl`-generated oneOf wrapper (`PC.ValueCurve`, `PC.FunctionData`,
+`PC.ProductionVariableCostCurve`, the per-component `<Component>OperationCost` types, ...)
+holds exactly one field, `value::Any`, set to the concrete resolved variant. Unwrapping it is
+the same operation for every one of them, so this single method replaces what would otherwise
+be one hand-written unwrap per wrapper type."""
+convert_cost(w::OpenAPI.OneOfAPIModel) = convert_cost(w.value)
 
 """Required-field guard: dispatches on `Nothing` vs. anything else, per style (no
 `isnothing(x) && ...` guards) — a required PO field read as `nothing` is malformed input."""
@@ -46,12 +54,6 @@ end
 convert_cost(fd::PC.PiecewiseStepData) = PiecewiseStepData(fd.x_coords, fd.y_coords)
 convert_cost(fd) = error("convert_cost: unmapped FunctionData variant $(typeof(fd))")
 
-# oneOf FunctionData wrappers: unwrap to the concrete variant above.
-convert_cost(w::PC.InputOutputCurveFunctionData) = convert_cost(w.value)
-convert_cost(w::PC.IncrementalCurveFunctionData) = convert_cost(w.value)
-# The bare (context-free) FunctionData wrapper — used e.g. by HydroReservoir.head_to_volume_factor.
-convert_cost(w::PC.FunctionData) = convert_cost(w.value)
-
 # ── ValueCurve ──────────────────────────────────────────────────────────────────
 
 convert_cost(vc::PC.InputOutputCurve) =
@@ -60,9 +62,6 @@ convert_cost(vc::PC.IncrementalCurve) =
     IncrementalCurve(convert_cost(vc.function_data), vc.initial_input, vc.input_at_zero)
 convert_cost(vc::PC.AverageRateCurve) =
     AverageRateCurve(convert_cost(vc.function_data), vc.initial_input, vc.input_at_zero)
-
-# oneOf ValueCurve wrapper: unwrap to the concrete variant above.
-convert_cost(w::PC.ValueCurve) = convert_cost(w.value)
 
 # ── vom_cost / startup_fuel_offtake: always a LINEAR InputOutputCurve ──────────
 
@@ -81,7 +80,6 @@ convert_cost(v::Real) = Float64(v)
 convert_cost(v::AbstractString) = error(
     "convert_cost: a String variant (\"$v\") — a time-series reference — is not implemented",
 )
-convert_cost(w::PC.FuelCurveFuelCost) = convert_cost(w.value)
 
 # ── ProductionVariableCostCurve: CostCurve / FuelCurve ─────────────────────────
 
@@ -102,32 +100,14 @@ function convert_cost(f::PC.FuelCurve)
     )
 end
 
-# oneOf ProductionVariableCostCurve wrapper: unwrap to the concrete variant above.
-convert_cost(w::PC.ProductionVariableCostCurve) = convert_cost(w.value)
-
 _optional_cost_curve(::Nothing) = zero(CostCurve)
 _optional_cost_curve(c::PC.CostCurve) = convert_cost(c)
 
 # ── start_up: a bare number, or a multi-stage / charge-discharge breakdown ────
 
 convert_cost(s::PC.StartUpStages) = (hot = s.hot, warm = s.warm, cold = s.cold)
-convert_cost(w::PC.ThermalGenerationCostStartUp) = convert_cost(w.value)
 
 convert_cost(s::PC.StorageCostStartUpOneOf) = (charge = s.charge, discharge = s.discharge)
-convert_cost(w::PC.StorageCostStartUp) = convert_cost(w.value)
-
-# ── Per-component `operation_cost` oneOf wrappers ────────────────────────────
-# Each component whose `operation_cost` is a oneOf gets its own generated wrapper named
-# `<Component>OperationCost`, holding the resolved variant in `.value`. One unwrap method per
-# wrapper, matching how the Core oneOf wrappers above are handled — a wrapper with no method
-# falls through to the loud `unmapped FunctionData variant` error rather than being guessed at.
-
-convert_cost(w::PO.ThermalStandardOperationCost) = convert_cost(w.value)
-convert_cost(w::PO.ThermalMultiStartOperationCost) = convert_cost(w.value)
-convert_cost(w::PO.RenewableDispatchOperationCost) = convert_cost(w.value)
-convert_cost(w::PO.HydroDispatchOperationCost) = convert_cost(w.value)
-convert_cost(w::PO.EnergyReservoirStorageOperationCost) = convert_cost(w.value)
-convert_cost(w::PO.InterruptiblePowerLoadOperationCost) = convert_cost(w.value)
 
 # ── Operation-cost containers emitted by the parser ──────────────────────────
 

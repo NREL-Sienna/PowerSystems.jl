@@ -151,15 +151,15 @@ set_load_zone!(value::ACBus, val) = value.load_zone = val
 set_ext!(value::ACBus, val) = value.ext = val
 
 
-const ACBUSTYPES_FROM_STRING = Dict{String, ACBusTypes}(string(m) => m for m in instances(ACBusTypes))
-const ACBUSTYPES_TO_STRING = Dict{ ACBusTypes, String}(m => string(m) for m in instances(ACBusTypes))
+const AC_BUS_TYPES_FROM_STRING = Dict{String, ACBusTypes}(string(m) => m for m in instances(ACBusTypes))
+const AC_BUS_TYPES_TO_STRING = Dict{ ACBusTypes, String}(m => string(m) for m in instances(ACBusTypes))
 
-function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ACBus(;
         number = po.number,
         name = po.name,
         available = po.available,
-        bustype = ACBUSTYPES_FROM_STRING[po.bustype],
+        bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
         angle = po.angle,
         magnitude = po.magnitude,
         voltage_limits = (if isnothing(po.voltage_limits); nothing; else; (min = po.voltage_limits.min, max = po.voltage_limits.max); end),
@@ -169,12 +169,12 @@ function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return ACBus(;
         number = po.number,
         name = po.name,
         available = po.available,
-        bustype = ACBUSTYPES_FROM_STRING[po.bustype],
+        bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
         angle = po.angle,
         magnitude = po.magnitude,
         voltage_limits = (if isnothing(po.voltage_limits); nothing; else; (min = po.voltage_limits.min, max = po.voltage_limits.max); end),
@@ -184,13 +184,13 @@ function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS
     )
 end
 
-function to_openapi(value::ACBus, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::ACBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.ACBus(;
         id = component_id(refs, value),
         number = get_number(value),
         name = get_name(value),
         available = get_available(value),
-        bustype = ACBUSTYPES_TO_STRING[get_bustype(value)],
+        bustype = AC_BUS_TYPES_TO_STRING[get_bustype(value)],
         angle = get_angle(value),
         magnitude = get_magnitude(value),
         voltage_limits = _minmax_po_optional(get_voltage_limits(value)),
@@ -200,13 +200,13 @@ function to_openapi(value::ACBus, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function to_openapi(value::ACBus, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::ACBus, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.ACBus(;
         id = component_id(refs, value),
         number = get_number(value),
         name = get_name(value),
         available = get_available(value),
-        bustype = ACBUSTYPES_TO_STRING[get_bustype(value)],
+        bustype = AC_BUS_TYPES_TO_STRING[get_bustype(value)],
         angle = get_angle(value),
         magnitude = get_magnitude(value),
         voltage_limits = _minmax_po_optional(get_voltage_limits(value)),

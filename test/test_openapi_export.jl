@@ -32,7 +32,7 @@ _export_bus(; number = 1, area = nothing, load_zone = nothing, bustype = ACBusTy
     refs[4] = bus2
     refs[5] = arc
 
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         area_po = PSY.to_openapi(area, refs, val)
         @test area_po.id == 1
         @test area_po.name == "area1"
@@ -80,13 +80,13 @@ end
     refs[3] = arc
     refs[4] = line
 
-    device_po = PSY.to_openapi(line, refs, Val(:DEVICE_BASE))
+    device_po = PSY.to_openapi(line, refs, DU)
     @test device_po.rating == 1.75
     @test device_po.active_power_flow == 0.1
     @test device_po.base_power == 100.0
     @test isnothing(device_po.rating_c)
 
-    natural_po = PSY.to_openapi(line, refs, Val(:NATURAL_UNITS))
+    natural_po = PSY.to_openapi(line, refs, NU)
     @test natural_po.rating == 175.0
     @test natural_po.active_power_flow == 10.0
     @test natural_po.reactive_power_flow == 2.0
@@ -130,7 +130,7 @@ end
     refs[4] = circuit
     refs[5] = xfmr
 
-    circuit_natural = PSY.to_openapi(circuit, refs, Val(:NATURAL_UNITS))
+    circuit_natural = PSY.to_openapi(circuit, refs, NU)
     @test circuit_natural.alpha == 0.05
     @test circuit_natural.r == 0.01
     @test circuit_natural.rating == 100.0
@@ -139,11 +139,11 @@ end
     @test circuit_natural.control_objective == "UNDEFINED"
     @test circuit_natural.parameter_units == "DEVICE_BASE"
 
-    circuit_device = PSY.to_openapi(circuit, refs, Val(:DEVICE_BASE))
+    circuit_device = PSY.to_openapi(circuit, refs, DU)
     @test circuit_device.rating == 2.0
     @test circuit_device.active_power_flow == 0.1
 
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         xfmr_po = PSY.to_openapi(xfmr, refs, val)
         @test xfmr_po.circuit == 4
         @test xfmr_po.magnetizing_shunt.real == 0.01
@@ -177,7 +177,7 @@ end
     refs[3] = line
     refs[4] = tx
 
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         tx_po = PSY.to_openapi(tx, refs, val)
         @test tx_po.id == 4
         @test tx_po.active_power_flow_limits.min == -1000.0
@@ -240,7 +240,7 @@ end
     refs[10] = get_tertiary_circuit(t3w)
     refs[11] = t3w
 
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         t3w_po = PSY.to_openapi(t3w, refs, val)
         @test t3w_po.primary_circuit == 8
         @test t3w_po.secondary_circuit == 9
@@ -272,7 +272,7 @@ end
     # The wire enum has no system-base member, so PSY's system-base pu Y rides as
     # DEVICE_MVAR (MVAr at unity voltage) scaled by the document's system base —
     # the same value regardless of the document's unit_system.
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         shunt_po = PSY.to_openapi(shunt, refs, val)
         @test shunt_po.id == 2
         @test shunt_po.bus == 1
@@ -310,13 +310,13 @@ end
     refs[3] = arc
     refs[4] = hvdc
 
-    natural_po = PSY.to_openapi(hvdc, refs, Val(:NATURAL_UNITS))
+    natural_po = PSY.to_openapi(hvdc, refs, NU)
     @test natural_po.active_power_flow == 50.0
     @test natural_po.active_power_limits_from.min == -100.0
     @test natural_po.reactive_power_limits_to.max == 50.0
     @test natural_po.loss.value.function_data.value.proportional_term == 0.01
 
-    device_po = PSY.to_openapi(hvdc, refs, Val(:DEVICE_BASE))
+    device_po = PSY.to_openapi(hvdc, refs, DU)
     @test device_po.active_power_flow == 0.5
     @test device_po.active_power_limits_from.min == -1.0
 end
@@ -343,13 +343,13 @@ end
     refs[2] = area2
     refs[3] = interchange
 
-    device_po = PSY.to_openapi(interchange, refs, Val(:DEVICE_BASE))
+    device_po = PSY.to_openapi(interchange, refs, DU)
     @test device_po.active_power_flow == 0.25
     @test device_po.flow_limits.from_to == 1.0
     @test device_po.flow_limits.to_from == -1.0
     @test device_po.base_power == 100.0
 
-    natural_po = PSY.to_openapi(interchange, refs, Val(:NATURAL_UNITS))
+    natural_po = PSY.to_openapi(interchange, refs, NU)
     @test natural_po.active_power_flow == 25.0
     @test natural_po.flow_limits.from_to == 100.0
     @test natural_po.flow_limits.to_from == -100.0
@@ -360,7 +360,7 @@ end
     import_refs[1] = area1
     import_refs[2] = area2
     reimported =
-        PSY.from_openapi(AreaInterchange, device_po, import_refs, Val(:DEVICE_BASE))
+        PSY.from_openapi(AreaInterchange, device_po, import_refs, DU)
     @test get_active_power_flow(reimported, PSY.DU) ==
           get_active_power_flow(interchange, SU)
     @test get_flow_limits(reimported, PSY.DU) == get_flow_limits(interchange, SU)
@@ -400,7 +400,7 @@ end
     refs[2] = gen
     refs[3] = load
 
-    gen_natural = PSY.to_openapi(gen, refs, Val(:NATURAL_UNITS))
+    gen_natural = PSY.to_openapi(gen, refs, NU)
     @test gen_natural.active_power == 50.0
     @test gen_natural.rating == 100.0
     @test gen_natural.active_power_limits.min == 10.0
@@ -409,16 +409,16 @@ end
     @test gen_natural.fuel == "NATURAL_GAS"
     @test gen_natural.operation_cost.fixed == 100.0
 
-    gen_device = PSY.to_openapi(gen, refs, Val(:DEVICE_BASE))
+    gen_device = PSY.to_openapi(gen, refs, DU)
     @test gen_device.active_power == 0.25
     @test gen_device.rating == 0.5
 
-    load_natural = PSY.to_openapi(load, refs, Val(:NATURAL_UNITS))
+    load_natural = PSY.to_openapi(load, refs, NU)
     @test load_natural.active_power == 30.0
     @test load_natural.max_active_power == 50.0
     @test load_natural.conformity == "CONFORMING"
 
-    load_device = PSY.to_openapi(load, refs, Val(:DEVICE_BASE))
+    load_device = PSY.to_openapi(load, refs, DU)
     @test load_device.active_power == 0.3
 end
 
@@ -442,22 +442,22 @@ end
     refs[2] = iload
     refs[3] = sload
 
-    iload_natural = PSY.to_openapi(iload, refs, Val(:NATURAL_UNITS))
+    iload_natural = PSY.to_openapi(iload, refs, NU)
     @test iload_natural.active_power == 30.0
     @test iload_natural.max_active_power == 30.0
     @test iload_natural.conformity == "UNDEFINED"
     @test iload_natural.operation_cost.fixed == 2400.0
 
-    iload_device = PSY.to_openapi(iload, refs, Val(:DEVICE_BASE))
+    iload_device = PSY.to_openapi(iload, refs, DU)
     @test iload_device.active_power == 0.3
 
-    sload_natural = PSY.to_openapi(sload, refs, Val(:NATURAL_UNITS))
+    sload_natural = PSY.to_openapi(sload, refs, NU)
     @test sload_natural.active_power == 30.0
     @test sload_natural.active_power_limits.min == 3.0
     @test sload_natural.active_power_limits.max == 30.0
     @test sload_natural.load_balance_time_horizon == 24
 
-    sload_device = PSY.to_openapi(sload, refs, Val(:DEVICE_BASE))
+    sload_device = PSY.to_openapi(sload, refs, DU)
     @test sload_device.active_power_limits.min == 0.03
 end
 
@@ -547,32 +547,32 @@ end
     refs[6] = condenser
     refs[7] = storage
 
-    turbine_natural = PSY.to_openapi(turbine, refs, Val(:NATURAL_UNITS))
+    turbine_natural = PSY.to_openapi(turbine, refs, NU)
     @test turbine_natural.active_power == 20.0
     @test turbine_natural.rating == 50.0
     @test turbine_natural.turbine_type == "FRANCIS"
     @test turbine_natural.operation_cost.fixed == 1.0
 
-    ror_natural = PSY.to_openapi(ror, refs, Val(:NATURAL_UNITS))
+    ror_natural = PSY.to_openapi(ror, refs, NU)
     @test ror_natural.active_power == 15.0
     @test ror_natural.rating == 40.0
 
-    wind_natural = PSY.to_openapi(wind, refs, Val(:NATURAL_UNITS))
+    wind_natural = PSY.to_openapi(wind, refs, NU)
     @test wind_natural.active_power == 25.0
     @test wind_natural.rating == 50.0
     @test wind_natural.prime_mover_type == "WT"
     @test wind_natural.power_factor == 0.95
 
-    solar_natural = PSY.to_openapi(solar, refs, Val(:NATURAL_UNITS))
+    solar_natural = PSY.to_openapi(solar, refs, NU)
     @test solar_natural.active_power == 15.0
     @test solar_natural.rating == 30.0
 
-    condenser_natural = PSY.to_openapi(condenser, refs, Val(:NATURAL_UNITS))
+    condenser_natural = PSY.to_openapi(condenser, refs, NU)
     @test condenser_natural.reactive_power == 5.0
     @test condenser_natural.rating == 20.0
     @test condenser_natural.active_power_losses == 1.0
 
-    storage_natural = PSY.to_openapi(storage, refs, Val(:NATURAL_UNITS))
+    storage_natural = PSY.to_openapi(storage, refs, NU)
     @test storage_natural.storage_capacity == 400.0
     @test storage_natural.rating == 100.0
     @test storage_natural.active_power == 20.0
@@ -583,7 +583,7 @@ end
     @test storage_natural.storage_technology_type == "LIB"
     @test storage_natural.energy_units == "MWH"
 
-    storage_device = PSY.to_openapi(storage, refs, Val(:DEVICE_BASE))
+    storage_device = PSY.to_openapi(storage, refs, DU)
     @test storage_device.storage_capacity == 2.0
     @test storage_device.rating == 0.5
 end
@@ -638,7 +638,7 @@ end
     refs[3] = reservoir
     refs[4] = reservoir_no_assoc
 
-    for val in (Val(:DEVICE_BASE), Val(:NATURAL_UNITS))
+    for val in (DU, NU)
         po = PSY.to_openapi(reservoir, refs, val)
         @test po.initial_level == 500.0
         @test po.level_targets == 600.0
@@ -702,25 +702,25 @@ end
     refs[4] = group
     refs[5] = ordc_reserve
 
-    up_natural = PSY.to_openapi(up_reserve, refs, Val(:NATURAL_UNITS))
+    up_natural = PSY.to_openapi(up_reserve, refs, NU)
     @test up_natural.requirement == 100.0
     @test up_natural.reserve_direction == "UP"
     @test isnothing(up_natural.variable)
 
-    up_device = PSY.to_openapi(up_reserve, refs, Val(:DEVICE_BASE))
+    up_device = PSY.to_openapi(up_reserve, refs, DU)
     @test up_device.requirement == 1.0
 
-    down_natural = PSY.to_openapi(down_reserve, refs, Val(:NATURAL_UNITS))
+    down_natural = PSY.to_openapi(down_reserve, refs, NU)
     @test down_natural.reserve_direction == "DOWN"
 
-    offline_natural = PSY.to_openapi(offline_reserve, refs, Val(:NATURAL_UNITS))
+    offline_natural = PSY.to_openapi(offline_reserve, refs, NU)
     @test offline_natural.requirement == 50.0
 
-    group_natural = PSY.to_openapi(group, refs, Val(:NATURAL_UNITS))
+    group_natural = PSY.to_openapi(group, refs, NU)
     @test group_natural.requirement == 150.0
     @test group_natural.reserve_direction == "UP"
 
-    ordc_natural = PSY.to_openapi(ordc_reserve, refs, Val(:NATURAL_UNITS))
+    ordc_natural = PSY.to_openapi(ordc_reserve, refs, NU)
     @test !isnothing(ordc_natural.variable)
 end
 

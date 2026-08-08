@@ -148,7 +148,7 @@ set_ext!(value::SynchronousCondenser, val) = value.ext = val
 
 
 
-function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return SynchronousCondenser(;
         name = po.name,
         available = po.available,
@@ -161,7 +161,7 @@ function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::Val
     )
 end
 
-function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return SynchronousCondenser(;
         name = po.name,
         available = po.available,
@@ -174,7 +174,7 @@ function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::Val
     )
 end
 
-function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.SynchronousCondenser(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -188,7 +188,7 @@ function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::Val{:DEVIC
     )
 end
 
-function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.SynchronousCondenser(;
         id = component_id(refs, value),
         name = get_name(value),

@@ -53,8 +53,8 @@
 #                                generator explicitly rejects any `openapi_type` on a struct
 #                                carrying `parametric`.
 #
-# Semantics throughout are adapted to this package's `OpenAPIRefs`/`Val{:DEVICE_BASE}`/
-# `Val{:NATURAL_UNITS}` dispatch so the document reader can call every converter — generated
+# Semantics throughout are adapted to this package's `OpenAPIRefs`/`DeviceBaseUnit`/
+# `NaturalUnit` dispatch so the document reader can call every converter — generated
 # or hand-written — uniformly.
 
 """Named tuple of `(min, max)` from a PO `MinMax`-shaped struct."""
@@ -99,7 +99,7 @@ _resolve_base_power(::OpenAPIRefs, base_power) = Float64(base_power)
 
 """Reservoir level fields arrive absolute (per `level_data_type`'s units); PSY wants them
 as a fraction of `storage_level_limits.max`. Semantic, not a unit conversion — same in
-both `Val{:DEVICE_BASE}`/`Val{:NATURAL_UNITS}` methods."""
+both `DeviceBaseUnit`/`NaturalUnit` methods."""
 _level_fraction(::Nothing, max_level) = nothing
 _level_fraction(v, max_level) = v / max_level
 
@@ -154,12 +154,12 @@ end
 # PO field names (`from_id`/`to_id`) differ from PSY's (`from`/`to`); no unit-converted
 # fields, so both unit-system methods are identical.
 
-function from_openapi(::Type{Arc}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{Arc}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return Arc(; from = refs[po.from_id], to = refs[po.to_id])
 end
 
-function from_openapi(::Type{Arc}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return from_openapi(Arc, po, refs, Val(:DEVICE_BASE))
+function from_openapi(::Type{Arc}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(Arc, po, refs, DU)
 end
 
 # ── Area / LoadZone ─────────────────────────────────────────────────────────────
@@ -176,7 +176,7 @@ end
 # falling back to `get_base_power(refs)` when a producer omits it — same fallback the
 # pre-existing conversion arithmetic already used.
 
-function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return Area(;
         name = po.name,
         peak_active_power = po.peak_active_power / get_base_power(refs),
@@ -186,11 +186,11 @@ function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return from_openapi(Area, po, refs, Val(:DEVICE_BASE))
+function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(Area, po, refs, DU)
 end
 
-function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return LoadZone(;
         name = po.name,
         peak_active_power = po.peak_active_power / get_base_power(refs),
@@ -199,8 +199,8 @@ function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BAS
     )
 end
 
-function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return from_openapi(LoadZone, po, refs, Val(:DEVICE_BASE))
+function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(LoadZone, po, refs, DU)
 end
 
 # ── TransmissionInterface ───────────────────────────────────────────────────────
@@ -216,7 +216,7 @@ function from_openapi(
     ::Type{TransmissionInterface},
     po,
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 )
     return TransmissionInterface(;
         name = po.name,
@@ -235,9 +235,9 @@ function from_openapi(
     ::Type{TransmissionInterface},
     po,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
-    return from_openapi(TransmissionInterface, po, refs, Val(:DEVICE_BASE))
+    return from_openapi(TransmissionInterface, po, refs, DU)
 end
 
 # ── Line ────────────────────────────────────────────────────────────────────────
@@ -246,11 +246,11 @@ end
 # impedance/admittance conversion, which `Line` does not carry (`TransformerCircuit` is the
 # pattern for a device that does), and that is what keeps this hand-written now.
 # `rating`/`rating_b`/`rating_c`/`active_power_flow`/`reactive_power_flow` are natural MVA/MW
-# divided by the line's own `base_power`, now a real PSY field — only under `Val{:NATURAL_UNITS}`;
+# divided by the line's own `base_power`, now a real PSY field — only under `NaturalUnit`;
 # `_resolve_base_power` falls back to `get_base_power(refs)` when a producer omits the field,
 # same as Area/LoadZone/TransmissionInterface above.
 
-function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return Line(;
         name = po.name,
         available = po.available,
@@ -269,7 +269,7 @@ function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
     )
 end
 
-function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::NaturalUnit)
     sbp = _resolve_base_power(refs, po.base_power)
     return Line(;
         name = po.name,
@@ -294,7 +294,7 @@ end
 # implemented, matching the reference; `NATURAL_UNITS` errors loudly rather than silently
 # guessing at ohms-to-pu arithmetic this pass does not need.
 # `rating`/`rating_b`/`rating_c`/`active_power_flow`/`reactive_power_flow` divide by the
-# circuit's own `base_power` only under `Val{:NATURAL_UNITS}` (identical to what the
+# circuit's own `base_power` only under `NaturalUnit` (identical to what the
 # generator produces for every other device-based type — verified by generating this field
 # set for TransformerCircuit before the `α`/`alpha` mismatch was found).
 const CIRCUIT_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
@@ -323,7 +323,7 @@ function from_openapi(
     ::Type{TransformerCircuit},
     po,
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 )
     _check_circuit_param_units(po)
     return TransformerCircuit(;
@@ -353,7 +353,7 @@ function from_openapi(
     ::Type{TransformerCircuit},
     po,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
     _check_circuit_param_units(po)
     dbp = po.base_power
@@ -398,7 +398,7 @@ function from_openapi(
     ::Type{TwoWindingTransformer},
     po,
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 )
     _check_shunt_admittance_units(po)
     return TwoWindingTransformer(;
@@ -413,9 +413,9 @@ function from_openapi(
     ::Type{TwoWindingTransformer},
     po,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
-    return from_openapi(TwoWindingTransformer, po, refs, Val(:DEVICE_BASE))
+    return from_openapi(TwoWindingTransformer, po, refs, DU)
 end
 
 # ── ThreeWindingTransformer ──────────────────────────────────────────────────────
@@ -454,7 +454,7 @@ function from_openapi(
     ::Type{ThreeWindingTransformer},
     po,
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 )
     _check_three_winding_param_units(po)
     _check_three_winding_shunt_admittance_units(po)
@@ -482,9 +482,9 @@ function from_openapi(
     ::Type{ThreeWindingTransformer},
     po,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
-    return from_openapi(ThreeWindingTransformer, po, refs, Val(:DEVICE_BASE))
+    return from_openapi(ThreeWindingTransformer, po, refs, DU)
 end
 
 # ── FixedAdmittance ───────────────────────────────────────────────────────────────
@@ -509,7 +509,7 @@ _check_fixed_admittance_units(po) = _check_unit_basis(
 _fixed_admittance_pu(po, refs::OpenAPIRefs) =
     _complex_number(po.Y) / get_base_power(refs)
 
-function from_openapi(::Type{FixedAdmittance}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{FixedAdmittance}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     _check_fixed_admittance_units(po)
     return FixedAdmittance(;
         name = po.name,
@@ -523,9 +523,9 @@ function from_openapi(
     ::Type{FixedAdmittance},
     po,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
-    return from_openapi(FixedAdmittance, po, refs, Val(:DEVICE_BASE))
+    return from_openapi(FixedAdmittance, po, refs, DU)
 end
 
 # ── HydroReservoir ──────────────────────────────────────────────────────────────
@@ -538,7 +538,7 @@ end
 # `operation_cost` is converted via `convert_cost`, rather than fabricated as a placeholder
 # when missing.
 
-function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     max_level = po.storage_level_limits.max
     return HydroReservoir(;
         name = po.name,
@@ -560,13 +560,13 @@ function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::Val{:DEVI
     )
 end
 
-function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
-    return from_openapi(HydroReservoir, po, refs, Val(:DEVICE_BASE))
+function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(HydroReservoir, po, refs, DU)
 end
 
 # ── EnergyReservoirStorage ──────────────────────────────────────────────────────
 # `storage_capacity` is energy (MWh when `energy_units == "MWH"`, the only basis
-# implemented) but still divides by `base_power` under `Val{:NATURAL_UNITS}` — the
+# implemented) but still divides by `base_power` under `NaturalUnit` — the
 # duration-in-hours convention PSY documents for this field, same rule as every other
 # `:mva`-tagged field. `storage_level_limits`, `initial_storage_capacity_level`,
 # `efficiency`, `conversion_factor`, `storage_target`, `self_discharge` are dimensionless
@@ -584,14 +584,14 @@ function from_openapi(
     ::Type{EnergyReservoirStorage},
     po,
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 )
     _check_energy_units(po)
     return EnergyReservoirStorage(;
         name = po.name,
         available = po.available,
         bus = refs[po.bus],
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
         storage_technology_type = STORAGETECH_FROM_STRING[po.storage_technology_type],
         storage_capacity = po.storage_capacity,
         storage_level_limits = _minmax(po.storage_level_limits),
@@ -618,7 +618,7 @@ function from_openapi(
     ::Type{EnergyReservoirStorage},
     po,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
     _check_energy_units(po)
     dbp = po.base_power
@@ -626,7 +626,7 @@ function from_openapi(
         name = po.name,
         available = po.available,
         bus = refs[po.bus],
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
         storage_technology_type = STORAGETECH_FROM_STRING[po.storage_technology_type],
         storage_capacity = po.storage_capacity / dbp,
         storage_level_limits = _minmax(po.storage_level_limits),
@@ -673,7 +673,7 @@ function from_openapi(
     ::Type{TwoTerminalGenericHVDCLine},
     po,
     refs::OpenAPIRefs,
-    ::Val{:DEVICE_BASE},
+    ::DeviceBaseUnit,
 )
     return TwoTerminalGenericHVDCLine(;
         name = po.name,
@@ -693,7 +693,7 @@ function from_openapi(
     ::Type{TwoTerminalGenericHVDCLine},
     po,
     refs::OpenAPIRefs,
-    ::Val{:NATURAL_UNITS},
+    ::NaturalUnit,
 )
     sbp = _resolve_base_power(refs, po.base_power)
     return TwoTerminalGenericHVDCLine(;
@@ -719,7 +719,7 @@ end
 # Curve) goes through `convert_reserve_variable` (already handles the `nothing` →
 # `ZERO_OFFER_CURVE` default).
 
-function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return OnlineReserve{direction}(;
         name = po.name,
@@ -734,7 +734,7 @@ function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::Val{:DEVIC
     )
 end
 
-function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::NaturalUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return OnlineReserve{direction}(;
         name = po.name,
@@ -749,7 +749,7 @@ function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::Val{:NATUR
     )
 end
 
-function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return OfflineReserve(;
         name = po.name,
         available = po.available,
@@ -763,7 +763,7 @@ function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::Val{:DEVI
     )
 end
 
-function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return OfflineReserve(;
         name = po.name,
         available = po.available,
@@ -777,7 +777,7 @@ function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::Val{:NATU
     )
 end
 
-function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return GroupReserve{direction}(;
         name = po.name,
@@ -786,7 +786,7 @@ function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::Val{:DEVICE
     )
 end
 
-function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::NaturalUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return GroupReserve{direction}(;
         name = po.name,

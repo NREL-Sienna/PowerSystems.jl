@@ -1,6 +1,6 @@
 # Hand-written export-direction helpers shared by the generated `to_openapi` methods and by
 # `export_handwritten.jl`. The 22 `to_openapi` methods that used to live here (one
-# `Val{:DEVICE_BASE}`/`Val{:NATURAL_UNITS}` pair per `ACBus`, `AreaInterchange`, `PowerLoad`,
+# `DeviceBaseUnit`/`NaturalUnit` pair per `ACBus`, `AreaInterchange`, `PowerLoad`,
 # `InterruptiblePowerLoad`, `ShiftablePowerLoad`, `HydroDispatch`, `HydroTurbine`,
 # `RenewableDispatch`, `RenewableNonDispatch`, `ThermalStandard`, `SynchronousCondenser`) are
 # now generated straight into src/models/generated/<Type>.jl from the `openapi_type`-annotated

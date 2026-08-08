@@ -114,7 +114,7 @@ const {{const_name}} = Dict{String, {{{enum_type}}}}(string(m) => m for m in ins
 const {{const_name}} = Dict{ {{{enum_type}}}, String}(m => string(m) for m in instances({{{enum_type}}}))
 {{/openapi_export_enum_tables}}
 
-function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return {{struct_name}}(;
         {{#openapi_kwargs_device}}
         {{name}} = {{{expr}}},
@@ -122,7 +122,7 @@ function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::
     )
 end
 
-function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return {{struct_name}}(;
         {{#openapi_kwargs_natural}}
         {{name}} = {{{expr}}},
@@ -130,7 +130,7 @@ function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::
     )
 end
 
-function to_openapi(value::{{struct_name}}, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::{{struct_name}}, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.{{struct_name}}(;
         {{#openapi_export_kwargs_device}}
         {{name}} = {{{expr}}},
@@ -138,7 +138,7 @@ function to_openapi(value::{{struct_name}}, refs::OpenAPIRefs, ::Val{:DEVICE_BAS
     )
 end
 
-function to_openapi(value::{{struct_name}}, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::{{struct_name}}, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.{{struct_name}}(;
         {{#openapi_export_kwargs_natural}}
         {{name}} = {{{expr}}},
@@ -153,9 +153,11 @@ end
 #
 # A descriptor entry carrying a top-level `openapi_type` key gets `from_openapi` and
 # `to_openapi` methods appended to its generated file, one per unit system
-# (`Val{:DEVICE_BASE}` pass-through, `Val{:NATURAL_UNITS}` with conversion arithmetic
-# inlined). `from_openapi` builds a PSY component from a PO (OpenAPI model) struct's
-# fields; `to_openapi` builds a PO struct from a PSY component's own `get_*` accessors —
+# (`DeviceBaseUnit` pass-through, `NaturalUnit` with conversion arithmetic
+# inlined — the same `IS.RelativeUnits` singleton markers used everywhere else in PSY's
+# explicit-units engine, not a bespoke `Val{:SYMBOL}` dispatch). `from_openapi` builds a PSY
+# component from a PO (OpenAPI model) struct's fields; `to_openapi` builds a PO struct from a
+# PSY component's own `get_*` accessors —
 # the same field classification run in the opposite direction. The generic
 # `from_openapi`/`to_openapi` functions, `OpenAPIRefs`, `convert_cost`/
 # `convert_cost_to_openapi`, and the PO/PC modules are all defined in PowerSystems, not
@@ -216,7 +218,23 @@ function openapi_strip_nullable(data_type::AbstractString)
     return (String(m.captures[1]), true)
 end
 
-openapi_enum_table_name(bare::AbstractString) = uppercase(bare) * "_FROM_STRING"
+"""
+Convert a CamelCase type name to SCREAMING_SNAKE_CASE, splitting on a lowercase/digit→
+uppercase boundary (`primeMovers` style transitions) and on an acronym-run→word boundary
+(`(?<=[A-Z])(?=[A-Z][a-z])`, e.g. the `C`/`B` in `ACBusTypes`) so a leading acronym like `AC`
+stays intact while the word that follows it (`Bus`) still gets its own segment —
+`ACBusTypes` → `AC_BUS_TYPES`, `PrimeMovers` → `PRIME_MOVERS`. Deterministic; does not attempt
+to split a bare run of caps with no case signal (e.g. an all-acronym prefix followed directly
+by another acronym) since no enum type in this descriptor needs that.
+"""
+function openapi_screaming_snake_case(bare::AbstractString)
+    with_word_breaks = replace(bare, r"(?<=[A-Z])(?=[A-Z][a-z])" => "_")
+    with_word_breaks = replace(with_word_breaks, r"(?<=[a-z0-9])(?=[A-Z])" => "_")
+    return uppercase(with_word_breaks)
+end
+
+openapi_enum_table_name(bare::AbstractString) =
+    openapi_screaming_snake_case(bare) * "_FROM_STRING"
 
 """
 Classify one field's role in an OpenAPI converter. Returns `(kind, bare, nullable)` with
@@ -528,7 +546,8 @@ end
 # `from_openapi` divides.
 # ──────────────────────────────────────────────────────────────────────────────────────
 
-openapi_enum_table_name_export(bare::AbstractString) = uppercase(bare) * "_TO_STRING"
+openapi_enum_table_name_export(bare::AbstractString) =
+    openapi_screaming_snake_case(bare) * "_TO_STRING"
 
 """
 Where an exported struct reads its S_base anchor, and which unit system it requests the

@@ -157,7 +157,7 @@ set_ext!(value::RenewableNonDispatch, val) = value.ext = val
 
 
 
-function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return RenewableNonDispatch(;
         name = po.name,
         available = po.available,
@@ -165,13 +165,13 @@ function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::Val
         active_power = po.active_power,
         reactive_power = po.reactive_power,
         rating = po.rating,
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
         power_factor = po.power_factor,
         base_power = po.base_power,
     )
 end
 
-function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::NaturalUnit)
     return RenewableNonDispatch(;
         name = po.name,
         available = po.available,
@@ -179,13 +179,13 @@ function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::Val
         active_power = po.active_power / po.base_power,
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,
-        prime_mover_type = PRIMEMOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
         power_factor = po.power_factor,
         base_power = po.base_power,
     )
 end
 
-function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::Val{:DEVICE_BASE})
+function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.RenewableNonDispatch(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -194,13 +194,13 @@ function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::Val{:DEVIC
         active_power = get_active_power(value, DU),
         reactive_power = get_reactive_power(value, DU),
         rating = get_rating(value, DU),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
         power_factor = get_power_factor(value),
         base_power = _get_base_power(value),
     )
 end
 
-function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::Val{:NATURAL_UNITS})
+function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.RenewableNonDispatch(;
         id = component_id(refs, value),
         name = get_name(value),
@@ -209,7 +209,7 @@ function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::Val{:NATUR
         active_power = get_active_power(value, DU) * _get_base_power(value),
         reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
         rating = get_rating(value, DU) * _get_base_power(value),
-        prime_mover_type = PRIMEMOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
         power_factor = get_power_factor(value),
         base_power = _get_base_power(value),
     )
