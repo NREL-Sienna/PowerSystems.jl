@@ -99,14 +99,14 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_uuid(gen1))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_uuid(gen1))
         @test length(shaft_map[1]) == 1
         @test shaft_map[1][1] == IS.get_uuid(gen3)
 
         # Remove last generator from shaft
         remove_supplemental_attribute!(sys, gen3, plant)
         @test !haskey(shaft_map, 1)
-        @test !haskey(reverse_map, IS.get_uuid(gen3))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_uuid(gen3))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(sys, gen1, plant)
@@ -299,7 +299,7 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_uuid(gen1))
+        @test !haskey(get_reverse_penstock_map(plant), IS.get_uuid(gen1))
         @test !haskey(penstock_map, 1)
 
         # Test error for HydroDispatch
@@ -373,14 +373,14 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_uuid(gen1))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_uuid(gen1))
         @test length(pcc_map[1]) == 1
         @test pcc_map[1][1] == IS.get_uuid(storage)
 
         # Remove storage
         remove_supplemental_attribute!(sys, storage, plant)
         @test !haskey(pcc_map, 1)
-        @test !haskey(reverse_map, IS.get_uuid(storage))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_uuid(storage))
     end
 
     @testset "Serialization and deserialization of ThermalPowerPlant" begin
@@ -602,14 +602,14 @@ const PSY = PowerSystems
 
         # Remove generator from block
         remove_supplemental_attribute!(sys, ct_gen, cc_block)
-        @test !haskey(ct_hrsg_map, IS.get_uuid(ct_gen))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_uuid(ct_gen))
         @test length(hrsg_ct_map[1]) == 1
         @test hrsg_ct_map[1][1] == IS.get_uuid(ct_gen2)
 
         # Remove last CT generator from HRSG 1
         remove_supplemental_attribute!(sys, ct_gen2, cc_block)
         @test !haskey(hrsg_ct_map, 1)
-        @test !haskey(ct_hrsg_map, IS.get_uuid(ct_gen2))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_uuid(ct_gen2))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(

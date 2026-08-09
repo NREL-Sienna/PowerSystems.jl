@@ -450,16 +450,20 @@ end
     add_component!(sys, area_interchange13)
     area_level_interface = TransmissionInterface("foo3", true, (min = -10.0, max = 10.0))
     area_level_mixed = TransmissionInterface("foo4", true, (min = -10.0, max = 10.0))
-    # Not round-tripped here: `AreaInterchange` (a `Branch <: Device`) is not in
-    # `DOCUMENT_PLAN` — a separate, pre-existing gap outside this testset's scope. Exporting
-    # a system where it contributes to a service would error in `_export_service_associations`
-    # (`component_id` unresolved), so this part is asserted on the built system only.
     add_service!(sys, area_level_interface, [area_interchange12, area_interchange13])
     @test_throws ArgumentError add_service!(
         sys,
         area_level_mixed,
         [area_interchange12, area_interchange13, line],
     )
+
+    # `AreaInterchange` is in `DOCUMENT_PLAN`, so an area-level interface and its
+    # contributing interchanges survive a document round trip. Compare by name: a document
+    # build mints fresh UUIDs.
+    sys3 = roundtrip_system(sys)
+    iface3 = get_component(TransmissionInterface, sys3, "foo3")
+    @test Set(get_name.(get_contributing_devices(sys3, iface3))) ==
+          Set(get_name.([area_interchange12, area_interchange13]))
 end
 
 @testset "Test AGC" begin

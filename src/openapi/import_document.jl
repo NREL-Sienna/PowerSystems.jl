@@ -4,7 +4,7 @@
 # in dependency order, then attaches reserve membership, time series, and (where a
 # converter exists) supplemental attributes.
 #
-# Export (`to_openapi(sys; ...)`) is a separate task and is not implemented here.
+# The export direction (`to_openapi(sys; ...)`) mirrors this file in src/openapi/export_document.jl.
 
 # ── Dependency-ordered component pass ───────────────────────────────────────────
 # Topology first, then arcs and branches, then injectors, then reserves. `TransformerCircuit` is the one

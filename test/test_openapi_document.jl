@@ -167,7 +167,9 @@ end
             System, to_test_document(doc); time_series_storage_path = sidecar.path,
         )
 
-        # Time series owner_category=SupplementalAttribute: documented gap, not implemented.
+        # A declared owner_category must match what owner_id actually resolves to. Id 7 is a
+        # Component here, so claiming SupplementalAttribute is a malformed document, not an
+        # unimplemented case — SupplementalAttribute owners are supported (see sqlite_load.jl).
         doc = make_openapi_test_doc()
         doc["time_series_associations"] = [
             _ts_association_row(;

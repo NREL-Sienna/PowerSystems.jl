@@ -361,30 +361,38 @@ end
 
 # `group_index`/`role` are the reverse of the plant-family `_attach_attribute!` dispatch
 # on import: the shaft/penstock/PCC/HRSG/exclusion-group number an entity holds within a
-# `PowerPlant`, read back out of the attribute's own reverse map rather than tracked
-# separately. `nothing` for both is correct for a plain attribute (`EmissionsData`,
-# `GeographicInfo`, the `Outage` types), which is why this dispatches on the attribute type,
-# not on some separate "has a group" flag.
+# `PowerPlant`, read out of the attribute's forward group map. `nothing` for both is correct
+# for a plain attribute (`EmissionsData`, `GeographicInfo`, the `Outage` types), which is why
+# this dispatches on the attribute type, not on some separate "has a group" flag.
+# `_group_indices` is used rather than the public reverse-map getters, which build a whole
+# dict per call and would make this walk quadratic.
 _group_index_and_role(::SupplementalAttribute, ::Any) = (nothing, nothing)
 _group_index_and_role(attr::ThermalPowerPlant, entity) =
-    (get(get_reverse_shaft_map(attr), IS.get_uuid(entity), nothing), nothing)
+    (_only_group_index(get_shaft_map(attr), entity), nothing)
 _group_index_and_role(attr::HydroPowerPlant, entity) =
-    (get(get_reverse_penstock_map(attr), IS.get_uuid(entity), nothing), nothing)
+    (_only_group_index(get_penstock_map(attr), entity), nothing)
 _group_index_and_role(attr::RenewablePowerPlant, entity) =
-    (get(get_reverse_pcc_map(attr), IS.get_uuid(entity), nothing), nothing)
+    (_only_group_index(get_pcc_map(attr), entity), nothing)
 _group_index_and_role(attr::CombinedCycleFractional, entity) =
-    (get(get_inverse_operation_exclusion_map(attr), IS.get_uuid(entity), nothing), nothing)
+    (_only_group_index(get_operation_exclusion_map(attr), entity), nothing)
 
-"""A CT/CA can feed more than one HRSG (`ct_hrsg_map`/`ca_hrsg_map` are `Vector{Int}`-valued),
-but IS attaches a `CombinedCycleBlock` to a component once regardless — so only the first HRSG
-number is representable per association row. Known limitation: no index survived a document at
-all before the plant-attribute feature was added."""
+"""The single group number `entity` holds in `group_map`, or `nothing` when it holds none —
+the shape `group_index` takes in the document."""
+function _only_group_index(group_map, entity)
+    indices = _group_indices(group_map, IS.get_uuid(entity))
+    isempty(indices) && return nothing
+    return only(indices)
+end
+
+"""A CT/CA can feed more than one HRSG, but IS attaches a `CombinedCycleBlock` to a component
+once regardless — so only the lowest HRSG number is representable per association row. Known
+limitation: no index survived a document at all before the plant-attribute feature was added."""
 function _group_index_and_role(attr::CombinedCycleBlock, entity)
     uuid = IS.get_uuid(entity)
-    ct_hrsgs = get(get_ct_hrsg_map(attr), uuid, nothing)
-    isnothing(ct_hrsgs) || return (first(ct_hrsgs), "CT")
-    ca_hrsgs = get(get_ca_hrsg_map(attr), uuid, nothing)
-    isnothing(ca_hrsgs) || return (first(ca_hrsgs), "CA")
+    ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), uuid)
+    isempty(ct_hrsgs) || return (first(ct_hrsgs), "CT")
+    ca_hrsgs = _group_indices(get_hrsg_ca_map(attr), uuid)
+    isempty(ca_hrsgs) || return (first(ca_hrsgs), "CA")
     return (nothing, nothing)
 end
 
