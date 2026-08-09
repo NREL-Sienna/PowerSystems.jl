@@ -49,17 +49,9 @@ get_grounding_resistance(value::Substation) = value.grounding_resistance
 get_internal(value::Substation) = value.internal
 
 # ── OpenAPI converters ───────────────────────────────────────────────────────────
-# `Substation` has no descriptor entry (no PSY struct field list for codegen to read), so
-# there is no generated file to append a converter to — same situation as
-# `EmissionsData`/`GeographicInfo`, whose hand-written converters normally live in
-# src/openapi/import_document.jl / export_document.jl next to the `attribute_type` dispatch
-# table and the supplemental-attribute export walk. Those two files are owned by a
-# concurrent session this pass, so the converters are defined here instead — this file is
-# included late enough (after `PO`/`PC` are aliased and after every other openapi/*.jl
-# machinery) for both directions to resolve, and Julia dispatch does not care which file a
-# method lives in. Needs wiring, reported separately rather than done here:
-#   import_document.jl `attribute_type` dispatch: "Substation" => from_openapi(Substation, po)
-#   export_document.jl supplemental-attribute walk: to_openapi(attr::Substation, id)
+# `Substation` has no descriptor entry, so there is no generated file to append a converter
+# to and both directions are hand-written here. This file must stay included after `PO`/`PC`
+# are aliased and after the openapi/*.jl machinery for them to resolve.
 # No unit conversion (`grounding_resistance` is plain ohms, no `needs_conversion`) and no
 # `refs` dependency on either side (no component references on the struct).
 

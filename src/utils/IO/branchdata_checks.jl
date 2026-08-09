@@ -8,7 +8,7 @@ function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::S
     is_valid = true
     if !check_endpoint_voltages(line)
         is_valid = false
-    elseif !correct_rate_limits!(line, _get_base_power(sys))
+    elseif !correct_rate_limits!(line)
         is_valid = false
     end
     return is_valid
@@ -85,7 +85,7 @@ const MVA_LIMITS_TRANSFORMERS = Dict(
     765.0 => (min = 2200.0, max = 6900.0), # This value is 3x the SIL value from https://neos-guide.org/wp-content/uploads/2022/04/line_flow_approximation.pdf
 )
 
-function check_rating_values(line::Union{Line, MonitoredLine}, ::Float64)
+function check_rating_values(line::Union{Line, MonitoredLine})
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
     voltage_levels = collect(keys(MVA_LIMITS_LINES))
@@ -135,7 +135,7 @@ function line_rating_calculation(l::Union{Line, MonitoredLine})
     return new_rate
 end
 
-function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float64)
+function correct_rate_limits!(branch::Union{Line, MonitoredLine})
     theoretical_line_rate_pu = line_rating_calculation(branch)
     for field in [:rating, :rating_b, :rating_c]
         rating_value = getfield(branch, field)
@@ -157,7 +157,7 @@ function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float
         end
     end
 
-    return check_rating_values(branch, basemva)
+    return check_rating_values(branch)
 end
 
 function check_endpoint_voltages(line::Union{Line, MonitoredLine})
@@ -241,7 +241,7 @@ function validate_component_with_system(
     sys::System,
 )
     is_valid_reactance = check_transformer_reactance(xfrm)
-    is_valid_rating = check_rating_values(xfrm, _get_base_power(sys))
+    is_valid_rating = check_rating_values(xfrm)
     is_valid_circuit = check_circuit_values(get_circuit(xfrm), get_name(xfrm))
     return is_valid_reactance && is_valid_rating && is_valid_circuit
 end
@@ -277,10 +277,7 @@ function validate_component_with_system(
     return is_valid
 end
 
-function check_rating_values(
-    xfrm::TwoWindingTransformer,
-    ::Float64,
-)
+function check_rating_values(xfrm::TwoWindingTransformer)
     arc = get_arc(xfrm)
     v_from = get_base_voltage(get_from(arc))
     v_to = get_base_voltage(get_to(arc))

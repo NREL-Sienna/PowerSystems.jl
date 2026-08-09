@@ -322,7 +322,7 @@ end
 
 # ── service membership (reverse of the service-membership branch in
 # _attach_supplemental_attribute_associations!) ───────────────────────────────────
-# D10: service membership is a row in the unified `supplemental_attribute_associations`
+# Service membership is a row in the unified `supplemental_attribute_associations`
 # table, not its own `ServiceAssociation` table. `attribute_id` names the service (a
 # component, not a supplemental attribute) and `attribute_type` its type name; neither
 # `group_index` nor `role` applies to a membership row.
@@ -359,7 +359,7 @@ end
 
 # ── supplemental attributes (reverse of _attach_supplemental_attribute_associations!) ──
 
-# `group_index`/`role` (D10) are the reverse of the plant-family `_attach_attribute!` dispatch
+# `group_index`/`role` are the reverse of the plant-family `_attach_attribute!` dispatch
 # on import: the shaft/penstock/PCC/HRSG/exclusion-group number an entity holds within a
 # `PowerPlant`, read back out of the attribute's own reverse map rather than tracked
 # separately. `nothing` for both is correct for a plain attribute (`EmissionsData`,

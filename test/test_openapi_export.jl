@@ -779,9 +779,8 @@ end
     plant_po = PSY.to_openapi(plant, 4)
     @test plant_po.name == "plant1"
 
-    # Substation: no descriptor entry at all (no PSY struct field list for codegen to
-    # read), so both directions are hand-written directly in src/substation.jl rather than
-    # here — see that file's header for why. Still exercised alongside its siblings.
+    # Substation has no descriptor entry, so both directions are hand-written in
+    # src/substation.jl.
     substation = Substation(; name = "SUB1", number = 7, grounding_resistance = 0.25)
     substation_po = PSY.to_openapi(substation, 5)
     @test substation_po.id == 5
@@ -954,7 +953,7 @@ end
                 "PowerLoad" => [openapi_raw(load_po)],
                 "OnlineReserve" => [openapi_raw(reserve_po)],
             ),
-            # D10: service membership is a row in the unified table, alongside the plain
+            # Service membership is a row in the unified table, alongside the plain
             # EmissionsData association below — attribute_id names the service component
             # (spin_up) and attribute_type its own type name.
             "supplemental_attributes" => [openapi_raw(emissions_po)],
@@ -996,7 +995,7 @@ end
         @test length(only(PSY.PC.get_components(out, "Line")) |> x -> [x]) == 1
         @test length(PSY.PC.get_components(out, "OnlineReserve")) == 1
         @test length(out.supplemental_attributes) == 1
-        # D10: the unified table carries both the plain EmissionsData association and the
+        # The unified table carries both the plain EmissionsData association and the
         # service-membership row, distinguished only by attribute_type.
         @test length(out.supplemental_attribute_associations) == 2
         assoc = only(

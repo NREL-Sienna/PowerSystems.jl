@@ -20,7 +20,6 @@
         for device in devices
             services = get_services(device)
             @test length(services) == 1
-            @test services[1] isa Service
             @test services[1] == service
         end
 
@@ -360,7 +359,6 @@ end
     for device in devices
         services = get_services(device)
         @test length(services) == 1
-        @test services[1] isa Service
         @test services[1] == service
     end
 

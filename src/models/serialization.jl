@@ -1,35 +1,21 @@
-const _ENCODE_AS_UUID_A = (
-    Union{Nothing, Arc},
-    Union{Nothing, Area},
-    Union{Nothing, Bus},
-    Union{Nothing, LoadZone},
-    Union{Nothing, DynamicInjection},
-    Union{Nothing, StaticInjection},
-    Union{Nothing, HydroReservoir},
+const _ENCODE_AS_UUID = (
+    Arc,
+    Area,
+    Bus,
+    LoadZone,
+    DynamicInjection,
+    StaticInjection,
+    HydroReservoir,
     Vector{Service},
     Vector{Reserve},
     Vector{HydroUnit},
     Vector{Device},
 )
 
-const _ENCODE_AS_UUID_B =
-    (
-        Arc,
-        Area,
-        Bus,
-        LoadZone,
-        DynamicInjection,
-        StaticInjection,
-        HydroReservoir,
-        Vector{Service},
-        Vector{Reserve},
-        Vector{HydroUnit},
-        Vector{Device},
-    )
-@assert length(_ENCODE_AS_UUID_A) == length(_ENCODE_AS_UUID_B)
-
-should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID_B)
-should_encode_as_uuid(::Type{T}) where {T} = any(x -> T <: x, _ENCODE_AS_UUID_A)
+should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID)
+# The field's declared type may be nullable, so match against `Union{Nothing, x}`.
+should_encode_as_uuid(::Type{T}) where {T} =
+    any(x -> T <: Union{Nothing, x}, _ENCODE_AS_UUID)
 
 const _CONTAINS_SHOULD_ENCODE = Union{
     Component,

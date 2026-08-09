@@ -91,9 +91,8 @@ to the document-level system base when the producer omits it. `Area`/`LoadZone`/
 `TransmissionInterface`/`Line`/`TwoTerminalGenericHVDCLine` all gained their own `base_power`
 field to close the missing-anchor gap, and it is schema-`required` going forward, but
 PowerTableDataParser does not emit it for these five types yet — an omitted field arrives as
-`nothing`, not a schema violation this pass should error on, since the document-level system
-base is exactly what these types used before the field existed and remains numerically
-identical by construction. Do not weaken this to a general nothing-skip guard elsewhere."""
+`nothing` and falls back to the system base, which is numerically identical by construction
+for these types. Do not weaken this to a general nothing-skip guard elsewhere."""
 _resolve_base_power(refs::OpenAPIRefs, ::Nothing) = get_base_power(refs)
 _resolve_base_power(::OpenAPIRefs, base_power) = Float64(base_power)
 
@@ -291,17 +290,15 @@ end
 
 # ── TransformerCircuit ──────────────────────────────────────────────────────────
 # `r`/`x` are pu on `base_power` when `parameter_units == "DEVICE_BASE"` — the only basis
-# implemented, matching the reference; `NATURAL_UNITS` errors loudly rather than silently
-# guessing at ohms-to-pu arithmetic this pass does not need.
-# `rating`/`rating_b`/`rating_c`/`active_power_flow`/`reactive_power_flow` divide by the
-# circuit's own `base_power` only under `NaturalUnit` (identical to what the
-# generator produces for every other device-based type — verified by generating this field
-# set for TransformerCircuit before the `α`/`alpha` mismatch was found).
+# implemented; `NATURAL_UNITS` errors loudly rather than silently guessing at ohms-to-pu
+# arithmetic. `rating`/`rating_b`/`rating_c`/`active_power_flow`/`reactive_power_flow` divide
+# by the circuit's own `base_power` only under `NaturalUnit`, as for every other device-based
+# type.
 const CIRCUIT_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
 
-"""One guard for every per-field unit-basis discriminator this pass has not implemented
-arithmetic for: error loudly naming the field, value, and the implemented set, rather than
-silently guessing (psy6 rule). `owner` is `" for <name>"` where the PO type has a name."""
+"""One guard for every per-field unit-basis discriminator with no implemented arithmetic:
+error loudly naming the field, value, and the implemented set, rather than silently guessing
+(psy6 rule). `owner` is `" for <name>"` where the PO type has a name."""
 function _check_unit_basis(value, implemented, field::AbstractString, owner::AbstractString)
     if value in implemented
         return nothing

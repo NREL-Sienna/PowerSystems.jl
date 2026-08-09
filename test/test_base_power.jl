@@ -31,8 +31,6 @@ function thermal_with_base_power(bus::PSY.Bus, name::String, base_power::Float64
     )
 end
 
-# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
-# `322_CT_6`, but PSB isn't compatible with the new units API yet.
 @testset "Test unit-aware get_base_power" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     device_base = PSY._get_base_power(gen)
@@ -86,8 +84,6 @@ end
     @test_throws ArgumentError get_base_power_unitful(sys, SU)
 end
 
-# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
-# `322_CT_6`, but PSB isn't compatible with the new units API yet.
 @testset "Generated getters: bare vs _unitful, NU path" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     device_base = PSY._get_base_power(gen)
@@ -197,7 +193,6 @@ end
         (set_base_power_31!, get_base_power_31),
     )
         setter(xfmr, 75.0)
-        @test getter(xfmr) isa Float64
         @test getter(xfmr) ≈ 75.0
         setter(xfmr, 15.0)
         @test getter(xfmr) ≈ 15.0

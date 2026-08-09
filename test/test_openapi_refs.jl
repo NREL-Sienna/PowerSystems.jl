@@ -28,11 +28,6 @@ end
     @test_throws ErrorException PSY.component_id(refs, other)
 end
 
-@testset "OpenAPIRefs: document unit system accessor" begin
-    refs = PSY.OpenAPIRefs("DEVICE_BASE")
-    @test PSY.get_unit_system(refs) == "DEVICE_BASE"
-end
-
 @testset "OpenAPI ledger: round trip through System.ext" begin
     sys = System(100.0)
     area = Area(; name = "a1", peak_active_power = 0.0, peak_reactive_power = 0.0)

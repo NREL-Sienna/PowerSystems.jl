@@ -208,10 +208,7 @@ end
 
 # ── TwoWindingTransformer ───────────────────────────────────────────────────────
 # `magnetizing_shunt` is pu on the circuit's `base_power` and identity in both document unit
-# systems (mirrors import). Constructs the nested `PO.TransformerCircuit` inline via its own
-# `to_openapi` method — the circuit is not looked up via `refs[id]`, matching how the import
-# converter consumes an inline `po.circuit` rather than a reference (verified against
-# import_handwritten.jl before assuming, per the task brief).
+# systems (mirrors import).
 
 function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::DeviceBaseUnit)
     circuit = get_circuit(xfmr)
@@ -235,12 +232,10 @@ end
 # ── ThreeWindingTransformer ──────────────────────────────────────────────────────
 # Mirrors TwoWindingTransformer's `magnetizing_shunt` handling exactly. The pairwise
 # impedances and their base powers are identity in DU (mirrors import); `parameter_units`/
-# `admittance_units` are always emitted as "DEVICE_BASE", the only basis this pass
-# implements on either side. `primary_circuit`/`secondary_circuit`/`tertiary_circuit`/
-# `star_bus` resolve via `component_id`, not inline — the owning `TwoWindingTransformer`
-# precedent for a nested `TransformerCircuit` is inline construction, but ThreeWindingTransformer's
-# circuits are already registered as standalone document rows via `_plan_components`
-# (export_document.jl), matching how import consumes them (`refs[po.primary_circuit]`).
+# `admittance_units` are always emitted as "DEVICE_BASE", the only basis implemented on either
+# side. `primary_circuit`/`secondary_circuit`/`tertiary_circuit`/`star_bus` resolve via
+# `component_id` because the circuits are registered as standalone document rows by
+# `_plan_components` (export_document.jl), matching how import consumes them.
 
 const THREEWINDINGTRANSFORMERSHUNTLOCATION_TO_STRING =
     _invert(THREEWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING)
@@ -420,7 +415,7 @@ end
 # quantity (MWh), matching import's own rule for uniform division. `storage_level_limits`,
 # `initial_storage_capacity_level`, `efficiency`, `conversion_factor`, `storage_target`,
 # `self_discharge` are dimensionless and pass through in both methods. `energy_units` is always
-# emitted as "MWH" (the only basis this pass implements on either side, per import's
+# emitted as "MWH" (the only basis implemented on either side, per import's
 # `_check_energy_units`).
 
 function to_openapi(storage::EnergyReservoirStorage, refs::OpenAPIRefs, ::DeviceBaseUnit)

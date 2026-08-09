@@ -154,19 +154,16 @@ end
 # A descriptor entry carrying a top-level `openapi_type` key gets `from_openapi` and
 # `to_openapi` methods appended to its generated file, one per unit system
 # (`DeviceBaseUnit` pass-through, `NaturalUnit` with conversion arithmetic
-# inlined — the same `IS.RelativeUnits` singleton markers used everywhere else in PSY's
-# explicit-units engine, not a bespoke `Val{:SYMBOL}` dispatch). `from_openapi` builds a PSY
-# component from a PO (OpenAPI model) struct's fields; `to_openapi` builds a PO struct from a
-# PSY component's own `get_*` accessors —
-# the same field classification run in the opposite direction. The generic
+# inlined, using the same `IS.RelativeUnits` singleton markers as the rest of PSY's
+# explicit-units engine). `from_openapi` builds a PSY component from a PO (OpenAPI model)
+# struct's fields; `to_openapi` builds a PO struct from the PSY component's `get_*`
+# accessors — the same field classification run in the opposite direction. The generic
 # `from_openapi`/`to_openapi` functions, `OpenAPIRefs`, `convert_cost`/
 # `convert_cost_to_openapi`, and the PO/PC modules are all defined in PowerSystems, not
 # here — this generator only emits methods that compile against them.
 #
-# `po` is left untyped. Annotating it would require this generator to name the PO module,
-# which would either hardcode a package name IS does not depend on or force IS to depend
-# on the OpenAPI model packages — neither acceptable. Dispatch is already unambiguous on
-# `Type{...}`/`Val{...}` alone.
+# `po` must stay untyped: annotating it would make this generator name the OpenAPI model
+# package. Dispatch is already unambiguous on `Type{...}`/`Val{...}` alone.
 #
 # A descriptor entry without `openapi_type` never reaches any function below — every one
 # is only called from `compute_openapi_converter!`/`compute_openapi_export_converter!`,
@@ -552,13 +549,12 @@ openapi_enum_table_name_export(bare::AbstractString) =
 """
 Where an exported struct reads its S_base anchor, and which unit system it requests the
 convertible field in. Every annotated struct reads its own `_get_base_power` in device
-units (`DU`) — the default, `openapi_export_base_kind` absent or `"device"`. The one
-exception in this generator pass is a struct whose `base_power_kind` (`src/models/
-components.jl`) is `SystemBasePower`: its own `base_power` field is not the per-unit
-anchor for a directly-constructed, unattached component (`add_component!` is what keeps it
-synced to the system base), so it reads the document-level anchor instead
-(`get_base_power(refs)`, unit system `SU`) — set `openapi_export_base_kind: "system"` on
-that struct's descriptor entry to opt in.
+units (`DU`) — the default, `openapi_export_base_kind` absent or `"device"`. A struct whose
+`base_power_kind` (`src/models/components.jl`) is `SystemBasePower` is the exception: its own
+`base_power` field is not the per-unit anchor for a directly-constructed, unattached
+component (`add_component!` is what keeps it synced to the system base), so it must read the
+document-level anchor instead (`get_base_power(refs)`, unit system `SU`) — set
+`openapi_export_base_kind: "system"` on that struct's descriptor entry to opt in.
 """
 function openapi_export_base_source(item)
     kind = get(item, "openapi_export_base_kind", "device")
@@ -577,8 +573,7 @@ function openapi_export_base_source(item)
 end
 
 """The PSY-side accessor name for one field: the public `get_X`, unless the descriptor
-marks the field `exclude_getter` (only `base_power` does, among annotated structs today),
-in which case only the internal `_get_X` exists."""
+marks the field `exclude_getter`, in which case only the internal `_get_X` exists."""
 function openapi_export_getter_name(field)
     if get(field, "exclude_getter", false)
         return "_get_" * field["name"]
@@ -1003,14 +998,11 @@ function generate_structs(directory, data::Vector; print_results = true)
                 # always export the public name.
                 push!(unique_accessor_functions, accessor_name)
                 push!(unique_setter_functions, setter_name)
-                # The `_unitful` companion is exported only when the getter is
-                # actually generated. For exclude_getter fields we emit just the
-                # private `_get_X` (needs_conversion forced false), so `_get_X_unitful`
-                # is never generated — PowerSystems hand-writes both `get_X` and
-                # `get_X_unitful` for those fields itself. Gating this export on
-                # needs_conversion alone would make IS export a `_unitful` symbol it
-                # never defined, colliding with PSY's hand-written one — coordinate
-                # with PSY before widening.
+                # Export the `_unitful` companion only when the getter is actually
+                # generated. `exclude_getter` fields emit only the private `_get_X`
+                # (needs_conversion forced false) and have both `get_X` and
+                # `get_X_unitful` hand-written, so exporting on needs_conversion alone
+                # would export a symbol this generator never defined.
                 if include_getter && get(param, "needs_conversion", false)
                     push!(unique_accessor_functions, accessor_name * "_unitful")
                 end

@@ -1,31 +1,14 @@
 # Hand-written export-direction helpers shared by the generated `to_openapi` methods and by
-# `export_handwritten.jl`. The 22 `to_openapi` methods that used to live here (one
-# `DeviceBaseUnit`/`NaturalUnit` pair per `ACBus`, `AreaInterchange`, `PowerLoad`,
-# `InterruptiblePowerLoad`, `ShiftablePowerLoad`, `HydroDispatch`, `HydroTurbine`,
-# `RenewableDispatch`, `RenewableNonDispatch`, `ThermalStandard`, `SynchronousCondenser`) are
-# now generated straight into src/models/generated/<Type>.jl from the `openapi_type`-annotated
-# descriptor entries, alongside the `from_openapi` methods those files already carried — see
-# `src/generate_structs.jl`'s `compute_openapi_export_converter!`. Their `<ENUM>_TO_STRING`
-# tables moved the same way, generated beside the matching `<ENUM>_FROM_STRING` table.
+# `export_handwritten.jl`. Per-type `to_openapi` methods and their `<ENUM>_TO_STRING` tables
+# are generated into src/models/generated/<Type>.jl from the `openapi_type`-annotated
+# descriptor entries by `compute_openapi_export_converter!` (src/generate_structs.jl), which
+# is where the per-field-kind conversion rules are defined. This file holds only the
+# infrastructure those methods call into, plus what `export_handwritten.jl` needs for the
+# types codegen does not reach (`Area`, `LoadZone`, `Line`, `TransformerCircuit`, the
+# reserves, and others — see that file's header).
 #
-# What remains here is purely infrastructure the generated methods call into, plus the pieces
-# `export_handwritten.jl` still depends on for the types codegen does not yet reach (`Area`,
-# `LoadZone`, `Line`, `TransformerCircuit`, the reserves, and others — see that file's header).
-#
-# Mechanical rules the generator follows (for reference, mirrored from `compute_openapi_
-# converter!`'s import-direction rules, inverted):
-#   - scalar (device-base pu):    DEVICE_BASE -> get_X(c, DU) directly; NATURAL_UNITS ->
-#                                 get_X(c, DU) * _get_base_power(c)
-#   - MinMax/UpDown (device-base): same, per-member
-#   - enum                        <ENUM>_TO_STRING[get_X(c)] — literal tables built by
-#                                 *inverting* the generated `<ENUM>_FROM_STRING` tables
-#                                 (Dict comprehensions over `instances(T)`, hence bijective)
-#   - component reference          component_id(refs, get_X(c))
-#   - cost                        convert_cost_to_openapi(get_operation_cost(c))
-#   - id                          component_id(refs, c) — the reflexive lookup: the document
-#                                 walk (export_document.jl) registers every component's
-#                                 id via `refs[id] = component` *before* calling `to_openapi`,
-#                                 so this always resolves.
+# The document walk (export_document.jl) registers every component's id in `refs` before
+# calling `to_openapi`, so the reflexive `component_id(refs, c)` lookup always resolves.
 
 # ── Shared compound-field helpers (device-base pu), reused by both the generated
 # `to_openapi` methods and export_handwritten.jl ──

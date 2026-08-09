@@ -622,13 +622,11 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
 
 const DEFAULT_SYSTEM_FREQUENCY = 60.0
 
-# Accumulator type for MW-sum helpers in system_checks.jl. Bare `Float64`
-# because unit-aware getters now return bare numbers; the `MW` arg merely
-# selects the unit basis (see `_sum_or_zero`).
+# Accumulator type for the MW-sum helpers in system_checks.jl.
 const MW_ACCUMULATOR_TYPE = Float64
 
 # Sentinel for `time_at_status`: "has been in this state indefinitely". Carried
-# in minutes, matching the operational-duration convention (was 1e4 hours).
+# in minutes, matching the operational-duration convention.
 const INFINITE_TIME = 6e5
 const START_COST = 1e8
 const INFINITE_COST = 1e8

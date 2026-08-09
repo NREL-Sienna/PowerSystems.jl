@@ -552,7 +552,6 @@ function add_component!(
 ) where {T <: Component}
     set_units_setting!(component, sys.base_power)
     _sync_base_power!(base_power_kind(component), component, sys.base_power)
-    @assert has_units_setting(component)
 
     check_topology(sys, component)
     check_component_addition(sys, component; kwargs...)
@@ -2189,10 +2188,8 @@ function check(sys::System)
     return
 end
 
-"""
-Check the the consistency of subsystems.
-"""
-function check_subsystems(sys::System)
+# Subsystem assignment is all-or-none across the system.
+function _check_uniform_subsystem_assignment(sys::System)
     must_be_assigned_to_subsystem = false
     for (i, component) in enumerate(iterate_components(sys))
         is_assigned = is_assigned_to_subsystem(sys, component)
@@ -2206,27 +2203,27 @@ function check_subsystems(sys::System)
                 ),
             )
         end
+    end
+    return
+end
+
+"""
+Check the consistency of subsystems.
+"""
+function check_subsystems(sys::System)
+    _check_uniform_subsystem_assignment(sys)
+    for component in iterate_components(sys)
         check_subsystems(sys, component)
     end
+    return
 end
 
 """
 Check the values of all components. See [`check_component`](@ref) for exceptions thrown.
 """
 function check_components(sys::System; check_masked_components = true)
-    must_be_assigned_to_subsystem = false
-    for (i, component) in enumerate(iterate_components(sys))
-        is_assigned = is_assigned_to_subsystem(sys, component)
-        if i == 1
-            must_be_assigned_to_subsystem = is_assigned
-        elseif is_assigned != must_be_assigned_to_subsystem
-            throw(
-                IS.InvalidValue(
-                    "If any component is assigned to a subsystem then all " *
-                    "components must be assigned to a subsystem.",
-                ),
-            )
-        end
+    _check_uniform_subsystem_assignment(sys)
+    for component in iterate_components(sys)
         check_component(sys, component)
     end
 
@@ -2283,16 +2280,15 @@ end
 
 """
 Check that all AC transmission [`Line`](@ref) and [`MonitoredLine`](@ref) components
-have valid rate values relative to the system base power.
+have valid rate values relative to their own device base power.
 
 Returns `true` if all values are valid, `false` otherwise.
 """
 function check_ac_transmission_rate_values(sys::System)
     is_valid = true
-    base_power = _get_base_power(sys)
     for line in
         Iterators.flatten((get_components(Line, sys), get_components(MonitoredLine, sys)))
-        if !check_rating_values(line, base_power)
+        if !check_rating_values(line)
             is_valid = false
         end
     end

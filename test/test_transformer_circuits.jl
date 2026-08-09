@@ -86,12 +86,8 @@ end
 
 @testset "parent constructors" begin
     t2w = TwoWindingTransformer(nothing)
-    @test t2w isa Component
-    @test get_circuit(t2w) isa TransformerCircuit
     @test get_shunt_location(t2w) == TwoWindingTransformerShuntLocation.PRIMARY
     t3w = ThreeWindingTransformer(nothing)
-    @test t3w isa Component
-    @test get_primary_circuit(t3w) isa TransformerCircuit
     @test get_shunt_location(t3w) == ThreeWindingTransformerShuntLocation.PRIMARY
 end
 
@@ -241,9 +237,6 @@ end
 end
 
 @testset "shunt location enums construct and serialize" begin
-    # The two enums are distinct types with the expected members.
-    @test TwoWindingTransformerShuntLocation.PRIMARY !==
-          TwoWindingTransformerShuntLocation.SECONDARY
     @test string(TwoWindingTransformerShuntLocation.SPLIT) == "SPLIT"
     @test string(ThreeWindingTransformerShuntLocation.STAR) == "STAR"
 

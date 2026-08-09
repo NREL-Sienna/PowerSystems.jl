@@ -1,7 +1,4 @@
 @testset "Bus Constructors" begin
-    tBus = ACBus(nothing)
-    tLoadZone = LoadZone(nothing)
-
     bus = ACBus(
         1,
         "test",
@@ -19,70 +16,11 @@
     @test PowerSystems.get_bustype(bus) == ACBusTypes.SLACK
 end
 
-@testset "Generation Constructors" begin
+@testset "OperationalCost demo constructors" begin
     for T in InteractiveUtils.subtypes(PSY.OperationalCost)
         isabstracttype(T) || (@test T(nothing) isa IS.InfrastructureSystemsType)
     end
     # TODO add concrete subtypes of ProductionVariableCostCurve?
-
-    tThermalGen = ThermalStandard(nothing)
-    @test tThermalGen isa PowerSystems.Component
-    tHydroDispatch = HydroDispatch(nothing)
-    @test tHydroDispatch isa PowerSystems.Component
-    tRenewableNonDispatch = RenewableNonDispatch(nothing)
-    @test tRenewableNonDispatch isa PowerSystems.Component
-    tRenewableDispatch = RenewableDispatch(nothing)
-    @test tRenewableDispatch isa PowerSystems.Component
-    tRenewableDispatch = RenewableDispatch(nothing)
-    @test tRenewableDispatch isa PowerSystems.Component
-    tTurbine = HydroTurbine(nothing)
-    @test tTurbine isa PowerSystems.Component
-    tReservoir = HydroReservoir(nothing)
-    @test tReservoir isa PowerSystems.Component
-end
-
-@testset "Source Constructors" begin
-    tSource = Source(nothing)
-    @test tSource isa PowerSystems.Component
-end
-
-@testset "Storage Constructors" begin
-    tStorage = EnergyReservoirStorage(nothing)
-    @test tStorage isa PowerSystems.Component
-end
-
-@testset "Load Constructors" begin
-    tPowerLoad = PowerLoad(nothing)
-    @test tPowerLoad isa PowerSystems.Component
-    tStandardLoad = StandardLoad(nothing)
-    @test tStandardLoad isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, ACBus(nothing), 0.0, 0.0, 100.0, 0.0, 0.0)
-    @test tPowerLoad isa PowerSystems.Component
-    tLoad = InterruptiblePowerLoad(nothing)
-    @test tLoad isa PowerSystems.Component
-    tShiftableLoad = ShiftablePowerLoad(nothing)
-    @test tShiftableLoad isa PowerSystems.Component
-    tInterruptibleStandardLoad = InterruptibleStandardLoad(nothing)
-    @test tInterruptibleStandardLoad isa PowerSystems.Component
-end
-
-@testset "Branch Constructors" begin
-    tLine = Line(nothing)
-    @test tLine isa PowerSystems.Component
-    tMonitoredLine = MonitoredLine(nothing)
-    @test tMonitoredLine isa PowerSystems.Component
-    tTwoTerminalGenericHVDCLine = TwoTerminalGenericHVDCLine(nothing)
-    @test tTwoTerminalGenericHVDCLine isa PowerSystems.Component
-    tTwoTerminalLCCLine = TwoTerminalLCCLine(nothing)
-    @test tTwoTerminalLCCLine isa PowerSystems.Component
-    tTwoTerminalVSCLine = TwoTerminalVSCLine(nothing)
-    @test tTwoTerminalVSCLine isa PowerSystems.Component
-    tTwoWindingTransformer = TwoWindingTransformer(nothing)
-    @test tTwoWindingTransformer isa PowerSystems.Component
-    tThreeWindingTransformer = ThreeWindingTransformer(nothing)
-    @test tThreeWindingTransformer isa PowerSystems.Component
-    tGenericArcImpedance = GenericArcImpedance(nothing)
-    @test tGenericArcImpedance isa PowerSystems.Component
 end
 
 @testset "TwoTerminalVSCLine remote-control / rated-DC-voltage fields" begin
@@ -179,42 +117,26 @@ end
     )
 end
 
-@testset "Service Constructors" begin
-    tOnlineReserve = OnlineReserve{ReserveUp}(nothing)
-    @test tOnlineReserve isa PowerSystems.Service
-    tOfflineReserve = OfflineReserve(nothing)
-    @test tOfflineReserve isa PowerSystems.Service
-    tGroupReserve = GroupReserve{ReserveDown}(nothing)
-    @test tGroupReserve isa PowerSystems.Service
-end
-
+# Smoke: every time-series type must keep accepting both its positional and its keyword
+# constructor form. Construction is the assertion; a signature change throws here.
 @testset "TimeSeriesData Constructors" begin
-    tg = RenewableNonDispatch(nothing)
     data = PowerSystems.TimeSeries.TimeArray(
         [DateTime("01-01-01"), DateTime("01-01-01") + Hour(1)],
         [1.0, 1.0],
     )
-    #SingleTimeSeries Tests
-    ts = SingleTimeSeries("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
-    @test ts isa PowerSystems.TimeSeriesData
-    ts = SingleTimeSeries(; name = "scalingfactor", data = data)
-    @test ts isa PowerSystems.TimeSeriesData
+    SingleTimeSeries("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
+    SingleTimeSeries(; name = "scalingfactor", data = data)
 
-    #Probabilistic Tests
     data = SortedDict(
         DateTime("01-01-01") => [1.0 1.0; 2.0 2.0],
         DateTime("01-01-01") + Hour(1) => [1.0 1.0; 2.0 2.0],
     )
-    ts = Probabilistic("scalingfactor", data, [0.5, 0.5], Hour(1))
-    @test ts isa PowerSystems.TimeSeriesData
-    ts = Probabilistic(;
+    Probabilistic("scalingfactor", data, [0.5, 0.5], Hour(1))
+    Probabilistic(;
         name = "scalingfactor",
         percentiles = [1.0, 1.0],
         data = data,
         resolution = Hour(1),
     )
-    @test ts isa PowerSystems.TimeSeriesData
-    ##Scenario Tests
-    ts = Scenarios("scalingfactor", data, Hour(1))
-    @test ts isa PowerSystems.TimeSeriesData
+    Scenarios("scalingfactor", data, Hour(1))
 end

@@ -1,24 +1,6 @@
-# DISABLED pending a rewrite of `StructGeneration.test_generated_structs`.
-#
-# The helper it calls cannot do the job it claims. It pairs both the two directory listings
-# and each file's lines with `zip`, which pairs by position and truncates to the shorter
-# sequence. Three consequences: one extra file shifts every later comparison onto the wrong
-# file; a file-count mismatch leaves the last file uncompared; and appended lines are never
-# compared at all, so a generated file that gains content still passes.
-#
-# The replacement should assert that generated output matches BOTH sources of truth it is
-# supposed to track — the struct definitions in the descriptor, and the field data in
-# SiennaSchemas — pairing by filename and comparing whole contents, reporting missing and
-# extra files rather than silently skipping them.
-#
-# @testset "Test generated structs" begin
-#     descriptor_file =
-#         joinpath(@__DIR__, "..", "src", "descriptors", "power_system_structs.json")
-#     existing_dir = joinpath(@__DIR__, "..", "src", "models", "generated")
-#     @test PowerSystems.StructGeneration.test_generated_structs(
-#         descriptor_file, existing_dir,
-#     )
-# end
+# No descriptor-to-generated consistency check runs here: `StructGeneration.test_generated_structs`
+# pairs files and lines with `zip`, which truncates, so appended generated content is never
+# compared. Inspect regeneration diffs by hand until it is rewritten.
 
 @testset "Test generated structs from StructDefinition" begin
     orig_descriptor_file =
@@ -421,8 +403,8 @@ end
         print_results = false,
     )
 
-    # A parametric + openapi_type combination is out of scope for this generator pass
-    # — refuse rather than emit a converter for the wrong (UnionAll) type.
+    # A parametric + openapi_type combination is out of scope — refuse rather than emit a
+    # converter for the wrong (UnionAll) type.
     parametric_openapi = [
         Dict{String, Any}(
             "struct_name" => "OATestParametric",

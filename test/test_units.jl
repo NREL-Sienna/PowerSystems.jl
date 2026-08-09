@@ -271,7 +271,7 @@ end
         base_power = 100.0,
         operation_cost = MarketBidCost(nothing),
     )
-    subcomponents = collect(PSY._get_components(h_sys))
+    subcomponents = collect(get_subcomponents(h_sys))
     @test length(subcomponents) == 4
     add_component!(sys, h_sys)
     @test all(c -> IS.get_base_value(c) !== nothing, subcomponents)
@@ -288,8 +288,6 @@ end
     @test_throws ArgumentError convert_units(gen, 0.5 * DU, POWER, SU, NU)
     @test_throws ArgumentError convert_units(gen, 0.5, POWER, MW, SU)
 end
-
-# ---- Task 5 helpers ----
 
 # Build a minimal System + Line (100 MVA base, 138 kV buses) for impedance/
 # admittance inference tests. rating_b is set to a non-nothing value so
@@ -457,9 +455,8 @@ end
     set_primary_circuit!(t3w, new_circuit)
     @test IS.get_base_value(new_circuit) == 100.0
 
-    # anchor is never serialized; it is repopulated on attach during load
-    # Not round-tripped: `ThreeWindingTransformer` is not in `DOCUMENT_PLAN`. The anchor is
-    # repopulated by `add_component!`, which is what this checks, so the built system suffices.
+    # The anchor is never serialized; `add_component!` repopulates it, which is what this
+    # checks.
     t2 = only(get_components(ThreeWindingTransformer, sys))
     for w in get_circuits(t2)
         @test IS.get_base_value(w) == 100.0

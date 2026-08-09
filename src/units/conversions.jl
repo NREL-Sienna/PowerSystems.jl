@@ -111,12 +111,6 @@ _du_to_su_ratio(c, ::ImpedanceCategory) =
 _du_to_su_ratio(::Any, ::VoltageCategory) = 1.0
 
 # ============================================================
-# Default units for 1-arg getters (downstream convention)
-# ============================================================
-
-const DEFAULT_UNITS = SU
-
-# ============================================================
 # convert_units: value from one unit system to another
 # ============================================================
 
@@ -135,19 +129,16 @@ convert_units(gen, 0.6, POWER, DU, Float64)  # → 0.3 (raw SU value)
 """
 function convert_units end
 
-# --- From DU ---
-# `Real`/`ComplexF64` are split so a Unitful/RelativeQuantity value (both <: Number)
-# falls through to the marker/value guards instead. ComplexF64 mirrors serve the
-# complex admittance getters (`magnetizing_shunt`).
+# `_BareNumber` is `Real` plus `ComplexF64` (the complex admittance getters, e.g.
+# `magnetizing_shunt`). It deliberately excludes `Quantity`/`RelativeQuantity`, which are
+# both `<: Number` and must fall through to the marker/value guards below.
+const _BareNumber = Union{Real, ComplexF64}
 
-function convert_units(c, value::Real, cat::UnitCategory, ::DeviceBaseUnit, units::Units)
-    natural = value * base_value(c, cat) * natural_unit(cat)
-    return uconvert(units, natural)
-end
+# --- From DU ---
 
 function convert_units(
     c,
-    value::ComplexF64,
+    value::_BareNumber,
     cat::UnitCategory,
     ::DeviceBaseUnit,
     units::Units,
@@ -161,30 +152,17 @@ end
 # be wasted work (and would wrongly require a base voltage to be defined).
 function convert_units(
     c,
-    value::Real,
+    value::_BareNumber,
     cat::UnitCategory,
     ::DeviceBaseUnit,
     ::SystemBaseUnit,
 )
     return (value * _du_to_su_ratio(c, cat)) * SU
 end
-
-function convert_units(
-    c,
-    value::ComplexF64,
-    cat::UnitCategory,
-    ::DeviceBaseUnit,
-    ::SystemBaseUnit,
-)
-    return (value * _du_to_su_ratio(c, cat)) * SU
-end
-
-convert_units(::Any, value::Real, ::UnitCategory, ::DeviceBaseUnit, ::DeviceBaseUnit) =
-    value * DU
 
 convert_units(
     ::Any,
-    value::ComplexF64,
+    value::_BareNumber,
     ::UnitCategory,
     ::DeviceBaseUnit,
     ::DeviceBaseUnit,
@@ -193,34 +171,19 @@ convert_units(
 
 function convert_units(
     c,
-    value::Float64,
+    value::Union{Float64, ComplexF64},
     cat::UnitCategory,
     ::DeviceBaseUnit,
     ::Type{Float64},
-)::Float64
-    return value * _du_to_su_ratio(c, cat)
-end
-
-function convert_units(
-    c,
-    value::ComplexF64,
-    cat::UnitCategory,
-    ::DeviceBaseUnit,
-    ::Type{Float64},
-)::ComplexF64
+)
     return value * _du_to_su_ratio(c, cat)
 end
 
 # --- From SU ---
 
-function convert_units(c, value::Real, cat::UnitCategory, ::SystemBaseUnit, units::Units)
-    natural = value * system_base_value(c, cat) * natural_unit(cat)
-    return uconvert(units, natural)
-end
-
 function convert_units(
     c,
-    value::ComplexF64,
+    value::_BareNumber,
     cat::UnitCategory,
     ::SystemBaseUnit,
     units::Units,
@@ -231,30 +194,17 @@ end
 
 function convert_units(
     c,
-    value::Real,
+    value::_BareNumber,
     cat::UnitCategory,
     ::SystemBaseUnit,
     ::DeviceBaseUnit,
 )
     return (value / _du_to_su_ratio(c, cat)) * DU
 end
-
-function convert_units(
-    c,
-    value::ComplexF64,
-    cat::UnitCategory,
-    ::SystemBaseUnit,
-    ::DeviceBaseUnit,
-)
-    return (value / _du_to_su_ratio(c, cat)) * DU
-end
-
-convert_units(::Any, value::Real, ::UnitCategory, ::SystemBaseUnit, ::SystemBaseUnit) =
-    value * SU
 
 convert_units(
     ::Any,
-    value::ComplexF64,
+    value::_BareNumber,
     ::UnitCategory,
     ::SystemBaseUnit,
     ::SystemBaseUnit,
@@ -275,11 +225,7 @@ end
 
 # --- To NU (natural units) — delegate to the category's natural unit ---
 
-function convert_units(c, value::Real, cat::UnitCategory, from, ::NaturalUnit)
-    return convert_units(c, value, cat, from, natural_unit(cat))
-end
-
-function convert_units(c, value::ComplexF64, cat::UnitCategory, from, ::NaturalUnit)
+function convert_units(c, value::_BareNumber, cat::UnitCategory, from, ::NaturalUnit)
     return convert_units(c, value, cat, from, natural_unit(cat))
 end
 

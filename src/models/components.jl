@@ -45,21 +45,15 @@ function _sync_base_power!(::SystemBasePower, component, system_base_power)
     return
 end
 
-# The single read path for a component's base power: both kinds read straight from
-# the field. For `SystemBasePower` types `add_component!` syncs the field to the
-# system base on attach, so an attached component always reads the system's value;
-# detached, the field is whatever a producer stated (a document records `base_power`
-# per component), which is real data and must not be discarded.
-#
-# Guarding detached access here would be redundant and lossy: the units engine
-# already errors on SU/NU for an unattached component, so a wrong base cannot reach
-# a per-unit conversion regardless of what this returns.
-_base_power_value(c::Component) = _get_base_power(c)
+# `_get_base_power` is the single read path for a component's base power, and it reads
+# straight from the field for both kinds. A detached component keeps whatever base its
+# producer stated, which is real data and must not be discarded; no guard belongs here,
+# because the units engine already errors on SU/NU for an unattached component.
 
 # Conversion-engine component interface (see src/units/conversions.jl): the
 # engine resolves bases through these three functions, so every getter and
 # setter shares one base-power/base-voltage choice per component type.
-_get_device_base_power(c::Component) = _base_power_value(c)
+_get_device_base_power(c::Component) = _get_base_power(c)
 
 # TransformerCircuit is a self-contained explicit-units base provider (defined
 # in models/transformer_circuits.jl, included earlier): it carries its own
@@ -115,18 +109,18 @@ unit (e.g. `MW`, `MVA`). Per-unit bases (`SU`, `DU`) and non-power units error â
 `base_power` is only meaningful in absolute power. See
 [`get_base_power_unitful`](@ref) for the unit-bearing value.
 """
-get_base_power(c::Component) = _base_power_value(c)
+get_base_power(c::Component) = _get_base_power(c)
 get_base_power(c::Component, u) = IS._strip_units(get_base_power_unitful(c, u))
 
 """
 `base_power` as a unit-bearing quantity (MVA). See [`get_base_power`](@ref).
 """
-get_base_power_unitful(c::Component) = _base_power_value(c) * MVA
-get_base_power_unitful(c::Component, ::NaturalUnit) = _base_power_value(c) * MVA
+get_base_power_unitful(c::Component) = _get_base_power(c) * MVA
+get_base_power_unitful(c::Component, ::NaturalUnit) = _get_base_power(c) * MVA
 # Any power-dimensioned Unitful unit: `uconvert` does the scaling and throws a
 # `Unitful.DimensionError` for non-power units, so wrong units error for free.
 get_base_power_unitful(c::Component, u::Unitful.Units) =
-    Unitful.uconvert(u, _base_power_value(c) * MVA)
+    Unitful.uconvert(u, _get_base_power(c) * MVA)
 # Relative per-unit markers (`SU`, `DU`) are not natural units.
 get_base_power_unitful(::Component, u::AbstractRelativeUnit) =
     _base_power_units_error(u)
@@ -182,10 +176,8 @@ IS.default_units(::Component) = SU
 #######################################################
 # Units-aware get_value / set_value
 #
-# Fields are stored internally in device base (DU). The 4-arg `get_value`
-# converts from DU to a requested target (e.g., MW, SU). The 3-arg form
-# delegates to the 4-arg with DEFAULT_UNITS (= SU, a RelativeQuantity
-# carrying its unit in its type).
+# Fields are stored internally in device base (DU); `get_value` converts from
+# DU to a requested target (e.g., MW, SU).
 #######################################################
 
 """
@@ -328,7 +320,6 @@ set_base_power_31!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
 # setter variants mirror the generic Component ones (natural units only) so no
 # ambiguity arises with `set_base_power!(::Component, ...)`.
 _get_base_power(t::TwoWindingTransformer) = get_base_power(get_circuit(t))
-get_base_power(t::TwoWindingTransformer) = get_base_power(get_circuit(t))
 set_base_power!(t::TwoWindingTransformer, val::Float64) =
     set_base_power!(get_circuit(t), val)
 set_base_power!(t::TwoWindingTransformer, val::Unitful.Quantity) =

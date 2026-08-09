@@ -634,7 +634,7 @@ export UnitCategory,
     PowerCategory, ImpedanceCategory, AdmittanceCategory,
     VoltageCategory, CurrentCategory
 export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
-export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
+export natural_unit, base_value, system_base_value, convert_units
 # Hand-written unit-bearing companion for the `exclude_getter` `base_power`
 # descriptor entry (its bare-number counterpart gets exported via
 # generated/includes.jl). `base_power_12`/`_23`/`_31` on `ThreeWindingTransformer`

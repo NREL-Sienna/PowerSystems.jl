@@ -219,8 +219,6 @@ end
     )
 end
 
-# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
-# `322_CT_6`, but PSB isn't compatible with the new units API yet.
 @testset "Test explicit units API" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     device_base = PSY._get_base_power(gen)
@@ -244,8 +242,6 @@ end
     @test get_active_power_unitful(gen, SU) isa RelativeQuantity
 end
 
-# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
-# `322_CT_6`, but PSB isn't compatible with the new units API yet.
 @testset "Test explicit units setters" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     device_base = PSY._get_base_power(gen)
@@ -646,12 +642,8 @@ end
     gen1 = first(get_components(ThermalStandard, sys1))
     gen2 = first(get_components(ThermalStandard, sys2))
     @test IS.compare_values(gen1, gen2)
-    # Whole-system comparison across two independent builds is no longer meaningful. A System
-    # is now built from a document that carries component ids rather than UUIDs, so each build
-    # mints its own UUIDs -- for components, for time series, and inside the OpenAPI round-trip
-    # ledger `System.ext` holds as strings, which `compare_uuids = false` cannot reach. What
-    # `compare_values` is here to exercise is field-by-field comparison, which the component
-    # cases above and below cover.
+    # Two independent builds mint their own UUIDs, so only field-by-field comparison is
+    # meaningful here, not whole-system equality.
 
     set_active_power!(gen1, (get_active_power(gen1, SU) + 0.1) * SU)
     @test(
@@ -673,7 +665,6 @@ end
         isapprox(a, b; atol = 0.2) || IS.isequivalent(a, b)
     my_match_fn(a, b) = IS.isequivalent(a, b)
     @test IS.compare_values(my_match_fn, gen1, gen2)
-    # Component-level only, for the reason given above.
 end
 
 @testset "Test check_components" begin
@@ -722,10 +713,8 @@ end
     name = "test_system"
     description = "a system description"
     sys = System(100.0)
-    @test get_name(sys) === nothing
-    @test get_description(sys) === nothing
-    set_name!(sys, name)
-    set_description!(sys, description)
+    @test isnothing(get_name(sys))
+    @test isnothing(get_description(sys))
 
     sys = System(100.0; name = name, description = description)
     @test get_name(sys) == name
@@ -744,11 +733,6 @@ end
     sys2 = roundtrip_system(sys)
     @test get_name(sys2) == name
     @test get_description(sys2) == description
-
-    # The `_metadata.json` sidecar this used to assert on is gone with the old writer. Its
-    # contents were either derivable from the document (component and time-series counts) or
-    # provenance that is deliberately deferred (`user_data`); name and description, the parts
-    # that carried real information, are asserted above.
 end
 
 @testset "Test addition of service to the wrong system" begin
@@ -790,8 +774,4 @@ end
     # Ensure that you can't change an unattached bus.
     remove_component!(sys, bus1)
     @test_throws ArgumentError set_bus_number!(sys, bus1, new_number + 1)
-
-    # Ensure that this is exported. This can be deleted in PSY5.
-    set_number!(bus1, new_number + 2)
-    @test get_number(bus1) == new_number + 2
 end

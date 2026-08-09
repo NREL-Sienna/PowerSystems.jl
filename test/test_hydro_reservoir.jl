@@ -114,8 +114,7 @@ end
     @test length(get_downstream_turbines(hydro_reservoir)) == 5
     @test isempty(get_upstream_turbines(hydro_reservoir))
 
-    mapping = get_turbine_head_reservoirs_mapping(sys)
-    @test mapping isa TurbineConnectedDevicesMapping
+    get_turbine_head_reservoirs_mapping(sys)
     @test length(get_connected_head_reservoirs(sys, turbines[1])) == 1
 
     remove_turbine!(hydro_reservoir, turbines[1])
