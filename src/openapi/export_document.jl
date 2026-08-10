@@ -148,9 +148,9 @@ _collect_dropped_ext!(::Dict{String, Int}, ::TransmissionInterface) = nothing
 """
 Tally the `ext` keys on `component` that the document will not carry.
 
-Component `ext` is deliberately not written: PowerSystems refuses a document that carries any
-`ext` on the way in (`_check_ext_is_empty`), so writing it would create a field that cannot be
-read back. PowerFlowFileParser's `ext`
+Component `ext` is deliberately not written: PowerSystems refuses a document that carries an
+`ext` key not on its ignore-list on the way in (`_check_ext_keys_are_known`), and never stores
+even a listed key, so writing it would create a field that cannot be read back. PowerFlowFileParser's `ext`
 is a pass-through of raw pm-dict records that nothing downstream reads from the document either.
 
 This is a tally-and-warn rather than an error because raising would make every

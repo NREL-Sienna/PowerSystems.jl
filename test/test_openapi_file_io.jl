@@ -95,7 +95,7 @@ end
     @test length(unique(component_ids)) == length(component_ids)
 end
 
-@testset "from_openapi: any ext key errors, naming it" begin
+@testset "from_openapi: ext keys on IGNORED_EXT_KEYS are skipped, an unlisted key errors" begin
     doc_dict = make_openapi_test_doc()
 
     # An empty ext is the normal case: producers keep unmappable source columns on their own
@@ -104,8 +104,15 @@ end
     empty_ext["ext"] = Dict{String, Any}()
     @test PSY.from_openapi(System, to_test_document(empty_ext)) isa System
 
-    # Any key at all fails, naming it -- PowerSystems has nowhere to put it, and silently
-    # dropping source data is what this replaces.
+    # A key on the ledger is skipped without comment -- not an error, and not stored anywhere.
+    listed_key = first(keys(PSY.IGNORED_EXT_KEYS))
+    listed = copy(doc_dict)
+    listed["ext"] = Dict{String, Any}("3" => Dict{String, Any}(listed_key => 1.0))
+    @test PSY.from_openapi(System, to_test_document(listed)) isa System
+
+    # An unlisted key fails, naming the key, the component id, and the component type --
+    # PowerSystems has nowhere to put it, and silently dropping source data is what this
+    # replaces.
     unknown = copy(doc_dict)
     unknown["ext"] = Dict{String, Any}("3" => Dict{String, Any}("Whatsit MW" => 1.0))
     err = try
@@ -116,4 +123,6 @@ end
     end
     @test err isa ErrorException
     @test occursin("Whatsit MW", err.msg)
+    @test occursin("component id 3", err.msg)
+    @test occursin("ACBus", err.msg)
 end
