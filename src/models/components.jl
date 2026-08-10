@@ -6,12 +6,15 @@ end
 
 """
 Unitless device-base power (MVA). Fallback for components with no `base_power`
-field: the device base equals the system base.
+field: the device base equals the system base. This is also the path
+`TModelHVDCLine` resolves through — it has no `base_power` field at all (it
+per-unitizes against `base_current` instead), so its power-dimensioned fields
+(`active_power_flow`, `active_power_limits_from/to`) anchor on the system base.
 """
 _get_base_power(c::Component) = _get_system_base_power(c)
 
 # Holy trait distinguishing components whose `base_power` field is a genuine,
-# independently-set device base (generators, loads, storage, ...) from the dozen
+# independently-set device base (generators, loads, storage, ...) from the
 # arc/area-ish types below whose `base_power` field only exists because the
 # schema records the system base per-component "in lieu of a system-level table"
 # (see SiennaSchemas). `add_component!` uses this trait to keep that field in
@@ -20,6 +23,10 @@ abstract type BasePowerKind end
 struct DeviceBasePower <: BasePowerKind end
 struct SystemBasePower <: BasePowerKind end
 
+# Default `DeviceBasePower()` also covers types with no `base_power` field at
+# all (e.g. `TModelHVDCLine`, whose anchor is `base_current`): `_sync_base_power!`
+# is a no-op for `DeviceBasePower`, so `add_component!` never touches a
+# nonexistent field.
 base_power_kind(::Component) = DeviceBasePower()
 base_power_kind(::Area) = SystemBasePower()
 base_power_kind(::AreaInterchange) = SystemBasePower()
@@ -28,7 +35,6 @@ base_power_kind(::GenericArcImpedance) = SystemBasePower()
 base_power_kind(::Line) = SystemBasePower()
 base_power_kind(::LoadZone) = SystemBasePower()
 base_power_kind(::MonitoredLine) = SystemBasePower()
-base_power_kind(::TModelHVDCLine) = SystemBasePower()
 base_power_kind(::TransmissionInterface) = SystemBasePower()
 base_power_kind(::TwoTerminalGenericHVDCLine) = SystemBasePower()
 base_power_kind(::TwoTerminalLCCLine) = SystemBasePower()

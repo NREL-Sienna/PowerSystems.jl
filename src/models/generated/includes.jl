@@ -504,6 +504,7 @@ export get_area
 export get_available
 export get_b
 export get_b_unitful
+export get_base_current
 export get_base_power
 export get_base_power_12
 export get_base_power_23
@@ -1231,6 +1232,7 @@ export set_arc!
 export set_area!
 export set_available!
 export set_b!
+export set_base_current!
 export set_base_power!
 export set_base_power_12!
 export set_base_power_23!

@@ -2297,25 +2297,22 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
-                },
-                {
-                    "name": "base_power",
-                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "name": "base_current",
+                    "comment": "Base current for per-unitization of this line's per-unit fields — this DC line per-unitizes against a current base, not a power base (A)",
                     "null_value": "100.0",
                     "data_type": "Float64",
-                    "default": "100.0",
-                    "exclude_getter": true,
-                    "exclude_setter": true,
                     "valid_range": {
                         "min": 0.0001,
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
                 },
                 {
                     "name": "ext",
