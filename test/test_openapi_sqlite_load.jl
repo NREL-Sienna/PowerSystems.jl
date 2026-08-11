@@ -48,13 +48,23 @@ function _sqlite_load_fixture()
 end
 
 """`make_openapi_test_doc()` with `supplemental_attributes`/`_associations`/
-`time_series_associations` overridden — every id these tests reference (including the
-`entity_id = 100`-style attribute ids) must be declared under one of those three, or
-`document_from_json` rejects the document before this file's loaders run at all."""
-function _sqlite_load_doc(; supplemental_attributes = [], associations = [], ts_rows = [])
+`service_associations`/`time_series_associations` overridden — every id these tests
+reference (including the `entity_id = 100`-style attribute ids) must be declared under one
+of those four, or `document_from_json` rejects the document before this file's loaders run
+at all. `plant_associations`/`combined_cycle_associations` are always emptied: none of
+these tests exercises a plant-family attribute."""
+function _sqlite_load_doc(;
+    supplemental_attributes = [],
+    associations = [],
+    service_associations = [],
+    ts_rows = [],
+)
     raw = make_openapi_test_doc()
     raw["supplemental_attributes"] = supplemental_attributes
     raw["supplemental_attribute_associations"] = associations
+    raw["plant_associations"] = []
+    raw["combined_cycle_associations"] = []
+    raw["service_associations"] = service_associations
     raw["time_series_associations"] = ts_rows
     if !isempty(ts_rows)
         raw["time_series_storage_file"] = "sqlite_load_test_storage.h5"
@@ -149,11 +159,8 @@ end
     f = _sqlite_load_fixture()
 
     doc = _sqlite_load_doc(;
-        associations = [
-            Dict{String, Any}(
-                "attribute_id" => 8, "entity_id" => 6,
-                "attribute_type" => "OnlineReserve",
-            ),
+        service_associations = [
+            Dict{String, Any}("service_id" => 8, "entity_id" => 6),
         ],
     )
 
@@ -187,20 +194,11 @@ end
         f.sys, f.refs, doc,
     )
 
-    # Unresolved attribute_id: id=1 (Area) is a real component id in the document, but is
-    # neither in `supplemental_attributes` nor registered in this file's `refs` — same class
-    # of gap, on the attribute_id side.
-    f = _sqlite_load_fixture()
-    doc = _sqlite_load_doc(;
-        associations = [
-            Dict{String, Any}(
-                "attribute_id" => 1, "entity_id" => 3, "attribute_type" => "Area",
-            ),
-        ],
-    )
-    @test_throws ErrorException PSY.load_supplemental_attribute_associations!(
-        f.sys, f.refs, doc,
-    )
+    # An unresolved attribute_id (naming a component, or nothing at all) is no longer
+    # reachable at the loader: `attribute_id` only ever means a supplemental attribute now
+    # that service membership has its own table, so `document_from_json`'s own validation
+    # (checked against the same `supplemental_attributes` list the loader indexes) rejects
+    # it before a document with one can even be constructed.
 
     # attribute_type mismatch: declares "EmissionsData" but the row builds a GeographicInfo.
     f = _sqlite_load_fixture()

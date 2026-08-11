@@ -987,10 +987,8 @@ const PSY = PowerSystems
             @test has_supplemental_attributes(renewable_gens[1])
         end
 
-        # 3b (closed by D10): a plant attribute now survives a document round trip.
-        # `group_index` rides on the unified `supplemental_attribute_associations` row, and
-        # import dispatches shaft_number back from it — no more
-        # `UndefKeywordError: shaft_number`.
+        # A plant attribute survives a document round trip: `group_index` rides on its
+        # `PlantAssociation` row, and import dispatches shaft_number back from it.
         restored = roundtrip_system(sys)
         gen1_name = get_name(thermal_gens[1])
         gen2_name = get_name(thermal_gens[2])

@@ -12,8 +12,8 @@
 # or one of `ThreeWindingTransformer.{primary,secondary,tertiary}_circuit`, never a
 # standalone System component, but still registered in `OpenAPIRefs` so the transformer
 # that references it can resolve it. `TransmissionInterface` (a `Service`, membership
-# carried by a `supplemental_attribute_associations` row like the reserves) is placed after
-# them for that reason, though it has no forward references of its own.
+# carried by a `service_associations` row like the reserves) is placed after them for that
+# reason, though it has no forward references of its own.
 const DOCUMENT_PLAN = [
     (po_type = PO.Area, psy_type = Area, key = "Area", addable = true),
     (po_type = PO.LoadZone, psy_type = LoadZone, key = "LoadZone", addable = true),
@@ -225,11 +225,10 @@ function _merge_doc_ext!(component, extras::AbstractDict)
 end
 
 # ── service membership dispatch ─────────────────────────────────────────────────
-# (device-first `add_service!`, not re-adding the service). Service membership is now a row
-# in the unified `supplemental_attribute_associations` table (D10) rather than its own table —
-# `_attach_supplemental_attribute_associations!` below is what routes a row here — but the
-# membership dispatch itself is unchanged, and stays dispatch rather than an `attribute_type`
-# string comparison.
+# (device-first `add_service!`, not re-adding the service). Service membership is a row in
+# its own `service_associations` table; `load_supplemental_attribute_associations!` in
+# `sqlite_load.jl` is what routes a row here. The membership dispatch itself stays dispatch
+# rather than an `attribute_type` string comparison.
 
 """Device contributing to a (non-group) reserve or `TransmissionInterface`: attach via
 the System-aware 3-arg `add_service!`, which validates both sides are already attached."""
@@ -715,14 +714,15 @@ function _attribute_from_openapi(po, ::OpenAPIRefs)
 end
 
 # ── group_index dispatch (plant-family attributes) ──────────────────────────────
-# `SupplementalAttributeAssociation.group_index` (D10) is the shaft/penstock/PCC/HRSG/
-# exclusion-group number for the five `PowerPlant` subtypes, and absent (`nothing`) for
-# everything else. Each plant type's `add_supplemental_attribute!` takes that number under
-# its own keyword or position, so dispatch on the attribute type picks the right call —
-# never an `attribute_type` string comparison.
+# The shaft/penstock/PCC/HRSG/exclusion-group number for the five `PowerPlant` subtypes comes
+# from the matching `PlantAssociation`/`CombinedCycleAssociation` row (`sqlite_load.jl`'s
+# `_group_index_by_pair`), and is `nothing` for everything else. Each plant type's
+# `add_supplemental_attribute!` takes that number under its own keyword or position, so
+# dispatch on the attribute type picks the right call — never an `attribute_type` string
+# comparison.
 
 """No group index: the plain attribute path (`EmissionsData`, `GeographicInfo`, the `Outage`
-types, ...), unchanged from before D10."""
+types, ...)."""
 _attach_attribute!(sys::System, component, attribute, ::Nothing) =
     add_supplemental_attribute!(sys, component, attribute)
 
@@ -805,16 +805,16 @@ Takes the typed container, not JSON: reading a file belongs to
 `PowerCoreOpenAPIModels.read_document`, which [`from_file`](@ref) drives.
 
 Converts every component in dependency order ([`DOCUMENT_PLAN`](@ref), verified against
-dependency order), attaches reserve membership and supplemental
-attributes from the unified `supplemental_attribute_associations` table (D10), and — when
-`time_series_storage_path` is given — ingests `time_series_associations` from the document
-plus its HDF5 sidecar.
+dependency order), attaches supplemental attributes from `supplemental_attribute_associations`
+(plus `plant_associations`/`combined_cycle_associations` for the plant-family ones) and
+reserve membership from `service_associations`, and — when `time_series_storage_path` is
+given — ingests `time_series_associations` from the document plus its HDF5 sidecar.
 
 Errors loudly (naming the offending type, id, or field) rather than silently skipping:
-a component type with no registered converter, an unresolved supplemental-attribute
-association (attribute/service or entity), or time-series owner reference, an unmapped
-time-series type, scaling-factor multiplier, or supplemental `attribute_type` (see
-[`_attach_supplemental_attribute_associations!`](@ref)), and a document that declares time
+a component type with no registered converter, an unresolved attribute/plant/service
+association or entity reference, or time-series owner reference, an unmapped time-series
+type, scaling-factor multiplier, or supplemental `attribute_type` (see
+[`load_supplemental_attribute_associations!`](@ref)), and a document that declares time
 series but supplies no `time_series_storage_path`.
 
 Stores the id↔UUID round-trip ledger (`store_ledger!`) so a later

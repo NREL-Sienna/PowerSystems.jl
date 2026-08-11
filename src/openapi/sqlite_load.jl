@@ -39,11 +39,8 @@ function _check_owner_category_matches(owner, declared_category, owner_id)
     return nothing
 end
 
-"""Loud error naming `id` when the document's declared type string is absent or does not
-match `nameof(typeof(resolved))` — used for both a real supplemental attribute's
-`attribute_type` and a service-membership row's `attribute_type` (which names the service's
-own component type, e.g. `"OnlineReserve"`), since both are just "the type of whatever `id`
-resolved to"."""
+"""Loud error naming `id` when the document's declared `attribute_type` is absent or does
+not match `nameof(typeof(resolved))`."""
 function _check_resolved_type_matches(resolved, declared_type, id)
     isnothing(declared_type) && error(
         "load_supplemental_attribute_associations!: association referencing id=$id has " *
@@ -58,33 +55,50 @@ function _check_resolved_type_matches(resolved, declared_type, id)
 end
 
 """
+Every group index a (plant_id, entity_id) pair carries, from `doc.plant_associations` and
+`doc.combined_cycle_associations` (whose `hrsg_index` fills the same role). The two tables
+never name the same pair — a plant is either a `PlantAssociation`-shaped plant or a
+`CombinedCycleBlock`, never both — so one merged map is unambiguous.
+"""
+function _group_index_by_pair(doc::PC.SystemDocument)
+    indices = Dict{Tuple{Int, Int}, Int}(
+        (Int(a.plant_id), Int(a.entity_id)) => Int(a.group_index) for
+        a in doc.plant_associations
+    )
+    for a in doc.combined_cycle_associations
+        key = (Int(a.plant_id), Int(a.entity_id))
+        haskey(indices, key) && error(
+            "load_supplemental_attribute_associations!: plant_id=$(key[1]) " *
+            "entity_id=$(key[2]) appears in both plant_associations and " *
+            "combined_cycle_associations",
+        )
+        indices[key] = Int(a.hrsg_index)
+    end
+    return indices
+end
+
+"""
 $(TYPEDSIGNATURES)
 
-Attach every row of `doc.supplemental_attribute_associations` into `sys`, going through
-[`add_supplemental_attribute!`](@ref) rather than the raw `supplemental_attributes` SQLite
-table — that API already de-duplicates the association and derives `component_type` from
-the component's own type, so this function does no SQL of its own.
+Attach every row of `doc.supplemental_attribute_associations` and `doc.service_associations`
+into `sys`, going through [`add_supplemental_attribute!`](@ref)/[`add_service!`](@ref) rather
+than the raw SQLite tables — that API already de-duplicates the association and derives
+`component_type` from the component's own type, so this function does no SQL of its own.
 
 One PSY attribute object per `attribute_id`: a `attribute_id` shared by several rows
 is converted once, memoized, and attached to every entity that references it — never
-copied per row.
+copied per row. A plant-family attribute's group number for a given entity comes from the
+matching `plant_associations`/`combined_cycle_associations` row (there always is one — see
+[`_group_index_by_pair`](@ref)); every other attribute passes `nothing`.
 
 Extends the id→UUID resolution map: the first time an `attribute_id` is converted, the new
 object is registered into `refs` under that id (`refs[attribute_id] = attribute`), so
 [`resolve_uuid`](@ref)/`refs[id]` covers supplemental attributes exactly the way it already
-covers components from the dependency-ordered component pass. This is the piece the still-wired
-`_attach_supplemental_attribute_associations!` in `import_document.jl` does not do.
+covers components from the dependency-ordered component pass.
 
-A row whose `attribute_id` names a service-membership pair (both `entity_id` and
-`attribute_id` resolve to already-registered *components* — e.g. a generator contributing
-to an `OnlineReserve`) is recognized and attached via `_attach_service_membership!`, exactly
-as the existing import path does. It produces no SQLite row: a `Service` is a `Component`,
-not a `SupplementalAttribute`, so it does not belong in IS's supplemental-attribute
-association table.
-
-Errors, naming the id, when: an association's `entity_id` or `attribute_id` does not
-resolve, or its `attribute_type` is absent or does not match what the id actually resolved
-to. No silent skip.
+Errors, naming the id, when: an association's `entity_id`/`attribute_id`/`service_id` does
+not resolve, or an attribute's `attribute_type` is absent or does not match what the id
+actually resolved to. No silent skip.
 """
 function load_supplemental_attribute_associations!(
     sys::System,
@@ -95,6 +109,7 @@ function load_supplemental_attribute_associations!(
         Int(getproperty(attr, :id)) => attr for attr in doc.supplemental_attributes
     )
     converted = Dict{Int, SupplementalAttribute}()
+    group_index_by_pair = _group_index_by_pair(doc)
     for assoc in doc.supplemental_attribute_associations
         attribute_id = Int(assoc.attribute_id)
         entity_id = Int(assoc.entity_id)
@@ -102,24 +117,31 @@ function load_supplemental_attribute_associations!(
             "load_supplemental_attribute_associations!: association references " *
             "unresolved entity_id=$entity_id (attribute_id=$attribute_id)",
         )
-        if haskey(attribute_rows, attribute_id)
-            attribute = get!(converted, attribute_id) do
-                built = _attribute_from_openapi(attribute_rows[attribute_id], refs)
-                _check_resolved_type_matches(built, assoc.attribute_type, attribute_id)
-                refs[attribute_id] = built
-                return built
-            end
-            _attach_attribute!(sys, refs[entity_id], attribute, assoc.group_index)
-        elseif has_ref(refs, attribute_id)
-            service = refs[attribute_id]
-            _check_resolved_type_matches(service, assoc.attribute_type, attribute_id)
-            _attach_service_membership!(refs[entity_id], service, sys)
-        else
-            error(
-                "load_supplemental_attribute_associations!: association references " *
-                "unresolved attribute_id=$attribute_id (entity_id=$entity_id)",
-            )
+        haskey(attribute_rows, attribute_id) || error(
+            "load_supplemental_attribute_associations!: association references " *
+            "unresolved attribute_id=$attribute_id (entity_id=$entity_id)",
+        )
+        attribute = get!(converted, attribute_id) do
+            built = _attribute_from_openapi(attribute_rows[attribute_id], refs)
+            _check_resolved_type_matches(built, assoc.attribute_type, attribute_id)
+            refs[attribute_id] = built
+            return built
         end
+        group_index = get(group_index_by_pair, (attribute_id, entity_id), nothing)
+        _attach_attribute!(sys, refs[entity_id], attribute, group_index)
+    end
+    for assoc in doc.service_associations
+        service_id = Int(assoc.service_id)
+        entity_id = Int(assoc.entity_id)
+        has_ref(refs, service_id) || error(
+            "load_supplemental_attribute_associations!: service_associations row " *
+            "references unresolved service_id=$service_id (entity_id=$entity_id)",
+        )
+        has_ref(refs, entity_id) || error(
+            "load_supplemental_attribute_associations!: service_associations row " *
+            "references unresolved entity_id=$entity_id (service_id=$service_id)",
+        )
+        _attach_service_membership!(refs[entity_id], refs[service_id], sys)
     end
     return nothing
 end

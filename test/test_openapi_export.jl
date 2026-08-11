@@ -991,19 +991,19 @@ end
                 "PowerLoad" => [openapi_raw(load_po)],
                 "OnlineReserve" => [openapi_raw(reserve_po)],
             ),
-            # Service membership is a row in the unified table, alongside the plain
-            # EmissionsData association below — attribute_id names the service component
-            # (spin_up) and attribute_type its own type name.
             "supplemental_attributes" => [openapi_raw(emissions_po)],
             "supplemental_attribute_associations" => [
                 Dict{String, Any}(
                     "attribute_id" => 9, "entity_id" => 7,
                     "attribute_type" => "EmissionsData",
                 ),
-                Dict{String, Any}(
-                    "attribute_id" => 8, "entity_id" => 7,
-                    "attribute_type" => "OnlineReserve",
-                ),
+            ],
+            "plant_associations" => [],
+            "combined_cycle_associations" => [],
+            # Service membership: service_id names the service component (spin_up), entity_id
+            # the contributing device (load1).
+            "service_associations" => [
+                Dict{String, Any}("service_id" => 8, "entity_id" => 7),
             ],
             "time_series_associations" => [],
             "ext" => Dict{String, Any}(),
@@ -1033,22 +1033,11 @@ end
         @test length(only(PSY.PC.get_components(out, "Line")) |> x -> [x]) == 1
         @test length(PSY.PC.get_components(out, "OnlineReserve")) == 1
         @test length(out.supplemental_attributes) == 1
-        # The unified table carries both the plain EmissionsData association and the
-        # service-membership row, distinguished only by attribute_type.
-        @test length(out.supplemental_attribute_associations) == 2
-        assoc = only(
-            filter(
-                a -> a.attribute_type == "EmissionsData",
-                out.supplemental_attribute_associations,
-            ),
-        )
+        @test length(out.supplemental_attribute_associations) == 1
+        assoc = only(out.supplemental_attribute_associations)
         @test assoc.attribute_type == "EmissionsData"
-        service_assoc = only(
-            filter(
-                a -> a.attribute_type == "OnlineReserve",
-                out.supplemental_attribute_associations,
-            ),
-        )
+        @test length(out.service_associations) == 1
+        service_assoc = only(out.service_associations)
         @test service_assoc.entity_id == PSY.component_id(
             PSY._build_export_refs(
                 sys, "NATURAL_UNITS", PSY._ledger_uuid_to_id(PSY.load_ledger(sys)),

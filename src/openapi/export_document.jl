@@ -312,22 +312,19 @@ end
 
 # ── service membership (reverse of the service-membership branch in
 # _attach_supplemental_attribute_associations!) ───────────────────────────────────
-# Service membership is a row in the unified `supplemental_attribute_associations`
-# table, not its own `ServiceAssociation` table. `attribute_id` names the service (a
-# component, not a supplemental attribute) and `attribute_type` its type name; neither
-# `group_index` nor `role` applies to a membership row.
+# Service membership is a row in its own `ServiceAssociation` table: `service_id` and
+# `entity_id` both name components, so no `attribute_type` discriminator is needed.
 
 function _export_service_associations(refs::OpenAPIRefs, sys::System)
-    rows = PC.SupplementalAttributeAssociation[]
+    rows = PO.ServiceAssociation[]
     for device in get_components(Device, sys)
         supports_services(device) || continue
         for service in get_services(device)
             push!(
                 rows,
-                PC.SupplementalAttributeAssociation(;
-                    attribute_id = component_id(refs, service),
+                PO.ServiceAssociation(;
+                    service_id = component_id(refs, service),
                     entity_id = component_id(refs, device),
-                    attribute_type = string(nameof(typeof(service))),
                 ),
             )
         end
@@ -336,10 +333,9 @@ function _export_service_associations(refs::OpenAPIRefs, sys::System)
         for contributing in get_contributing_services(group)
             push!(
                 rows,
-                PC.SupplementalAttributeAssociation(;
-                    attribute_id = component_id(refs, group),
+                PO.ServiceAssociation(;
+                    service_id = component_id(refs, group),
                     entity_id = component_id(refs, contributing),
-                    attribute_type = string(nameof(typeof(group))),
                 ),
             )
         end
@@ -349,41 +345,122 @@ end
 
 # ── supplemental attributes (reverse of _attach_supplemental_attribute_associations!) ──
 
-# `group_index`/`role` are the reverse of the plant-family `_attach_attribute!` dispatch
-# on import: the shaft/penstock/PCC/HRSG/exclusion-group number an entity holds within a
-# `PowerPlant`, read out of the attribute's forward group map. `nothing` for both is correct
-# for a plain attribute (`EmissionsData`, `GeographicInfo`, the `Outage` types), which is why
-# this dispatches on the attribute type, not on some separate "has a group" flag.
+# A plant-family attribute (`ThermalPowerPlant`, `HydroPowerPlant`, `RenewablePowerPlant`,
+# `CombinedCycleFractional`, `CombinedCycleBlock`) gets both a plain
+# `SupplementalAttributeAssociation` row (for type resolution, like any other attribute) and
+# an additional `PlantAssociation`/`CombinedCycleAssociation` row recording the group: the
+# reverse of the plant-family `_attach_attribute!` dispatch on import. A plain attribute
+# (`EmissionsData`, `GeographicInfo`, the `Outage` types) gets no group row at all, which is
+# why this dispatches on the attribute type rather than on some separate "has a group" flag.
 # `_group_indices` is used rather than the public reverse-map getters, which build a whole
 # dict per call and would make this walk quadratic.
-_group_index_and_role(::SupplementalAttribute, ::Any) = (nothing, nothing)
-_group_index_and_role(attr::ThermalPowerPlant, entity) =
-    (_only_group_index(get_shaft_map(attr), entity), nothing)
-_group_index_and_role(attr::HydroPowerPlant, entity) =
-    (_only_group_index(get_penstock_map(attr), entity), nothing)
-_group_index_and_role(attr::RenewablePowerPlant, entity) =
-    (_only_group_index(get_pcc_map(attr), entity), nothing)
-_group_index_and_role(attr::CombinedCycleFractional, entity) =
-    (_only_group_index(get_operation_exclusion_map(attr), entity), nothing)
+_group_association!(::Vector, ::Vector, ::SupplementalAttribute, ::Any, ::Int, ::Int) =
+    nothing
+function _group_association!(
+    plant_rows::Vector{PO.PlantAssociation},
+    ::Vector,
+    attr::ThermalPowerPlant,
+    entity,
+    attr_id::Int,
+    entity_id::Int,
+)
+    _push_plant_association!(plant_rows, get_shaft_map(attr), entity, attr_id, entity_id)
+    return nothing
+end
+function _group_association!(
+    plant_rows::Vector{PO.PlantAssociation},
+    ::Vector,
+    attr::HydroPowerPlant,
+    entity,
+    attr_id::Int,
+    entity_id::Int,
+)
+    _push_plant_association!(plant_rows, get_penstock_map(attr), entity, attr_id, entity_id)
+    return nothing
+end
+function _group_association!(
+    plant_rows::Vector{PO.PlantAssociation},
+    ::Vector,
+    attr::RenewablePowerPlant,
+    entity,
+    attr_id::Int,
+    entity_id::Int,
+)
+    _push_plant_association!(plant_rows, get_pcc_map(attr), entity, attr_id, entity_id)
+    return nothing
+end
+function _group_association!(
+    plant_rows::Vector{PO.PlantAssociation},
+    ::Vector,
+    attr::CombinedCycleFractional,
+    entity,
+    attr_id::Int,
+    entity_id::Int,
+)
+    _push_plant_association!(
+        plant_rows,
+        get_operation_exclusion_map(attr),
+        entity,
+        attr_id,
+        entity_id,
+    )
+    return nothing
+end
 
-"""The single group number `entity` holds in `group_map`, or `nothing` when it holds none —
-the shape `group_index` takes in the document."""
-function _only_group_index(group_map, entity)
+"""Push a `PlantAssociation` row for `entity`'s single group in `group_map`, or nothing when
+it holds none — the shape `group_index` takes in the document."""
+function _push_plant_association!(plant_rows, group_map, entity, attr_id::Int, entity_id::Int)
     indices = _group_indices(group_map, IS.get_uuid(entity))
     isempty(indices) && return nothing
-    return only(indices)
+    push!(
+        plant_rows,
+        PO.PlantAssociation(;
+            plant_id = attr_id,
+            entity_id = entity_id,
+            group_index = only(indices),
+        ),
+    )
+    return nothing
 end
 
 """A CT/CA can feed more than one HRSG, but IS attaches a `CombinedCycleBlock` to a component
 once regardless — so only the lowest HRSG number is representable per association row. Known
 limitation: no index survived a document at all before the plant-attribute feature was added."""
-function _group_index_and_role(attr::CombinedCycleBlock, entity)
+function _group_association!(
+    ::Vector,
+    cc_rows::Vector{PO.CombinedCycleAssociation},
+    attr::CombinedCycleBlock,
+    entity,
+    attr_id::Int,
+    entity_id::Int,
+)
     uuid = IS.get_uuid(entity)
     ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), uuid)
-    isempty(ct_hrsgs) || return (first(ct_hrsgs), "CT")
+    if !isempty(ct_hrsgs)
+        push!(
+            cc_rows,
+            PO.CombinedCycleAssociation(;
+                plant_id = attr_id,
+                entity_id = entity_id,
+                role = "CT",
+                hrsg_index = first(ct_hrsgs),
+            ),
+        )
+        return nothing
+    end
     ca_hrsgs = _group_indices(get_hrsg_ca_map(attr), uuid)
-    isempty(ca_hrsgs) || return (first(ca_hrsgs), "CA")
-    return (nothing, nothing)
+    if !isempty(ca_hrsgs)
+        push!(
+            cc_rows,
+            PO.CombinedCycleAssociation(;
+                plant_id = attr_id,
+                entity_id = entity_id,
+                role = "CA",
+                hrsg_index = first(ca_hrsgs),
+            ),
+        )
+    end
+    return nothing
 end
 
 """
@@ -404,6 +481,8 @@ function _export_supplemental_attributes(
     )
     attribute_rows = Any[]
     association_rows = PC.SupplementalAttributeAssociation[]
+    plant_association_rows = PO.PlantAssociation[]
+    combined_cycle_association_rows = PO.CombinedCycleAssociation[]
     attr_ids = Dict{Base.UUID, Int}()
     for (entity_id, entity) in sorted_refs
         _has_own_uuid(entity) || continue
@@ -417,20 +496,28 @@ function _export_supplemental_attributes(
                 )
                 return id
             end
-            group_index, role = _group_index_and_role(attr, entity)
             push!(
                 association_rows,
                 PC.SupplementalAttributeAssociation(;
                     attribute_id = attr_id,
                     entity_id = entity_id,
                     attribute_type = string(nameof(typeof(attr))),
-                    group_index = group_index,
-                    role = role,
                 ),
+            )
+            _group_association!(
+                plant_association_rows,
+                combined_cycle_association_rows,
+                attr,
+                entity,
+                attr_id,
+                entity_id,
             )
         end
     end
-    return attribute_rows, association_rows
+    return attribute_rows,
+    association_rows,
+    plant_association_rows,
+    combined_cycle_association_rows
 end
 
 # ── time series (reverse of _attach_time_series!) ───────────────────────────────
@@ -616,14 +703,15 @@ function to_openapi(
     # One id-ordered snapshot of the registry, shared by both document-order-sensitive
     # walks below rather than each re-collecting and re-sorting it.
     sorted_refs = sort(collect(refs.by_id); by = first)
-    supplemental_attributes, supplemental_attribute_associations =
-        _export_supplemental_attributes(sorted_refs, refs, doc)
+    supplemental_attributes,
+    supplemental_attribute_associations,
+    plant_associations,
+    combined_cycle_associations = _export_supplemental_attributes(sorted_refs, refs, doc)
     append!(doc.supplemental_attributes, supplemental_attributes)
     append!(doc.supplemental_attribute_associations, supplemental_attribute_associations)
-    append!(
-        doc.supplemental_attribute_associations,
-        _export_service_associations(refs, sys),
-    )
+    append!(doc.plant_associations, plant_associations)
+    append!(doc.combined_cycle_associations, combined_cycle_associations)
+    append!(doc.service_associations, _export_service_associations(refs, sys))
     append!(
         doc.time_series_associations,
         _export_all_time_series(sorted_refs, time_series_storage_path),

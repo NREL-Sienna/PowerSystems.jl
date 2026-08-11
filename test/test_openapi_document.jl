@@ -89,8 +89,7 @@ end
         @test get_bus(shunt) === bus2
         @test get_Y(shunt) == Complex(0.0, -0.5)
 
-        # Reserve device membership, from a service-membership row in the unified
-        # `supplemental_attribute_associations` table (D10).
+        # Reserve device membership, from a service_associations row.
         gen = get_component(ThermalStandard, sys, "gen1")
         reserve = get_component(OnlineReserve, sys, "spin_up")
         @test has_service(gen, reserve)
@@ -120,14 +119,11 @@ end
         doc["components"]["FooBarType"] = [Dict{String, Any}("id" => 999)]
         @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
 
-        # Unresolved entity_id on a service-membership row: attribute_id (8) resolves to
+        # Unresolved entity_id on a service-membership row: service_id (8) resolves to
         # the real "spin_up" reserve, but no component exists under entity_id 999.
         doc = make_openapi_test_doc()
-        doc["supplemental_attribute_associations"] = [
-            Dict{String, Any}(
-                "attribute_id" => 8, "entity_id" => 999,
-                "attribute_type" => "OnlineReserve",
-            ),
+        doc["service_associations"] = [
+            Dict{String, Any}("service_id" => 8, "entity_id" => 999),
         ]
         @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
 

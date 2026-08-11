@@ -326,13 +326,13 @@ function make_openapi_test_doc(;
         "unit_system" => "NATURAL_UNITS",
         "components" => components,
         "supplemental_attributes" => [],
-        # Service membership is a row in the unified table, with attribute_id naming
-        # the service component (spin_up) and attribute_type its own type name.
-        "supplemental_attribute_associations" => [
-            Dict{String, Any}(
-                "attribute_id" => 8, "entity_id" => 6,
-                "attribute_type" => "OnlineReserve",
-            ),
+        "supplemental_attribute_associations" => [],
+        "plant_associations" => [],
+        "combined_cycle_associations" => [],
+        # Service membership: service_id names the service component (spin_up), entity_id
+        # the contributing device (gen1).
+        "service_associations" => [
+            Dict{String, Any}("service_id" => 8, "entity_id" => 6),
         ],
         "time_series_associations" => [],
         "ext" => Dict{String, Any}(),
