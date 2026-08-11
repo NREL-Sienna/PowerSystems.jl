@@ -360,8 +360,6 @@ export ReserveUp
 export ReserveDown
 export ReserveSymmetric
 export AGC
-export ReserveDemandCurve
-export ReserveDemandTimeSeriesCurve
 export OnlineReserve
 export OfflineReserve
 export GroupReserve
@@ -976,9 +974,6 @@ include("openapi/import_handwritten.jl")
 # Hand-written methods on the generated `TransformerCircuit` type; included after
 # generated/includes.jl so the type is defined.
 include("models/transformer_circuits.jl")
-
-include("models/cost_functions/ReserveDemandCurve.jl")
-include("models/cost_functions/ReserveDemandTimeSeriesCurve.jl")
 
 #Methods for devices
 include("models/components.jl")
