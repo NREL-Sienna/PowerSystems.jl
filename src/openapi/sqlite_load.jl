@@ -161,9 +161,8 @@ function load_time_series_associations!(
         "time_series_associations row(s) but no time_series_storage_path was given",
     )
     storage = IS.Hdf5TimeSeriesStorage(false; filename = String(time_series_storage_path))
-    # Shared across every row in this call: a series referenced by N owner rows (e.g. RTS's
-    # zone/area load fan-out) is read off `storage` once via `_materialize_time_series!`,
-    # not N times. Every owner row still gets its own attach call.
+    # Shared across every row in this call: a series referenced by N owner rows is read off
+    # `storage` once via `_materialize_time_series!`, not N times.
     materialized = Dict{Base.UUID, TimeSeriesData}()
     for assoc in rows
         owner_id = Int(assoc.owner_id)

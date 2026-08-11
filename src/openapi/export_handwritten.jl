@@ -17,6 +17,8 @@ const TWOWINDINGTRANSFORMERSHUNTLOCATION_TO_STRING =
     _invert(TWOWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING)
 const RESERVOIRDATATYPE_TO_STRING = _invert(RESERVOIRDATATYPE_FROM_STRING)
 const STORAGETECH_TO_STRING = _invert(STORAGETECH_FROM_STRING)
+const VSCDCCONTROLMODES_TO_STRING = _invert(VSCDCCONTROLMODES_FROM_STRING)
+const VSCACCONTROLMODES_TO_STRING = _invert(VSCACCONTROLMODES_FROM_STRING)
 
 # ── Arc ─────────────────────────────────────────────────────────────────────────
 # No unit-converted fields; both unit-system methods identical (mirrors import).
@@ -137,6 +139,61 @@ function to_openapi(line::Line, refs::OpenAPIRefs, ::NaturalUnit)
         rating_c = _scale_optional_po(get_rating_c(line, SU), sbp),
         angle_limits = _minmax_po(get_angle_limits(line)),
         g = _fromto_po(get_g(line, SU)),
+    )
+end
+
+# ── DiscreteControlledACBranch ───────────────────────────────────────────────────
+# `active_power_flow`/`reactive_power_flow`/`r`/`x` are declared `SU` (system base), `rating`
+# is declared `DU` — numerically identical for this type since its `base_power` always equals
+# the document system base (see the import-side comment), but the identity accessor for each
+# field must still match its own declared tier.
+const DISCRETECONTROLLEDBRANCHTYPE_TO_STRING =
+    Dict(v => k for (k, v) in DISCRETECONTROLLEDBRANCHTYPE_FROM_STRING)
+const DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING =
+    Dict(v => k for (k, v) in DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING)
+
+function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.DiscreteControlledACBranch(;
+        id = component_id(refs, branch),
+        name = get_name(branch),
+        available = get_available(branch),
+        active_power_flow = get_active_power_flow(branch, SU),
+        reactive_power_flow = get_reactive_power_flow(branch, SU),
+        arc = component_id(refs, get_arc(branch)),
+        base_power = _get_base_power(branch),
+        r = get_r(branch, SU),
+        x = get_x(branch, SU),
+        rating = get_rating(branch, DU),
+        discrete_branch_type = DISCRETECONTROLLEDBRANCHTYPE_TO_STRING[get_discrete_branch_type(
+            branch,
+        )],
+        branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_branch_status(branch)],
+        normal_branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_normal_branch_status(
+            branch,
+        )],
+    )
+end
+
+function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::NaturalUnit)
+    bp = _get_base_power(branch)
+    return PO.DiscreteControlledACBranch(;
+        id = component_id(refs, branch),
+        name = get_name(branch),
+        available = get_available(branch),
+        active_power_flow = get_active_power_flow(branch, SU) * bp,
+        reactive_power_flow = get_reactive_power_flow(branch, SU) * bp,
+        arc = component_id(refs, get_arc(branch)),
+        base_power = bp,
+        r = get_r(branch, SU),
+        x = get_x(branch, SU),
+        rating = get_rating(branch, DU) * bp,
+        discrete_branch_type = DISCRETECONTROLLEDBRANCHTYPE_TO_STRING[get_discrete_branch_type(
+            branch,
+        )],
+        branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_branch_status(branch)],
+        normal_branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_normal_branch_status(
+            branch,
+        )],
     )
 end
 
@@ -274,11 +331,10 @@ end
 # ── FixedAdmittance ─────────────────────────────────────────────────────────────
 # `Y` is stored in PSY as pu on the system base, but the wire enum has no system-base
 # member: `ShuntAdmittanceUnitBasis` is `NATURAL_UNITS`/`DEVICE_MVAR` only, because a shunt
-# has no device MVA rating of its own. Export therefore states `DEVICE_MVAR` — PSS/E RAW
-# native, MVAr at unity voltage — and multiplies by the document-level system base, exactly
-# inverting the `DEVICE_MVAR` division in `_fixed_admittance_pu`. Independent of what basis
-# the document was originally imported from, mirroring TwoWindingTransformer's
-# always-"DEVICE_BASE" export above.
+# has no device MVA rating of its own. Export therefore states `DEVICE_MVAR` (MVAr at unity
+# voltage) and multiplies by the document-level system base, exactly inverting the
+# `DEVICE_MVAR` division in `_fixed_admittance_pu`. Independent of what basis the document was
+# originally imported from, mirroring TwoWindingTransformer's always-"DEVICE_BASE" export.
 
 function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     y = get_Y(shunt) * get_base_power(refs)
@@ -294,6 +350,76 @@ end
 
 function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
     return to_openapi(shunt, refs, DU)
+end
+
+# ── SwitchedAdmittance ────────────────────────────────────────────────────────────
+# Mirrors `FixedAdmittance`: `Y`/`Y_increase` are fixed-natural DEVICE_MVAR-on-system-base,
+# independent of the document's unit system, so `NaturalUnit` delegates to `DeviceBaseUnit`.
+const SWITCHED_ADMITTANCE_CONTROL_MODE_TO_STRING =
+    Dict(v => k for (k, v) in SWITCHED_ADMITTANCE_CONTROL_MODE_FROM_STRING)
+
+function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    base_power = get_base_power(refs)
+    y_increase = [
+        _complex_number_po(v * base_power) for v in get_Y_increase(shunt)
+    ]
+    return PO.SwitchedAdmittance(;
+        id = component_id(refs, shunt),
+        name = get_name(shunt),
+        available = get_available(shunt),
+        bus = component_id(refs, get_bus(shunt)),
+        admittance_units = "DEVICE_MVAR",
+        Y = _complex_number_po(get_Y(shunt) * base_power),
+        initial_status = get_initial_status(shunt),
+        number_of_steps = get_number_of_steps(shunt),
+        Y_increase = y_increase,
+        admittance_limits = _minmax_po(get_admittance_limits(shunt)),
+        control_mode = SWITCHED_ADMITTANCE_CONTROL_MODE_TO_STRING[get_control_mode(shunt)],
+        regulated_bus_number = get_regulated_bus_number(shunt),
+    )
+end
+
+function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(shunt, refs, DU)
+end
+
+# ── FACTSControlDevice ────────────────────────────────────────────────────────────
+# Mirrors import: `max_shunt_current`/`max_reactive_power` are `SU`-identity, divided/
+# multiplied by the document system base; `voltage_setpoint` is always exported as
+# "DEVICE_BASE" (the only basis import implements), matching TwoWindingTransformer's
+# always-"DEVICE_BASE" export posture for a similarly fixed-representation field.
+const FACTSOPERATIONMODES_TO_STRING =
+    Dict(v => k for (k, v) in FACTSOPERATIONMODES_FROM_STRING)
+const FACTSSHUNTCONTROLTYPE_TO_STRING =
+    Dict(v => k for (k, v) in FACTSSHUNTCONTROLTYPE_FROM_STRING)
+
+function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    base_power = get_base_power(refs)
+    control_mode = get_control_mode(device)
+    return PO.FACTSControlDevice(;
+        id = component_id(refs, device),
+        name = get_name(device),
+        available = get_available(device),
+        bus = component_id(refs, get_bus(device)),
+        control_mode = if isnothing(control_mode)
+            nothing
+        else
+            FACTSOPERATIONMODES_TO_STRING[control_mode]
+        end,
+        voltage_setpoint_units = "DEVICE_BASE",
+        voltage_setpoint = get_voltage_setpoint(device),
+        max_shunt_current = get_max_shunt_current(device, SU) * base_power,
+        reactive_power_required = get_reactive_power_required(device),
+        max_reactive_power = get_max_reactive_power(device, SU) * base_power,
+        shunt_control_type = FACTSSHUNTCONTROLTYPE_TO_STRING[get_shunt_control_type(
+            device,
+        )],
+        regulated_bus_number = get_regulated_bus_number(device),
+    )
+end
+
+function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(device, refs, DU)
 end
 
 # ── TwoTerminalGenericHVDCLine ──────────────────────────────────────────────────
@@ -357,6 +483,307 @@ function to_openapi(
         base_power = sbp,
     )
 end
+
+# ── TwoTerminalLCCLine ────────────────────────────────────────────────────────────
+# Mirrors import: always exports "NATURAL_UNITS" for `parameter_units`/`dc_voltage_units` (the
+# only basis implemented), so `r`/`rectifier_rc`/`rectifier_xc`/`rectifier_capacitor_reactance`/
+# `inverter_rc`/`inverter_xc`/`inverter_capacitor_reactance`/`compounding_resistance` convert
+# pu → ohms in BOTH methods identically — the PROVISIONAL `scheduled_dc_voltage`-based Zbase for
+# `r`/`compounding_resistance` (see import_handwritten.jl's header on this exact point) applies
+# here too. Only `active_power_flow`/`active_power_limits_*`/`reactive_power_limits_*`/
+# `transfer_setpoint` (when `power_mode`) differ, multiplying by the document system base under
+# `NaturalUnit`. Voltage/angle/ratio/tap/bridge fields have no unit-aware getter on the PSY
+# side (plain field access) and pass through unconverted.
+
+_lcc_pu_to_ohm(pu, base_voltage, base_power) = pu * (base_voltage^2 / base_power)
+
+_lcc_transfer_setpoint_to_openapi(transfer_setpoint, ::Val{true}, base_power) =
+    transfer_setpoint * base_power
+_lcc_transfer_setpoint_to_openapi(transfer_setpoint, ::Val{false}, _base_power) =
+    transfer_setpoint
+
+function to_openapi(lcc::TwoTerminalLCCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    base_power = _get_base_power(lcc)
+    rbv = get_rectifier_base_voltage(lcc)
+    ibv = get_inverter_base_voltage(lcc)
+    dcv = get_scheduled_dc_voltage(lcc)
+    return PO.TwoTerminalLCCLine(;
+        id = component_id(refs, lcc),
+        name = get_name(lcc),
+        available = get_available(lcc),
+        arc = component_id(refs, get_arc(lcc)),
+        active_power_flow = get_active_power_flow(lcc, SU),
+        parameter_units = "NATURAL_UNITS",
+        r = _lcc_pu_to_ohm(get_r(lcc), dcv, base_power),
+        transfer_setpoint = get_transfer_setpoint(lcc),
+        dc_voltage_units = "NATURAL_UNITS",
+        scheduled_dc_voltage = dcv,
+        rectifier_bridges = get_rectifier_bridges(lcc),
+        rectifier_delay_angle_limits = _minmax_po(get_rectifier_delay_angle_limits(lcc)),
+        rectifier_rc = _lcc_pu_to_ohm(get_rectifier_rc(lcc), rbv, base_power),
+        rectifier_xc = _lcc_pu_to_ohm(get_rectifier_xc(lcc), rbv, base_power),
+        rectifier_base_voltage = rbv,
+        inverter_bridges = get_inverter_bridges(lcc),
+        inverter_extinction_angle_limits = _minmax_po(
+            get_inverter_extinction_angle_limits(lcc),
+        ),
+        inverter_rc = _lcc_pu_to_ohm(get_inverter_rc(lcc), ibv, base_power),
+        inverter_xc = _lcc_pu_to_ohm(get_inverter_xc(lcc), ibv, base_power),
+        inverter_base_voltage = ibv,
+        power_mode = get_power_mode(lcc),
+        switch_mode_voltage = get_switch_mode_voltage(lcc),
+        compounding_resistance = _lcc_pu_to_ohm(
+            get_compounding_resistance(lcc),
+            dcv,
+            base_power,
+        ),
+        min_compounding_voltage = get_min_compounding_voltage(lcc),
+        rectifier_transformer_ratio = get_rectifier_transformer_ratio(lcc),
+        rectifier_tap_setting = get_rectifier_tap_setting(lcc),
+        rectifier_tap_limits = _minmax_po(get_rectifier_tap_limits(lcc)),
+        rectifier_tap_step = get_rectifier_tap_step(lcc),
+        rectifier_delay_angle = get_rectifier_delay_angle(lcc),
+        rectifier_capacitor_reactance = _lcc_pu_to_ohm(
+            get_rectifier_capacitor_reactance(lcc), rbv, base_power,
+        ),
+        inverter_transformer_ratio = get_inverter_transformer_ratio(lcc),
+        inverter_tap_setting = get_inverter_tap_setting(lcc),
+        inverter_tap_limits = _minmax_po(get_inverter_tap_limits(lcc)),
+        inverter_tap_step = get_inverter_tap_step(lcc),
+        inverter_extinction_angle = get_inverter_extinction_angle(lcc),
+        inverter_capacitor_reactance = _lcc_pu_to_ohm(
+            get_inverter_capacitor_reactance(lcc), ibv, base_power,
+        ),
+        active_power_limits_from = _minmax_po(get_active_power_limits_from(lcc, SU)),
+        active_power_limits_to = _minmax_po(get_active_power_limits_to(lcc, SU)),
+        reactive_power_limits_from = _minmax_po(get_reactive_power_limits_from(lcc, SU)),
+        reactive_power_limits_to = _minmax_po(get_reactive_power_limits_to(lcc, SU)),
+        loss = _hvdc_loss_to_openapi(get_loss(lcc)),
+        base_power = base_power,
+    )
+end
+
+function to_openapi(lcc::TwoTerminalLCCLine, refs::OpenAPIRefs, ::NaturalUnit)
+    base_power = _get_base_power(lcc)
+    rbv = get_rectifier_base_voltage(lcc)
+    ibv = get_inverter_base_voltage(lcc)
+    dcv = get_scheduled_dc_voltage(lcc)
+    return PO.TwoTerminalLCCLine(;
+        id = component_id(refs, lcc),
+        name = get_name(lcc),
+        available = get_available(lcc),
+        arc = component_id(refs, get_arc(lcc)),
+        active_power_flow = get_active_power_flow(lcc, SU) * base_power,
+        parameter_units = "NATURAL_UNITS",
+        r = _lcc_pu_to_ohm(get_r(lcc), dcv, base_power),
+        transfer_setpoint = _lcc_transfer_setpoint_to_openapi(
+            get_transfer_setpoint(lcc), Val(get_power_mode(lcc)), base_power,
+        ),
+        dc_voltage_units = "NATURAL_UNITS",
+        scheduled_dc_voltage = dcv,
+        rectifier_bridges = get_rectifier_bridges(lcc),
+        rectifier_delay_angle_limits = _minmax_po(get_rectifier_delay_angle_limits(lcc)),
+        rectifier_rc = _lcc_pu_to_ohm(get_rectifier_rc(lcc), rbv, base_power),
+        rectifier_xc = _lcc_pu_to_ohm(get_rectifier_xc(lcc), rbv, base_power),
+        rectifier_base_voltage = rbv,
+        inverter_bridges = get_inverter_bridges(lcc),
+        inverter_extinction_angle_limits = _minmax_po(
+            get_inverter_extinction_angle_limits(lcc),
+        ),
+        inverter_rc = _lcc_pu_to_ohm(get_inverter_rc(lcc), ibv, base_power),
+        inverter_xc = _lcc_pu_to_ohm(get_inverter_xc(lcc), ibv, base_power),
+        inverter_base_voltage = ibv,
+        power_mode = get_power_mode(lcc),
+        switch_mode_voltage = get_switch_mode_voltage(lcc),
+        compounding_resistance = _lcc_pu_to_ohm(
+            get_compounding_resistance(lcc),
+            dcv,
+            base_power,
+        ),
+        min_compounding_voltage = get_min_compounding_voltage(lcc),
+        rectifier_transformer_ratio = get_rectifier_transformer_ratio(lcc),
+        rectifier_tap_setting = get_rectifier_tap_setting(lcc),
+        rectifier_tap_limits = _minmax_po(get_rectifier_tap_limits(lcc)),
+        rectifier_tap_step = get_rectifier_tap_step(lcc),
+        rectifier_delay_angle = get_rectifier_delay_angle(lcc),
+        rectifier_capacitor_reactance = _lcc_pu_to_ohm(
+            get_rectifier_capacitor_reactance(lcc), rbv, base_power,
+        ),
+        inverter_transformer_ratio = get_inverter_transformer_ratio(lcc),
+        inverter_tap_setting = get_inverter_tap_setting(lcc),
+        inverter_tap_limits = _minmax_po(get_inverter_tap_limits(lcc)),
+        inverter_tap_step = get_inverter_tap_step(lcc),
+        inverter_extinction_angle = get_inverter_extinction_angle(lcc),
+        inverter_capacitor_reactance = _lcc_pu_to_ohm(
+            get_inverter_capacitor_reactance(lcc), ibv, base_power,
+        ),
+        active_power_limits_from = _minmax_po_scaled(
+            get_active_power_limits_from(lcc, SU),
+            base_power,
+        ),
+        active_power_limits_to = _minmax_po_scaled(
+            get_active_power_limits_to(lcc, SU),
+            base_power,
+        ),
+        reactive_power_limits_from = _minmax_po_scaled(
+            get_reactive_power_limits_from(lcc, SU),
+            base_power,
+        ),
+        reactive_power_limits_to = _minmax_po_scaled(
+            get_reactive_power_limits_to(lcc, SU),
+            base_power,
+        ),
+        loss = _hvdc_loss_to_openapi(get_loss(lcc)),
+        base_power = base_power,
+    )
+end
+
+# ── TwoTerminalVSCLine ──────────────────────────────────────────────────────────
+# Mirrors import: always exports "NATURAL_UNITS" for `admittance_units`/`voltage_units` (the
+# only basis implemented), so `g` converts pu → siemens in BOTH methods, and the DC-voltage
+# `dc_setpoint_*` branches convert pu → kV in both. Only the document-unit-system-governed power
+# fields and `dc_setpoint_*`'s `DC_POWER` branch multiply by the system base under `NaturalUnit`.
+# `voltage_limits_*`, `dc_voltage_droop_*`, the current fields, `rmpct_*`, the weighting
+# fractions, and `rated_dc_voltage` pass through — see import_handwritten.jl's header for why
+# each one is left alone. `ac_setpoint_*` under `AC_VOLTAGE` errors on the way out for the same
+# missing-AC-base reason it errors on the way in, rather than writing a per-unit magnitude into a
+# field the document declares in kV.
+
+"""pu → siemens via `Ybase = base_power / rated_dc_voltage^2` (kV, MVA)."""
+function _vsc_pu_to_siemens(vsc::TwoTerminalVSCLine, base_power)
+    g = get_g(vsc)
+    base_voltage = _vsc_export_dc_base_voltage(vsc, g, "g")
+    return g / (base_voltage^2 / base_power)
+end
+
+"""Inverse of import's `_vsc_dc_base_voltage`: a `0.0` rating is only usable while nothing
+actually needs the base."""
+function _vsc_export_dc_base_voltage(vsc::TwoTerminalVSCLine, value, field::AbstractString)
+    rated = get_rated_dc_voltage(vsc)
+    if !iszero(rated)
+        return rated
+    end
+    if iszero(value)
+        return one(rated)
+    end
+    return error(
+        "TwoTerminalVSCLine \"$(get_name(vsc))\": $field is $value but rated_dc_voltage is " *
+        "0.0, so there is no DC voltage base to express it against — set rated_dc_voltage",
+    )
+end
+
+_vsc_dc_setpoint_to_openapi(
+    _vsc, setpoint, ::Val{VSCDCControlModes.DC_POWER}, base_power, ::NaturalUnit,
+) = setpoint * base_power
+_vsc_dc_setpoint_to_openapi(
+    _vsc, setpoint, ::Val{VSCDCControlModes.DC_POWER}, _base_power, ::DeviceBaseUnit,
+) = setpoint
+function _vsc_dc_setpoint_to_openapi(
+    vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit,
+)
+    return setpoint * _vsc_export_dc_base_voltage(vsc, setpoint, "dc_setpoint")
+end
+function _vsc_dc_setpoint_to_openapi(
+    vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
+)
+    return setpoint * _vsc_export_dc_base_voltage(vsc, setpoint, "dc_setpoint")
+end
+
+_vsc_ac_setpoint_to_openapi(_vsc, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) =
+    setpoint
+_vsc_ac_setpoint_to_openapi(vsc, _setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = error(
+    "TwoTerminalVSCLine \"$(get_name(vsc))\": ac_control is AC_VOLTAGE, whose ac_setpoint is " *
+    "per-unit of the converter's AC base voltage in PowerSystems and kV in the document — " *
+    "neither the component nor the document carries that base, so the value cannot be converted",
+)
+
+"""The shared body of both unit-system methods; only `unit` decides the power scaling."""
+function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAPIRefs, unit)
+    base_power = _get_base_power(vsc)
+    dc_control_from = get_dc_control_from(vsc)
+    dc_control_to = get_dc_control_to(vsc)
+    ac_control_from = get_ac_control_from(vsc)
+    ac_control_to = get_ac_control_to(vsc)
+    return PO.TwoTerminalVSCLine(;
+        id = component_id(refs, vsc),
+        name = get_name(vsc),
+        available = get_available(vsc),
+        arc = component_id(refs, get_arc(vsc)),
+        active_power_flow = _vsc_power_to_openapi(
+            get_active_power_flow(vsc, SU), base_power, unit,
+        ),
+        rating = _vsc_power_to_openapi(get_rating(vsc, SU), base_power, unit),
+        active_power_limits_from = _vsc_minmax_to_openapi(
+            get_active_power_limits_from(vsc, SU), base_power, unit,
+        ),
+        active_power_limits_to = _vsc_minmax_to_openapi(
+            get_active_power_limits_to(vsc, SU), base_power, unit,
+        ),
+        admittance_units = "NATURAL_UNITS",
+        g = _vsc_pu_to_siemens(vsc, base_power),
+        dc_current = get_dc_current(vsc),
+        reactive_power_from = _vsc_power_to_openapi(
+            get_reactive_power_from(vsc, SU), base_power, unit,
+        ),
+        dc_control_from = VSCDCCONTROLMODES_TO_STRING[dc_control_from],
+        ac_control_from = VSCACCONTROLMODES_TO_STRING[ac_control_from],
+        dc_setpoint_from = _vsc_dc_setpoint_to_openapi(
+            vsc, get_dc_setpoint_from(vsc), Val(dc_control_from), base_power, unit,
+        ),
+        ac_setpoint_from = _vsc_ac_setpoint_to_openapi(
+            vsc, get_ac_setpoint_from(vsc), Val(ac_control_from),
+        ),
+        converter_loss_from = convert_cost_to_openapi(get_converter_loss_from(vsc)),
+        max_dc_current_from = get_max_dc_current_from(vsc),
+        rating_from = _vsc_power_to_openapi(get_rating_from(vsc, SU), base_power, unit),
+        reactive_power_limits_from = _vsc_minmax_to_openapi(
+            get_reactive_power_limits_from(vsc, SU), base_power, unit,
+        ),
+        power_factor_weighting_fraction_from =
+        get_power_factor_weighting_fraction_from(vsc),
+        voltage_units = "NATURAL_UNITS",
+        voltage_limits_from = _minmax_po(get_voltage_limits_from(vsc)),
+        dc_voltage_droop_from = get_dc_voltage_droop_from(vsc),
+        reactive_power_to = _vsc_power_to_openapi(
+            get_reactive_power_to(vsc, SU), base_power, unit,
+        ),
+        dc_control_to = VSCDCCONTROLMODES_TO_STRING[dc_control_to],
+        ac_control_to = VSCACCONTROLMODES_TO_STRING[ac_control_to],
+        dc_setpoint_to = _vsc_dc_setpoint_to_openapi(
+            vsc, get_dc_setpoint_to(vsc), Val(dc_control_to), base_power, unit,
+        ),
+        ac_setpoint_to = _vsc_ac_setpoint_to_openapi(
+            vsc, get_ac_setpoint_to(vsc), Val(ac_control_to),
+        ),
+        converter_loss_to = convert_cost_to_openapi(get_converter_loss_to(vsc)),
+        max_dc_current_to = get_max_dc_current_to(vsc),
+        rating_to = _vsc_power_to_openapi(get_rating_to(vsc, SU), base_power, unit),
+        reactive_power_limits_to = _vsc_minmax_to_openapi(
+            get_reactive_power_limits_to(vsc, SU), base_power, unit,
+        ),
+        power_factor_weighting_fraction_to = get_power_factor_weighting_fraction_to(vsc),
+        voltage_limits_to = _minmax_po(get_voltage_limits_to(vsc)),
+        dc_voltage_droop_to = get_dc_voltage_droop_to(vsc),
+        rated_dc_voltage = get_rated_dc_voltage(vsc),
+        remote_bus_control_from = get_remote_bus_control_from(vsc),
+        remote_bus_control_to = get_remote_bus_control_to(vsc),
+        rmpct_from = get_rmpct_from(vsc),
+        rmpct_to = get_rmpct_to(vsc),
+        base_power = base_power,
+    )
+end
+
+_vsc_power_to_openapi(value, base_power, ::NaturalUnit) = value * base_power
+_vsc_power_to_openapi(value, _base_power, ::DeviceBaseUnit) = value
+
+_vsc_minmax_to_openapi(m, base_power, ::NaturalUnit) = _minmax_po_scaled(m, base_power)
+_vsc_minmax_to_openapi(m, _base_power, ::DeviceBaseUnit) = _minmax_po(m)
+
+to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAPIRefs, unit::DeviceBaseUnit) =
+    _two_terminal_vsc_line_to_openapi(vsc, refs, unit)
+
+to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAPIRefs, unit::NaturalUnit) =
+    _two_terminal_vsc_line_to_openapi(vsc, refs, unit)
 
 # ── HydroReservoir ──────────────────────────────────────────────────────────────
 # No unit-converted fields; both unit-system methods identical (mirrors import).

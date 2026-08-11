@@ -1,7 +1,6 @@
 # Document-level OpenAPI import path. A small synthetic document exercises the
 # dependency-ordered component pass, reserve membership, time series ingestion against a
-# real HDF5 sidecar, ledger round-trip, and every loud-error path — not the full RTS
-# fixture (too slow for this file; that is the controller's integration script).
+# real HDF5 sidecar, ledger round-trip, and every loud-error path.
 
 # The shared document fixture lives in common.jl (`make_openapi_test_doc`,
 # `openapi_raw`), also used by test_openapi_export.jl.
@@ -84,7 +83,7 @@ end
         @test get_name(get_area(bus2)) == "area1"
         @test get_name(get_load_zone(bus2)) == "lz1"
 
-        # DEVICE_MVAR (PSS/E RAW native) divides by the document's system base
+        # DEVICE_MVAR divides by the document's system base
         # (100 MVA) to land on PSY's SYSTEM_BASE pu storage: -50 MVAr / 100 MVA.
         shunt = get_component(FixedAdmittance, sys, "shunt1")
         @test get_bus(shunt) === bus2

@@ -21,6 +21,10 @@ const DOCUMENT_PLAN = [
     (po_type = PO.Arc, psy_type = Arc, key = "Arc", addable = true),
     (po_type = PO.Line, psy_type = Line, key = "Line", addable = true),
     (
+        po_type = PO.DiscreteControlledACBranch, psy_type = DiscreteControlledACBranch,
+        key = "DiscreteControlledACBranch", addable = true,
+    ),
+    (
         po_type = PO.TransformerCircuit, psy_type = TransformerCircuit,
         key = "TransformerCircuit", addable = false,
     ),
@@ -45,8 +49,18 @@ const DOCUMENT_PLAN = [
     ),
     (po_type = PO.PowerLoad, psy_type = PowerLoad, key = "PowerLoad", addable = true),
     (
+        po_type = PO.StandardLoad,
+        psy_type = StandardLoad,
+        key = "StandardLoad",
+        addable = true,
+    ),
+    (
         po_type = PO.InterruptiblePowerLoad, psy_type = InterruptiblePowerLoad,
         key = "InterruptiblePowerLoad", addable = true,
+    ),
+    (
+        po_type = PO.InterruptibleStandardLoad, psy_type = InterruptibleStandardLoad,
+        key = "InterruptibleStandardLoad", addable = true,
     ),
     (
         po_type = PO.ShiftablePowerLoad, psy_type = ShiftablePowerLoad,
@@ -55,6 +69,16 @@ const DOCUMENT_PLAN = [
     (
         po_type = PO.FixedAdmittance, psy_type = FixedAdmittance,
         key = "FixedAdmittance",
+        addable = true,
+    ),
+    (
+        po_type = PO.SwitchedAdmittance, psy_type = SwitchedAdmittance,
+        key = "SwitchedAdmittance",
+        addable = true,
+    ),
+    (
+        po_type = PO.FACTSControlDevice, psy_type = FACTSControlDevice,
+        key = "FACTSControlDevice",
         addable = true,
     ),
     (
@@ -88,6 +112,14 @@ const DOCUMENT_PLAN = [
     (
         po_type = PO.TwoTerminalGenericHVDCLine, psy_type = TwoTerminalGenericHVDCLine,
         key = "TwoTerminalGenericHVDCLine", addable = true,
+    ),
+    (
+        po_type = PO.TwoTerminalLCCLine, psy_type = TwoTerminalLCCLine,
+        key = "TwoTerminalLCCLine", addable = true,
+    ),
+    (
+        po_type = PO.TwoTerminalVSCLine, psy_type = TwoTerminalVSCLine,
+        key = "TwoTerminalVSCLine", addable = true,
     ),
     (
         po_type = PO.OnlineReserve, psy_type = OnlineReserve, key = "OnlineReserve",
@@ -172,170 +204,24 @@ function _check_no_unconverted_component_types(components::AbstractDict)
 end
 
 # ── document `ext` ──────────────────────────────────────────────────────────────
+# `doc.ext[component_id]` is a producer-side escape hatch for source columns no schema field
+# claims. It is merged onto the constructed component's own `ext` dict rather than validated
+# against an allow-list — the data survives the import, and whether a column deserves a real
+# schema field is a producer-side/schema question, not an import-time error.
+#
+# `Arc`/`TransformerCircuit`/`TransmissionInterface` carry no `ext` field at all (mirroring the
+# same exception on the export side, `_collect_dropped_ext!` in export_document.jl) — nothing
+# to merge into, so those overloads are no-ops rather than an error about a missing getter.
 
-"""
-Ledger of `doc.ext` keys already known to have no PowerSystems field, each with a one-line
-reason for its class.
-
-`ext` is a producer-side escape hatch for source columns no schema field claims. A key on this
-list is skipped on import without comment — it is never stored on the resulting `System`. A key
-NOT on this list errors ([`_check_ext_keys_are_known`](@ref)) rather than being silently
-dropped: a producer that cannot map a column either grows the schema a field, keeps the value on
-its own side, or earns an entry here with a reason.
-
-Harvested empirically from PowerTableDataParser's RTS-GMLC build (the only current producer of
-non-empty `ext`, via `PowerSystemCaseBuilder`'s `RTS_GMLC_DA_sys`, `test_RTS_GMLC_sys`, and
-`test_RTS_GMLC_sys_with_hybrid`). This list's size measures remaining schema/parser drift —
-grow it for a new producer's genuinely unclaimed columns, never pad it speculatively.
-"""
-const IGNORED_EXT_KEYS = Dict{String, String}(
-    # Dynamics: no schema field while dynamics support is deferred.
-    "Damping Ratio" => "dynamics: generator damping ratio, deferred",
-    "Inertia MJ/MW" => "dynamics: generator inertia constant, deferred",
-    "Transformer X p.u." => "dynamics: generator step-up transformer reactance, deferred",
-    "Unit X p.u." => "dynamics: generator unit reactance, deferred",
-
-    # HVDC type-selection debt: TwoTerminalGenericHVDCLine has no fields for PSS/E's detailed
-    # two-terminal DC line control/tap/rating/outage block.
-    "From R Commutating" => "HVDC type-selection debt: commutating resistance, from-side converter",
-    "From Series Bridges" => "HVDC type-selection debt: series bridge count, from-side converter",
-    "From Station FOR Active" => "HVDC type-selection debt: forced-outage rate (active), from station",
-    "From Station FOR Passive" => "HVDC type-selection debt: forced-outage rate (passive), from station",
-    "From Station Scheduled Maint Hours" => "HVDC type-selection debt: scheduled maintenance hours, from station",
-    "From Station Scheduled Maint Rate" => "HVDC type-selection debt: scheduled maintenance rate, from station",
-    "From Switching Time Hours" => "HVDC type-selection debt: switching time, from-side converter",
-    "From Tap Setpoint" => "HVDC type-selection debt: tap setpoint, from-side converter",
-    "From Tap Step" => "HVDC type-selection debt: tap step, from-side converter",
-    "From Tr Ratio" => "HVDC type-selection debt: transformer ratio, from-side converter",
-    "From baseKV" => "HVDC type-selection debt: converter transformer base kV, from side",
-    "To R Commutating" => "HVDC type-selection debt: commutating resistance, to-side converter",
-    "To Series Bridges" => "HVDC type-selection debt: series bridge count, to-side converter",
-    "To Station FOR Active" => "HVDC type-selection debt: forced-outage rate (active), to station",
-    "To Station FOR Passive" => "HVDC type-selection debt: forced-outage rate (passive), to station",
-    "To Station Scheduled Maint Dur Hours" => "HVDC type-selection debt: scheduled maintenance duration, to station",
-    "To Station Scheduled Maint Rate" => "HVDC type-selection debt: scheduled maintenance rate, to station",
-    "To Switching Time Hours" => "HVDC type-selection debt: switching time, to-side converter",
-    "To Tap Setpoint" => "HVDC type-selection debt: tap setpoint, to-side converter",
-    "To Tap Step" => "HVDC type-selection debt: tap step, to-side converter",
-    "To Tr Ratio" => "HVDC type-selection debt: transformer ratio, to-side converter",
-    "To baseKV" => "HVDC type-selection debt: converter transformer base kV, to side",
-    "Line FOR Perm" => "HVDC type-selection debt: permanent forced-outage rate",
-    "Line FOR Trans" => "HVDC type-selection debt: transient forced-outage rate",
-    "Line Outage Dur 0" => "HVDC type-selection debt: multi-state outage duration, state 0",
-    "Line Outage Dur 1" => "HVDC type-selection debt: multi-state outage duration, state 1",
-    "Line Outage Dur 2" => "HVDC type-selection debt: multi-state outage duration, state 2",
-    "Line Outage Dur 3" => "HVDC type-selection debt: multi-state outage duration, state 3",
-    "Line Outage Loading 1" => "HVDC type-selection debt: multi-state outage loading, state 1",
-    "Line Outage Loading 2" => "HVDC type-selection debt: multi-state outage loading, state 2",
-    "Line Outage Loading 3" => "HVDC type-selection debt: multi-state outage loading, state 3",
-    "Line Outage Prob 0" => "HVDC type-selection debt: multi-state outage probability, state 0",
-    "Line Outage Prob 1" => "HVDC type-selection debt: multi-state outage probability, state 1",
-    "Line Outage Prob 2" => "HVDC type-selection debt: multi-state outage probability, state 2",
-    "Line Outage Prob 3" => "HVDC type-selection debt: multi-state outage probability, state 3",
-    "Line Outage Rate 0" => "HVDC type-selection debt: multi-state outage rate, state 0",
-    "Line Outage Rate 1" => "HVDC type-selection debt: multi-state outage rate, state 1",
-    "Line Outage Rate 2" => "HVDC type-selection debt: multi-state outage rate, state 2",
-    "Line Outage Rate 3" => "HVDC type-selection debt: multi-state outage rate, state 3",
-    "MTTR Line Hours" => "HVDC type-selection debt: mean time to repair, DC line",
-    "Metered end" => "HVDC type-selection debt: PSS/E metered-end code, no schema field",
-    "R Compound" => "HVDC type-selection debt: compounding resistance",
-    "R Line" => "HVDC type-selection debt: DC line resistance",
-    "V Mag kV" => "HVDC type-selection debt: DC line voltage magnitude",
-
-    # Multi-state outage / emergency-rating tiers RTS states for an AC Line that the schema
-    # does not carry (Line has one `rating`, not a permanent/transient outage table or
-    # LTE/STE emergency tiers).
-    "Duration" => "multi-state outage table: permanent outage duration, no Line field",
-    "LTE Rating" => "multi-state outage table: long-term emergency rating tier, no Line field",
-    "Perm OutRate" => "multi-state outage table: permanent outage rate, no Line field",
-    "STE Rating" => "multi-state outage table: short-term emergency rating tier, no Line field",
-    "Tran OutRate" => "multi-state outage table: transient outage rate, no Line field",
-
-    # Descriptor-alias artifact.
-    "Zone" => "descriptor-alias artifact: RTS zone folds into LoadZone/Area, not a raw field",
-
-    # Misc no-schema-home.
-    "Sub Area" => "misc no-schema-home: RTS sub-area subdivision below Area",
-    "Fuel Sulfur Content %" => "misc no-schema-home: fuel sulfur content",
-    "Storage Roundtrip Efficiency" => "misc no-schema-home: storage roundtrip efficiency",
-    "Unit Group" => "misc no-schema-home: RTS unit-group tag",
-    "Length" => "misc no-schema-home: branch physical length",
-    "Gen ID" => "misc no-schema-home: PSS/E per-bus generator discriminator",
-    "Pump Load MW" => "misc no-schema-home: pumped-storage load rating on a thermal-coded row",
-
-    # Bus columns PowerSystems has a home for (FixedAdmittance, GeographicInfo) that
-    # PowerTableDataParser does not yet synthesize from these inline RTS Bus columns.
-    "MVAR Shunt B" => "producer gap: bus fixed-shunt susceptance, not yet synthesized into a FixedAdmittance",
-    "MW Shunt G" => "producer gap: bus fixed-shunt conductance, not yet synthesized into a FixedAdmittance",
-    "lat" => "producer gap: bus latitude, not yet synthesized into a GeographicInfo",
-    "lng" => "producer gap: bus longitude, not yet synthesized into a GeographicInfo",
-
-    # Multi-pollutant emissions beyond PowerTableDataParser's current EmissionsData coverage —
-    # EmissionsData supports an arbitrary pollutant per attribute, but the parser emits only a
-    # subset of RTS's eight pollutant columns per generator.
-    "Emissions CH4 Lbs/MMBTU" => "emissions coverage gap: CH4 rate not yet emitted as an EmissionsData attribute",
-    "Emissions CO Lbs/MMBTU" => "emissions coverage gap: CO rate not yet emitted as an EmissionsData attribute",
-    "Emissions CO2 Lbs/MMBTU" => "emissions coverage gap: CO2 rate not yet emitted as an EmissionsData attribute",
-    "Emissions N2O Lbs/MMBTU" => "emissions coverage gap: N2O rate not yet emitted as an EmissionsData attribute",
-    "Emissions NOX Lbs/MMBTU" => "emissions coverage gap: NOX rate not yet emitted as an EmissionsData attribute",
-    "Emissions Part Lbs/MMBTU" => "emissions coverage gap: particulate rate not yet emitted as an EmissionsData attribute",
-    "Emissions SO2 Lbs/MMBTU" => "emissions coverage gap: SO2 rate not yet emitted as an EmissionsData attribute",
-    "Emissions VOCs Lbs/MMBTU" => "emissions coverage gap: VOCs rate not yet emitted as an EmissionsData attribute",
-
-    # Generator cost/reliability detail finer than ThermalStandard's schema fields.
-    "Base MVA" => "cost/reliability breakdown gap: generator's own base MVA already feeds base_power via a separate accessor; the raw column itself is not excluded from ext",
-    "MTTF Hr" => "cost/reliability breakdown gap: mean time to failure, distinct from GeometricDistributionForcedOutage's MTTR",
-    "Non Fuel Start Cost \$" => "cost/reliability breakdown gap: non-fuel start cost, finer than the schema's start-up cost field",
-    "Scheduled Maint Weeks" => "cost/reliability breakdown gap: scheduled maintenance duration",
-    "Start Heat Hot MBTU" => "cost/reliability breakdown gap: hot-start heat input, finer than the schema's cost curve",
-    "Start Heat Warm MBTU" => "cost/reliability breakdown gap: warm-start heat input, finer than the schema's cost curve",
-    "V Setpoint p.u." => "cost/reliability breakdown gap: generator voltage setpoint, no ThermalStandard field",
-    "VOM" => "cost/reliability breakdown gap: variable O&M cost, no schema field",
-)
-
-"""Component type name owning `component_id` in `doc`, for the ext error message. Every id is
-unique across the document's component tables (`PC.SystemDocument`'s own invariant), so this
-is a lookup, not a search over ambiguous candidates."""
-function _ext_component_type(doc::PC.SystemDocument, component_id::Int)
-    for type_name in PC.component_type_names(doc)
-        for component in PC.get_components(doc, type_name)
-            Int(component.id) == component_id && return type_name
-        end
+_merge_doc_ext!(::Arc, ::AbstractDict) = nothing
+_merge_doc_ext!(::TransformerCircuit, ::AbstractDict) = nothing
+_merge_doc_ext!(::TransmissionInterface, ::AbstractDict) = nothing
+function _merge_doc_ext!(component, extras::AbstractDict)
+    ext = get_ext(component)
+    for (k, v) in extras
+        ext[k] = v
     end
-    return "unknown component id"
-end
-
-"""
-Error naming every `ext` key a document carries that is not on [`IGNORED_EXT_KEYS`](@ref),
-together with the component id and component type it was found on.
-
-`ext` is a producer-side escape hatch for source columns no schema field claims. A key not on
-the ignore-list is refused at the boundary rather than silently discarded: a producer that
-cannot map a column either grows the schema a field, keeps the value on its own side, or earns
-a ledger entry. A listed key is skipped without comment — it is never stored anywhere.
-"""
-function _check_ext_keys_are_known(doc::PC.SystemDocument)
-    offenders = Dict{String, Int}()
-    for (component_id, extras) in doc.ext
-        for key in keys(extras)
-            haskey(IGNORED_EXT_KEYS, key) && continue
-            offenders[key] = component_id
-        end
-    end
-    isempty(offenders) && return nothing
-    listed = join(
-        (
-            "\"$k\" (component id $(offenders[k]), type $(_ext_component_type(doc, offenders[k])))"
-            for k in sort(collect(keys(offenders)))
-        ),
-        ", ",
-    )
-    error(
-        "from_openapi(System, doc): document ext carries key(s) PowerSystems has no field " *
-        "for and no IGNORED_EXT_KEYS entry for: $listed — add the field to the schema, keep " *
-        "the value on the producer side, or add the key to IGNORED_EXT_KEYS with a reason. " *
-        "Silently dropping source data is not an option.",
-    )
+    return nothing
 end
 
 # ── service membership dispatch ─────────────────────────────────────────────────
@@ -367,21 +253,23 @@ end
 
 # ── Time series ingestion ───────────────────────────────────────────────────────
 
-"""Scaling-factor multiplier names a document may carry, resolved to the PSY getter each
-one names. The document field is a bare, unprefixed function name (confirmed against
-real pointer files — the schema docstring's "PowerSystems.get_max_active_power"
-module-qualified form does not occur in practice), so this is a literal table rather than
-a runtime `getproperty(PowerSystems, Symbol(name))` dispatch — consistent with every
-other document-string lookup in this package. An unmapped string errors loudly."""
+"""Scaling-factor multiplier names a document may carry, resolved to the PSY getter each one
+names. The document field is a bare, unprefixed function name, so this is a closed registry
+rather than a runtime `getproperty(PowerSystems, Symbol(name))` — an unmapped string must error
+rather than resolve to an arbitrary function. [`SCALING_FACTOR_MULTIPLIER_TO_STRING`](@ref)
+inverts it for export, so the two directions cannot drift."""
 const SCALING_FACTOR_MULTIPLIERS = Dict{String, Function}(
-    "get_max_active_power" => get_max_active_power,
-    "get_max_reactive_power" => get_max_reactive_power,
-    "get_peak_active_power" => get_peak_active_power,
-    "get_peak_reactive_power" => get_peak_reactive_power,
-    "get_inflow" => get_inflow,
-    "get_level_targets" => get_level_targets,
-    "get_requirement" => get_requirement,
-    "get_storage_capacity" => get_storage_capacity,
+    string(nameof(f)) => f
+    for f in (
+        get_max_active_power,
+        get_max_reactive_power,
+        get_peak_active_power,
+        get_peak_reactive_power,
+        get_inflow,
+        get_level_targets,
+        get_requirement,
+        get_storage_capacity,
+    )
 )
 
 _resolve_scaling_factor_multiplier(::Nothing) = nothing
@@ -550,18 +438,12 @@ function _read_time_series(
 end
 
 """
-Materialize (read off the HDF5 sidecar) the time series identified by `assoc`'s own
-`time_series_uuid`, memoized in `materialized` so a series shared by N owner rows — e.g.
-RTS's zone/area load fan-out, the same case `_export_time_series!`'s own `written::Set{
-Base.UUID}` dedups on the export side (`src/openapi/export_document.jl`) — is read once
-rather than N times. Every owner row still gets its own [`_attach_time_series_row!`](@ref)
-call; only this read (and, for the ordinary dispatch, the downstream `add_time_series!`
-re-serialize it feeds) is skipped on a cache hit.
+Read the time series `assoc` names off the HDF5 sidecar, memoized in `materialized`.
 
-`DeterministicSingleTimeSeries` shares its `time_series_uuid` with the wrapped
-`SingleTimeSeries` it views, so a mix of rows for the same uuid (one `SingleTimeSeries` row
-plus several `DeterministicSingleTimeSeries` rows) all resolve to the one cache entry
-regardless of which row reads it first.
+A series shared by N owner rows is read once rather than N times; every owner row still gets
+its own [`_attach_time_series_row!`](@ref) call. `DeterministicSingleTimeSeries` shares its
+`time_series_uuid` with the `SingleTimeSeries` it views, so rows of both kinds for that uuid
+resolve to the one cache entry regardless of which reads it first.
 """
 function _materialize_time_series!(
     materialized::Dict{Base.UUID, TimeSeriesData},
@@ -670,17 +552,11 @@ end
 # take no `Val{unit_system}`; only the three `Outage` types need `refs`, to resolve
 # document-id `monitored_components` into the UUIDs PSY stores.
 
-const POLLUTANT_TYPE_FROM_STRING =
-    Dict{String, PollutantType}(string(m) => m for m in instances(PollutantType))
-const EMISSION_BASIS_FROM_STRING =
-    Dict{String, EmissionBasis}(string(m) => m for m in instances(EmissionBasis))
-const MASS_UNIT_FROM_STRING =
-    Dict{String, MassUnit}(string(m) => m for m in instances(MassUnit))
-const ENERGY_UNIT_FROM_STRING =
-    Dict{String, EnergyUnit}(string(m) => m for m in instances(EnergyUnit))
-const COMBINED_CYCLE_CONFIGURATION_FROM_STRING = Dict{String, CombinedCycleConfiguration}(
-    string(m) => m for m in instances(CombinedCycleConfiguration)
-)
+const POLLUTANT_TYPE_FROM_STRING = _enum_table(PollutantType)
+const EMISSION_BASIS_FROM_STRING = _enum_table(EmissionBasis)
+const MASS_UNIT_FROM_STRING = _enum_table(MassUnit)
+const ENERGY_UNIT_FROM_STRING = _enum_table(EnergyUnit)
+const COMBINED_CYCLE_CONFIGURATION_FROM_STRING = _enum_table(CombinedCycleConfiguration)
 
 function _enum_from_string(table, s, field_name)
     haskey(table, s) || error("from_openapi: unmapped $field_name=\"$s\"")
@@ -778,6 +654,21 @@ end
 from_openapi(::Type{GeographicInfo}, po::PC.GeographicInfo) =
     GeographicInfo(; geo_json = po.geo_json)
 
+const WINDINGCATEGORY_FROM_STRING = _enum_table(WindingCategory)
+const IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING =
+    _enum_table(ImpedanceCorrectionTransformerControlMode)
+
+"""`table_number`/`transformer_winding`/`transformer_control_mode` carry no unit-bearing
+fields — a row number and two enum discriminators. `impedance_correction_curve` reuses
+`convert_cost`, the same PO->PSY `PiecewiseLinearData` converter cost curves use."""
+from_openapi(::Type{ImpedanceCorrectionData}, po::PO.ImpedanceCorrectionData) =
+    ImpedanceCorrectionData(;
+        table_number = po.table_number,
+        impedance_correction_curve = convert_cost(po.impedance_correction_curve),
+        transformer_winding = WINDINGCATEGORY_FROM_STRING[po.transformer_winding],
+        transformer_control_mode = IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING[po.transformer_control_mode],
+    )
+
 """
 Convert one already-deserialized PO supplemental attribute to its PSY counterpart.
 
@@ -811,6 +702,8 @@ _attribute_from_openapi(po::PO.CombinedCycleFractional, ::OpenAPIRefs) =
 _attribute_from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) =
     from_openapi(GeographicInfo, po)
 _attribute_from_openapi(po::PO.Substation, ::OpenAPIRefs) = from_openapi(Substation, po)
+_attribute_from_openapi(po::PO.ImpedanceCorrectionData, ::OpenAPIRefs) =
+    from_openapi(ImpedanceCorrectionData, po)
 
 """Loud fallback: a PO attribute type with no converter is a gap to close, not a row to skip."""
 function _attribute_from_openapi(po, ::OpenAPIRefs)
@@ -944,16 +837,17 @@ function from_openapi(
     unit_val = _unit_val(unit_system)
 
     _check_no_unconverted_component_types(doc.components)
-    _check_ext_keys_are_known(doc)
 
     sys = System(base_power; system_kwargs...)
     _apply_document_metadata!(sys, doc)
 
     refs = OpenAPIRefs(unit_system, base_power)
 
-    for (po_type, psy_type, key, addable) in DOCUMENT_PLAN
+    for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for po in PC.get_components(doc, key)
             component = from_openapi(psy_type, po, refs, unit_val)
+            extras = get(doc.ext, Int(po.id), nothing)
+            isnothing(extras) || _merge_doc_ext!(component, extras)
             if addable
                 add_component!(sys, component)
             end

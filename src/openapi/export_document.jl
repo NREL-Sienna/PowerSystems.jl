@@ -2,18 +2,13 @@
 # src/openapi/import_document.jl's structure in reverse: same `DOCUMENT_PLAN` type enumeration,
 # same supplemental-attribute / service-membership / time-series machinery, inverted.
 #
-# Export (`to_openapi(sys; ...)`) assembles a `PowerCoreOpenAPIModels.SystemDocument` — the
-# same container PTDP adopts in place of its own `OpenAPISystem`, so PTDP- and PSY-produced
-# documents are interchangeable by construction rather than by matching two hand-built shapes.
-# Writing it to disk is `write_document`'s job, driven by `to_file` in src/openapi/file_io.jl.
+# Export (`to_openapi(sys; ...)`) assembles a `PowerCoreOpenAPIModels.SystemDocument`. Writing
+# it to disk is `write_document`'s job, driven by `to_file` in src/openapi/file_io.jl.
 
 # ── Supplemental attribute reverse converters ───────────────────────────────────
-# Mirrors src/openapi/import_document.jl's per-type `from_openapi` methods. Dispatches directly on
-# the PSY attribute's concrete type (Julia multiple dispatch) rather than a runtime
-# string -> function table — export does not need one, since the *type* is already known;
-# only the *emitted* `attribute_type` string (read by `add_supplemental_attribute!` on the way
-# back in) is derived from it, via `string(nameof(typeof(attr)))`, matching
-# PowerTableDataParser.jl/src/openapi/container.jl's own convention exactly.
+# Dispatches on the PSY attribute's concrete type rather than a runtime string → function
+# table: export already knows the type. Only the emitted `attribute_type` string, read by
+# `add_supplemental_attribute!` on the way back in, is derived from it.
 
 const POLLUTANT_TYPE_TO_STRING = Dict(v => k for (k, v) in POLLUTANT_TYPE_FROM_STRING)
 const EMISSION_BASIS_TO_STRING = Dict(v => k for (k, v) in EMISSION_BASIS_FROM_STRING)
@@ -125,6 +120,24 @@ end
 to_openapi(geo::GeographicInfo, id::Int) =
     PC.GeographicInfo(; id = id, geo_json = get_geo_json(geo))
 
+const WINDINGCATEGORY_TO_STRING = Dict(v => k for (k, v) in WINDINGCATEGORY_FROM_STRING)
+const IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_TO_STRING =
+    Dict(v => k for (k, v) in IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING)
+
+function to_openapi(attr::ImpedanceCorrectionData, id::Int)
+    return PO.ImpedanceCorrectionData(;
+        id = id,
+        table_number = get_table_number(attr),
+        impedance_correction_curve = convert_cost_to_openapi(
+            get_impedance_correction_curve(attr),
+        ),
+        transformer_winding = WINDINGCATEGORY_TO_STRING[get_transformer_winding(attr)],
+        transformer_control_mode = IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_TO_STRING[get_transformer_control_mode(
+            attr,
+        )],
+    )
+end
+
 """Dispatch helper: the three `Outage` subtypes need `refs`/`uuid_to_component` to resolve
 `monitored_components`; every other supplemental attribute type does not. Absorbs that arity
 split here (mirroring `_attribute_from_openapi` on import) so the walk below can call one
@@ -137,39 +150,20 @@ _to_openapi_attribute(
     id::Int,
 ) = to_openapi(attr, refs, uuid_to_component, id)
 
-# ── ext guard (R6) ───────────────────────────────────────────────────────────────
-# `Arc`/`TransformerCircuit`/`TransmissionInterface` carry no `ext` field at all — nothing
-# to lose, so the check is a no-op for them rather than an error about a missing getter.
+# ── component `ext` ──────────────────────────────────────────────────────────────
+# Written through to `doc.ext[component_id]` verbatim, the reverse of `_merge_doc_ext!` in
+# import_document.jl. `ext` is producer-side passthrough: PowerSystems stores it and never
+# reads it, so it is neither validated nor mapped onto fields in either direction.
+#
+# `Arc`/`TransformerCircuit`/`TransmissionInterface` carry no `ext` field at all — nothing to
+# write, so those overloads are no-ops rather than an error about a missing getter.
 
-_collect_dropped_ext!(::Dict{String, Int}, ::Arc) = nothing
-_collect_dropped_ext!(::Dict{String, Int}, ::TransformerCircuit) = nothing
-_collect_dropped_ext!(::Dict{String, Int}, ::TransmissionInterface) = nothing
+_export_ext!(::PC.SystemDocument, ::Int, ::Arc) = nothing
+_export_ext!(::PC.SystemDocument, ::Int, ::TransformerCircuit) = nothing
+_export_ext!(::PC.SystemDocument, ::Int, ::TransmissionInterface) = nothing
 
-"""
-Tally the `ext` keys on `component` that the document will not carry.
-
-Component `ext` is deliberately not written: PowerSystems refuses a document that carries an
-`ext` key not on its ignore-list on the way in (`_check_ext_keys_are_known`), and never stores
-even a listed key, so writing it would create a field that cannot be read back. PowerFlowFileParser's `ext`
-is a pass-through of raw pm-dict records that nothing downstream reads from the document either.
-
-This is a tally-and-warn rather than an error because raising would make every
-PowerFlowFileParser-sourced system unserializable — PFFP puts PSS/E record fields such as
-`ARNAME`/`PTOL` on `Area.ext` — which blocks using documents as PowerSystemCaseBuilder's
-cache format. The loss is reported per export instead of being silent.
-"""
-function _collect_dropped_ext!(dropped::Dict{String, Int}, component)
-    for key in keys(get_ext(component))
-        dropped[key] = get(dropped, key, 0) + 1
-    end
-    return nothing
-end
-
-function _warn_dropped_ext(dropped::Dict{String, Int})
-    isempty(dropped) && return nothing
-    listed = join(("$k ($(dropped[k]))" for k in sort(collect(keys(dropped)))), ", ")
-    @warn "to_openapi: dropping component ext key(s) — a document does not carry component " *
-          "ext, so these will not survive a round trip: $listed"
+function _export_ext!(doc::PC.SystemDocument, id::Int, component)
+    PC.set_ext!(doc, id, get_ext(component))
     return nothing
 end
 
@@ -278,16 +272,11 @@ function _build_export_refs(
         maximum(values(uuid_to_id)) + 1
     end
     next_id = Ref(start_id)
-    # Tallied across the whole walk and reported once, rather than one warning per component:
-    # a PFFP-sourced system puts the same handful of pm-dict keys on every Area.
-    dropped_ext = Dict{String, Int}()
-    for (po_type, psy_type, key, addable) in DOCUMENT_PLAN
+    for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
-            _collect_dropped_ext!(dropped_ext, c)
             refs[_export_id!(next_id, uuid_to_id, c)] = c
         end
     end
-    _warn_dropped_ext(dropped_ext)
     return refs
 end
 
@@ -312,9 +301,10 @@ function _export_components!(
     sys::System,
     val::IS.AbstractUnitSystem,
 )
-    for (po_type, psy_type, key, addable) in DOCUMENT_PLAN
+    for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
             PC.add_component!(doc, to_openapi(c, refs, val))
+            _export_ext!(doc, component_id(refs, c), c)
         end
     end
     return nothing
@@ -457,8 +447,7 @@ function _scaling_factor_multiplier_to_string(f::Function)
     return SCALING_FACTOR_MULTIPLIER_TO_STRING[f]
 end
 
-"""ISO 8601 duration, the reverse of `_parse_iso8601_seconds` (src/openapi/import_document.jl) and
-matching `PowerTableDataParser.jl/src/openapi/time_series.jl`'s `_iso_duration`."""
+"""ISO 8601 duration, the reverse of `_parse_iso8601_seconds` (src/openapi/import_document.jl)."""
 _iso8601_duration(period::Dates.Period) =
     string("PT", Dates.value(Dates.Second(period)), "S")
 
@@ -501,8 +490,7 @@ _document_length(ts::DeterministicSingleTimeSeries) = length(IS.get_single_time_
 Emit one `PC.TimeSeriesAssociation` row per time series attached to `entity` (document id
 `entity_id`) — every [`TimeSeriesData`](@ref) subtype IS ships, dispatched per type rather
 than branched on a string. Writes each series' data to the HDF5 `storage` the first time its
-UUID is seen — a series shared by multiple owners (e.g. RTS's zone/area load fan-out) must
-not be written twice.
+UUID is seen — a series shared by multiple owners must not be written twice.
 """
 function _export_time_series!(
     rows::Vector{PC.TimeSeriesAssociation},
@@ -593,8 +581,8 @@ requirement — every id already exists or is assigned fresh before it is ever r
 `PO.Line.base_power` (and the equivalent on every system-base-denormalized type) as
 `get_base_power(sys)` exactly — not reconstructed.
 
-Errors loudly rather than silently dropping data: a non-empty `ext` on any component,
-a time series with no `time_series_storage_path` given, or an unmapped
+Component `ext` is written through verbatim to `doc.ext`. Errors loudly rather than silently
+dropping data: a time series with no `time_series_storage_path` given, or an unmapped
 `scaling_factor_multiplier` function.
 """
 function to_openapi(

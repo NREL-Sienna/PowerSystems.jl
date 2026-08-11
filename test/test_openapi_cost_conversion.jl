@@ -1,5 +1,4 @@
 # Cost/curve shapes constructed directly from PowerCoreOpenAPIModels kwargs (PC = PSY.PC),
-# matching what PowerTableDataParser's `src/openapi/cost.jl` and `.../generation.jl` emit.
 
 _po_linear_io(prop, const_) = PSY.PC.InputOutputCurve(;
     function_data = PSY.PC.InputOutputCurveFunctionData(

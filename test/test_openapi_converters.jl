@@ -9,6 +9,49 @@ _bus_po(id; area = 1, load_zone = 2, bustype = "REF") = PSY.PO.ACBus(;
     base_voltage = 138.0, area = area, load_zone = load_zone,
 )
 
+"""A LINEAR `InputOutputCurve`, the shape every `converter_loss`/`loss` field carries."""
+_io_curve(proportional_term, constant_term) = PSY.PC.InputOutputCurve(;
+    function_data = PSY.PC.InputOutputCurveFunctionData(
+        PSY.PC.LinearFunctionData(;
+            proportional_term = proportional_term,
+            constant_term = constant_term,
+        ),
+    ),
+)
+
+"""
+A `TwoTerminalVSCLine` PO struct on the DC_POWER/AC_REACTIVE_POWER branches, which are the
+only ones every field of has a faithful conversion. Freshly built per call: the PO structs are
+mutable, so the error-path testsets mutate one field of their own copy.
+"""
+_vsc_po_minimal() = PSY.PO.TwoTerminalVSCLine(;
+    id = 20, name = "vsc1", available = true, arc = 10,
+    active_power_flow = 50.0, rating = 200.0,
+    active_power_limits_from = PSY.PC.MinMax(; min = -200.0, max = 200.0),
+    active_power_limits_to = PSY.PC.MinMax(; min = -200.0, max = 200.0),
+    admittance_units = "NATURAL_UNITS", g = 0.5,
+    dc_current = 300.0, reactive_power_from = 10.0,
+    dc_control_from = "DC_POWER", ac_control_from = "AC_REACTIVE_POWER",
+    dc_setpoint_from = 40.0, ac_setpoint_from = 0.95,
+    converter_loss_from = _io_curve(1.2, 0.5),
+    max_dc_current_from = 1000.0, rating_from = 200.0,
+    reactive_power_limits_from = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+    power_factor_weighting_fraction_from = 0.5,
+    voltage_units = "NATURAL_UNITS",
+    voltage_limits_from = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+    dc_voltage_droop_from = 0.0, reactive_power_to = 20.0,
+    dc_control_to = "DC_POWER", ac_control_to = "AC_REACTIVE_POWER",
+    dc_setpoint_to = 40.0, ac_setpoint_to = 0.98,
+    converter_loss_to = _io_curve(1.1, 0.4),
+    max_dc_current_to = 1000.0, rating_to = 200.0,
+    reactive_power_limits_to = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+    power_factor_weighting_fraction_to = 0.5,
+    voltage_limits_to = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+    dc_voltage_droop_to = 0.0, rated_dc_voltage = 200.0,
+    remote_bus_control_from = nothing, remote_bus_control_to = 4,
+    rmpct_from = 100.0, rmpct_to = 100.0, base_power = 100.0,
+)
+
 function _refs_with_area_bus(unit_system = "NATURAL_UNITS"; base_power = 100.0)
     refs = PSY.OpenAPIRefs(unit_system, base_power)
     area_po = PSY.PO.Area(;
@@ -91,7 +134,7 @@ end
         @test get_peak_reactive_power(lz, SU) == 0.5
 
         # Both structs gained their own `base_power`. The
-        # document omits it above (PowerTableDataParser does not emit it yet), so
+        # document omits it above, so
         # `_resolve_base_power` falls back to `get_base_power(refs)` — proving the
         # backward-compat path, not just the happy path.
         @test get_base_power(area) == 100.0
@@ -125,7 +168,7 @@ end
     # peak_active_power above, dividing by the document-level base in BOTH unit-system
     # methods. The struct has its own `base_power` field, but
     # `direction_mapping::Dict{String, Int}` still blocks codegen. The document below omits
-    # `base_power` (PowerTableDataParser does not emit it yet), exercising the
+    # `base_power` is absent from the document, exercising the
     # `_resolve_base_power` fallback to `get_base_power(refs)`.
     refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
     for (i, val) in enumerate((DU, NU))
@@ -484,9 +527,7 @@ end
 @testset "OpenAPI converters: FixedAdmittance" begin
     refs = _refs_with_area_bus(; base_power = 100.0)
 
-    # DEVICE_MVAR (PSS/E RAW native, the RTS-GMLC real-world convention) divides by
-    # the document's system base — same numbers as RTS-GMLC-0.2.3 bus "Alber": MW
-    # Shunt G = 0.0, MVAR Shunt B = -100.0.
+    # DEVICE_MVAR divides by the document's system base: G = 0.0, B = -100.0 MVAr.
     mvar_po = PSY.PO.FixedAdmittance(;
         id = 20, name = "shunt1", available = true, bus = 4,
         admittance_units = "DEVICE_MVAR",
@@ -590,8 +631,7 @@ end
         @test get_level_data_type(reservoir) == ReservoirDataType.USABLE_VOLUME
     end
 
-    # RTS shape (verified against PowerTableDataParser.jl/data/rts.json): every
-    # HydroReservoir carries upstream_turbines=null, upstream_reservoirs=null, and a
+    # A HydroReservoir carrying upstream_turbines=null, upstream_reservoirs=null, and a
     # populated downstream_turbines — a legitimate absence of association, not malformed
     # input. Must yield empty vectors, not a `MethodError: length(::Nothing)`.
     reservoir_head_po = PSY.PO.HydroReservoir(;
@@ -790,7 +830,7 @@ end
     @test get_reactive_power_limits_to(hvdc_natural, SU) == (min = -0.5, max = 0.5)
     @test get_loss(hvdc_natural) == LinearCurve(0.01, 0.0)
     # `hvdc_po` omits `base_power` (backward compat with
-    # PowerTableDataParser) — `_resolve_base_power` falls back to `get_base_power(refs)`.
+    # `_resolve_base_power` falls back to `get_base_power(refs)`.
     @test isnothing(hvdc_po.base_power)
     @test get_base_power(hvdc_natural) == 100.0
 
@@ -999,4 +1039,162 @@ end
     group_device = PSY.from_openapi(GroupReserve, group_po_device, refs, DU)
     add_component!(sys, group_device)
     @test get_requirement(group_device, SU) == 150.0
+end
+
+@testset "OpenAPI converters: TwoTerminalVSCLine" begin
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    arc_po = PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4)
+    refs[10] = PSY.from_openapi(Arc, arc_po, refs, NU)
+
+    # rated_dc_voltage = 200 kV on a 100 MVA base ⇒ Ybase = 100/200^2 = 0.0025 S,
+    # so g = 0.5 S is 200.0 pu, and a 204 kV DC setpoint is 1.02 pu.
+    vsc_po = PSY.PO.TwoTerminalVSCLine(;
+        id = 20, name = "vsc1", available = true, arc = 10,
+        active_power_flow = 50.0, rating = 200.0,
+        active_power_limits_from = PSY.PC.MinMax(; min = -200.0, max = 200.0),
+        active_power_limits_to = PSY.PC.MinMax(; min = -200.0, max = 200.0),
+        admittance_units = "NATURAL_UNITS", g = 0.5,
+        dc_current = 300.0, reactive_power_from = 10.0,
+        dc_control_from = "DC_POWER", ac_control_from = "AC_REACTIVE_POWER",
+        dc_setpoint_from = 40.0, ac_setpoint_from = 0.95,
+        converter_loss_from = _io_curve(1.2, 0.5),
+        max_dc_current_from = 1000.0, rating_from = 200.0,
+        reactive_power_limits_from = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+        power_factor_weighting_fraction_from = 0.5,
+        voltage_units = "NATURAL_UNITS",
+        voltage_limits_from = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        dc_voltage_droop_from = 0.0, reactive_power_to = 20.0,
+        dc_control_to = "DC_VOLTAGE", ac_control_to = "AC_REACTIVE_POWER",
+        dc_setpoint_to = 204.0, ac_setpoint_to = 0.98,
+        converter_loss_to = _io_curve(1.1, 0.4),
+        max_dc_current_to = 1000.0, rating_to = 200.0,
+        reactive_power_limits_to = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+        power_factor_weighting_fraction_to = 0.5,
+        voltage_limits_to = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        dc_voltage_droop_to = 0.0, rated_dc_voltage = 200.0,
+        remote_bus_control_from = nothing, remote_bus_control_to = 4,
+        rmpct_from = 100.0, rmpct_to = 100.0, base_power = 100.0,
+    )
+
+    sys = System(100.0)
+    for id in (1, 2, 3, 4)
+        add_component!(sys, refs[id])
+    end
+    add_component!(sys, refs[10])
+
+    natural = PSY.from_openapi(TwoTerminalVSCLine, vsc_po, refs, NU)
+    add_component!(sys, natural)
+    @test get_active_power_flow(natural, SU) == 0.5
+    @test get_rating(natural, SU) == 2.0
+    @test get_active_power_limits_from(natural, SU) == (min = -2.0, max = 2.0)
+    @test get_reactive_power_limits_to(natural, SU) == (min = -1.0, max = 1.0)
+    # DC_POWER setpoint is a power field: divides under NaturalUnit only.
+    @test get_dc_setpoint_from(natural) == 0.4
+    # DC_VOLTAGE setpoint is kV → pu of rated_dc_voltage, in both unit systems.
+    @test get_dc_setpoint_to(natural) == 1.02
+    # Siemens → pu is governed by admittance_units, not the document unit system.
+    @test get_g(natural) == 200.0
+    # Amperes, dimensionless, and kV fields have no base to convert against.
+    @test get_dc_current(natural) == 300.0
+    @test get_ac_setpoint_from(natural) == 0.95
+    @test get_voltage_limits_from(natural) == (min = 0.9, max = 1.1)
+    @test get_rated_dc_voltage(natural) == 200.0
+    @test isnothing(get_remote_bus_control_from(natural))
+    @test get_remote_bus_control_to(natural) == 4
+    @test get_converter_loss_from(natural) == LinearCurve(1.2, 0.5)
+
+    vsc_po.id = 21
+    vsc_po.name = "vsc2"
+    device = PSY.from_openapi(TwoTerminalVSCLine, vsc_po, refs, DU)
+    add_component!(sys, device)
+    @test get_active_power_flow(device, SU) == 50.0
+    @test get_active_power_limits_from(device, SU) == (min = -200.0, max = 200.0)
+    @test get_dc_setpoint_from(device) == 40.0
+    @test get_dc_setpoint_to(device) == 1.02
+    @test get_g(device) == 200.0
+end
+
+@testset "OpenAPI converters: TwoTerminalVSCLine quadratic converter loss" begin
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    refs[10] =
+        PSY.from_openapi(Arc, PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
+    vsc_po = _vsc_po_minimal()
+    vsc_po.converter_loss_to = PSY.PC.InputOutputCurve(;
+        function_data = PSY.PC.InputOutputCurveFunctionData(
+            PSY.PC.QuadraticFunctionData(;
+                quadratic_term = 0.01, proportional_term = 1.1, constant_term = 0.4,
+            ),
+        ),
+    )
+    vsc = PSY.from_openapi(TwoTerminalVSCLine, vsc_po, refs, NU)
+    @test get_converter_loss_to(vsc) == QuadraticCurve(0.01, 1.1, 0.4)
+end
+
+@testset "OpenAPI converters: TwoTerminalVSCLine unconvertible inputs error" begin
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    refs[10] =
+        PSY.from_openapi(Arc, PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
+
+    # An AC_VOLTAGE setpoint is kV here and per-unit of an AC base voltage in PSY that
+    # neither side records — the one branch with no faithful conversion.
+    ac_voltage = _vsc_po_minimal()
+    ac_voltage.ac_control_from = "AC_VOLTAGE"
+    @test_throws ErrorException PSY.from_openapi(TwoTerminalVSCLine, ac_voltage, refs, NU)
+
+    # Only NATURAL_UNITS is implemented for either unit-basis selector.
+    bad_admittance = _vsc_po_minimal()
+    bad_admittance.admittance_units = "DEVICE_BASE"
+    @test_throws ErrorException PSY.from_openapi(
+        TwoTerminalVSCLine,
+        bad_admittance,
+        refs,
+        NU,
+    )
+
+    bad_voltage = _vsc_po_minimal()
+    bad_voltage.voltage_units = "DEVICE_BASE"
+    @test_throws ErrorException PSY.from_openapi(TwoTerminalVSCLine, bad_voltage, refs, NU)
+
+    # A non-zero g with no DC voltage base is unconvertible; a zero one is not.
+    no_base = _vsc_po_minimal()
+    no_base.rated_dc_voltage = 0.0
+    no_base.g = 0.5
+    @test_throws ErrorException PSY.from_openapi(TwoTerminalVSCLine, no_base, refs, NU)
+
+    no_base.g = 0.0
+    @test iszero(get_g(PSY.from_openapi(TwoTerminalVSCLine, no_base, refs, NU)))
+end
+
+@testset "OpenAPI converters: InterruptibleStandardLoad (generated)" begin
+    # Same ZIP fields as StandardLoad plus an `operation_cost`, which is what kept it off
+    # the generated path until its descriptor gained `openapi_type`.
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    load_po = PSY.PO.InterruptibleStandardLoad(;
+        id = 30, name = "load1", available = true, bus = 3, base_power = 100.0,
+        operation_cost = PSY.PC.LoadCost(;
+            fixed = 2400.0,
+            variable = PSY.PC.CostCurve(;
+                power_units = "NATURAL_UNITS",
+                value_curve = PSY.PC.ValueCurve(_io_curve(150.0, 0.0)),
+            ),
+        ),
+        conformity = "CONFORMING",
+        constant_active_power = 50.0, constant_reactive_power = 10.0,
+        impedance_active_power = 20.0, impedance_reactive_power = 5.0,
+        current_active_power = 30.0, current_reactive_power = 7.0,
+        max_constant_active_power = 60.0, max_constant_reactive_power = 12.0,
+        max_impedance_active_power = 25.0, max_impedance_reactive_power = 6.0,
+        max_current_active_power = 35.0, max_current_reactive_power = 8.0,
+    )
+
+    natural = PSY.from_openapi(InterruptibleStandardLoad, load_po, refs, NU)
+    @test get_bus(natural) === refs[3]
+    @test get_constant_active_power(natural, DU) == 0.5
+    @test get_impedance_reactive_power(natural, DU) == 0.05
+    @test get_max_current_active_power(natural, DU) == 0.35
+    @test get_conformity(natural) == LoadConformity.CONFORMING
+
+    device = PSY.from_openapi(InterruptibleStandardLoad, load_po, refs, DU)
+    @test get_constant_active_power(device, DU) == 50.0
+    @test get_max_current_active_power(device, DU) == 35.0
 end

@@ -11,6 +11,44 @@ _export_bus(; number = 1, area = nothing, load_zone = nothing, bustype = ACBusTy
         base_voltage = 138.0, area = area, load_zone = load_zone,
     )
 
+"""
+A `TwoTerminalVSCLine` on a 100 MVA / 200 kV DC base, with one converter on each DC control
+mode so both `dc_setpoint` conversions are exercised at once, and a quadratic loss on the `to`
+side to cover the second arm of the `Union{LinearCurve, QuadraticCurve}` field.
+"""
+_export_vsc(
+    arc;
+    ac_control_from = VSCACControlModes.AC_REACTIVE_POWER,
+    dc_control_to = VSCDCControlModes.DC_VOLTAGE,
+    rated_dc_voltage = 200.0,
+) = TwoTerminalVSCLine(;
+    name = "vsc1", available = true, arc = arc,
+    active_power_flow = 0.5, rating = 2.0,
+    active_power_limits_from = (min = -2.0, max = 2.0),
+    active_power_limits_to = (min = -2.0, max = 2.0),
+    g = 200.0, dc_current = 300.0, reactive_power_from = 0.1,
+    dc_control_from = VSCDCControlModes.DC_POWER,
+    ac_control_from = ac_control_from,
+    dc_setpoint_from = 0.4, ac_setpoint_from = 0.95,
+    converter_loss_from = LinearCurve(1.2, 0.5),
+    max_dc_current_from = 1000.0, rating_from = 2.0,
+    reactive_power_limits_from = (min = -1.0, max = 1.0),
+    power_factor_weighting_fraction_from = 0.5,
+    voltage_limits_from = (min = 0.9, max = 1.1),
+    dc_voltage_droop_from = 0.0, reactive_power_to = 0.2,
+    dc_control_to = dc_control_to,
+    ac_control_to = VSCACControlModes.AC_REACTIVE_POWER,
+    dc_setpoint_to = 1.02, ac_setpoint_to = 0.98,
+    converter_loss_to = QuadraticCurve(0.01, 1.1, 0.4),
+    max_dc_current_to = 1000.0, rating_to = 2.0,
+    reactive_power_limits_to = (min = -1.0, max = 1.0),
+    power_factor_weighting_fraction_to = 0.5,
+    voltage_limits_to = (min = 0.9, max = 1.1),
+    dc_voltage_droop_to = 0.0, rated_dc_voltage = rated_dc_voltage,
+    remote_bus_control_from = nothing, remote_bus_control_to = 2,
+    rmpct_from = 100.0, rmpct_to = 100.0, base_power = 100.0,
+)
+
 @testset "OpenAPI export converters: ACBus / Area / LoadZone / Arc" begin
     area = Area(; name = "area1", peak_active_power = 2.5, peak_reactive_power = 0.5)
     lz = LoadZone(; name = "lz1", peak_active_power = 2.5, peak_reactive_power = 0.5)
@@ -1103,4 +1141,82 @@ end
         @test TimeSeries.values(get_data(IS.get_single_time_series(dsts2))) ==
               [0.11, 0.12, 0.13, 0.14]
     end
+end
+
+@testset "OpenAPI export converters: TwoTerminalVSCLine" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    vsc = _export_vsc(arc)
+    sys = System(100.0)
+    for component in (bus1, bus2, arc, vsc)
+        add_component!(sys, component)
+    end
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = arc
+    refs[4] = vsc
+
+    natural_po = PSY.to_openapi(vsc, refs, NU)
+    @test natural_po.active_power_flow == 50.0
+    @test natural_po.rating == 200.0
+    @test natural_po.active_power_limits_from.min == -200.0
+    @test natural_po.reactive_power_limits_to.max == 100.0
+    # DC_POWER setpoint scales with the other power fields; the DC_VOLTAGE one is pu → kV.
+    @test natural_po.dc_setpoint_from == 40.0
+    @test natural_po.dc_setpoint_to == 204.0
+    # pu → siemens against Ybase = 100 / 200^2.
+    @test natural_po.g == 0.5
+    @test natural_po.admittance_units == "NATURAL_UNITS"
+    @test natural_po.voltage_units == "NATURAL_UNITS"
+    @test natural_po.dc_control_to == "DC_VOLTAGE"
+    @test natural_po.ac_control_from == "AC_REACTIVE_POWER"
+    @test natural_po.converter_loss_to.function_data.value.quadratic_term == 0.01
+
+    device_po = PSY.to_openapi(vsc, refs, DU)
+    @test device_po.active_power_flow == 0.5
+    @test device_po.active_power_limits_from.min == -2.0
+    @test device_po.dc_setpoint_from == 0.4
+    @test device_po.dc_setpoint_to == 204.0
+    @test device_po.g == 0.5
+end
+
+@testset "OpenAPI export: TwoTerminalVSCLine survives a document round trip" begin
+    for unit_system in (:natural_units, :device_base)
+        bus1 = _export_bus(; number = 1)
+        bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+        arc = Arc(; from = bus1, to = bus2)
+        vsc = _export_vsc(arc)
+        sys = System(100.0)
+        for component in (bus1, bus2, arc, vsc)
+            add_component!(sys, component)
+        end
+
+        dir = mktempdir()
+        PSY.to_file(sys, dir; unit_system = unit_system, force = true)
+        restored = get_component(TwoTerminalVSCLine, PSY.from_file(System, dir), "vsc1")
+        for field in fieldnames(TwoTerminalVSCLine)
+            field in (:internal, :arc, :services) && continue
+            @test getfield(restored, field) == getfield(vsc, field)
+        end
+    end
+end
+
+@testset "OpenAPI export: TwoTerminalVSCLine unconvertible values error" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+
+    ac_voltage = _export_vsc(arc; ac_control_from = VSCACControlModes.AC_VOLTAGE)
+    refs[4] = ac_voltage
+    @test_throws ErrorException PSY.to_openapi(ac_voltage, refs, NU)
+
+    # A non-zero conductance with no DC voltage base has nothing to be expressed against.
+    no_base =
+        _export_vsc(arc; rated_dc_voltage = 0.0, dc_control_to = VSCDCControlModes.DC_POWER)
+    refs[5] = no_base
+    @test_throws ErrorException PSY.to_openapi(no_base, refs, NU)
 end

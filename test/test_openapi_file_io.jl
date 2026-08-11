@@ -95,34 +95,31 @@ end
     @test length(unique(component_ids)) == length(component_ids)
 end
 
-@testset "from_openapi: ext keys on IGNORED_EXT_KEYS are skipped, an unlisted key errors" begin
+@testset "ext is passthrough: any key survives a document round trip" begin
     doc_dict = make_openapi_test_doc()
 
-    # An empty ext is the normal case: producers keep unmappable source columns on their own
-    # side rather than emitting them.
     empty_ext = copy(doc_dict)
     empty_ext["ext"] = Dict{String, Any}()
-    @test PSY.from_openapi(System, to_test_document(empty_ext)) isa System
+    @test isempty(
+        get_ext(
+            get_component(ACBus, PSY.from_openapi(System, to_test_document(empty_ext)),
+                "bus1"),
+        ),
+    )
 
-    # A key on the ledger is skipped without comment -- not an error, and not stored anywhere.
-    listed_key = first(keys(PSY.IGNORED_EXT_KEYS))
-    listed = copy(doc_dict)
-    listed["ext"] = Dict{String, Any}("3" => Dict{String, Any}(listed_key => 1.0))
-    @test PSY.from_openapi(System, to_test_document(listed)) isa System
+    # Id 3 is bus1. No key is privileged: PowerSystems stores whatever the producer emitted
+    # and never reads it, so an arbitrary name and a mix of value types must both survive.
+    extras = Dict{String, Any}("Whatsit MW" => 1.0, "Source Label" => "zone-a", "Tol" => 3)
+    with_ext = copy(doc_dict)
+    with_ext["ext"] = Dict{String, Any}("3" => extras)
 
-    # An unlisted key fails, naming the key, the component id, and the component type --
-    # PowerSystems has nowhere to put it, and silently dropping source data is what this
-    # replaces.
-    unknown = copy(doc_dict)
-    unknown["ext"] = Dict{String, Any}("3" => Dict{String, Any}("Whatsit MW" => 1.0))
-    err = try
-        PSY.from_openapi(System, to_test_document(unknown))
-        nothing
-    catch e
-        e
-    end
-    @test err isa ErrorException
-    @test occursin("Whatsit MW", err.msg)
-    @test occursin("component id 3", err.msg)
-    @test occursin("ACBus", err.msg)
+    sys = PSY.from_openapi(System, to_test_document(with_ext))
+    @test get_ext(get_component(ACBus, sys, "bus1")) == extras
+    @test isempty(get_ext(get_component(ACBus, sys, "bus2")))
+
+    # And back out again, unchanged. `:original` reproduces the document's own ids, so bus1
+    # is id 3 on the way out as well.
+    exported = to_openapi(sys; unit_system = :original)
+    @test PSY.PC.get_ext(exported, 3) == extras
+    @test isempty(PSY.PC.get_ext(exported, 4))
 end
