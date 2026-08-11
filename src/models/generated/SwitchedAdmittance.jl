@@ -35,8 +35,8 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `number_of_steps::Vector{Int}`: (default: `Int[]`) Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.
 - `Y_increase::Vector{Complex{Float64}}`: (default: `Complex{Float64}[]`) Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2.
 - `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
-- `control_mode::SwitchedAdmittanceControlMode`: (default: `SwitchedAdmittanceControlMode.FIXED`) Switched-shunt control mode (PSS/E MODSW).
-- `regulated_bus_number::Int`: (default: `0`) Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG).
+- `control_mode::SwitchedAdmittanceControlMode`: (default: `SwitchedAdmittanceControlMode.FIXED`) Switched-shunt control mode.
+- `regulated_bus_number::Int`: (default: `0`) Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -59,9 +59,9 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     Y_increase::Vector{Complex{Float64}}
     "Shunt admittance limits for switched shunt model"
     admittance_limits::MinMax
-    "Switched-shunt control mode (PSS/E MODSW)."
+    "Switched-shunt control mode."
     control_mode::SwitchedAdmittanceControlMode
-    "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG)."
+    "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus."
     regulated_bus_number::Int
     "corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}

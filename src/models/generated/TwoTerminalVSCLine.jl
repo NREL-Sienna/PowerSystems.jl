@@ -88,7 +88,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `power_factor_weighting_fraction_to::Float64`: (default: `1.0`) Power weighting factor fraction used in reducing the active power order and either the reactive power order when the converter rating is violated. When is 0.0, only the active power is reduced; when is 1.0, only the reactive power is reduced; otherwise, a weighted reduction of both active and reactive power is applied., validation range: `(0, 1)`
 - `voltage_limits_to::MinMax`: (default: `(min=0.0, max=999.9)`) Limits on the Voltage at the DC `to` Bus.
 - `dc_voltage_droop_to::Float64`: (default: `0.0`) DC-voltage droop gain on the `to` converter, used when `dc_control_to` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_to + dc_voltage_droop_to * P_c` (with `P_c` the converter's AC-side active-power injection).
-- `rated_dc_voltage::Float64`: (default: `0.0`) Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints and for PSS/E export of DCSET/RDC/BLOSS; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly).
+- `rated_dc_voltage::Float64`: (default: `0.0`) Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly).
 - `remote_bus_control_from::Union{Nothing, Int}`: (default: `nothing`) Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus., validation range: `(1, nothing)`
 - `remote_bus_control_to::Union{Nothing, Int}`: (default: `nothing`) Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus., validation range: `(1, nothing)`
 - `rmpct_from::Float64`: (default: `100.0`) Percent of the total Mvar required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.
@@ -165,7 +165,7 @@ mutable struct TwoTerminalVSCLine <: TwoTerminalHVDC
     voltage_limits_to::MinMax
     "DC-voltage droop gain on the `to` converter, used when `dc_control_to` is `DC_VOLTAGE_DROOP`: `V_dc = dc_setpoint_to + dc_voltage_droop_to * P_c` (with `P_c` the converter's AC-side active-power injection)."
     dc_voltage_droop_to::Float64
-    "Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints and for PSS/E export of DCSET/RDC/BLOSS; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly)."
+    "Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly)."
     rated_dc_voltage::Float64
     "Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus."
     remote_bus_control_from::Union{Nothing, Int}

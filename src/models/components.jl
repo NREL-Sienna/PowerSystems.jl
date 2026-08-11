@@ -31,6 +31,7 @@ base_power_kind(::Component) = DeviceBasePower()
 base_power_kind(::Area) = SystemBasePower()
 base_power_kind(::AreaInterchange) = SystemBasePower()
 base_power_kind(::DiscreteControlledACBranch) = SystemBasePower()
+base_power_kind(::FixedAdmittance) = SystemBasePower()
 base_power_kind(::GenericArcImpedance) = SystemBasePower()
 base_power_kind(::Line) = SystemBasePower()
 base_power_kind(::LoadZone) = SystemBasePower()
@@ -352,8 +353,8 @@ _unit_category(::Val{:siemens}) = ADMITTANCE
 
 # Base provider for the pairwise impedance fields of a ThreeWindingTransformer.
 # Convention: Z_ij is pu on base_power_ij referenced to the first-index circuit's
-# base voltage (PSS/E CZ = 1): r_12/x_12 -> primary, r_23/x_23 -> secondary,
-# r_31/x_31 -> tertiary (R3-1 references NOMV3, the tertiary winding). The
+# base voltage: r_12/x_12 -> primary, r_23/x_23 -> secondary,
+# r_31/x_31 -> tertiary. The
 # transformer-level `magnetizing_shunt` is pu on the primary circuit's own
 # `base_power` referenced to the primary circuit's base voltage (it converts
 # directly on the primary `TransformerCircuit`, not through a `PairBase`).
@@ -365,7 +366,7 @@ end
 
 function _get_device_base_power(p::PairBase)
     isnothing(p.base_power) && error(
-        "The pairwise PSS/E fields (r_12/x_12/r_23/x_23/r_31/x_31 and base_power_12/23/31) " *
+        "The pairwise impedance fields (r_12/x_12/r_23/x_23/r_31/x_31 and base_power_12/23/31) " *
         "of $(summary(p.transformer)) are not set; cannot convert pairwise values",
     )
     return p.base_power

@@ -271,3 +271,99 @@ set_max_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.m
 set_services!(value::InterruptibleStandardLoad, val) = value.services = val
 """Set [`InterruptibleStandardLoad`](@ref) `ext`."""
 set_ext!(value::InterruptibleStandardLoad, val) = value.ext = val
+
+
+
+function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return InterruptibleStandardLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        constant_active_power = po.constant_active_power,
+        constant_reactive_power = po.constant_reactive_power,
+        impedance_active_power = po.impedance_active_power,
+        impedance_reactive_power = po.impedance_reactive_power,
+        current_active_power = po.current_active_power,
+        current_reactive_power = po.current_reactive_power,
+        max_constant_active_power = po.max_constant_active_power,
+        max_constant_reactive_power = po.max_constant_reactive_power,
+        max_impedance_active_power = po.max_impedance_active_power,
+        max_impedance_reactive_power = po.max_impedance_reactive_power,
+        max_current_active_power = po.max_current_active_power,
+        max_current_reactive_power = po.max_current_reactive_power,
+    )
+end
+
+function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return InterruptibleStandardLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        constant_active_power = po.constant_active_power / po.base_power,
+        constant_reactive_power = po.constant_reactive_power / po.base_power,
+        impedance_active_power = po.impedance_active_power / po.base_power,
+        impedance_reactive_power = po.impedance_reactive_power / po.base_power,
+        current_active_power = po.current_active_power / po.base_power,
+        current_reactive_power = po.current_reactive_power / po.base_power,
+        max_constant_active_power = po.max_constant_active_power / po.base_power,
+        max_constant_reactive_power = po.max_constant_reactive_power / po.base_power,
+        max_impedance_active_power = po.max_impedance_active_power / po.base_power,
+        max_impedance_reactive_power = po.max_impedance_reactive_power / po.base_power,
+        max_current_active_power = po.max_current_active_power / po.base_power,
+        max_current_reactive_power = po.max_current_reactive_power / po.base_power,
+    )
+end
+
+function to_openapi(value::InterruptibleStandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.InterruptibleStandardLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        constant_active_power = get_constant_active_power(value, DU),
+        constant_reactive_power = get_constant_reactive_power(value, DU),
+        impedance_active_power = get_impedance_active_power(value, DU),
+        impedance_reactive_power = get_impedance_reactive_power(value, DU),
+        current_active_power = get_current_active_power(value, DU),
+        current_reactive_power = get_current_reactive_power(value, DU),
+        max_constant_active_power = get_max_constant_active_power(value, DU),
+        max_constant_reactive_power = get_max_constant_reactive_power(value, DU),
+        max_impedance_active_power = get_max_impedance_active_power(value, DU),
+        max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU),
+        max_current_active_power = get_max_current_active_power(value, DU),
+        max_current_reactive_power = get_max_current_reactive_power(value, DU),
+    )
+end
+
+function to_openapi(value::InterruptibleStandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.InterruptibleStandardLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        constant_active_power = get_constant_active_power(value, DU) * _get_base_power(value),
+        constant_reactive_power = get_constant_reactive_power(value, DU) * _get_base_power(value),
+        impedance_active_power = get_impedance_active_power(value, DU) * _get_base_power(value),
+        impedance_reactive_power = get_impedance_reactive_power(value, DU) * _get_base_power(value),
+        current_active_power = get_current_active_power(value, DU) * _get_base_power(value),
+        current_reactive_power = get_current_reactive_power(value, DU) * _get_base_power(value),
+        max_constant_active_power = get_max_constant_active_power(value, DU) * _get_base_power(value),
+        max_constant_reactive_power = get_max_constant_reactive_power(value, DU) * _get_base_power(value),
+        max_impedance_active_power = get_max_impedance_active_power(value, DU) * _get_base_power(value),
+        max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU) * _get_base_power(value),
+        max_current_active_power = get_max_current_active_power(value, DU) * _get_base_power(value),
+        max_current_reactive_power = get_max_current_reactive_power(value, DU) * _get_base_power(value),
+    )
+end

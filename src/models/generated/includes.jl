@@ -691,6 +691,7 @@ export get_max_impedance_reactive_power_unitful
 export get_max_reactive_power
 export get_max_reactive_power_unitful
 export get_max_shunt_current
+export get_max_shunt_current_unitful
 export get_min_compounding_voltage
 export get_minimum_time
 export get_motor_technology

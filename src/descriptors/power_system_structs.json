@@ -534,35 +534,35 @@
                 },
                 {
                     "name": "control_objective",
-                    "comment": "Tap-changer / phase-shifter control objective (PSS/E COD). `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)",
+                    "comment": "Tap-changer / phase-shifter control objective. `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "data_type": "TransformerControlObjective",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "regulated_bus_number",
-                    "comment": "Controlled bus number (PSS/E CONT; sign = regulation side)",
+                    "comment": "Controlled bus number; the sign indicates the regulation side",
                     "null_value": "0",
                     "data_type": "Int",
                     "default": "0"
                 },
                 {
                     "name": "control_limits",
-                    "comment": "Control band (PSS/E RMA/RMI): tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control",
+                    "comment": "Control band: tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control",
                     "null_value": "(min=0.9, max=1.1)",
                     "data_type": "MinMax",
                     "default": "(min=0.9, max=1.1)"
                 },
                 {
                     "name": "controlled_quantity_limits",
-                    "comment": "Controlled-quantity band (PSS/E VMA/VMI): pu voltage / Mvar / MW bounds depending on `control_objective`",
+                    "comment": "Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`",
                     "null_value": "(min=0.9, max=1.1)",
                     "data_type": "MinMax",
                     "default": "(min=0.9, max=1.1)"
                 },
                 {
                     "name": "number_of_tap_positions",
-                    "comment": "Number of tap positions (PSS/E NTP)",
+                    "comment": "Number of tap positions",
                     "null_value": "33",
                     "data_type": "Int",
                     "default": "33"
@@ -1270,7 +1270,7 @@
         },
         {
             "struct_name": "ThreeWindingTransformer",
-            "docstring": "A three-winding transformer.\n\nThe model uses an equivalent star model with a star (hidden) bus. Each of the three [`TransformerCircuit`](@ref) objects ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)) connects a terminal bus to the star bus and carries its own arc, tap, phase shift, star-leg impedance, ratings, per-winding base power/voltages, availability, and control. The `magnetizing_shunt` admittance and its `shunt_location` are transformer-level. The pairwise measured impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` are one representation of the transformer impedance; the individual star-leg impedances stored on each circuit are derived from them at parse time. Each pairwise impedance is in pu (device base) on the corresponding `base_power_12`/`base_power_23`/`base_power_31`, referenced to the FIRST-INDEX circuit's base voltage (PSS/E CZ = 1): `r_12`/`x_12` to the primary circuit's base voltage, `r_23`/`x_23` to the secondary circuit's base voltage, and `r_31`/`x_31` to the tertiary circuit's base voltage. Mutating either representation after construction does not update the other. Power-flow and Ybus assembly read the per-circuit star-leg impedances, not the pairwise fields. Availability is circuit-level (see [`get_available`](@ref)). The model is described in Chapter 3.6 of J.D. Glover, M.S. Sarma and T. Overbye: Power Systems Analysis and Design.",
+            "docstring": "A three-winding transformer.\n\nThe model uses an equivalent star model with a star (hidden) bus. Each of the three [`TransformerCircuit`](@ref) objects ([`get_primary_circuit`](@ref), [`get_secondary_circuit`](@ref), [`get_tertiary_circuit`](@ref)) connects a terminal bus to the star bus and carries its own arc, tap, phase shift, star-leg impedance, ratings, per-winding base power/voltages, availability, and control. The `magnetizing_shunt` admittance and its `shunt_location` are transformer-level. The pairwise measured impedances `r_12`/`x_12`, `r_23`/`x_23`, `r_31`/`x_31` are one representation of the transformer impedance; the individual star-leg impedances stored on each circuit are derived from them at parse time. Each pairwise impedance is in pu (device base) on the corresponding `base_power_12`/`base_power_23`/`base_power_31`, referenced to the FIRST-INDEX circuit's base voltage: `r_12`/`x_12` to the primary circuit's base voltage, `r_23`/`x_23` to the secondary circuit's base voltage, and `r_31`/`x_31` to the tertiary circuit's base voltage. Mutating either representation after construction does not update the other. Power-flow and Ybus assembly read the per-circuit star-leg impedances, not the pairwise fields. Availability is circuit-level (see [`get_available`](@ref)). The model is described in Chapter 3.6 of J.D. Glover, M.S. Sarma and T. Overbye: Power Systems Analysis and Design.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1311,7 +1311,7 @@
                     "default": "nothing",
                     "name": "r_12",
                     "data_type": "Union{Nothing, Float64}",
-                    "comment": "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (R1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Measured resistance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings. Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1325,7 +1325,7 @@
                     "default": "nothing",
                     "name": "x_12",
                     "data_type": "Union{Nothing, Float64}",
-                    "comment": "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings (X1-2 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Measured reactance in pu (device base on `base_power_12`), referenced to the primary winding's base voltage, from primary to secondary windings. Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1339,7 +1339,7 @@
                     "default": "nothing",
                     "name": "r_23",
                     "data_type": "Union{Nothing, Float64}",
-                    "comment": "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Measured resistance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings. Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1353,7 +1353,7 @@
                     "default": "nothing",
                     "name": "x_23",
                     "data_type": "Union{Nothing, Float64}",
-                    "comment": "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Measured reactance in pu (device base on `base_power_23`), referenced to the secondary winding's base voltage, from secondary to tertiary windings. Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1367,7 +1367,7 @@
                     "default": "nothing",
                     "name": "r_31",
                     "data_type": "Union{Nothing, Float64}",
-                    "comment": "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (R3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Measured resistance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings. Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1381,7 +1381,7 @@
                     "default": "nothing",
                     "name": "x_31",
                     "data_type": "Union{Nothing, Float64}",
-                    "comment": "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings (X3-1 with CZ = 1 in PSS/E). Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Measured reactance in pu (device base on `base_power_31`), referenced to the tertiary winding's base voltage, from tertiary to primary windings. Not synced with the star-leg values after construction; see struct docstring. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -1394,7 +1394,7 @@
                     "name": "base_power_12",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "null_value": "nothing",
                     "default": "nothing",
                     "data_type": "Union{Nothing, Float64}",
@@ -1408,7 +1408,7 @@
                     "name": "base_power_23",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "null_value": "nothing",
                     "default": "nothing",
                     "data_type": "Union{Nothing, Float64}",
@@ -1422,7 +1422,7 @@
                     "name": "base_power_31",
                     "exclude_getter": true,
                     "exclude_setter": true,
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings. Optional; all pairwise PSSE fields must be set together or all be `nothing`.",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for tertiary-primary windings. Optional; all pairwise measured-impedance fields must be set together or all be `nothing`.",
                     "null_value": "nothing",
                     "default": "nothing",
                     "data_type": "Union{Nothing, Float64}",
@@ -1848,7 +1848,7 @@
                 },
                 {
                     "name": "rated_dc_voltage",
-                    "comment": "Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints and for PSS/E export of DCSET/RDC/BLOSS; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly).",
+                    "comment": "Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
@@ -2446,6 +2446,7 @@
         },
         {
             "struct_name": "InterruptibleStandardLoad",
+            "openapi_type": "InterruptibleStandardLoad",
                 "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power), according to `P = P_P * V^0 + P_I * V^1 + P_Z * V^2` for active power and `Q = Q_P * V^0 + Q_I * V^1 + Q_Z * V^2` for reactive power. (Voltage V is in per unit.)\n\nFor an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref)",
             "fields": [
                 {
@@ -2796,15 +2797,19 @@
                 },
                 {
                     "name": "max_shunt_current",
-                    "comment": "Maximum shunt current at unity voltage (PSS/E SHMX), MVA; the STATCOM current limit and SVC susceptance base.",
+                    "comment": "Maximum shunt current at unity voltage, MVA; the STATCOM current limit and SVC susceptance base.",
                     "default": "9999.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_reactive_power",
                     "comment": "Independent maximum reactive power ceiling (MVA); the device reactive limit is min(the current/susceptance law on max_shunt_current, this value). Non-binding at the 9999.0 default.",
                     "default": "9999.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "shunt_control_type",
@@ -2815,7 +2820,7 @@
                 },
                 {
                     "name": "regulated_bus_number",
-                    "comment": "Bus whose voltage this device regulates; 0 ⇒ local (sending) bus (PSS/E FCREG)",
+                    "comment": "Bus whose voltage this device regulates; 0 ⇒ local (sending) bus",
                     "null_value": "0",
                     "default": "0",
                     "data_type": "Int"
@@ -2825,6 +2830,20 @@
                     "comment": "Solver-populated: delivered reactive power after solve (output; not parsed from input)",
                     "default": "0.0",
                     "data_type": "Float64"
+                },
+                {
+                    "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "services",
@@ -2886,6 +2905,20 @@
                     "comment": "Fixed admittance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "default": "100.0",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
+                    "valid_range": {
+                        "min": 0.0001,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "dynamic_injector",
@@ -2977,14 +3010,14 @@
                 },
                 {
                     "name": "control_mode",
-                    "comment": "Switched-shunt control mode (PSS/E MODSW).",
+                    "comment": "Switched-shunt control mode.",
                     "data_type": "SwitchedAdmittanceControlMode",
                     "null_value": "SwitchedAdmittanceControlMode.FIXED",
                     "default": "SwitchedAdmittanceControlMode.FIXED"
                 },
                 {
                     "name": "regulated_bus_number",
-                    "comment": "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus (PSS/E SWREM/NREG).",
+                    "comment": "Bus number whose voltage/quantity this shunt regulates; 0 ⇒ local bus.",
                     "data_type": "Int",
                     "null_value": "0",
                     "default": "0"
@@ -3252,7 +3285,8 @@
         },
         {
             "struct_name": "StandardLoad",
-                "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power), according to `P = P_P * V^0 + P_I * V^1 + P_Z * V^2` for active power and `Q = Q_P * V^0 + Q_I * V^1 + Q_Z * V^2` for reactive power. (Voltage V is in per unit.)\n\nFor an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref)",
+            "openapi_type": "StandardLoad",
+            "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power), according to `P = P_P * V^0 + P_I * V^1 + P_Z * V^2` for active power and `Q = Q_P * V^0 + Q_I * V^1 + Q_Z * V^2` for reactive power. (Voltage V is in per unit.)\n\nFor an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
