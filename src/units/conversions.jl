@@ -124,15 +124,14 @@ Convert a value between unit systems.
 convert_units(gen, 0.6, POWER, DU, MW)       # → 30.0 MW
 convert_units(gen, 30.0MW, POWER, MW, DU)    # → 0.6 DU
 convert_units(gen, 0.6, POWER, DU, SU)       # → 0.3 SU
-convert_units(gen, 0.6, POWER, DU, Float64)  # → 0.3 (raw SU value)
 ```
 """
 function convert_units end
 
-# `_BareNumber` is `Real` plus `ComplexF64` (the complex admittance getters, e.g.
-# `magnetizing_shunt`). It deliberately excludes `Quantity`/`RelativeQuantity`, which are
-# both `<: Number` and must fall through to the marker/value guards below.
-const _BareNumber = Union{Real, ComplexF64}
+# Excludes `Quantity`/`RelativeQuantity`, which are `<: Number` but neither `<: Real` nor
+# `<: Complex`, and must fall through to the marker guards below. Widening this to `Number`
+# makes those guards ambiguous.
+const _BareNumber = Union{Real, Complex}
 
 # --- From DU ---
 
@@ -168,16 +167,6 @@ convert_units(
     ::DeviceBaseUnit,
 ) =
     value * DU
-
-function convert_units(
-    c,
-    value::Union{Float64, ComplexF64},
-    cat::UnitCategory,
-    ::DeviceBaseUnit,
-    ::Type{Float64},
-)
-    return value * _du_to_su_ratio(c, cat)
-end
 
 # --- From SU ---
 

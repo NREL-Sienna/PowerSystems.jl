@@ -230,7 +230,7 @@ end
     # Regression guard for a silent units bug. The getters must honor the explicit
     # `units` argument and resolve the CORRECT pair base. Each pairwise impedance
     # has its own `base_power_XX` and is referenced to the FIRST-INDEX circuit's
-    # base voltage (12 -> primary, 23 -> secondary, 31 -> tertiary; PSS/E CZ = 1).
+    # base voltage (12 -> primary, 23 -> secondary, 31 -> tertiary).
     # Distinct per-pair bases catch a wrong-pair-base selection.
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
@@ -351,7 +351,7 @@ end
     @test_nowarn add_component!(sys, gen2)
 end
 
-@testset "PSSE pairwise block is optional, all-or-none" begin
+@testset "pairwise impedance block is optional, all-or-none" begin
     sys = System(100.0)
     b1 = ACBus(nothing)
     set_name!(b1, "b1")
@@ -401,7 +401,7 @@ end
 
     # (c) partial block rejected at add_component!
     @test_logs(
-        (:error, r"partial PSS/E pairwise block"),
+        (:error, r"partial pairwise impedance block"),
         match_mode = :any,
         @test_throws(IS.InvalidValue, add_component!(sys, t_partial))
     )

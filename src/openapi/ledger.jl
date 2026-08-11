@@ -1,31 +1,29 @@
-# Hand-written: the OpenAPI round-trip ledger. Extends `src/openapi/refs.jl` conceptually;
-# split into its own file because it needs `System`, defined in `base.jl`, included after
-# `refs.jl` — see the note there.
+# The OpenAPI round-trip ledger: the id⇄UUID map persisted in `System.ext` under one reserved
+# key. On the critical path both ways — `from_openapi` writes it (import_document.jl), and
+# `to_openapi(sys; unit_system = :original)` reads it to reproduce the document's ids
+# (export_document.jl).
 #
-# id<->UUID persisted in `System.ext` under one reserved key. This is a deliberate TEMPORARY
-# BRIDGE pending the planned UUID→id migration in IS/PSY — once component identity is natively
-# id-based, this ext entry becomes redundant and should be DELETED, not migrated forward.
-# Component object references do not survive a JSON round-trip of `System.ext` (a plain
-# `Dict{String,Any}`), so the ledger stores UUIDs — strings — rather than the components
-# `OpenAPIRefs` holds in memory during one conversion pass.
+# It stores UUID strings rather than the components `OpenAPIRefs` holds in memory, because
+# component references do not survive a JSON round-trip of `ext`. The whole file is a bridge
+# pending the UUID→id migration in IS/PSY; once identity is natively id-based it should be
+# deleted, not migrated forward.
+#
+# Split from refs.jl because it needs `System`, which base.jl defines much later.
 
 const OPENAPI_LEDGER_KEY = "_openapi_ledger"
 
 """
-Whether `x` carries its own UUID and belongs in the id<->UUID ledger.
+Whether `x` carries its own UUID and belongs in the id⇄UUID ledger.
 
-`TransformerCircuit` is a `DeviceParameter` embedded in its owning transformer, not an
-`InfrastructureSystemsComponent` — it has no `internal` field and thus no UUID of its own.
-It is still registered in `OpenAPIRefs` (transformers resolve it by id), so
-[`store_ledger!`](@ref) must skip it rather than error.
+`TransformerCircuit` is embedded in its owning transformer and has no `internal` field, so no
+UUID — but it is still registered in `OpenAPIRefs`, and must be skipped rather than error.
 """
 _has_own_uuid(::Any) = true
 _has_own_uuid(::TransformerCircuit) = false
 
 """
-Persist `refs`' id<->component registry and unit system into `sys`'s `ext`, keyed under
-`OPENAPI_LEDGER_KEY`, so a later `to_openapi(sys; unit_system = :original)` can reproduce
-the document's ids and unit convention. See [`load_ledger`](@ref), [`has_ledger`](@ref).
+Persist `refs`' id⇄component registry and unit system into `sys`'s `ext` so a later
+`to_openapi(sys; unit_system = :original)` can reproduce the document's ids and units.
 """
 function store_ledger!(sys::System, refs::OpenAPIRefs)
     id_to_uuid = Dict{String, String}(
@@ -40,15 +38,12 @@ function store_ledger!(sys::System, refs::OpenAPIRefs)
 end
 
 """Whether `sys` carries an OpenAPI round-trip ledger. Use before [`load_ledger`](@ref) when
-absence is a valid outcome to branch on, rather than an error to raise."""
+absence is a valid outcome to branch on."""
 has_ledger(sys::System) = haskey(get_ext(sys), OPENAPI_LEDGER_KEY)
 
 """
-Read the OpenAPI round-trip ledger `store_ledger!` wrote into `sys`'s `ext`.
-
-Errors when `sys` carries no ledger — it was never built via `PSY.from_openapi`, or the
-`ext` key was cleared — naming the missing key, since exporting with
-`unit_system = :original` cannot proceed without it.
+Read the ledger [`store_ledger!`](@ref) wrote into `sys`'s `ext`. Errors when `sys` carries
+none, since `unit_system = :original` export cannot proceed without it.
 """
 function load_ledger(sys::System)
     has_ledger(sys) || error(

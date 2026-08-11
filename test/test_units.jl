@@ -64,10 +64,6 @@ end
 
     result = convert_units(gen, 0.6, POWER, DU, DU)
     @test ustrip(result) ≈ 0.6
-
-    result = convert_units(gen, 0.6, POWER, DU, Float64)
-    @test result isa Float64
-    @test result ≈ 0.3
 end
 
 @testset "convert_units: SU → other" begin
@@ -100,9 +96,9 @@ end
     result = convert_units(line, 0.01, IMPEDANCE, DU, OHMS)
     @test Unitful.ustrip(result) ≈ 0.01 * z_base
 
-    # device base == system base, so DU → Float64 ratio = 1.0
-    result = convert_units(line, 0.01, IMPEDANCE, DU, Float64)
-    @test result ≈ 0.01
+    # device base == system base, so the DU → SU ratio is 1.0
+    result = convert_units(line, 0.01, IMPEDANCE, DU, SU)
+    @test ustrip(result) ≈ 0.01
 end
 
 @testset "convert_units: nothing passthrough" begin
@@ -123,13 +119,13 @@ end
     @test ustrip(back) ≈ original
 end
 
-@testset "convert_units: ComplexF64 support" begin
+@testset "convert_units: complex support" begin
     line = MockLine(0.01, 0.1)
-    z = 0.01 + 0.1im
 
-    result = convert_units(line, z, IMPEDANCE, DU, Float64)
-    @test result isa ComplexF64
-    @test result ≈ z  # ratio is 1.0 since device == system base
+    # ratio is 1.0 since device base == system base
+    for z in (0.01 + 0.1im, ComplexF32(0.01, 0.1), Complex(1, 2))
+        @test ustrip(convert_units(line, z, IMPEDANCE, DU, SU)) ≈ z
+    end
 end
 
 @testset "convert_units: NU (natural units)" begin
@@ -196,9 +192,6 @@ end
     for cat in (POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT)
         @test PSY._du_to_su_ratio(gen, cat) ≈
               base_value(gen, cat) / system_base_value(gen, cat)
-        # DU → Float64 must agree with the value of DU → SU
-        @test convert_units(gen, 0.6, cat, DU, Float64) ≈
-              ustrip(convert_units(gen, 0.6, cat, DU, SU))
     end
 end
 
@@ -369,7 +362,7 @@ end
     @inferred Union{Nothing, Float64} get_rating_b(line, SU)
 
     # three-winding pairwise bases (PairBase engine); r_12/r_23 are now
-    # Union{Nothing, Float64} descriptor fields (optional PSSE pairwise block)
+    # Union{Nothing, Float64} descriptor fields (optional pairwise block)
     @inferred Union{Nothing, Float64} get_r_12(xfmr3w, SU)
     @inferred Union{Nothing, Float64} get_r_23(xfmr3w, DU)
 

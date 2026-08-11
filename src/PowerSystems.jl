@@ -1007,38 +1007,18 @@ include("emissions_data.jl")
 # Definitions of PowerSystem
 include("base.jl")
 
-# OpenAPI round-trip ledger (needs `System`, just defined in base.jl — see the note in
-# refs.jl for why this is a separate file from the rest of the OpenAPI serde code).
 include("openapi/ledger.jl")
 
 include("plant_attribute.jl")
 
-# OpenAPI document-level serde: dependency-ordered component pass + ServiceAssociation
-# membership + time series ingestion. Needs System (base.jl), the round-trip ledger
-# (ledger.jl), and the supplemental-attribute hand-written constructors (outages.jl,
-# emissions_data.jl, plant_attribute.jl) already defined, so it is included after all of them.
+# OpenAPI import must follow the supplemental-attribute constructors it calls (outages.jl,
+# emissions_data.jl, plant_attribute.jl); export must follow every component type it reads.
 include("openapi/import_document.jl")
-
-# OpenAPI serde: the id⇄UUID loaders that carry document association rows into IS's
-# two SQLite association stores. Wired into `from_openapi(::Type{System}, doc)`
-# (import_document.jl calls `load_supplemental_attribute_associations!` and
-# `load_time_series_associations!` directly). Needs `_attribute_from_openapi`,
-# `_attach_attribute!`, `_attach_service_membership!`, and `_materialize_time_series!` from
-# import_document.jl, so it is included right after it.
 include("openapi/sqlite_load.jl")
-
-# OpenAPI export direction: PSY → PO/PC reverse converters and the document-level
-# `to_openapi(sys; ...)` entry point. Included last among the OpenAPI serde files —
-# after every PSY component type, getter, cost/curve type, and the round-trip ledger exist —
-# since export reads existing components rather than constructing them from a dependency-ordered
-# document walk the way import does.
 include("openapi/export_cost_conversion.jl")
 include("openapi/export_generated_types.jl")
 include("openapi/export_handwritten.jl")
 include("openapi/export_document.jl")
-
-# `from_file`/`to_file`: the directory-bundle entry points over both document directions.
-# Included after both, since it drives each.
 include("openapi/file_io.jl")
 
 include("substation.jl")

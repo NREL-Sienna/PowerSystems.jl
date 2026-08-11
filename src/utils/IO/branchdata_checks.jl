@@ -100,12 +100,12 @@ function check_rating_values(line::Union{Line, MonitoredLine})
             @assert field ∈ (:rating_b, :rating_c)
             continue
         end
-        if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
-            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        rating_mw = rating_value * device_base_power
+        if rating_mw >= 2.0 * closest_rate_range.max
+            @warn "$(field) $(round(rating_mw; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
-        elseif (rating_value * device_base_power >= closest_rate_range.max) ||
-               (rating_value * device_base_power <= closest_rate_range.min)
-            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        elseif rating_mw >= closest_rate_range.max || rating_mw <= closest_rate_range.min
+            @info "$(field) $(round(rating_mw; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         end
     end
@@ -246,20 +246,20 @@ function validate_component_with_system(
     return is_valid_reactance && is_valid_rating && is_valid_circuit
 end
 
-const _PSSE_PAIRWISE_FIELDS = (
+const _PAIRWISE_IMPEDANCE_FIELDS = (
     :r_12, :x_12, :r_23, :x_23, :r_31, :x_31,
     :base_power_12, :base_power_23, :base_power_31,
 )
 
-# The pairwise PSS/E block is carried verbatim from source data or absent entirely;
-# a partial block has no defined conversion (impedances without their base) and is
-# always a data error.
-function check_psse_pairwise_block(xfrm::ThreeWindingTransformer)
-    missing_fields = [f for f in _PSSE_PAIRWISE_FIELDS if isnothing(getfield(xfrm, f))]
+# The pairwise block is carried verbatim from source data or absent entirely; a partial block
+# has no defined conversion (impedances without their base) and is always a data error.
+function check_pairwise_impedance_block(xfrm::ThreeWindingTransformer)
+    missing_fields = [f for f in _PAIRWISE_IMPEDANCE_FIELDS if isnothing(getfield(xfrm, f))]
     isempty(missing_fields) && return true
-    length(missing_fields) == length(_PSSE_PAIRWISE_FIELDS) && return true
-    @error "ThreeWindingTransformer $(get_name(xfrm)) has a partial PSS/E pairwise block; " *
-           "missing $(missing_fields). Set all of $(collect(_PSSE_PAIRWISE_FIELDS)) or none." _group =
+    length(missing_fields) == length(_PAIRWISE_IMPEDANCE_FIELDS) && return true
+    @error "ThreeWindingTransformer $(get_name(xfrm)) has a partial pairwise impedance " *
+           "block; missing $(missing_fields). Set all of " *
+           "$(collect(_PAIRWISE_IMPEDANCE_FIELDS)) or none." _group =
         IS.LOG_GROUP_PARSING
     return false
 end
@@ -268,7 +268,7 @@ function validate_component_with_system(
     xfrm::ThreeWindingTransformer,
     sys::System,
 )
-    is_valid = check_psse_pairwise_block(xfrm)
+    is_valid = check_pairwise_impedance_block(xfrm)
     for circuit in get_circuits(xfrm)
         if !check_circuit_values(circuit, get_name(xfrm))
             is_valid = false

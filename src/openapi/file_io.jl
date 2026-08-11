@@ -1,17 +1,10 @@
-# Hand-written: the file-level entry points, `from_file` / `to_file`.
-#
 # A serialized System is a directory holding two members:
 #
 #     case/
 #       system.json      the OpenAPI document (PowerCoreOpenAPIModels writes/reads it)
 #       time_series.h5   the HDF5 sidecar (PSY writes/reads it, via IS's storage layer)
 #
-# The split of labor is the point. PowerCoreOpenAPIModels owns JSON <-> SystemDocument and
-# never opens HDF5; PSY owns SystemDocument <-> System and owns the sidecar. The document
-# records only the sidecar's *basename* (`time_series_storage_file`), so the pair moves
-# together and the layout stays this file's choice rather than the container's.
-#
-# These replace the removed `System(::AbstractString)` constructor and `to_json`/`from_json`.
+# The document records only the sidecar's basename, so the pair moves together.
 
 """Document member of a serialized System directory."""
 const SYSTEM_DOCUMENT_FILE = "system.json"

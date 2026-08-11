@@ -93,7 +93,6 @@ This classification is essential for WECC dynamic studies as it determines how l
 modeled during system disturbances and stability analysis.
 """ LoadConformity
 
-# "From PSSE POM v33 Manual"
 IS.@scoped_enum(
     FACTSOperationModes,
     OOS = 0, # out-of-service (i.e., Series and Shunt links open)
@@ -104,7 +103,6 @@ IS.@scoped_enum(
     FACTSOperationModes
 
 Enumeration defining the operational modes for FACTS (Flexible AC Transmission System) devices.
-Based on PSSE POM v33 Manual specifications.
 
 # Values
 - `OOS = 0`: Out-of-service mode where both Series and Shunt links are open
@@ -145,14 +143,14 @@ AC-side control mode of a voltage-source-converter (VSC) terminal.
 
 IS.@scoped_enum(
     FACTSShuntControlType,
-    SVC = 0,        # variable-susceptance SVC: Q = b·V² bounded by SHMX
-    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·IMX
+    SVC = 0,        # variable-susceptance SVC: Q = b·V², bounded by max susceptance
+    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·max shunt current
 )
 @doc "Shunt-FACTS device class selecting the reactive-limit law: `SVC` bounds susceptance \
-(`Q=b·V²`, cap `SHMX`); `STATCOM` is current-limited (`|Q| ≤ V·IMX`)." FACTSShuntControlType
+(`Q=b·V²`); `STATCOM` is current-limited (`|Q| ≤ V·max_shunt_current`)." FACTSShuntControlType
 
 IS.@scoped_enum(
-    SwitchedAdmittanceControlMode,  # MODSW in PSS/E switched-shunt records
+    SwitchedAdmittanceControlMode,
     UNDEFINED = -99,
     FIXED = 0,
     DISCRETE_VOLTAGE = 1,
@@ -162,8 +160,8 @@ IS.@scoped_enum(
     DISCRETE_ADMITTANCE_REMOTE = 5,
 )
 @doc"
-Control mode of a switched shunt. The enumerator maps the integer MODSW control-mode field
-of a switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
+Control mode of a switched shunt. The enumerator maps the integer control-mode field of a
+switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
 `CONTINUOUS_VOLTAGE` = 2, `DISCRETE_REACTIVE_PLANT` = 3, `DISCRETE_REACTIVE_VSC` = 4,
 `DISCRETE_ADMITTANCE_REMOTE` = 5; `UNDEFINED` = -99 when unset. The names describe each mode;
 consult your source data's own documentation for the precise definition of each control mode.
@@ -239,8 +237,7 @@ IS.@scoped_enum(
 @doc"""
     ImpedanceCorrectionTransformerControlMode
 
-Enumeration defining the control modes for impedance correction in transformers,
-based on PSS/E transformer control definitions.
+Enumeration defining the control modes for impedance correction in transformers.
 
 # Values
 - `PHASE_SHIFT_ANGLE = 1`: Control mode for phase-shifting transformers where the
@@ -251,13 +248,12 @@ based on PSS/E transformer control definitions.
   controls voltage magnitude through tap position changes.
 
 # Notes
-This enumeration corresponds to PSS/E transformer control field definitions for
-determining how impedance corrections are calculated and applied in power flow
+Determines how impedance corrections are calculated and applied in power flow
 and dynamic simulation studies.
 """ ImpedanceCorrectionTransformerControlMode
 
 IS.@scoped_enum(
-    TransformerControlObjective, # COD1 or COD2 in PSS\e
+    TransformerControlObjective,
     UNDEFINED = -99,
     VOLTAGE_DISABLED = -1,
     REACTIVE_POWER_FLOW_DISABLED = -2,
@@ -274,10 +270,8 @@ IS.@scoped_enum(
 @doc"
     TransformerControlObjective
 
-Enumeration of transformer control objectives based on PSS/E COD1 and COD2 fields.
-
-This enumeration defines the control modes for transformer tap changers and phase shifters
-as specified in the PSS/E-35 manual.
+Enumeration of transformer control objectives: the control modes for transformer tap
+changers and phase shifters.
 
 # Values
 - `UNDEFINED = -99`: Undefined control objective

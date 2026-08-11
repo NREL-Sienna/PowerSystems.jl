@@ -48,12 +48,7 @@ get_grounding_resistance(value::Substation) = value.grounding_resistance
 """Get [`Substation`](@ref) `internal`."""
 get_internal(value::Substation) = value.internal
 
-# ── OpenAPI converters ───────────────────────────────────────────────────────────
-# `Substation` has no descriptor entry, so there is no generated file to append a converter
-# to and both directions are hand-written here. This file must stay included after `PO`/`PC`
-# are aliased and after the openapi/*.jl machinery for them to resolve.
-# No unit conversion (`grounding_resistance` is plain ohms, no `needs_conversion`) and no
-# `refs` dependency on either side (no component references on the struct).
+# `Substation` has no descriptor entry, so both OpenAPI directions are hand-written here.
 
 from_openapi(::Type{Substation}, po::PO.Substation) = Substation(;
     name = po.name,

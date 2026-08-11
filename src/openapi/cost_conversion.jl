@@ -1,28 +1,14 @@
-# Hand-written (not generated): the shared PO (OpenAPI model) → PSY cost/curve converter.
-# One recursive `convert_cost` overloaded across every PO cost/curve type, plus the reserve
-# ORDC PO.OnlineReserve/OfflineReserve.variable reuses. Every unmapped PO variant errors
-# loudly naming the type — no fabricated `ThermalGenerationCost(nothing)`-style placeholders.
+# PO (OpenAPI model) → PSY cost/curve conversion: one recursive `convert_cost` overloaded
+# across every PO cost/curve type. Unmapped variants error rather than yielding a placeholder.
 #
-# PO fields are accessed with dot notation throughout (`po.value_curve`, `po.function_data`),
-# matching the OpenAPI model convention — PO structs are `OpenAPI.jl`-generated kwarg structs,
-# not PSY component types, so the "getters, not dot access" rule does not apply to them.
-#
-# `PC`/`PO` are the `PowerCoreOpenAPIModels`/`PowerOperationsOpenAPIModels` aliases set up
-# in `src/PowerSystems.jl`. Several PO fields are "oneOf" wrapper structs (`.value` holds
-# the concrete resolved instance, chosen by the document's discriminator field at deserialize
-# time) — every such wrapper subtypes `OpenAPI.OneOfAPIModel` and holds nothing but that one
-# `value` field, so one generic method below unwraps all of them; callers never need to spell
-# `.value` themselves.
+# PO structs are `OpenAPI.jl`-generated kwarg structs, not PSY components, so they are read
+# with dot access — the "getters, not dot access" rule does not apply to them.
 
-"""Every `OpenAPI.jl`-generated oneOf wrapper (`PC.ValueCurve`, `PC.FunctionData`,
-`PC.ProductionVariableCostCurve`, the per-component `<Component>OperationCost` types, ...)
-holds exactly one field, `value::Any`, set to the concrete resolved variant. Unwrapping it is
-the same operation for every one of them, so this single method replaces what would otherwise
-be one hand-written unwrap per wrapper type."""
+"""Unwrap any `OpenAPI.jl` oneOf wrapper, whose sole `value` field holds the resolved
+variant chosen by the document's discriminator."""
 convert_cost(w::OpenAPI.OneOfAPIModel) = convert_cost(w.value)
 
-"""Required-field guard: dispatches on `Nothing` vs. anything else, per style (no
-`isnothing(x) && ...` guards) — a required PO field read as `nothing` is malformed input."""
+"""A required PO field read as `nothing` is malformed input."""
 _require(::Nothing, context::AbstractString) =
     error("convert_cost: $context is required and missing")
 _require(x, ::AbstractString) = x
@@ -44,9 +30,7 @@ convert_cost(fd::PC.LinearFunctionData) =
     LinearFunctionData(fd.proportional_term, fd.constant_term)
 convert_cost(fd::PC.QuadraticFunctionData) =
     QuadraticFunctionData(fd.quadratic_term, fd.proportional_term, fd.constant_term)
-# `PiecewiseLinearData.points` is generated as a bare `Vector` (the element type is dropped
-# from `Vector{XYCoords}`), so converting once restores inference for the per-point loop —
-# this one scales with curve segments rather than components.
+# `points` is generated as a bare `Vector`, so converting once restores inference for the loop.
 function convert_cost(fd::PC.PiecewiseLinearData)
     points = convert(Vector{PC.XYCoords}, fd.points)
     return PiecewiseLinearData([(x = p.x, y = p.y) for p in points])
@@ -162,10 +146,8 @@ function convert_cost(po::PC.StorageCost)
     )
 end
 
-# ── Reserve Operating Reserve Demand Curve ─────────────────────────────────────
-# PO.OnlineReserve/OfflineReserve.variable::Union{Nothing, PC.CostCurve} (never a FuelCurve —
-# reserves are not fuel-priced); PSY stores `CostCurve{PiecewiseIncrementalCurve, U}`, with the
-# `ZERO_OFFER_CURVE` sentinel for "no demand curve" (`nothing` in the document).
+# ── Operating Reserve Demand Curve ─────────────────────────────────────────────
+# A reserve's `variable` is never a FuelCurve; PSY stores `CostCurve{PiecewiseIncrementalCurve}`.
 
 _as_piecewise_incremental(cost::CostCurve{PiecewiseIncrementalCurve}) = cost
 _as_piecewise_incremental(cost::CostCurve) = error(
@@ -173,8 +155,6 @@ _as_piecewise_incremental(cost::CostCurve) = error(
     "got CostCurve{$(typeof(get_value_curve(cost)))}",
 )
 
-"""Convert a reserve's PO `variable` (Operating Reserve Demand Curve) field: `nothing` means
-no curve is defined and maps to `ZERO_OFFER_CURVE`; a present curve must reduce to
-`CostCurve{PiecewiseIncrementalCurve}`."""
+"""Convert a reserve's `variable` field; `nothing` means no demand curve is defined."""
 convert_reserve_variable(::Nothing) = ZERO_OFFER_CURVE
 convert_reserve_variable(po::PC.CostCurve) = _as_piecewise_incremental(convert_cost(po))

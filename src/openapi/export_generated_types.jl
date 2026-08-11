@@ -1,17 +1,7 @@
-# Hand-written export-direction helpers shared by the generated `to_openapi` methods and by
-# `export_handwritten.jl`. Per-type `to_openapi` methods and their `<ENUM>_TO_STRING` tables
-# are generated into src/models/generated/<Type>.jl from the `openapi_type`-annotated
-# descriptor entries by `compute_openapi_export_converter!` (src/generate_structs.jl), which
-# is where the per-field-kind conversion rules are defined. This file holds only the
-# infrastructure those methods call into, plus what `export_handwritten.jl` needs for the
-# types codegen does not reach (`Area`, `LoadZone`, `Line`, `TransformerCircuit`, the
-# reserves, and others — see that file's header).
-#
-# The document walk (export_document.jl) registers every component's id in `refs` before
-# calling `to_openapi`, so the reflexive `component_id(refs, c)` lookup always resolves.
+# Export-direction helpers shared by the generated `to_openapi` methods (emitted by
+# `compute_openapi_export_converter!` in src/generate_structs.jl) and by export_handwritten.jl.
 
-# ── Shared compound-field helpers (device-base pu), reused by both the generated
-# `to_openapi` methods and export_handwritten.jl ──
+# ── Compound-field helpers (device-base pu) ──
 
 _minmax_po(nt) = PC.MinMax(; min = nt.min, max = nt.max)
 _minmax_po_optional(::Nothing) = nothing
@@ -41,14 +31,8 @@ _scale_optional_po(v, base) = v * base
 _component_id_optional(::OpenAPIRefs, ::Nothing) = nothing
 _component_id_optional(refs::OpenAPIRefs, component) = component_id(refs, component)
 
-# ── Reverse enum tables, for the enums generated `to_openapi` methods do not already cover
-# (inverted from the `<ENUM>_FROM_STRING` tables; those are built as
-# `Dict(string(m) => m for m in instances(T))`, which is bijective since `instances(T)` yields
-# unique values — verified, so inversion is safe rather than hand-writing a second literal
-# table that could drift from the first). `export_handwritten.jl` still calls `_invert`
-# directly for the enums on types it hand-writes. ──
-
-# A Dict rather than `string(e)`: `@scoped_enum`'s `string` routes through
-# `_value2name(Val{value}())`, a dynamic dispatch that is ~7x slower and infers `Any`. These
-# lookups run per component per enum field, so the table stays.
+# Reverse enum tables, inverted from the `<ENUM>_FROM_STRING` tables rather than hand-written
+# again, so the two cannot drift. A Dict rather than `string(e)`: `@scoped_enum`'s `string`
+# routes through `_value2name(Val{value}())`, a dynamic dispatch ~7x slower that infers `Any`,
+# and these lookups run per component per enum field.
 _invert(d) = Dict(v => k for (k, v) in d)
