@@ -3099,6 +3099,7 @@ function convert_component!(
         line.rating_c,
         line.g,
         line.services,
+        line.base_power,
         line.ext,
         _copy_internal_for_conversion(line),
     )
@@ -3145,6 +3146,7 @@ function convert_component!(
         line.rating_c,
         line.g,
         line.services,
+        line.base_power,
         line.ext,
         _copy_internal_for_conversion(line),
     )
