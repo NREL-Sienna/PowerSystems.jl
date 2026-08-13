@@ -228,8 +228,8 @@ end
     reserves = (
         OnlineReserve{ReserveUp}(nothing),
         OnlineReserve{ReserveDown}(nothing),
-        ReserveDemandCurve{ReserveUp}(nothing),
-        ReserveDemandCurve{ReserveDown}(nothing),
+        OfflineReserve(nothing),
+        GroupReserve{ReserveUp}(nothing),
     )
 
     for reserve in reserves
@@ -237,27 +237,26 @@ end
     end
 
     @test length(get_components(Service, sys)) == length(reserves)
-    @test length(get_components(Reserve, sys)) == length(reserves)
+    # The whole reserve tree, groups included.
+    @test length(get_components(AbstractReserve, sys)) == length(reserves)
+    # Direction-parameterized spinning products only.
+    @test length(get_components(Reserve, sys)) == 2
     @test length(get_components(OnlineReserve, sys)) == 2
     @test length(get_components(OnlineReserve{ReserveUp}, sys)) == 1
     @test length(get_components(OnlineReserve{ReserveDown}, sys)) == 1
-    @test length(get_components(ReserveDemandCurve{ReserveUp}, sys)) == 1
-    @test length(get_components(ReserveDemandCurve{ReserveDown}, sys)) == 1
+    @test length(get_components(OfflineReserve, sys)) == 1
+    @test length(get_components(GroupReserve{ReserveUp}, sys)) == 1
 end
 
 @testset "Test struct type collections" begin
-    concrete_types = IS.get_all_concrete_subtypes(Service)
-    reserve_types = InteractiveUtils.subtypes(Reserve)
-    reserve_parametric_types = InteractiveUtils.subtypes(ReserveDirection)
-
-    actual_count = length(concrete_types)
-    for reserve in reserve_types
-        for parametric in reserve_parametric_types
-            actual_count += 1
-        end
-    end
-    # 11: concrete Service subtypes + (Reserve subtypes × ReserveDirection subtypes)
-    @test 11 == actual_count
+    # Lock the reserve tree's shape: membership assertions instead of a count so a
+    # failure names the type that moved.
+    @test Set(IS.get_all_concrete_subtypes(Service)) == Set([AGC, TransmissionInterface])
+    @test Set(InteractiveUtils.subtypes(AbstractReserve)) ==
+          Set([Reserve, OfflineReserve, GroupReserve])
+    @test InteractiveUtils.subtypes(Reserve) == [OnlineReserve]
+    @test Set(InteractiveUtils.subtypes(ReserveDirection)) ==
+          Set([ReserveUp, ReserveDown, ReserveSymmetric])
 end
 
 @testset "Test GroupReserve" begin
