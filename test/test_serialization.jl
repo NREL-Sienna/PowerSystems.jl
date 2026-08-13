@@ -456,3 +456,36 @@ end
     # fields absent in the old schema fall back to their defaults
     @test get_rated_dc_voltage(vsc) == 0.0
 end
+
+@testset "Test deserialization of TwoTerminalVSCLine control modes stored as Bools" begin
+    # Some serialized systems carry `Bool` values in the `*_control_*` fields rather than the
+    # scoped-enum names. `Bool <: Integer`, so IS's generic scoped-enum `convert` resolves them
+    # in the keyword constructor that the component deserializer calls.
+    bus_from = ACBus(1, "bus_from", true, ACBusTypes.REF, 0.0, 1.0,
+        (min = 0.9, max = 1.1), 230.0)
+    bus_to = ACBus(2, "bus_to", true, ACBusTypes.PV, 0.0, 1.0,
+        (min = 0.9, max = 1.1), 230.0)
+    arc = Arc(bus_from, bus_to)
+    vsc = TwoTerminalVSCLine(;
+        name = "vsc_bool_modes",
+        available = true,
+        arc = arc,
+        active_power_flow = 0.1,
+        rating = 2.0,
+        active_power_limits_from = (min = -2.0, max = 2.0),
+        active_power_limits_to = (min = -2.0, max = 2.0),
+    )
+
+    data = IS.serialize(vsc)
+    data["dc_control_from"] = true
+    data["ac_control_from"] = false
+    data["dc_control_to"] = false
+    data["ac_control_to"] = true
+
+    component_cache = Dict(IS.get_uuid(arc) => arc)
+    round_tripped = IS.deserialize(TwoTerminalVSCLine, data, component_cache)
+    @test get_dc_control_from(round_tripped) == VSCDCControlModes.DC_VOLTAGE
+    @test get_ac_control_from(round_tripped) == VSCACControlModes.AC_REACTIVE_POWER
+    @test get_dc_control_to(round_tripped) == VSCDCControlModes.DC_POWER
+    @test get_ac_control_to(round_tripped) == VSCACControlModes.AC_VOLTAGE
+end
