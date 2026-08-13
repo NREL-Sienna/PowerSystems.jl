@@ -26,8 +26,8 @@ Persist `refs`' id⇄component registry and unit system into `sys`'s `ext` so a 
 `to_openapi(sys; unit_system = :original)` can reproduce the document's ids and units.
 """
 function store_ledger!(sys::System, refs::OpenAPIRefs)
-    id_to_uuid = Dict{String, String}(
-        string(id) => string(IS.get_uuid(component))
+    id_to_uuid = Dict{String, Int}(
+        string(id) => IS.get_id(component)
         for (id, component) in refs.by_id if _has_own_uuid(component)
     )
     get_ext(sys)[OPENAPI_LEDGER_KEY] = Dict{String, Any}(

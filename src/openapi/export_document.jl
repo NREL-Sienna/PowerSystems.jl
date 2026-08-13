@@ -249,7 +249,7 @@ Components with no UUID of their own (`_has_own_uuid` false — `TransformerCirc
 never in the ledger, so they always get a fresh id."""
 function _export_id!(next_id::Base.RefValue{Int}, uuid_to_id, component)
     if _has_own_uuid(component)
-        return get(uuid_to_id, IS.get_uuid(component)) do
+        return get(uuid_to_id, IS.get_id(component)) do
             fresh = next_id[]
             next_id[] += 1
             return fresh
@@ -263,7 +263,7 @@ end
 function _build_export_refs(
     sys::System,
     unit_system_string::AbstractString,
-    uuid_to_id::AbstractDict{Base.UUID, Int},
+    uuid_to_id::AbstractDict{Int, Int},
 )
     refs = OpenAPIRefs(unit_system_string, get_base_power(sys))
     start_id = if isempty(uuid_to_id)
@@ -281,9 +281,9 @@ function _build_export_refs(
 end
 
 function _ledger_uuid_to_id(ledger)
-    return Dict{Base.UUID, Int}(
-        Base.UUID(uuid_str) => parse(Int, id_str) for
-        (id_str, uuid_str) in ledger["id_to_uuid"]
+    return Dict{Int, Int}(
+        component_id => parse(Int, doc_id_str) for
+        (doc_id_str, component_id) in ledger["id_to_uuid"]
     )
 end
 
@@ -410,7 +410,7 @@ end
 """Push a `PlantAssociation` row for `entity`'s single group in `group_map`, or nothing when
 it holds none — the shape `group_index` takes in the document."""
 function _push_plant_association!(plant_rows, group_map, entity, attr_id::Int, entity_id::Int)
-    indices = _group_indices(group_map, IS.get_uuid(entity))
+    indices = _group_indices(group_map, IS.get_id(entity))
     isempty(indices) && return nothing
     push!(
         plant_rows,
@@ -434,7 +434,7 @@ function _group_association!(
     attr_id::Int,
     entity_id::Int,
 )
-    uuid = IS.get_uuid(entity)
+    uuid = IS.get_id(entity)
     ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), uuid)
     if !isempty(ct_hrsgs)
         push!(
@@ -476,18 +476,18 @@ function _export_supplemental_attributes(
     refs::OpenAPIRefs,
     doc::PC.SystemDocument,
 )
-    uuid_to_component = Dict{Base.UUID, Any}(
-        IS.get_uuid(c) => c for c in values(refs.by_id) if _has_own_uuid(c)
+    uuid_to_component = Dict{Int, Any}(
+        IS.get_id(c) => c for c in values(refs.by_id) if _has_own_uuid(c)
     )
     attribute_rows = Any[]
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
-    attr_ids = Dict{Base.UUID, Int}()
+    attr_ids = Dict{Int, Int}()
     for (entity_id, entity) in sorted_refs
         _has_own_uuid(entity) || continue
         for attr in get_supplemental_attributes(entity)
-            attr_uuid = IS.get_uuid(attr)
+            attr_uuid = IS.get_id(attr)
             attr_id = get!(attr_ids, attr_uuid) do
                 id = PC.next_id!(doc)
                 push!(
@@ -680,7 +680,7 @@ function to_openapi(
     warn_unexportable_components(sys)
     unit_system_string, ledger = _resolve_export_unit_system(sys, unit_system)
     uuid_to_id = if isnothing(ledger)
-        Dict{Base.UUID, Int}()
+        Dict{Int, Int}()
     else
         _ledger_uuid_to_id(ledger)
     end

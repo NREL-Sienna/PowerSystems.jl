@@ -567,9 +567,9 @@ means none declared and maps to an empty vector, matching the PSY constructors' 
 default — not an error to guard against."""
 function _monitored_component_uuids(refs::OpenAPIRefs, ids)
     if isnothing(ids)
-        return Base.UUID[]
+        return Int[]
     end
-    return Base.UUID[IS.get_uuid(refs[Int(id)]) for id in ids]
+    return Int[IS.get_id(refs[Int(id)]) for id in ids]
 end
 
 function from_openapi(::Type{EmissionsData}, po::PO.EmissionsData)

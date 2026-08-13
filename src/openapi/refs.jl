@@ -84,7 +84,7 @@ Resolve the UUID of the component or supplemental attribute registered under doc
 This is the id⇄UUID bridge the association loaders resolve through, kept isolated here so it
 collapses to nothing once IS goes id-native and the `*_uuid` columns become `*_id`.
 """
-resolve_uuid(refs::OpenAPIRefs, id::Integer) = IS.get_uuid(refs[id])
+resolve_uuid(refs::OpenAPIRefs, id::Integer) = IS.get_id(refs[id])
 
 """Resolve the document id a previously-registered `component` was stored under."""
 function component_id(refs::OpenAPIRefs, component)
