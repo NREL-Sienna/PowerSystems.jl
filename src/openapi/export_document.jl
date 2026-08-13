@@ -706,6 +706,7 @@ function to_openapi(
     _reserve_component_ids!(doc, refs)
 
     _export_components!(doc, refs, sys, val)
+    _export_market_bid_service_offers!(doc, refs)
     # One id-ordered snapshot of the registry, shared by both document-order-sensitive
     # walks below rather than each re-collecting and re-sorting it.
     sorted_refs = sort(collect(refs.by_id); by = first)
@@ -729,6 +730,26 @@ end
 
 _sidecar_basename(::Nothing) = nothing
 _sidecar_basename(path) = basename(String(path))
+
+"""
+Fill each exported `MarketBidCost`'s `ancillary_service_offers` with the ids of the offered
+services. Runs after `_export_components!` so every service already has an id;
+`convert_cost_to_openapi(::MarketBidCost)` exports the list empty because the per-cost
+converter has no id registry.
+"""
+function _export_market_bid_service_offers!(doc::PC.SystemDocument, refs::OpenAPIRefs)
+    for po_components in values(doc.components), po in po_components
+        hasproperty(po, :operation_cost) || continue
+        po_cost = po.operation_cost
+        po_cost isa PC.MarketBidCost || continue
+        component = refs.by_id[Int(po.id)]
+        offers = get_ancillary_service_offers(get_operation_cost(component))
+        isempty(offers) && continue
+        po_cost.ancillary_service_offers =
+            Int64[refs.id_by_component[service] for service in offers]
+    end
+    return nothing
+end
 
 function _reserve_component_ids!(doc::PC.SystemDocument, refs::OpenAPIRefs)
     if isempty(refs.by_id)

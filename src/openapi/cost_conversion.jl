@@ -126,6 +126,25 @@ function convert_cost(po::PC.LoadCost)
     )
 end
 
+"""
+Static market bid. The document's `ancillary_service_offers` ids resolve to `Service`
+objects only after every service is imported, so this conversion leaves the vector empty;
+`_load_market_bid_service_offers!` fills it in a document-level pass.
+"""
+function convert_cost(po::PC.MarketBidCost)
+    return MarketBidCost(;
+        no_load_cost = convert_cost(_require(po.no_load_cost, "MarketBidCost.no_load_cost")),
+        start_up = convert_cost(_require(po.start_up, "MarketBidCost.start_up")),
+        shut_down = convert_cost(_require(po.shut_down, "MarketBidCost.shut_down")),
+        incremental_offer_curves = convert_cost(
+            _require(po.incremental_offer_curves, "MarketBidCost.incremental_offer_curves"),
+        ),
+        decremental_offer_curves = convert_cost(
+            _require(po.decremental_offer_curves, "MarketBidCost.decremental_offer_curves"),
+        ),
+    )
+end
+
 function convert_cost(po::PC.HydroReservoirCost)
     return HydroReservoirCost(;
         level_shortage_cost = po.level_shortage_cost,

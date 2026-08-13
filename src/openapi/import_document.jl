@@ -855,6 +855,8 @@ function from_openapi(
         end
     end
 
+    _load_market_bid_service_offers!(refs, doc)
+
     # Attributes first: a supplemental attribute that owns time series must be attached and
     # registered in `refs` before the time-series pass can resolve its `owner_id`.
     load_supplemental_attribute_associations!(sys, refs, doc)
@@ -862,4 +864,33 @@ function from_openapi(
 
     store_ledger!(sys, refs)
     return sys
+end
+
+"""
+Resolve each imported `MarketBidCost`'s `ancillary_service_offers` ids to the now-imported
+`Service` objects. `convert_cost(::PC.MarketBidCost)` leaves the vector empty because
+services may not exist yet when the carrying device converts; this runs after the full
+component pass. Errors on an unresolved id rather than dropping the offer.
+"""
+function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PC.SystemDocument)
+    for po_components in values(doc.components), po in po_components
+        hasproperty(po, :operation_cost) || continue
+        po_cost = po.operation_cost
+        po_cost isa PC.MarketBidCost || continue
+        ids = po_cost.ancillary_service_offers
+        (isnothing(ids) || isempty(ids)) && continue
+        component = refs.by_id[Int(po.id)]
+        offers = get_ancillary_service_offers(get_operation_cost(component))
+        for id in ids
+            service = get(refs.by_id, Int(id), nothing)
+            isnothing(service) && throw(
+                IS.DataFormatError(
+                    "MarketBidCost on component id=$(po.id) offers into unresolved " *
+                    "component id=$id",
+                ),
+            )
+            push!(offers, service)
+        end
+    end
+    return nothing
 end

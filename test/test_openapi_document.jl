@@ -366,3 +366,46 @@ end
         PSY.POLLUTANT_TYPE_FROM_STRING, "BOGUS", "pollutant",
     )
 end
+
+@testset "MarketBidCost round trip: fields and ancillary service offer ids" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+    svc = OnlineReserve{ReserveUp}(;
+        name = "RESERVE", available = true, time_frame = 10.0, requirement = 0.1)
+    add_service!(sys, svc, [gen])
+
+    mbc = MarketBidCost(;
+        no_load_cost = LinearCurve(5.0),
+        start_up = (hot = 100.0, warm = 200.0, cold = 300.0),
+        shut_down = LinearCurve(2.0),
+        incremental_offer_curves = make_market_bid_curve(
+            [0.0, 50.0, 100.0], [10.0, 20.0], 0.0; power_units = IS.NaturalUnit(),
+        ),
+    )
+    push!(get_ancillary_service_offers(mbc), svc)
+    set_operation_cost!(gen, mbc)
+
+    doc = to_openapi(sys; unit_system = :natural_units)
+    sys2 = from_openapi(System, doc)
+
+    gen2 = get_component(ThermalStandard, sys2, "gen1")
+    mbc2 = get_operation_cost(gen2)
+    @test mbc2 isa MarketBidCost
+    @test get_no_load_cost(mbc2) == LinearCurve(5.0)
+    @test get_start_up(mbc2) == (hot = 100.0, warm = 200.0, cold = 300.0)
+    @test get_shut_down(mbc2) == LinearCurve(2.0)
+    @test get_incremental_offer_curves(mbc2) == get_incremental_offer_curves(mbc)
+    @test get_decremental_offer_curves(mbc2) == get_decremental_offer_curves(mbc)
+    offers = get_ancillary_service_offers(mbc2)
+    @test length(offers) == 1
+    @test get_name(only(offers)) == "RESERVE"
+    @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
+end
