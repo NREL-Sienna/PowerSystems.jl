@@ -36,10 +36,12 @@ A [`Reserve`](@ref) can be specified as a `ReserveSymmetric` when it is defined.
 abstract type ReserveSymmetric <: ReserveDirection end
 
 """
-Supertype for all reserve products, both spinning and non-spinning.
+Supertype for all reserve products: spinning, non-spinning, and service-aggregating groups.
 
 Subtypes are [`Reserve`](@ref) (parameterized by [`ReserveDirection`](@ref), for spinning
-products) and [`OfflineReserve`](@ref) (non-spinning, upward only).
+products), [`OfflineReserve`](@ref) (non-spinning, upward only), and [`GroupReserve`](@ref)
+(a demand over the awards of other reserves; it carries no device-side fields and no
+contributing devices of its own).
 """
 abstract type AbstractReserve <: Service end
 
@@ -292,7 +294,7 @@ makes an ELASTIC group (one demand curve met by the awards of several sub-produc
 The `ReserveDirection` must be specified as [`ReserveUp`](@ref), [`ReserveDown`](@ref), or
 [`ReserveSymmetric`](@ref).
 """
-mutable struct GroupReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} <: Service
+mutable struct GroupReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} <: AbstractReserve
     "Name of the component"
     name::String
     "Indicator of whether the component is connected and online"
@@ -477,7 +479,7 @@ nonzero quantity range and reads `true`.
 Accepts a [`GroupReserve`](@ref) as well: a group carries its own curve, which is what distinguishes
 an ELASTIC group (priced by the curve) from a fixed-requirement one.
 """
-function has_demand_curve(reserve::Union{AbstractReserve, GroupReserve})
+function has_demand_curve(reserve::AbstractReserve)
     return !_is_zero_offer_curve(get_variable(reserve))
 end
 
