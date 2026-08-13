@@ -409,7 +409,13 @@ end
 
 """Push a `PlantAssociation` row for `entity`'s single group in `group_map`, or nothing when
 it holds none — the shape `group_index` takes in the document."""
-function _push_plant_association!(plant_rows, group_map, entity, attr_id::Int, entity_id::Int)
+function _push_plant_association!(
+    plant_rows,
+    group_map,
+    entity,
+    attr_id::Int,
+    entity_id::Int,
+)
     indices = _group_indices(group_map, IS.get_uuid(entity))
     isempty(indices) && return nothing
     push!(

@@ -78,7 +78,10 @@ mutable struct OnlineReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} 
     # TODO DISCUSS: the ORDC `variable` is a Union of a static and a time-series-backed CostCurve
     # (absorbing the retired ReserveDemandCurve / ReserveDemandTimeSeriesCurve). Revisit later.
     "Operating reserve demand curve (static or time-series-backed). `ZERO_OFFER_CURVE` means no curve is defined"
-    variable::Union{CostCurve{PiecewiseIncrementalCurve, U}, CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}}
+    variable::Union{
+        CostCurve{PiecewiseIncrementalCurve, U},
+        CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
+    }
     "The time in minutes reserve contribution must be sustained at a specified level"
     sustained_time::Float64
     "The maximum fraction of each device's output that can be assigned to the service"
@@ -189,7 +192,10 @@ mutable struct OfflineReserve{U <: IS.AbstractUnitSystem} <: AbstractReserve
     # TODO DISCUSS: see OnlineReserve.variable - the ORDC is a Union of a static and a
     # time-series-backed CostCurve. Revisit later.
     "Operating reserve demand curve (static or time-series-backed). `ZERO_OFFER_CURVE` means no curve is defined"
-    variable::Union{CostCurve{PiecewiseIncrementalCurve, U}, CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}}
+    variable::Union{
+        CostCurve{PiecewiseIncrementalCurve, U},
+        CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
+    }
     "The time in minutes reserve contribution must be sustained at a specified level"
     sustained_time::Float64
     "The maximum fraction of each device's output that can be assigned to the service"
@@ -294,7 +300,8 @@ makes an ELASTIC group (one demand curve met by the awards of several sub-produc
 The `ReserveDirection` must be specified as [`ReserveUp`](@ref), [`ReserveDown`](@ref), or
 [`ReserveSymmetric`](@ref).
 """
-mutable struct GroupReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} <: AbstractReserve
+mutable struct GroupReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} <:
+               AbstractReserve
     "Name of the component"
     name::String
     "Indicator of whether the component is connected and online"
@@ -304,7 +311,10 @@ mutable struct GroupReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} <
     # TODO DISCUSS: see OnlineReserve.variable - the ORDC is a Union of a static and a
     # time-series-backed CostCurve. Revisit later.
     "Operating reserve demand curve for the group (static or time-series-backed). `ZERO_OFFER_CURVE` means no curve is defined"
-    variable::Union{CostCurve{PiecewiseIncrementalCurve, U}, CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}}
+    variable::Union{
+        CostCurve{PiecewiseIncrementalCurve, U},
+        CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
+    }
     "An extra dictionary for users to add metadata that are not used in simulation"
     ext::Dict{String, Any}
     "Services that contribute to this group requirement"

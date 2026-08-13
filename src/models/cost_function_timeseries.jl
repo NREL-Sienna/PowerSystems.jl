@@ -230,7 +230,11 @@ function _get_reserve_variable_cost(
     len::Union{Nothing, Int},
 )
     isnothing(start_time) &&
-        throw(ArgumentError("start_time is required for a time-series-backed reserve demand curve"))
+        throw(
+            ArgumentError(
+                "start_time is required for a time-series-backed reserve demand curve",
+            ),
+        )
     return _resolve_ts_cost_curve(service, variable, start_time, len)
 end
 
