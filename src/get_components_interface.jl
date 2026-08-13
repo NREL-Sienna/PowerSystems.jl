@@ -1,36 +1,10 @@
-# The longstanding status quo in Sienna has been for `PSY.get_components` to be distinct
-# from `IS.get_components`, mostly so that PowerSystems users aren't confused by all the
-# InfrastructureSystems methods. This lack of a unified interface on "things with
-# components" has begun to cause problems, most notably for ComponentSelector. Therefore,
-# the new plan is:
-#   1. Implement, wherever relevant, methods of the IS `get_components`-like functions
-#      listed below on PSY data structures.
-#   2. Add, in this file, methods of the PSY `get_components`-like functions that purely
-#      redirect to the IS versions and have the documentation PSY users should see. Never
-#      add actual functionality in these PSY methods; they must only redirect to the IS
-#      versions. Purely to facilitate neater documentation, add `ComponentSelector`-related
-#      methods in the follow-on file `component_selector_interface.jl` instead.
-#   3. In downstream Sienna packages like PowerSimulations that seek to add their own
-#      `get_components`-like methods on their own data structures that show up in
-#      user-friendly documentation, do the same thing: add the implementation in the IS
-#      method and add a PSY method that purely redirects.
-#   4. Internal code designed to work with all "things with components" should use the IS
-#      functions, not the PSY ones.
-
-# This design preserves the simplified interface presented to the casual PSY user while
-# allowing for better cross-package integration behind the scenes. It also enables a quick
-# switch to a design where we no longer maintain two versions of each `get_components`-like
-# function at the cost of slightly more confusing documentation -- simply import the IS
-# versions into PowerSystems and delete this file (and analogous redirects in downstream
-# packages). See https://github.com/Sienna-Platform/InfrastructureSystems.jl/issues/388.
-
-# Here is the current list of "`get_components`-like functions" to which this plan applies:
-#  - `get_components`
-#  - `get_component`
-#  - `get_available_components`
-#  - `get_available_component`
-#  - `get_groups`
-#  - `get_available_groups`
+# The PSY `get_components`-like methods here (`get_components`, `get_component`,
+# `get_available_components`, `get_available_component`, `get_groups`, `get_available_groups`)
+# exist only to carry PSY-facing documentation: they must purely redirect to the IS versions
+# and never add functionality. Implement the actual behavior in IS. Internal code that works
+# with any "thing with components" should call the IS functions, not these.
+# `ComponentSelector`-related methods go in `component_selector_interface.jl` instead.
+# See https://github.com/Sienna-Platform/InfrastructureSystems.jl/issues/388.
 
 # get_components
 """

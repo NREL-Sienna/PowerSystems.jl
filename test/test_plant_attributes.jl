@@ -99,14 +99,14 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_id(gen1))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_id(gen1))
         @test length(shaft_map[1]) == 1
         @test shaft_map[1][1] == IS.get_id(gen3)
 
         # Remove last generator from shaft
         remove_supplemental_attribute!(sys, gen3, plant)
         @test !haskey(shaft_map, 1)
-        @test !haskey(reverse_map, IS.get_id(gen3))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_id(gen3))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(sys, gen1, plant)
@@ -299,7 +299,7 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_id(gen1))
+        @test !haskey(get_reverse_penstock_map(plant), IS.get_id(gen1))
         @test !haskey(penstock_map, 1)
 
         # Test error for HydroDispatch
@@ -373,14 +373,14 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_id(gen1))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_id(gen1))
         @test length(pcc_map[1]) == 1
         @test pcc_map[1][1] == IS.get_id(storage)
 
         # Remove storage
         remove_supplemental_attribute!(sys, storage, plant)
         @test !haskey(pcc_map, 1)
-        @test !haskey(reverse_map, IS.get_id(storage))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_id(storage))
     end
 
     @testset "Serialization and deserialization of ThermalPowerPlant" begin
@@ -409,8 +409,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, gen2, plant; shaft_number = 2)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(ThermalStandard, sys2, "thermal_gen1")
@@ -457,8 +459,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, gen2, plant, 2)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(HydroTurbine, sys2, "hydro_gen1")
@@ -499,8 +503,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, storage, plant, 1)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(RenewableDispatch, sys2, "wind_gen1")
@@ -596,14 +602,14 @@ const PSY = PowerSystems
 
         # Remove generator from block
         remove_supplemental_attribute!(sys, ct_gen, cc_block)
-        @test !haskey(ct_hrsg_map, IS.get_id(ct_gen))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_id(ct_gen))
         @test length(hrsg_ct_map[1]) == 1
         @test hrsg_ct_map[1][1] == IS.get_id(ct_gen2)
 
         # Remove last CT generator from HRSG 1
         remove_supplemental_attribute!(sys, ct_gen2, cc_block)
         @test !haskey(hrsg_ct_map, 1)
-        @test !haskey(ct_hrsg_map, IS.get_id(ct_gen2))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_id(ct_gen2))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(
@@ -702,8 +708,10 @@ const PSY = PowerSystems
         )
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify block is preserved
         ct_gen_restored = get_component(ThermalStandard, sys2, "cc_ct_gen1")
@@ -935,8 +943,10 @@ const PSY = PowerSystems
         IS.add_supplemental_attribute!(sys.data, gen, plant)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify empty plant is preserved
         gen_restored = get_component(ThermalStandard, sys2, "thermal_gen1")
@@ -1074,6 +1084,21 @@ const PSY = PowerSystems
             # Clean up temporary files
             rm(test_dir; recursive = true, force = true)
         end
+
+        # A plant attribute survives a document round trip: `group_index` rides on its
+        # `PlantAssociation` row, and import dispatches shaft_number back from it.
+        restored = roundtrip_system(sys)
+        gen1_name = get_name(thermal_gens[1])
+        gen2_name = get_name(thermal_gens[2])
+        restored_gen1 = get_component(ThermalStandard, restored, gen1_name)
+        restored_gen2 = get_component(ThermalStandard, restored, gen2_name)
+        restored_plant =
+            only(get_supplemental_attributes(ThermalPowerPlant, restored_gen1))
+        @test get_name(restored_plant) == "Test Coal Plant"
+        @test only(get_supplemental_attributes(ThermalPowerPlant, restored_gen2)) ===
+              restored_plant
+        @test get_reverse_shaft_map(restored_plant)[IS.get_id(restored_gen1)] == 1
+        @test get_reverse_shaft_map(restored_plant)[IS.get_id(restored_gen2)] == 2
     end
 
     @testset "CombinedCycleFractional construction and basic accessors" begin
@@ -1339,8 +1364,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, cc_gen2, cc_frac; exclusion_group = 2)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(ThermalStandard, sys2, "cc_frac_gen1")

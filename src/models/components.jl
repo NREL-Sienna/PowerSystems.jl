@@ -6,9 +6,56 @@ end
 
 """
 Unitless device-base power (MVA). Fallback for components with no `base_power`
-field: the device base equals the system base.
+field: the device base equals the system base. This is also the path
+`TModelHVDCLine` resolves through — it has no `base_power` field at all (it
+per-unitizes against `base_current` instead), so its power-dimensioned fields
+(`active_power_flow`, `active_power_limits_from/to`) anchor on the system base.
 """
 _get_base_power(c::Component) = _get_system_base_power(c)
+
+# Holy trait distinguishing components whose `base_power` field is a genuine,
+# independently-set device base (generators, loads, storage, ...) from the
+# arc/area-ish types below whose `base_power` field only exists because the
+# schema records the system base per-component "in lieu of a system-level table"
+# (see SiennaSchemas). `add_component!` uses this trait to keep that field in
+# sync with the system's base power; it must never be set independently.
+abstract type BasePowerKind end
+struct DeviceBasePower <: BasePowerKind end
+struct SystemBasePower <: BasePowerKind end
+
+# Default `DeviceBasePower()` also covers types with no `base_power` field at
+# all (e.g. `TModelHVDCLine`, whose anchor is `base_current`): `_sync_base_power!`
+# is a no-op for `DeviceBasePower`, so `add_component!` never touches a
+# nonexistent field.
+base_power_kind(::Component) = DeviceBasePower()
+base_power_kind(::Area) = SystemBasePower()
+base_power_kind(::AreaInterchange) = SystemBasePower()
+base_power_kind(::DiscreteControlledACBranch) = SystemBasePower()
+base_power_kind(::FixedAdmittance) = SystemBasePower()
+base_power_kind(::GenericArcImpedance) = SystemBasePower()
+base_power_kind(::Line) = SystemBasePower()
+base_power_kind(::LoadZone) = SystemBasePower()
+base_power_kind(::MonitoredLine) = SystemBasePower()
+base_power_kind(::TransmissionInterface) = SystemBasePower()
+base_power_kind(::TwoTerminalGenericHVDCLine) = SystemBasePower()
+base_power_kind(::TwoTerminalLCCLine) = SystemBasePower()
+base_power_kind(::TwoTerminalVSCLine) = SystemBasePower()
+
+"""
+Write the system's base power onto `component.base_power` for `SystemBasePower`
+types; a no-op for genuine device-base types. Called from `add_component!` so
+the field never drifts from the system it is recorded against.
+"""
+_sync_base_power!(::DeviceBasePower, component, system_base_power) = nothing
+function _sync_base_power!(::SystemBasePower, component, system_base_power)
+    component.base_power = system_base_power
+    return
+end
+
+# `_get_base_power` is the single read path for a component's base power, and it reads
+# straight from the field for both kinds. A detached component keeps whatever base its
+# producer stated, which is real data and must not be discarded; no guard belongs here,
+# because the units engine already errors on SU/NU for an unattached component.
 
 # Conversion-engine component interface (see src/units/conversions.jl): the
 # engine resolves bases through these three functions, so every getter and
@@ -92,12 +139,21 @@ Accepts a bare `Float64` (interpreted as MVA) or a power-dimensioned
 `Unitful.Quantity` (e.g. `80.0 * MW`, `90.0 * MVA`). Per-unit inputs (`SU`, `DU`)
 and non-power units error: `base_power` is only meaningful in absolute power.
 """
-set_base_power!(c::Component, val::Float64) = (c.base_power = val)
+set_base_power!(c::Component, val::Float64) = _set_base_power!(base_power_kind(c), c, val)
 # `ustrip(MVA, val)` converts power units and throws for non-power units.
 set_base_power!(c::Component, val::Unitful.Quantity) =
-    (c.base_power = Unitful.ustrip(MVA, val))
+    _set_base_power!(base_power_kind(c), c, Unitful.ustrip(MVA, val))
 set_base_power!(::Component, ::RelativeQuantity{<:Any, U}) where {U} =
     _base_power_units_error(U())
+
+_set_base_power!(::DeviceBasePower, c, val::Float64) = (c.base_power = val)
+function _set_base_power!(::SystemBasePower, c, ::Float64)
+    error(
+        "$(typeof(c)) has no independent base_power: it always equals the system's " *
+        "base power. Change the system's base power instead of setting this field " *
+        "directly.",
+    )
+end
 
 """
 Reject any attempt to read/write `base_power` in non-natural units.
@@ -131,10 +187,8 @@ IS.default_units(::Component) = SU
 #######################################################
 # Units-aware get_value / set_value
 #
-# Fields are stored internally in device base (DU). The 4-arg `get_value`
-# converts from DU to a requested target (e.g., MW, SU). The 3-arg form
-# delegates to the 4-arg with DEFAULT_UNITS (= SU, a RelativeQuantity
-# carrying its unit in its type).
+# Fields are stored internally in device base (DU); `get_value` converts from
+# DU to a requested target (e.g., MW, SU).
 #######################################################
 
 """
@@ -277,7 +331,6 @@ set_base_power_31!(t::ThreeWindingTransformer, v::Union{Float64, Nothing}) =
 # setter variants mirror the generic Component ones (natural units only) so no
 # ambiguity arises with `set_base_power!(::Component, ...)`.
 _get_base_power(t::TwoWindingTransformer) = get_base_power(get_circuit(t))
-get_base_power(t::TwoWindingTransformer) = get_base_power(get_circuit(t))
 set_base_power!(t::TwoWindingTransformer, val::Float64) =
     set_base_power!(get_circuit(t), val)
 set_base_power!(t::TwoWindingTransformer, val::Unitful.Quantity) =
@@ -304,8 +357,8 @@ _unit_category(::Val{:siemens}) = ADMITTANCE
 
 # Base provider for the pairwise impedance fields of a ThreeWindingTransformer.
 # Convention: Z_ij is pu on base_power_ij referenced to the first-index circuit's
-# base voltage (PSS/E CZ = 1): r_12/x_12 -> primary, r_23/x_23 -> secondary,
-# r_31/x_31 -> tertiary (R3-1 references NOMV3, the tertiary winding). The
+# base voltage: r_12/x_12 -> primary, r_23/x_23 -> secondary,
+# r_31/x_31 -> tertiary. The
 # transformer-level `magnetizing_shunt` is pu on the primary circuit's own
 # `base_power` referenced to the primary circuit's base voltage (it converts
 # directly on the primary `TransformerCircuit`, not through a `PairBase`).
@@ -317,7 +370,7 @@ end
 
 function _get_device_base_power(p::PairBase)
     isnothing(p.base_power) && error(
-        "The pairwise PSS/E fields (r_12/x_12/r_23/x_23/r_31/x_31 and base_power_12/23/31) " *
+        "The pairwise impedance fields (r_12/x_12/r_23/x_23/r_31/x_31 and base_power_12/23/31) " *
         "of $(summary(p.transformer)) are not set; cannot convert pairwise values",
     )
     return p.base_power

@@ -106,3 +106,20 @@ end
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(ta)
 end
+
+@testset "TimeSeriesData data matpower" begin
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
+    file_metadata = joinpath(DATA_DIR, "5-Bus", "5bus_ts", "timeseries_pointers_da.json")
+    add_time_series!(sys, file_metadata)
+    @test verify_time_series(sys, 1, 5, 24)
+
+    # Add the same files.
+    # This will fail because the component-name pairs will be duplicated.
+    @test_throws ArgumentError add_time_series!(sys, file_metadata)
+
+    file_metadata = joinpath(DATA_DIR, "5-Bus", "5bus_ts", "timeseries_pointers_rt.json")
+
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
+    add_time_series!(sys, file_metadata)
+    @test verify_time_series(sys, 1, 5, 288)
+end

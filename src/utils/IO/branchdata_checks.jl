@@ -8,7 +8,7 @@ function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::S
     is_valid = true
     if !check_endpoint_voltages(line)
         is_valid = false
-    elseif !correct_rate_limits!(line, _get_base_power(sys))
+    elseif !correct_rate_limits!(line)
         is_valid = false
     end
     return is_valid
@@ -85,31 +85,27 @@ const MVA_LIMITS_TRANSFORMERS = Dict(
     765.0 => (min = 2200.0, max = 6900.0), # This value is 3x the SIL value from https://neos-guide.org/wp-content/uploads/2022/04/line_flow_approximation.pdf
 )
 
-function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
+function check_rating_values(line::Union{Line, MonitoredLine})
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
     voltage_levels = collect(keys(MVA_LIMITS_LINES))
     closestV_ix = findmin(abs.(voltage_levels .- vrated))
     closest_v_level = voltage_levels[closestV_ix[2]]
     closest_rate_range = MVA_LIMITS_LINES[closest_v_level]
+    device_base_power = _get_base_power(line)
 
-    getter_map = (
-        rating = get_rating,
-        rating_b = get_rating_b,
-        rating_c = get_rating_c,
-    )
-    for (field, getter) in pairs(getter_map)
-        rating_value = getter(line, SU)
+    for field in (:rating, :rating_b, :rating_c)
+        rating_value = getfield(line, field)
         if isnothing(rating_value)
-            @assert field ∈ [:rating_b, :rating_c]
+            @assert field ∈ (:rating_b, :rating_c)
             continue
         end
-        if (rating_value >= 2.0 * closest_rate_range.max / basemva)
-            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        rating_mw = rating_value * device_base_power
+        if rating_mw >= 2.0 * closest_rate_range.max
+            @warn "$(field) $(round(rating_mw; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
-        elseif (rating_value >= closest_rate_range.max / basemva) ||
-               (rating_value <= closest_rate_range.min / basemva)
-            @info "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        elseif rating_mw >= closest_rate_range.max || rating_mw <= closest_rate_range.min
+            @info "$(field) $(round(rating_mw; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         end
     end
@@ -139,7 +135,7 @@ function line_rating_calculation(l::Union{Line, MonitoredLine})
     return new_rate
 end
 
-function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float64)
+function correct_rate_limits!(branch::Union{Line, MonitoredLine})
     theoretical_line_rate_pu = line_rating_calculation(branch)
     for field in [:rating, :rating_b, :rating_c]
         rating_value = getfield(branch, field)
@@ -161,7 +157,7 @@ function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float
         end
     end
 
-    return check_rating_values(branch, basemva)
+    return check_rating_values(branch)
 end
 
 function check_endpoint_voltages(line::Union{Line, MonitoredLine})
@@ -245,25 +241,25 @@ function validate_component_with_system(
     sys::System,
 )
     is_valid_reactance = check_transformer_reactance(xfrm)
-    is_valid_rating = check_rating_values(xfrm, _get_base_power(sys))
+    is_valid_rating = check_rating_values(xfrm)
     is_valid_circuit = check_circuit_values(get_circuit(xfrm), get_name(xfrm))
     return is_valid_reactance && is_valid_rating && is_valid_circuit
 end
 
-const _PSSE_PAIRWISE_FIELDS = (
+const _PAIRWISE_IMPEDANCE_FIELDS = (
     :r_12, :x_12, :r_23, :x_23, :r_31, :x_31,
     :base_power_12, :base_power_23, :base_power_31,
 )
 
-# The pairwise PSS/E block is carried verbatim from source data or absent entirely;
-# a partial block has no defined conversion (impedances without their base) and is
-# always a data error.
-function check_psse_pairwise_block(xfrm::ThreeWindingTransformer)
-    missing_fields = [f for f in _PSSE_PAIRWISE_FIELDS if isnothing(getfield(xfrm, f))]
+# The pairwise block is carried verbatim from source data or absent entirely; a partial block
+# has no defined conversion (impedances without their base) and is always a data error.
+function check_pairwise_impedance_block(xfrm::ThreeWindingTransformer)
+    missing_fields = [f for f in _PAIRWISE_IMPEDANCE_FIELDS if isnothing(getfield(xfrm, f))]
     isempty(missing_fields) && return true
-    length(missing_fields) == length(_PSSE_PAIRWISE_FIELDS) && return true
-    @error "ThreeWindingTransformer $(get_name(xfrm)) has a partial PSS/E pairwise block; " *
-           "missing $(missing_fields). Set all of $(collect(_PSSE_PAIRWISE_FIELDS)) or none." _group =
+    length(missing_fields) == length(_PAIRWISE_IMPEDANCE_FIELDS) && return true
+    @error "ThreeWindingTransformer $(get_name(xfrm)) has a partial pairwise impedance " *
+           "block; missing $(missing_fields). Set all of " *
+           "$(collect(_PAIRWISE_IMPEDANCE_FIELDS)) or none." _group =
         IS.LOG_GROUP_PARSING
     return false
 end
@@ -272,7 +268,7 @@ function validate_component_with_system(
     xfrm::ThreeWindingTransformer,
     sys::System,
 )
-    is_valid = check_psse_pairwise_block(xfrm)
+    is_valid = check_pairwise_impedance_block(xfrm)
     for circuit in get_circuits(xfrm)
         if !check_circuit_values(circuit, get_name(xfrm))
             is_valid = false
@@ -281,10 +277,7 @@ function validate_component_with_system(
     return is_valid
 end
 
-function check_rating_values(
-    xfrm::TwoWindingTransformer,
-    ::Float64,
-)
+function check_rating_values(xfrm::TwoWindingTransformer)
     arc = get_arc(xfrm)
     v_from = get_base_voltage(get_from(arc))
     v_to = get_base_voltage(get_to(arc))

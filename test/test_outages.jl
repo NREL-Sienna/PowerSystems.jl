@@ -288,16 +288,15 @@ end
         set_monitored_components!(outage, gens)
     end
 
-    # Round-trip via to_json/from_json, preserving UUIDs.
-    test_dir = mktempdir()
-    path = joinpath(test_dir, "sys_with_monitored.json")
-    to_json(sys, path; force = true)
-    sys2 = System(path)
+    sys2 = roundtrip_system(sys)
 
     # Every outage must come back with the same monitored UUIDs (set semantics —
     # order is not preserved), and each UUID must still resolve to a Device in
     # the new system.
-    expected_uuids = Set(IS.get_id.(gens))
+    # The rebuilt system's ids, not the original's: a load mints fresh component ids, so the
+    # original `gens` ids do not carry over. What must hold is that each outage still points
+    # at the same *set of components*, resolvable in the system it came back in.
+    expected_uuids = Set(IS.get_id.(collect(get_components(ThermalStandard, sys2))))
     outages2 = collect(get_supplemental_attributes(Outage, sys2))
     @test length(outages2) == 4
     for outage in outages2
@@ -312,8 +311,7 @@ end
 
     # Default (empty) monitored_components also round-trips without error.
     sys_empty = create_system_with_outages()
-    sys_empty2, ok = validate_serialization(sys_empty)
-    @test ok
+    sys_empty2 = roundtrip_system(sys_empty)
     for outage in get_supplemental_attributes(Outage, sys_empty2)
         @test isempty(get_monitored_components(outage))
     end

@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         from_area::Area
         to_area::Area
         flow_limits::FromTo_ToFrom
+        base_power::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -26,6 +27,7 @@ Flow exchanged between Areas. This Interchange is agnostic to the lines connecti
 - `from_area::Area`: Area from which the power is extracted
 - `to_area::Area`: Area to which the power is injected
 - `flow_limits::FromTo_ToFrom`: Max flow between the areas. It ignores lines and other branches totals
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `services::Vector{Service}`: (default: `Service[]`) Service interfaces that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -43,6 +45,8 @@ mutable struct AreaInterchange <: Branch
     to_area::Area
     "Max flow between the areas. It ignores lines and other branches totals"
     flow_limits::FromTo_ToFrom
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "Service interfaces that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -51,12 +55,12 @@ mutable struct AreaInterchange <: Branch
     internal::InfrastructureSystemsInternal
 end
 
-function AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, services=Service[], ext=Dict{String, Any}(), )
-    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, services, ext, InfrastructureSystemsInternal(), )
+function AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, base_power=100.0, services=Service[], ext=Dict{String, Any}(), )
+    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, base_power, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function AreaInterchange(; name, available, active_power_flow, from_area, to_area, flow_limits, services=Service[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, services, ext, internal, )
+function AreaInterchange(; name, available, active_power_flow, from_area, to_area, flow_limits, base_power=100.0, services=Service[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, base_power, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -68,6 +72,7 @@ function AreaInterchange(::Nothing)
         from_area=Area(nothing),
         to_area=Area(nothing),
         flow_limits=(from_to=0.0, to_from=0.0),
+        base_power=100.0,
         services=Service[],
         ext=Dict{String, Any}(),
     )
@@ -93,6 +98,8 @@ get_flow_limits(value::AreaInterchange, units) = InfrastructureSystems._strip_un
 get_flow_limits_unitful(value::AreaInterchange, units) = get_value(value, Val(:flow_limits), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_flow_limits), ::Type{AreaInterchange}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_flow_limits_unitful), ::Type{AreaInterchange}) = InfrastructureSystems.SU
+
+_get_base_power(value::AreaInterchange) = value.base_power
 """Get [`AreaInterchange`](@ref) `services`."""
 get_services(value::AreaInterchange) = value.services
 """Get [`AreaInterchange`](@ref) `ext`."""
@@ -114,3 +121,55 @@ set_flow_limits!(value::AreaInterchange, val) = value.flow_limits = set_value(va
 set_services!(value::AreaInterchange, val) = value.services = val
 """Set [`AreaInterchange`](@ref) `ext`."""
 set_ext!(value::AreaInterchange, val) = value.ext = val
+
+
+
+function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return AreaInterchange(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow,
+        from_area = resolve_ref(refs, po.from_area),
+        to_area = resolve_ref(refs, po.to_area),
+        flow_limits = (from_to = po.flow_limits.from_to, to_from = po.flow_limits.to_from),
+        base_power = po.base_power,
+    )
+end
+
+function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return AreaInterchange(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow / po.base_power,
+        from_area = resolve_ref(refs, po.from_area),
+        to_area = resolve_ref(refs, po.to_area),
+        flow_limits = (from_to = po.flow_limits.from_to / po.base_power, to_from = po.flow_limits.to_from / po.base_power),
+        base_power = po.base_power,
+    )
+end
+
+function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.AreaInterchange(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        active_power_flow = get_active_power_flow(value, SU),
+        from_area = component_id(refs, get_from_area(value)),
+        to_area = component_id(refs, get_to_area(value)),
+        flow_limits = _fromto_toframe_po(get_flow_limits(value, SU)),
+        base_power = get_base_power(refs),
+    )
+end
+
+function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.AreaInterchange(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        active_power_flow = get_active_power_flow(value, SU) * get_base_power(refs),
+        from_area = component_id(refs, get_from_area(value)),
+        to_area = component_id(refs, get_to_area(value)),
+        flow_limits = _fromto_toframe_po_scaled(get_flow_limits(value, SU), get_base_power(refs)),
+        base_power = get_base_power(refs),
+    )
+end

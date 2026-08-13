@@ -64,10 +64,6 @@ end
 
     result = convert_units(gen, 0.6, POWER, DU, DU)
     @test ustrip(result) ≈ 0.6
-
-    result = convert_units(gen, 0.6, POWER, DU, Float64)
-    @test result isa Float64
-    @test result ≈ 0.3
 end
 
 @testset "convert_units: SU → other" begin
@@ -100,9 +96,9 @@ end
     result = convert_units(line, 0.01, IMPEDANCE, DU, OHMS)
     @test Unitful.ustrip(result) ≈ 0.01 * z_base
 
-    # device base == system base, so DU → Float64 ratio = 1.0
-    result = convert_units(line, 0.01, IMPEDANCE, DU, Float64)
-    @test result ≈ 0.01
+    # device base == system base, so the DU → SU ratio is 1.0
+    result = convert_units(line, 0.01, IMPEDANCE, DU, SU)
+    @test ustrip(result) ≈ 0.01
 end
 
 @testset "convert_units: nothing passthrough" begin
@@ -123,13 +119,13 @@ end
     @test ustrip(back) ≈ original
 end
 
-@testset "convert_units: ComplexF64 support" begin
+@testset "convert_units: complex support" begin
     line = MockLine(0.01, 0.1)
-    z = 0.01 + 0.1im
 
-    result = convert_units(line, z, IMPEDANCE, DU, Float64)
-    @test result isa ComplexF64
-    @test result ≈ z  # ratio is 1.0 since device == system base
+    # ratio is 1.0 since device base == system base
+    for z in (0.01 + 0.1im, ComplexF32(0.01, 0.1), Complex(1, 2))
+        @test ustrip(convert_units(line, z, IMPEDANCE, DU, SU)) ≈ z
+    end
 end
 
 @testset "convert_units: NU (natural units)" begin
@@ -196,9 +192,6 @@ end
     for cat in (POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT)
         @test PSY._du_to_su_ratio(gen, cat) ≈
               base_value(gen, cat) / system_base_value(gen, cat)
-        # DU → Float64 must agree with the value of DU → SU
-        @test convert_units(gen, 0.6, cat, DU, Float64) ≈
-              ustrip(convert_units(gen, 0.6, cat, DU, SU))
     end
 end
 
@@ -247,9 +240,7 @@ end
 
 @testset "deserialized components carry the system's base value" begin
     sys, gen = _sys_with_thermal()
-    path = joinpath(mktempdir(), "sys.json")
-    to_json(sys, path)
-    sys2 = System(path)
+    sys2 = roundtrip_system(sys)
     gen2 = get_component(ThermalStandard, sys2, get_name(gen))
     @test IS.get_base_value(gen2) == sys2.base_power
     @test get_active_power(gen2, SU) ≈ get_active_power(gen, SU)
@@ -273,7 +264,7 @@ end
         base_power = 100.0,
         operation_cost = MarketBidCost(nothing),
     )
-    subcomponents = collect(PSY._get_components(h_sys))
+    subcomponents = collect(get_subcomponents(h_sys))
     @test length(subcomponents) == 4
     add_component!(sys, h_sys)
     @test all(c -> IS.get_base_value(c) !== nothing, subcomponents)
@@ -290,8 +281,6 @@ end
     @test_throws ArgumentError convert_units(gen, 0.5 * DU, POWER, SU, NU)
     @test_throws ArgumentError convert_units(gen, 0.5, POWER, MW, SU)
 end
-
-# ---- Task 5 helpers ----
 
 # Build a minimal System + Line (100 MVA base, 138 kV buses) for impedance/
 # admittance inference tests. rating_b is set to a non-nothing value so
@@ -373,7 +362,7 @@ end
     @inferred Union{Nothing, Float64} get_rating_b(line, SU)
 
     # three-winding pairwise bases (PairBase engine); r_12/r_23 are now
-    # Union{Nothing, Float64} descriptor fields (optional PSSE pairwise block)
+    # Union{Nothing, Float64} descriptor fields (optional pairwise block)
     @inferred Union{Nothing, Float64} get_r_12(xfmr3w, SU)
     @inferred Union{Nothing, Float64} get_r_23(xfmr3w, DU)
 
@@ -464,17 +453,17 @@ end
 
 @testset "TransformerCircuit base_value anchor lifecycle" begin
     sys = System(100.0)
-    b1 = ACBus(nothing);
-    set_name!(b1, "b1");
+    b1 = ACBus(nothing)
+    set_name!(b1, "b1")
     set_number!(b1, 1)
-    b2 = ACBus(nothing);
-    set_name!(b2, "b2");
+    b2 = ACBus(nothing)
+    set_name!(b2, "b2")
     set_number!(b2, 2)
-    b3 = ACBus(nothing);
-    set_name!(b3, "b3");
+    b3 = ACBus(nothing)
+    set_name!(b3, "b3")
     set_number!(b3, 3)
-    star = ACBus(nothing);
-    set_name!(star, "star");
+    star = ACBus(nothing)
+    set_name!(star, "star")
     set_number!(star, 901)
     for b in (b1, b2, b3, star)
         set_base_voltage!(b, 100.0)
@@ -482,8 +471,8 @@ end
         add_component!(sys, b)
     end
     set_bustype!(b1, ACBusTypes.REF)
-    a1 = Arc(b1, star);
-    a2 = Arc(b2, star);
+    a1 = Arc(b1, star)
+    a2 = Arc(b2, star)
     a3 = Arc(b3, star)
     foreach(a -> add_component!(sys, a), (a1, a2, a3))
     t3w = ThreeWindingTransformer(nothing)
@@ -513,11 +502,9 @@ end
     set_primary_circuit!(t3w, new_circuit)
     @test IS.get_base_value(new_circuit) == 100.0
 
-    # anchor is never serialized; it is repopulated on attach during load
-    path = joinpath(mktempdir(), "anchor_sys.json")
-    to_json(sys, path)
-    sys2 = System(path)
-    t2 = only(get_components(ThreeWindingTransformer, sys2))
+    # The anchor is never serialized; `add_component!` repopulates it, which is what this
+    # checks.
+    t2 = only(get_components(ThreeWindingTransformer, sys))
     for w in get_circuits(t2)
         @test IS.get_base_value(w) == 100.0
     end

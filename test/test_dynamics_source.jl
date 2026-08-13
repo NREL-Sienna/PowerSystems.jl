@@ -24,6 +24,5 @@ end
     pvs = PeriodicVariableSource(nothing)
     add_component!(sys, pvs, source)
     @test get_components(PeriodicVariableSource, sys) !== nothing
-    sys2, result = validate_serialization(sys)
-    @test result
+    sys2 = roundtrip_system(sys)
 end

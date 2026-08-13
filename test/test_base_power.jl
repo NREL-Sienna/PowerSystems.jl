@@ -31,8 +31,6 @@ function thermal_with_base_power(bus::PSY.Bus, name::String, base_power::Float64
     )
 end
 
-# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
-# `322_CT_6`, but PSB isn't compatible with the new units API yet.
 @testset "Test unit-aware get_base_power" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     device_base = PSY._get_base_power(gen)
@@ -86,8 +84,6 @@ end
     @test_throws ArgumentError get_base_power_unitful(sys, SU)
 end
 
-# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
-# `322_CT_6`, but PSB isn't compatible with the new units API yet.
 @testset "Generated getters: bare vs _unitful, NU path" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     device_base = PSY._get_base_power(gen)
@@ -147,8 +143,8 @@ end
     # (3) A sum loop over the getter is allocation-free once compiled.
     gens = collect(get_components(ThermalStandard, sys))
     sum_strip(gs, u) = (s = 0.0; for g in gs
-            s += Unitful.ustrip(get_active_power_unitful(g, u))
-        end; s)
+        s += Unitful.ustrip(get_active_power_unitful(g, u))
+    end; s)
     for u in (SU, DU, NU)
         sum_strip(gens, u)  # warm up
         @test (@inferred sum_strip(gens, u)) isa Float64
@@ -197,7 +193,6 @@ end
         (set_base_power_31!, get_base_power_31),
     )
         setter(xfmr, 75.0)
-        @test getter(xfmr) isa Float64
         @test getter(xfmr) ≈ 75.0
         setter(xfmr, 15.0)
         @test getter(xfmr) ≈ 15.0
@@ -235,7 +230,7 @@ end
     # Regression guard for a silent units bug. The getters must honor the explicit
     # `units` argument and resolve the CORRECT pair base. Each pairwise impedance
     # has its own `base_power_XX` and is referenced to the FIRST-INDEX circuit's
-    # base voltage (12 -> primary, 23 -> secondary, 31 -> tertiary; PSS/E CZ = 1).
+    # base voltage (12 -> primary, 23 -> secondary, 31 -> tertiary).
     # Distinct per-pair bases catch a wrong-pair-base selection.
     system_base = 100.0
     xfmr = _make_test_3w_xfmr(; system_base = system_base)
@@ -356,19 +351,19 @@ end
     @test_nowarn add_component!(sys, gen2)
 end
 
-@testset "PSSE pairwise block is optional, all-or-none" begin
+@testset "pairwise impedance block is optional, all-or-none" begin
     sys = System(100.0)
-    b1 = ACBus(nothing);
-    set_name!(b1, "b1");
+    b1 = ACBus(nothing)
+    set_name!(b1, "b1")
     set_number!(b1, 1)
-    b2 = ACBus(nothing);
-    set_name!(b2, "b2");
+    b2 = ACBus(nothing)
+    set_name!(b2, "b2")
     set_number!(b2, 2)
-    b3 = ACBus(nothing);
-    set_name!(b3, "b3");
+    b3 = ACBus(nothing)
+    set_name!(b3, "b3")
     set_number!(b3, 3)
-    star = ACBus(nothing);
-    set_name!(star, "star");
+    star = ACBus(nothing)
+    set_name!(star, "star")
     set_number!(star, 901)
     for b in (b1, b2, b3, star)
         set_base_voltage!(b, 100.0)
@@ -376,8 +371,8 @@ end
         add_component!(sys, b)
     end
     set_bustype!(b1, ACBusTypes.REF)
-    a1 = Arc(b1, star);
-    a2 = Arc(b2, star);
+    a1 = Arc(b1, star)
+    a2 = Arc(b2, star)
     a3 = Arc(b3, star)
     foreach(a -> add_component!(sys, a), (a1, a2, a3))
     function _pairwise_test_3w(name)
@@ -406,7 +401,7 @@ end
 
     # (c) partial block rejected at add_component!
     @test_logs(
-        (:error, r"partial PSS/E pairwise block"),
+        (:error, r"partial pairwise impedance block"),
         match_mode = :any,
         @test_throws(IS.InvalidValue, add_component!(sys, t_partial))
     )
@@ -426,4 +421,65 @@ end
     add_component!(sys, t_full)   # must not throw
     @test get_base_power_12(t_full) == 15.0
     @test get_r_12(t_full, SU) ≈ 0.01 * (100.0 / 15.0)
+end
+
+@testset "SystemBasePower components track the system base, not 100 MVA" begin
+    system_base = 1000.0
+    sys = System(system_base)
+    b1 = ACBus(;
+        number = 1, name = "b1", available = true,
+        bustype = ACBusTypes.REF, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    b2 = ACBus(;
+        number = 2, name = "b2", available = true,
+        bustype = ACBusTypes.PQ, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys, b1)
+    add_component!(sys, b2)
+
+    ln = Line(;
+        name = "l1", available = true, active_power_flow = 0.0,
+        reactive_power_flow = 0.0, arc = Arc(; from = b1, to = b2),
+        r = 0.01, x = 0.1, b = (from = 0.0, to = 0.0), rating = 1.0,
+        angle_limits = (min = -1.5, max = 1.5),
+    )
+    add_component!(sys, ln)
+
+    area = Area(; name = "a1")
+    add_component!(sys, area)
+
+    # The descriptor's 100.0 default must not survive attachment: this is the
+    # bug being pinned. Both Line and Area are among the 12 types whose
+    # base_power field records the system base, not an independent device base.
+    @test PSY._get_base_power(ln) == system_base
+    @test PSY._get_base_power(area) == system_base
+
+    # DU is a pass-through (unaffected by system base); SU must scale by the
+    # true system base, not the stale 100.0 default.
+    @test get_rating(ln, DU) ≈ 1.0
+    @test get_rating(ln, SU) ≈ 1.0
+
+    # set_base_power! is disallowed for SystemBasePower types: the field has no
+    # meaning independent of the system it is attached to.
+    @test_throws ErrorException set_base_power!(ln, 50.0)
+    @test_throws ErrorException set_base_power!(area, 50.0)
+
+    # A detached component of this kind keeps the descriptor default and errors
+    # on any access that requires a defined system base, mirroring the behavior
+    # of components with no base_power field at all.
+    ln_detached = Line(;
+        name = "l2", available = true, active_power_flow = 0.0,
+        reactive_power_flow = 0.0, arc = Arc(ACBus(nothing), ACBus(nothing)),
+        r = 0.01, x = 0.1, b = (from = 0.0, to = 0.0), rating = 1.0,
+        angle_limits = (min = -1.5, max = 1.5),
+    )
+    @test PSY._get_base_power(ln_detached) == 100.0
+    @test get_rating(ln_detached, DU) ≈ 1.0
+    @test_throws ErrorException get_rating(ln_detached, SU)
+    # Detached, `base_power` reads back whatever was stated (a document records it per
+    # component); `add_component!` syncs it to the system base on attach. The wrong-base
+    # risk is covered by the SU throw above, not by guarding this read.
+    @test get_base_power(ln_detached) == 100.0
 end

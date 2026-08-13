@@ -10,7 +10,6 @@ This file is auto-generated. Do not edit.
         arc::Arc
         tap::Float64
         α::Float64
-        winding_group_number::WindingGroupNumber
         r::Float64
         x::Float64
         control_objective::TransformerControlObjective
@@ -38,14 +37,13 @@ A [`TwoWindingTransformer`](@ref) has one circuit; a [`ThreeWindingTransformer`]
 - `arc::Arc`: An [`Arc`](@ref) defining this circuit `from` a terminal bus `to` the transformer's other terminal or star bus
 - `tap::Float64`: (default: `1.0`) Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage
 - `α::Float64`: (default: `0.0`) Initial condition of phase shift (radians) across this circuit
-- `winding_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating fixed phase shift (radians) due to the connection group configuration
 - `r::Float64`: (default: `0.0`) Circuit resistance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent, validation range: `(-2, 4)`
 - `x::Float64`: (default: `0.0`) Circuit reactance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent, validation range: `(-2, 4)`
-- `control_objective::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Tap-changer / phase-shifter control objective (PSS/E COD). `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)
-- `regulated_bus_number::Int`: (default: `0`) Controlled bus number (PSS/E CONT; sign = regulation side)
-- `control_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Control band (PSS/E RMA/RMI): tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control
-- `controlled_quantity_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Controlled-quantity band (PSS/E VMA/VMI): pu voltage / Mvar / MW bounds depending on `control_objective`
-- `number_of_tap_positions::Int`: (default: `33`) Number of tap positions (PSS/E NTP)
+- `control_objective::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Tap-changer / phase-shifter control objective. `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)
+- `regulated_bus_number::Int`: (default: `0`) Controlled bus number; the sign indicates the regulation side
+- `control_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Control band: tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control
+- `controlled_quantity_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`
+- `number_of_tap_positions::Int`: (default: `33`) Number of tap positions
 - `rating::Union{Nothing, Float64}`: (default: `nothing`) Thermal rating (MVA) stored in device base per unit on `base_power`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
@@ -65,21 +63,19 @@ mutable struct TransformerCircuit <: DeviceParameter
     tap::Float64
     "Initial condition of phase shift (radians) across this circuit"
     α::Float64
-    "Vector group number ('clock number') indicating fixed phase shift (radians) due to the connection group configuration"
-    winding_group_number::WindingGroupNumber
     "Circuit resistance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent"
     r::Float64
     "Circuit reactance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent"
     x::Float64
-    "Tap-changer / phase-shifter control objective (PSS/E COD). `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)"
+    "Tap-changer / phase-shifter control objective. `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)"
     control_objective::TransformerControlObjective
-    "Controlled bus number (PSS/E CONT; sign = regulation side)"
+    "Controlled bus number; the sign indicates the regulation side"
     regulated_bus_number::Int
-    "Control band (PSS/E RMA/RMI): tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control"
+    "Control band: tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control"
     control_limits::MinMax
-    "Controlled-quantity band (PSS/E VMA/VMI): pu voltage / Mvar / MW bounds depending on `control_objective`"
+    "Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`"
     controlled_quantity_limits::MinMax
-    "Number of tap positions (PSS/E NTP)"
+    "Number of tap positions"
     number_of_tap_positions::Int
     "Thermal rating (MVA) stored in device base per unit on `base_power`"
     rating::Union{Nothing, Float64}
@@ -101,12 +97,12 @@ mutable struct TransformerCircuit <: DeviceParameter
     base_value::Union{Nothing, Float64}
 end
 
-function TransformerCircuit(available, arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, r=0.0, x=0.0, control_objective=TransformerControlObjective.UNDEFINED, regulated_bus_number=0, control_limits=(min=0.9, max=1.1), controlled_quantity_limits=(min=0.9, max=1.1), number_of_tap_positions=33, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage_primary=nothing, base_voltage_secondary=nothing, )
-    TransformerCircuit(available, arc, tap, α, winding_group_number, r, x, control_objective, regulated_bus_number, control_limits, controlled_quantity_limits, number_of_tap_positions, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage_primary, base_voltage_secondary, nothing, )
+function TransformerCircuit(available, arc, tap=1.0, α=0.0, r=0.0, x=0.0, control_objective=TransformerControlObjective.UNDEFINED, regulated_bus_number=0, control_limits=(min=0.9, max=1.1), controlled_quantity_limits=(min=0.9, max=1.1), number_of_tap_positions=33, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage_primary=nothing, base_voltage_secondary=nothing, )
+    TransformerCircuit(available, arc, tap, α, r, x, control_objective, regulated_bus_number, control_limits, controlled_quantity_limits, number_of_tap_positions, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage_primary, base_voltage_secondary, nothing, )
 end
 
-function TransformerCircuit(; available, arc, tap=1.0, α=0.0, winding_group_number=WindingGroupNumber.UNDEFINED, r=0.0, x=0.0, control_objective=TransformerControlObjective.UNDEFINED, regulated_bus_number=0, control_limits=(min=0.9, max=1.1), controlled_quantity_limits=(min=0.9, max=1.1), number_of_tap_positions=33, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage_primary=nothing, base_voltage_secondary=nothing, base_value=nothing, )
-    TransformerCircuit(available, arc, tap, α, winding_group_number, r, x, control_objective, regulated_bus_number, control_limits, controlled_quantity_limits, number_of_tap_positions, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage_primary, base_voltage_secondary, base_value, )
+function TransformerCircuit(; available, arc, tap=1.0, α=0.0, r=0.0, x=0.0, control_objective=TransformerControlObjective.UNDEFINED, regulated_bus_number=0, control_limits=(min=0.9, max=1.1), controlled_quantity_limits=(min=0.9, max=1.1), number_of_tap_positions=33, rating=nothing, rating_b=nothing, rating_c=nothing, active_power_flow=0.0, reactive_power_flow=0.0, base_power=100.0, base_voltage_primary=nothing, base_voltage_secondary=nothing, base_value=nothing, )
+    TransformerCircuit(available, arc, tap, α, r, x, control_objective, regulated_bus_number, control_limits, controlled_quantity_limits, number_of_tap_positions, rating, rating_b, rating_c, active_power_flow, reactive_power_flow, base_power, base_voltage_primary, base_voltage_secondary, base_value, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -116,7 +112,6 @@ function TransformerCircuit(::Nothing)
         arc=Arc(ACBus(nothing), ACBus(nothing)),
         tap=1.0,
         α=0.0,
-        winding_group_number=WindingGroupNumber.UNDEFINED,
         r=0.0,
         x=0.0,
         control_objective=TransformerControlObjective.UNDEFINED,
@@ -143,8 +138,6 @@ get_arc(value::TransformerCircuit) = value.arc
 get_tap(value::TransformerCircuit) = value.tap
 """Get [`TransformerCircuit`](@ref) `α`."""
 get_α(value::TransformerCircuit) = value.α
-"""Get [`TransformerCircuit`](@ref) `winding_group_number`."""
-get_winding_group_number(value::TransformerCircuit) = value.winding_group_number
 """Get [`TransformerCircuit`](@ref) `r` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_r_unitful`](@ref)."""
 get_r(value::TransformerCircuit, units) = InfrastructureSystems._strip_units(get_value(value, Val(:r), Val(:ohm), units))
 """Get [`TransformerCircuit`](@ref) `r` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_r`](@ref)."""
@@ -214,8 +207,6 @@ set_arc!(value::TransformerCircuit, val) = value.arc = val
 set_tap!(value::TransformerCircuit, val) = value.tap = val
 """Set [`TransformerCircuit`](@ref) `α`."""
 set_α!(value::TransformerCircuit, val) = value.α = val
-"""Set [`TransformerCircuit`](@ref) `winding_group_number`."""
-set_winding_group_number!(value::TransformerCircuit, val) = value.winding_group_number = val
 """Set [`TransformerCircuit`](@ref) `r`."""
 set_r!(value::TransformerCircuit, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`TransformerCircuit`](@ref) `x`."""

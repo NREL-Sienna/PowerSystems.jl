@@ -116,7 +116,7 @@ are modeled with geometric distributions. The outage probabilities and recovery 
 series.
 
 # Arguments
-- `mean_time_to_recovery::Float64`: Time elapsed to recovery after a failure in Milliseconds.
+- `mean_time_to_recovery::Float64`: Time elapsed to recovery after a failure, in minutes.
 - `outage_transition_probability::Float64`: Characterizes the probability of failure (1 - p) in the geometric distribution.
 - `monitored_components::Set{Int}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
@@ -134,7 +134,7 @@ end
 Construct a [`GeometricDistributionForcedOutage`](@ref).
 
 # Arguments
-- `mean_time_to_recovery::Float64`: (default: `0.0`) Time elapsed to recovery after a failure in Milliseconds.
+- `mean_time_to_recovery::Float64`: (default: `0.0`) Time elapsed to recovery after a failure, in minutes.
 - `outage_transition_probability::Float64`: (default: `0.0`) Characterizes the probability of failure (1 - p) in the geometric distribution.
 - `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref). Devices are converted to their UUIDs internally; duplicates are collapsed.
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference

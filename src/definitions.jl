@@ -93,7 +93,6 @@ This classification is essential for WECC dynamic studies as it determines how l
 modeled during system disturbances and stability analysis.
 """ LoadConformity
 
-# "From PSSE POM v33 Manual"
 IS.@scoped_enum(
     FACTSOperationModes,
     OOS = 0, # out-of-service (i.e., Series and Shunt links open)
@@ -104,7 +103,6 @@ IS.@scoped_enum(
     FACTSOperationModes
 
 Enumeration defining the operational modes for FACTS (Flexible AC Transmission System) devices.
-Based on PSSE POM v33 Manual specifications.
 
 # Values
 - `OOS = 0`: Out-of-service mode where both Series and Shunt links are open
@@ -145,14 +143,14 @@ AC-side control mode of a voltage-source-converter (VSC) terminal.
 
 IS.@scoped_enum(
     FACTSShuntControlType,
-    SVC = 0,        # variable-susceptance SVC: Q = b·V² bounded by SHMX
-    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·IMX
+    SVC = 0,        # variable-susceptance SVC: Q = b·V², bounded by max susceptance
+    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·max shunt current
 )
 @doc "Shunt-FACTS device class selecting the reactive-limit law: `SVC` bounds susceptance \
-(`Q=b·V²`, cap `SHMX`); `STATCOM` is current-limited (`|Q| ≤ V·IMX`)." FACTSShuntControlType
+(`Q=b·V²`); `STATCOM` is current-limited (`|Q| ≤ V·max_shunt_current`)." FACTSShuntControlType
 
 IS.@scoped_enum(
-    SwitchedAdmittanceControlMode,  # MODSW in PSS/E switched-shunt records
+    SwitchedAdmittanceControlMode,
     UNDEFINED = -99,
     FIXED = 0,
     DISCRETE_VOLTAGE = 1,
@@ -162,8 +160,8 @@ IS.@scoped_enum(
     DISCRETE_ADMITTANCE_REMOTE = 5,
 )
 @doc"
-Control mode of a switched shunt. The enumerator maps the integer MODSW control-mode field
-of a switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
+Control mode of a switched shunt. The enumerator maps the integer control-mode field of a
+switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
 `CONTINUOUS_VOLTAGE` = 2, `DISCRETE_REACTIVE_PLANT` = 3, `DISCRETE_REACTIVE_VSC` = 4,
 `DISCRETE_ADMITTANCE_REMOTE` = 5; `UNDEFINED` = -99 when unset. The names describe each mode;
 consult your source data's own documentation for the precise definition of each control mode.
@@ -232,38 +230,6 @@ in the power system model, particularly in relation to tap-changing transformers
 " WindingCategory
 
 IS.@scoped_enum(
-    WindingGroupNumber,
-    UNDEFINED = -99,
-    GROUP_0 = 0, # 0 Degrees
-    GROUP_1 = 1, # -30 Degrees
-    GROUP_5 = 5, # -150 Degrees
-    GROUP_6 = 6, # 180 Degrees
-    GROUP_7 = 7, # 150 Degrees
-    GROUP_11 = 11, # 30 Degrees
-)
-@doc"
-    WindingGroupNumber
-
-Enumeration defining transformer winding group numbers based on IEC 60076-1 standard.
-These numbers represent the phase displacement between primary and secondary windings
-of three-phase transformers.
-
-# Valid Values
-- `UNDEFINED = -99`: Undefined or unspecified winding group
-- `GROUP_0 = 0`: 0° phase displacement (Yy0, Dd0, Dz0)
-- `GROUP_1 = 1`: -30° phase displacement (Yy1, Dd1, Dz1)
-- `GROUP_5 = 5`: -150° phase displacement (Yy5, Dd5, Dz5)
-- `GROUP_6 = 6`: 180° phase displacement (Yy6, Dd6, Dz6)
-- `GROUP_7 = 7`: 150° phase displacement (Yy7, Dd7, Dz7)
-- `GROUP_11 = 11`: 30° phase displacement (Yy11, Dd11, Dz11)
-
-# Notes
-The phase displacement is measured from the primary to secondary winding, with
-positive angles representing a lead and negative angles representing a lag.
-Clock notation follows the convention where each hour represents 30°.
-" WindingGroupNumber
-
-IS.@scoped_enum(
     ImpedanceCorrectionTransformerControlMode,
     PHASE_SHIFT_ANGLE = 1,
     TAP_RATIO = 2,
@@ -271,8 +237,7 @@ IS.@scoped_enum(
 @doc"""
     ImpedanceCorrectionTransformerControlMode
 
-Enumeration defining the control modes for impedance correction in transformers,
-based on PSS/E transformer control definitions.
+Enumeration defining the control modes for impedance correction in transformers.
 
 # Values
 - `PHASE_SHIFT_ANGLE = 1`: Control mode for phase-shifting transformers where the
@@ -283,13 +248,12 @@ based on PSS/E transformer control definitions.
   controls voltage magnitude through tap position changes.
 
 # Notes
-This enumeration corresponds to PSS/E transformer control field definitions for
-determining how impedance corrections are calculated and applied in power flow
+Determines how impedance corrections are calculated and applied in power flow
 and dynamic simulation studies.
 """ ImpedanceCorrectionTransformerControlMode
 
 IS.@scoped_enum(
-    TransformerControlObjective, # COD1 or COD2 in PSS\e
+    TransformerControlObjective,
     UNDEFINED = -99,
     VOLTAGE_DISABLED = -1,
     REACTIVE_POWER_FLOW_DISABLED = -2,
@@ -306,10 +270,8 @@ IS.@scoped_enum(
 @doc"
     TransformerControlObjective
 
-Enumeration of transformer control objectives based on PSS/E COD1 and COD2 fields.
-
-This enumeration defines the control modes for transformer tap changers and phase shifters
-as specified in the PSS/E-35 manual.
+Enumeration of transformer control objectives: the control modes for transformer tap
+changers and phase shifters.
 
 # Values
 - `UNDEFINED = -99`: Undefined control objective
@@ -654,35 +616,21 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
 
 const DEFAULT_SYSTEM_FREQUENCY = 60.0
 
-const DEFAULT_BASE_MVA = 100.0
-# Accumulator type for MW-sum helpers in system_checks.jl. Bare `Float64`
-# because unit-aware getters now return bare numbers; the `MW` arg merely
-# selects the unit basis (see `_sum_or_zero`).
+# Accumulator type for the MW-sum helpers in system_checks.jl.
 const MW_ACCUMULATOR_TYPE = Float64
 
-const INFINITE_TIME = 1e4
+# Sentinel for `time_at_status`: "has been in this state indefinitely". Carried
+# in minutes, matching the operational-duration convention.
+const INFINITE_TIME = 6e5
 const START_COST = 1e8
 const INFINITE_COST = 1e8
 const INFINITE_BOUND = 1e6
 const BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL = 0.01
 
-const ZERO_IMPEDANCE_REACTANCE_THRESHOLD = 1e-4
-
 # Absolute threshold below which a shunt admittance component (conductance or
 # susceptance) is treated as zero for capability detection, so negligible
 # admittances do not force their host bus to be kept during network reduction.
 const ZERO_ADMITTANCE_THRESHOLD = 1e-4
-
-const WINDING_NAMES = Dict(
-    WindingCategory.PRIMARY_WINDING => "primary",
-    WindingCategory.SECONDARY_WINDING => "secondary",
-    WindingCategory.TERTIARY_WINDING => "tertiary",
-)
-
-const TRANSFORMER3W_PARAMETER_NAMES = [
-    "COD", "CONT", "NOMV", "WINDV", "RMA", "RMI",
-    "NTP", "VMA", "VMI", "RATA", "RATB", "RATC",
-]
 
 # Emissions enums
 
@@ -694,6 +642,8 @@ IS.@scoped_enum(
     N2O = 4,
     NOX = 10,
     SO2 = 11,
+    CO = 12,
+    VOC = 13,
     PM25 = 20,
     PM10 = 21,
     HG = 30,
@@ -710,6 +660,8 @@ Enumeration of pollutant types for emissions tracking.
 - `N2O = 4`: Nitrous oxide
 - `NOX = 10`: Nitrogen oxides
 - `SO2 = 11`: Sulfur dioxide
+- `CO = 12`: Carbon monoxide
+- `VOC = 13`: Volatile organic compounds
 - `PM25 = 20`: Particulate matter (2.5 μm)
 - `PM10 = 21`: Particulate matter (10 μm)
 - `HG = 30`: Mercury

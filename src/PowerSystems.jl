@@ -322,7 +322,6 @@ export remove_monitored_components!
 # Impedance Correction Data
 export ImpedanceCorrectionData
 export WindingCategory
-export WindingGroupNumber
 export ImpedanceCorrectionTransformerControlMode
 
 export get_table_number
@@ -355,19 +354,30 @@ export set_basis_and_energy_unit!
 export Service
 export AbstractReserve
 export Reserve
-export ReserveNonSpinning
 export ReserveDirection
 export ReserveUp
 export ReserveDown
 export ReserveSymmetric
-export ConstantReserve
-export VariableReserve
 export AGC
-export ReserveDemandCurve
-export ReserveDemandTimeSeriesCurve
-export ConstantReserveGroup
-export ConstantReserveNonSpinning
-export VariableReserveNonSpinning
+export OnlineReserve
+export OfflineReserve
+export GroupReserve
+export has_demand_curve
+export get_time_frame
+export set_time_frame!
+export get_requirement
+export get_requirement_unitful
+export set_requirement!
+export get_sustained_time
+export set_sustained_time!
+export get_max_output_fraction
+export set_max_output_fraction!
+export get_max_participation_factor
+export set_max_participation_factor!
+export get_deployed_fraction
+export set_deployed_fraction!
+export get_contributing_services
+export set_contributing_services!
 export TransmissionInterface
 
 export AngleUnits
@@ -638,7 +648,7 @@ export UnitCategory,
     PowerCategory, ImpedanceCategory, AdmittanceCategory,
     VoltageCategory, CurrentCategory
 export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
-export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
+export natural_unit, base_value, system_base_value, convert_units
 # Hand-written unit-bearing companion for the `exclude_getter` `base_power`
 # descriptor entry (its bare-number counterpart gets exported via
 # generated/includes.jl). `base_power_12`/`_23`/`_31` on `ThreeWindingTransformer`
@@ -671,6 +681,12 @@ export get_circuits
 export has_control
 export supports_services
 
+# OpenAPI serde
+export from_openapi
+export to_openapi
+export from_file
+export to_file
+
 #################################################################################
 # Imports
 
@@ -685,6 +701,12 @@ import JSON
 import Base.to_index
 import PrettyTables
 import Unitful
+import PowerCoreOpenAPIModels
+import PowerOperationsOpenAPIModels
+import OpenAPI
+import TimeZones
+const PC = PowerCoreOpenAPIModels
+const PO = PowerOperationsOpenAPIModels
 using Unitful: @u_str, @unit, Quantity, Units, uconvert, ustrip
 
 # Relative-unit primitives live in IS; PSY re-exports them for downstream
@@ -777,6 +799,7 @@ import InfrastructureSystems:
     get_static_time_series_reader_entries,
     get_num_static_time_series_groups,
     show_time_series,
+    read_time_series_file_metadata,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
@@ -796,6 +819,7 @@ import InfrastructureSystems:
     NormalizationFactor,
     NormalizationTypes,
     UnitSystem,
+    LOG_GROUP_PARSING,
     open_file_logger,
     make_logging_config_file,
     validate_struct,
@@ -883,6 +907,11 @@ using DocStringExtensions
 #################################################################################
 # Includes
 
+# PSY's own struct code generator (forked from InfrastructureSystems.jl). Self-contained
+# submodule — declares its own imports, emits Julia source as text, needs nothing from
+# PSY's types below, so it is included first. Call site: `StructGeneration.generate_structs`.
+include("generate_structs.jl")
+
 """
 Supertype for all PowerSystems components.
 All subtypes must include a InfrastructureSystemsInternal member.
@@ -950,15 +979,28 @@ include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
 include("models/cost_functions/HydroReservoirCost.jl")
 
+# OpenAPI serde: hand-written pieces the generated from_openapi/to_openapi methods
+# build on. Must precede the generated includes. The rest of src/openapi/ is included
+# further down, after base.jl defines `System`.
+include("openapi/refs.jl")
+include("openapi/cost_conversion.jl")
+
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
+
+# Hand-written OpenAPI converters for types the generator cannot reach: abstract-typed
+# references (Arc), fields with no device-level base_power (Line,
+# TwoTerminalGenericHVDCLine), unclassifiable field kinds (TwoWindingTransformer.magnetizing_shunt,
+# EnergyReservoirStorage.efficiency, HydroReservoir's Vector{HydroUnit}/Vector{Device}
+# fields), a PSY/PO field-name mismatch (TransformerCircuit.α vs po.alpha), semantic
+# (not unit) conversions (HydroReservoir), and the parametric reserves (OnlineReserve/
+# OfflineReserve/GroupReserve). Included after generated/includes.jl so those struct
+# types exist.
+include("openapi/import_handwritten.jl")
 
 # Hand-written methods on the generated `TransformerCircuit` type; included after
 # generated/includes.jl so the type is defined.
 include("models/transformer_circuits.jl")
-
-include("models/cost_functions/ReserveDemandCurve.jl")
-include("models/cost_functions/ReserveDemandTimeSeriesCurve.jl")
 
 #Methods for devices
 include("models/components.jl")
@@ -986,7 +1028,21 @@ include("emissions_data.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+
+include("openapi/ledger.jl")
+
 include("plant_attribute.jl")
+
+# OpenAPI import must follow the supplemental-attribute constructors it calls (outages.jl,
+# emissions_data.jl, plant_attribute.jl); export must follow every component type it reads.
+include("openapi/import_document.jl")
+include("openapi/sqlite_load.jl")
+include("openapi/export_cost_conversion.jl")
+include("openapi/export_generated_types.jl")
+include("openapi/export_handwritten.jl")
+include("openapi/export_document.jl")
+include("openapi/file_io.jl")
+
 include("substation.jl")
 include("subsystems.jl")
 include("component_selector.jl")

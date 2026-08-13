@@ -1,35 +1,21 @@
-const _ENCODE_AS_UUID_A = (
-    Union{Nothing, Arc},
-    Union{Nothing, Area},
-    Union{Nothing, Bus},
-    Union{Nothing, LoadZone},
-    Union{Nothing, DynamicInjection},
-    Union{Nothing, StaticInjection},
-    Union{Nothing, HydroReservoir},
+const _ENCODE_AS_UUID = (
+    Arc,
+    Area,
+    Bus,
+    LoadZone,
+    DynamicInjection,
+    StaticInjection,
+    HydroReservoir,
     Vector{Service},
     Vector{Reserve},
     Vector{HydroUnit},
     Vector{Device},
 )
 
-const _ENCODE_AS_UUID_B =
-    (
-        Arc,
-        Area,
-        Bus,
-        LoadZone,
-        DynamicInjection,
-        StaticInjection,
-        HydroReservoir,
-        Vector{Service},
-        Vector{Reserve},
-        Vector{HydroUnit},
-        Vector{Device},
-    )
-@assert length(_ENCODE_AS_UUID_A) == length(_ENCODE_AS_UUID_B)
-
-should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID_B)
-should_encode_as_uuid(::Type{T}) where {T} = any(x -> T <: x, _ENCODE_AS_UUID_A)
+should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID)
+# The field's declared type may be nullable, so match against `Union{Nothing, x}`.
+should_encode_as_uuid(::Type{T}) where {T} =
+    any(x -> T <: Union{Nothing, x}, _ENCODE_AS_UUID)
 
 const _CONTAINS_SHOULD_ENCODE = Union{
     Component,
@@ -58,8 +44,12 @@ function IS.serialize(component::T) where {T <: _CONTAINS_SHOULD_ENCODE}
 
     IS.add_serialization_metadata!(data, T)
 
-    # This is a temporary workaround until these types are not parameterized.
-    if T <: Reserve || T <: ConstantReserveGroup
+    # Sets IS.CONSTRUCT_WITH_PARAMETERS_KEY so IS.get_type_from_serialization_metadata
+    # reconstructs type parameters on deserialize. Needed because Reserve{T}/
+    # OfflineReserve{U}/GroupReserve{T} are parametric families with no one clean shared
+    # supertype to dispatch this on generically. IS's own serialization.jl labels this the
+    # "workaround for PSY.Reserve subtypes".
+    if T <: Reserve || T <: OfflineReserve || T <: GroupReserve
         data[IS.METADATA_KEY][IS.CONSTRUCT_WITH_PARAMETERS_KEY] = true
     end
 

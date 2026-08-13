@@ -593,7 +593,7 @@ function add_component!(
     kwargs...,
 ) where {T <: Component}
     set_units_setting!(component, sys.base_power)
-    @assert has_units_setting(component)
+    _sync_base_power!(base_power_kind(component), component, sys.base_power)
 
     check_topology(sys, component)
     check_component_addition(sys, component; kwargs...)
@@ -868,15 +868,15 @@ function add_service!(device::Device, service::Service, sys::System)
 end
 
 """
-Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
+Similar to [`add_component!`](@ref) but for GroupReserve.
 
 # Arguments
 - `sys::System`: system
-- `service::ConstantReserveGroup`: service to add
+- `service::GroupReserve`: service to add
 """
 function add_service!(
     sys::System,
-    service::ConstantReserveGroup;
+    service::GroupReserve;
     skip_validation = false,
     kwargs...,
 )
@@ -891,10 +891,10 @@ function add_service!(
     return
 end
 
-"""Set ConstantReserveGroup contributing_services with check"""
+"""Set GroupReserve contributing_services with check"""
 function set_contributing_services!(
     sys::System,
-    service::ConstantReserveGroup,
+    service::GroupReserve,
     val::Vector{<:Service},
 )
     for _service in val
@@ -905,16 +905,16 @@ function set_contributing_services!(
 end
 
 """
-Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
+Similar to [`add_component!`](@ref) but for GroupReserve.
 
 # Arguments
 - `sys::System`: system
-- `service::ConstantReserveGroup`: service to add
+- `service::GroupReserve`: service to add
 - `contributing_services`: contributing services to the group
 """
 function add_service!(
     sys::System,
-    service::ConstantReserveGroup,
+    service::GroupReserve,
     contributing_services::Vector{<:Service};
     skip_validation = false,
     kwargs...,
@@ -1061,21 +1061,22 @@ end
 """
 Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
-function check_component_removal(sys::System, service::T) where {T <: Service}
-    if T == ConstantReserveGroup
-        return
-    end
-    groupservices = get_components(ConstantReserveGroup, sys)
+function check_component_removal(sys::System, service::Service)
+    groupservices = get_components(GroupReserve, sys)
     for groupservice in groupservices
         if service ∈ get_contributing_services(groupservice)
             throw(
                 ArgumentError(
-                    "service $(get_name(service)) cannot be removed with an attached ConstantReserveGroup",
+                    "service $(get_name(service)) cannot be removed with an attached GroupReserve",
                 ),
             )
-            return
         end
     end
+    return
+end
+
+function check_component_removal(sys::System, service::GroupReserve)
+    return
 end
 
 """
@@ -1538,6 +1539,23 @@ function add_time_series!(
     features...,
 )
     return IS.add_time_series!(sys.data, component, time_series; features...)
+end
+
+"""
+Add time series data to a supplemental attribute. Mirrors the `Component` method above;
+see [`remove_time_series!`](@ref) for the existing precedent of a supplemental attribute
+owner on the time series API. The attribute must already be attached to `sys` via
+[`add_supplemental_attribute!`](@ref).
+
+Throws ArgumentError if the attribute is not stored in the system.
+"""
+function add_time_series!(
+    sys::System,
+    attribute::SupplementalAttribute,
+    time_series::TimeSeriesData;
+    features...,
+)
+    return IS.add_time_series!(sys.data, attribute, time_series; features...)
 end
 
 """
@@ -2140,10 +2158,8 @@ function check(sys::System)
     return
 end
 
-"""
-Check the the consistency of subsystems.
-"""
-function check_subsystems(sys::System)
+# Subsystem assignment is all-or-none across the system.
+function _check_uniform_subsystem_assignment(sys::System)
     must_be_assigned_to_subsystem = false
     for (i, component) in enumerate(iterate_components(sys))
         is_assigned = is_assigned_to_subsystem(sys, component)
@@ -2157,27 +2173,27 @@ function check_subsystems(sys::System)
                 ),
             )
         end
+    end
+    return
+end
+
+"""
+Check the consistency of subsystems.
+"""
+function check_subsystems(sys::System)
+    _check_uniform_subsystem_assignment(sys)
+    for component in iterate_components(sys)
         check_subsystems(sys, component)
     end
+    return
 end
 
 """
 Check the values of all components. See [`check_component`](@ref) for exceptions thrown.
 """
 function check_components(sys::System; check_masked_components = true)
-    must_be_assigned_to_subsystem = false
-    for (i, component) in enumerate(iterate_components(sys))
-        is_assigned = is_assigned_to_subsystem(sys, component)
-        if i == 1
-            must_be_assigned_to_subsystem = is_assigned
-        elseif is_assigned != must_be_assigned_to_subsystem
-            throw(
-                IS.InvalidValue(
-                    "If any component is assigned to a subsystem then all " *
-                    "components must be assigned to a subsystem.",
-                ),
-            )
-        end
+    _check_uniform_subsystem_assignment(sys)
+    for component in iterate_components(sys)
         check_component(sys, component)
     end
 
@@ -2234,16 +2250,15 @@ end
 
 """
 Check that all AC transmission [`Line`](@ref) and [`MonitoredLine`](@ref) components
-have valid rate values relative to the system base power.
+have valid rate values relative to their own device base power.
 
 Returns `true` if all values are valid, `false` otherwise.
 """
 function check_ac_transmission_rate_values(sys::System)
     is_valid = true
-    base_power = _get_base_power(sys)
     for line in
         Iterators.flatten((get_components(Line, sys), get_components(MonitoredLine, sys)))
-        if !check_rating_values(line, base_power)
+        if !check_rating_values(line)
             is_valid = false
         end
     end
@@ -2442,15 +2457,15 @@ function deserialize_components!(sys::System, raw)
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
         include_types = [Arc, Service],
-        skip_types = [ConstantReserveGroup],
+        skip_types = [GroupReserve],
     )
     deserialize_and_add!(;
         include_types = [HydroTurbine, HydroPumpTurbine],
-        skip_types = [ConstantReserveGroup, HydroReservoir],
+        skip_types = [GroupReserve, HydroReservoir],
     )
     deserialize_and_add!(; include_types = [HydroReservoir])
     deserialize_and_add!(; include_types = [Branch])
-    deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
+    deserialize_and_add!(; include_types = [GroupReserve, DynamicInjection])
     deserialize_and_add!(; skip_types = [StaticInjectionSubsystem])
     deserialize_and_add!()
 
@@ -3058,6 +3073,7 @@ function convert_component!(
         line.rating_c,
         line.g,
         line.services,
+        line.base_power,
         line.ext,
         _copy_internal_for_conversion(line),
     )
@@ -3104,6 +3120,7 @@ function convert_component!(
         line.rating_c,
         line.g,
         line.services,
+        line.base_power,
         line.ext,
         _copy_internal_for_conversion(line),
     )

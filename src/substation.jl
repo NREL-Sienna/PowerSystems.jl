@@ -47,3 +47,18 @@ get_number(value::Substation) = value.number
 get_grounding_resistance(value::Substation) = value.grounding_resistance
 """Get [`Substation`](@ref) `internal`."""
 get_internal(value::Substation) = value.internal
+
+# `Substation` has no descriptor entry, so both OpenAPI directions are hand-written here.
+
+from_openapi(::Type{Substation}, po::PO.Substation) = Substation(;
+    name = po.name,
+    number = po.number,
+    grounding_resistance = po.grounding_resistance,
+)
+
+to_openapi(attr::Substation, id::Int) = PO.Substation(;
+    id = id,
+    name = get_name(attr),
+    number = get_number(attr),
+    grounding_resistance = get_grounding_resistance(attr),
+)

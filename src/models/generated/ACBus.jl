@@ -149,3 +149,69 @@ set_area!(value::ACBus, val) = value.area = val
 set_load_zone!(value::ACBus, val) = value.load_zone = val
 """Set [`ACBus`](@ref) `ext`."""
 set_ext!(value::ACBus, val) = value.ext = val
+
+
+const AC_BUS_TYPES_FROM_STRING = Dict{String, ACBusTypes}(string(m) => m for m in instances(ACBusTypes))
+const AC_BUS_TYPES_TO_STRING = Dict{ ACBusTypes, String}(m => string(m) for m in instances(ACBusTypes))
+
+function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return ACBus(;
+        number = po.number,
+        name = po.name,
+        available = po.available,
+        bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
+        angle = po.angle,
+        magnitude = po.magnitude,
+        voltage_limits = (if isnothing(po.voltage_limits); nothing; else; (min = po.voltage_limits.min, max = po.voltage_limits.max); end),
+        base_voltage = po.base_voltage,
+        area = resolve_ref(refs, po.area),
+        load_zone = resolve_ref(refs, po.load_zone),
+    )
+end
+
+function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return ACBus(;
+        number = po.number,
+        name = po.name,
+        available = po.available,
+        bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
+        angle = po.angle,
+        magnitude = po.magnitude,
+        voltage_limits = (if isnothing(po.voltage_limits); nothing; else; (min = po.voltage_limits.min, max = po.voltage_limits.max); end),
+        base_voltage = po.base_voltage,
+        area = resolve_ref(refs, po.area),
+        load_zone = resolve_ref(refs, po.load_zone),
+    )
+end
+
+function to_openapi(value::ACBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.ACBus(;
+        id = component_id(refs, value),
+        number = get_number(value),
+        name = get_name(value),
+        available = get_available(value),
+        bustype = AC_BUS_TYPES_TO_STRING[get_bustype(value)],
+        angle = get_angle(value),
+        magnitude = get_magnitude(value),
+        voltage_limits = _minmax_po_optional(get_voltage_limits(value)),
+        base_voltage = get_base_voltage(value),
+        area = _component_id_optional(refs, get_area(value)),
+        load_zone = _component_id_optional(refs, get_load_zone(value)),
+    )
+end
+
+function to_openapi(value::ACBus, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.ACBus(;
+        id = component_id(refs, value),
+        number = get_number(value),
+        name = get_name(value),
+        available = get_available(value),
+        bustype = AC_BUS_TYPES_TO_STRING[get_bustype(value)],
+        angle = get_angle(value),
+        magnitude = get_magnitude(value),
+        voltage_limits = _minmax_po_optional(get_voltage_limits(value)),
+        base_voltage = get_base_voltage(value),
+        area = _component_id_optional(refs, get_area(value)),
+        load_zone = _component_id_optional(refs, get_load_zone(value)),
+    )
+end

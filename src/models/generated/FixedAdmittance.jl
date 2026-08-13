@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::ACBus
         Y::Complex{Float64}
+        base_power::Float64
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -25,6 +26,7 @@ Most often used in dynamics or AC power flow studies as a source of reactive pow
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Fixed admittance in p.u. ([`SYSTEM_BASE`](@ref per_unit))
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -39,6 +41,8 @@ mutable struct FixedAdmittance <: ElectricLoad
     bus::ACBus
     "Fixed admittance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
     Y::Complex{Float64}
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
@@ -49,12 +53,12 @@ mutable struct FixedAdmittance <: ElectricLoad
     internal::InfrastructureSystemsInternal
 end
 
-function FixedAdmittance(name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
-    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
+function FixedAdmittance(name, available, bus, Y, base_power=100.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    FixedAdmittance(name, available, bus, Y, base_power, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function FixedAdmittance(; name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, internal, )
+function FixedAdmittance(; name, available, bus, Y, base_power=100.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    FixedAdmittance(name, available, bus, Y, base_power, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -64,6 +68,7 @@ function FixedAdmittance(::Nothing)
         available=false,
         bus=ACBus(nothing),
         Y=0.0,
+        base_power=100.0,
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -78,6 +83,8 @@ get_available(value::FixedAdmittance) = value.available
 get_bus(value::FixedAdmittance) = value.bus
 """Get [`FixedAdmittance`](@ref) `Y`."""
 get_Y(value::FixedAdmittance) = value.Y
+
+_get_base_power(value::FixedAdmittance) = value.base_power
 """Get [`FixedAdmittance`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::FixedAdmittance) = value.dynamic_injector
 """Get [`FixedAdmittance`](@ref) `services`."""

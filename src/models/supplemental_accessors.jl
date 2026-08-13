@@ -263,19 +263,12 @@ function supports_voltage_control(d::SynchronousCondenser)
     return bustype ∈ (ACBusTypes.PV, ACBusTypes.REF, ACBusTypes.SLACK)
 end
 
-function _get_components(value::HybridSystem)
-    components =
-        [value.thermal_unit, value.electric_load, value.storage, value.renewable_unit]
-    filter!(x -> !isnothing(x), components)
-    return components
-end
-
 function set_units_setting!(
     value::HybridSystem,
     settings::Union{Float64, Nothing},
 )
     IS.set_base_value!(value, settings)
-    for component in _get_components(value)
+    for component in get_subcomponents(value)
         IS.set_base_value!(component, settings)
     end
     return
@@ -310,6 +303,6 @@ function get_subcomponents(hybrid::HybridSystem)
             hybrid.electric_load,
             hybrid.storage,
             hybrid.renewable_unit,
-        ) if sc !== nothing
+        ) if !isnothing(sc)
     )
 end

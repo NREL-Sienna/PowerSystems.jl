@@ -10,6 +10,59 @@ abstract type PowerPlant <: SupplementalAttribute end
 """Get `internal`."""
 get_internal(x::PowerPlant) = x.internal
 
+# Every `PowerPlant` stores membership as one forward map, group number -> member UUIDs.
+# The reverse direction is derived on demand by the helpers below rather than stored: a
+# second stored map is state a caller can contradict, and nothing validated the two against
+# each other. The document and SiennaGridDB carry the same relation as association rows
+# (`group_index`, plus `role` for a CombinedCycleBlock), never as either map.
+
+"""Group numbers `uuid` belongs to in `group_map`, ascending. Empty means it is not a
+member — a concrete value, so callers never dispatch on `nothing`."""
+function _group_indices(group_map::AbstractDict, uuid::Int)
+    return sort!([index for (index, uuids) in group_map if uuid in uuids])
+end
+
+"""Whether `uuid` appears anywhere in `group_map`."""
+function _in_group_map(group_map::AbstractDict, uuid::Int)
+    return any(uuids -> uuid in uuids, values(group_map))
+end
+
+"""Derive UUID -> group number from a forward map in which each member holds exactly one
+group (shaft, penstock, PCC, exclusion group)."""
+function _reverse_group_map(group_map::AbstractDict)
+    return Dict{Int, Int}(
+        uuid => index for (index, uuids) in group_map for uuid in uuids
+    )
+end
+
+"""Derive UUID -> group numbers from a forward map in which a member may hold several
+groups (a CT or CA can feed more than one HRSG)."""
+function _reverse_multi_group_map(group_map::AbstractDict)
+    reverse_map = Dict{Int, Vector{Int}}()
+    for (index, uuids) in group_map, uuid in uuids
+        push!(get!(reverse_map, uuid, Int[]), index)
+    end
+    foreach(sort!, values(reverse_map))
+    return reverse_map
+end
+
+"""Drop `uuid` from each listed group of `group_map`, deleting groups left empty."""
+function _drop_from_group_map!(group_map::AbstractDict, uuid::Int, indices)
+    for index in indices
+        filter!(x -> x != uuid, group_map[index])
+        if isempty(group_map[index])
+            delete!(group_map, index)
+        end
+    end
+    return
+end
+
+"""Append `uuid` to `group_map[index]`, creating the group if it is new."""
+function _push_to_group_map!(group_map::AbstractDict, uuid::Int, index::Int)
+    push!(get!(group_map, index, Int[]), uuid)
+    return
+end
+
 """
 Attribute to represent [`ThermalGen`](@ref) power plants with synchronous generation.
 For Combined Cycle plants consider using [`CombinedCycleBlock`](@ref).
@@ -19,13 +72,11 @@ The shaft map field is used to represent shared shafts between units.
 # Arguments
 - `name::String`: Name of the power plant
 - `shaft_map::Dict{Int, Vector{Int}}`: Mapping of shaft numbers to unit UUIDs (multiple units can share a shaft)
-- `reverse_shaft_map::Dict{Int, Int}`: Reverse mapping from unit UUID to shaft number
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct ThermalPowerPlant <: PowerPlant
     name::String
     shaft_map::Dict{Int, Vector{Int}}
-    reverse_shaft_map::Dict{Int, Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -33,7 +84,6 @@ end
 function ThermalPowerPlant(
     name::String,
     shaft_map::Dict{String, <:Any},
-    reverse_shaft_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return ThermalPowerPlant(
@@ -41,37 +91,34 @@ function ThermalPowerPlant(
         Dict{Int, Vector{Int}}(
             parse(Int, k) => Int.(v) for (k, v) in shaft_map
         ),
-        Dict{Int, Int}(parse(Int, k) => v for (k, v) in reverse_shaft_map),
         internal,
     )
 end
 
 """
-    ThermalPowerPlant(; name, shaft_map, reverse_shaft_map, internal)
+    ThermalPowerPlant(; name, shaft_map, internal)
 
 Construct a [`ThermalPowerPlant`](@ref).
 
 # Arguments
 - `name::String`: Name of the power plant
 - `shaft_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of shaft numbers to unit UUIDs
-- `reverse_shaft_map::Dict{Int, Int}`: (default: empty dict) Reverse mapping from unit UUID to shaft number
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function ThermalPowerPlant(;
     name::String,
     shaft_map::AbstractDict = Dict{Int, Vector{Int}}(),
-    reverse_shaft_map::AbstractDict = Dict{Int, Int}(),
     internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
-    return ThermalPowerPlant(name, shaft_map, reverse_shaft_map, internal)
+    return ThermalPowerPlant(name, shaft_map, internal)
 end
 
 """Get [`ThermalPowerPlant`](@ref) `name`."""
 get_name(value::ThermalPowerPlant) = value.name
 """Get [`ThermalPowerPlant`](@ref) `shaft_map`."""
 get_shaft_map(value::ThermalPowerPlant) = value.shaft_map
-"""Get [`ThermalPowerPlant`](@ref) `reverse_shaft_map`."""
-get_reverse_shaft_map(value::ThermalPowerPlant) = value.reverse_shaft_map
+"""Unit UUID -> shaft number, derived from `shaft_map`."""
+get_reverse_shaft_map(value::ThermalPowerPlant) = _reverse_group_map(value.shaft_map)
 
 """
 Attribute to represent combined cycle generation by block configuration that shares heat recovery converstions.
@@ -83,8 +130,6 @@ For aggregate representations consider using [`CombinedCycleFractional`](@ref).
 - `heat_recovery_to_steam_factor::Float64`: Factor for heat recovery to steam conversion
 - `hrsg_ct_map::Dict{Int, Vector{Int}}`: Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
 - `hrsg_ca_map::Dict{Int, Vector{Int}}`: Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
-- `ct_hrsg_map::Dict{Int, Vector{Int}}`: Reverse mapping from CT unit UUID to HRSG numbers (a CT can feed multiple HRSGs)
-- `ca_hrsg_map::Dict{Int, Vector{Int}}`: Reverse mapping from CA unit UUID to HRSG numbers (a CA can receive from multiple HRSGs)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleBlock <: PowerPlant
@@ -93,8 +138,6 @@ struct CombinedCycleBlock <: PowerPlant
     heat_recovery_to_steam_factor::Float64
     hrsg_ct_map::Dict{Int, Vector{Int}}
     hrsg_ca_map::Dict{Int, Vector{Int}}
-    ct_hrsg_map::Dict{Int, Vector{Int}}
-    ca_hrsg_map::Dict{Int, Vector{Int}}
     internal::InfrastructureSystemsInternal
 end
 
@@ -105,8 +148,6 @@ function CombinedCycleBlock(
     heat_recovery_to_steam_factor::Float64,
     hrsg_ct_map::Dict{String, <:Any},
     hrsg_ca_map::Dict{String, <:Any},
-    ct_hrsg_map::Dict{String, <:Any},
-    ca_hrsg_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return CombinedCycleBlock(
@@ -119,8 +160,6 @@ function CombinedCycleBlock(
         Dict{Int, Vector{Int}}(
             parse(Int, k) => Int.(v) for (k, v) in hrsg_ca_map
         ),
-        Dict{Int, Vector{Int}}(parse(Int, k) => v for (k, v) in ct_hrsg_map),
-        Dict{Int, Vector{Int}}(parse(Int, k) => v for (k, v) in ca_hrsg_map),
         internal,
     )
 end
@@ -132,8 +171,6 @@ function CombinedCycleBlock(
     heat_recovery_to_steam_factor::Float64,
     hrsg_ct_map::Dict{String, <:Any},
     hrsg_ca_map::Dict{String, <:Any},
-    ct_hrsg_map::Dict{String, <:Any},
-    ca_hrsg_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return CombinedCycleBlock(
@@ -142,14 +179,12 @@ function CombinedCycleBlock(
         heat_recovery_to_steam_factor,
         hrsg_ct_map,
         hrsg_ca_map,
-        ct_hrsg_map,
-        ca_hrsg_map,
         internal,
     )
 end
 
 """
-    CombinedCycleBlock(; name, configuration, heat_recovery_to_steam_factor, hrsg_ct_map, hrsg_ca_map, ct_hrsg_map, ca_hrsg_map, internal)
+    CombinedCycleBlock(; name, configuration, heat_recovery_to_steam_factor, hrsg_ct_map, hrsg_ca_map, internal)
 
 Construct a [`CombinedCycleBlock`](@ref).
 
@@ -159,8 +194,6 @@ Construct a [`CombinedCycleBlock`](@ref).
 - `heat_recovery_to_steam_factor::Float64`: (default: `0.0`) Factor for heat recovery to steam conversion
 - `hrsg_ct_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
 - `hrsg_ca_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
-- `ct_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CT unit UUID to HRSG numbers
-- `ca_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CA unit UUID to HRSG numbers
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleBlock(;
@@ -169,8 +202,6 @@ function CombinedCycleBlock(;
     heat_recovery_to_steam_factor = 0.0,
     hrsg_ct_map::AbstractDict = Dict{Int, Vector{Int}}(),
     hrsg_ca_map::AbstractDict = Dict{Int, Vector{Int}}(),
-    ct_hrsg_map::AbstractDict = Dict{Int, Vector{Int}}(),
-    ca_hrsg_map::AbstractDict = Dict{Int, Vector{Int}}(),
     internal = InfrastructureSystemsInternal(),
 )
     return CombinedCycleBlock(
@@ -179,8 +210,6 @@ function CombinedCycleBlock(;
         heat_recovery_to_steam_factor,
         hrsg_ct_map,
         hrsg_ca_map,
-        ct_hrsg_map,
-        ca_hrsg_map,
         internal,
     )
 end
@@ -196,10 +225,11 @@ get_heat_recovery_to_steam_factor(value::CombinedCycleBlock) =
 get_hrsg_ct_map(value::CombinedCycleBlock) = value.hrsg_ct_map
 """Get [`CombinedCycleBlock`](@ref) `hrsg_ca_map`."""
 get_hrsg_ca_map(value::CombinedCycleBlock) = value.hrsg_ca_map
-"""Get [`CombinedCycleBlock`](@ref) `ct_hrsg_map`."""
-get_ct_hrsg_map(value::CombinedCycleBlock) = value.ct_hrsg_map
-"""Get [`CombinedCycleBlock`](@ref) `ca_hrsg_map`."""
-get_ca_hrsg_map(value::CombinedCycleBlock) = value.ca_hrsg_map
+"""CT unit UUID -> HRSG numbers, derived from `hrsg_ct_map`. A CT can feed several HRSGs."""
+get_ct_hrsg_map(value::CombinedCycleBlock) = _reverse_multi_group_map(value.hrsg_ct_map)
+"""CA unit UUID -> HRSG numbers, derived from `hrsg_ca_map`. A CA can receive from several
+HRSGs."""
+get_ca_hrsg_map(value::CombinedCycleBlock) = _reverse_multi_group_map(value.hrsg_ca_map)
 
 """
 Attribute to represent combined cycle generation when each unit represents a specific configuration and aggregate heat rate.
@@ -209,14 +239,12 @@ For block-level representations consider using [`CombinedCycleBlock`](@ref).
 - `name::String`: Name of the combined cycle fractional plant
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `operation_exclusion_map::Dict{Int, Vector{Int}}`: Mapping of operation exclusion group numbers to unit UUIDs (only units in the same group can operate simultaneously)
-- `inverse_operation_exclusion_map::Dict{Int, Int}`: Reverse mapping from unit UUID to exclusion group number
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleFractional <: PowerPlant
     name::String
     configuration::CombinedCycleConfiguration
     operation_exclusion_map::Dict{Int, Vector{Int}}
-    inverse_operation_exclusion_map::Dict{Int, Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -225,7 +253,6 @@ function CombinedCycleFractional(
     name::String,
     configuration::CombinedCycleConfiguration,
     operation_exclusion_map::Dict{String, <:Any},
-    inverse_operation_exclusion_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return CombinedCycleFractional(
@@ -233,9 +260,6 @@ function CombinedCycleFractional(
         configuration,
         Dict{Int, Vector{Int}}(
             parse(Int, k) => Int.(v) for (k, v) in operation_exclusion_map
-        ),
-        Dict{Int, Int}(
-            parse(Int, k) => v for (k, v) in inverse_operation_exclusion_map
         ),
         internal,
     )
@@ -246,20 +270,18 @@ function CombinedCycleFractional(
     name::String,
     configuration::String,
     operation_exclusion_map::Dict{String, <:Any},
-    inverse_operation_exclusion_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return CombinedCycleFractional(
         name,
         IS.deserialize(CombinedCycleConfiguration, configuration),
         operation_exclusion_map,
-        inverse_operation_exclusion_map,
         internal,
     )
 end
 
 """
-    CombinedCycleFractional(; name, configuration, operation_exclusion_map, inverse_operation_exclusion_map, internal)
+    CombinedCycleFractional(; name, configuration, operation_exclusion_map, internal)
 
 Construct a [`CombinedCycleFractional`](@ref).
 
@@ -267,21 +289,18 @@ Construct a [`CombinedCycleFractional`](@ref).
 - `name::String`: Name of the combined cycle fractional plant
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `operation_exclusion_map::AbstractDict`: (default: empty dict) Mapping of operation exclusion group numbers to unit UUIDs
-- `inverse_operation_exclusion_map::AbstractDict`: (default: empty dict) Reverse mapping from unit UUID to exclusion group number
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleFractional(;
     name,
     configuration,
     operation_exclusion_map::AbstractDict = Dict{Int, Vector{Int}}(),
-    inverse_operation_exclusion_map::AbstractDict = Dict{Int, Int}(),
     internal = InfrastructureSystemsInternal(),
 )
     return CombinedCycleFractional(
         name,
         configuration,
         operation_exclusion_map,
-        inverse_operation_exclusion_map,
         internal,
     )
 end
@@ -293,9 +312,9 @@ get_configuration(value::CombinedCycleFractional) = value.configuration
 """Get [`CombinedCycleFractional`](@ref) `operation_exclusion_map`."""
 get_operation_exclusion_map(value::CombinedCycleFractional) =
     value.operation_exclusion_map
-"""Get [`CombinedCycleFractional`](@ref) `inverse_operation_exclusion_map`."""
+"""Unit UUID -> exclusion group number, derived from `operation_exclusion_map`."""
 get_inverse_operation_exclusion_map(value::CombinedCycleFractional) =
-    value.inverse_operation_exclusion_map
+    _reverse_group_map(value.operation_exclusion_map)
 
 """
 Attribute to represent hydro power plants with shared penstocks.
@@ -303,13 +322,11 @@ Attribute to represent hydro power plants with shared penstocks.
 # Arguments
 - `name::String`: Name of the hydro power plant
 - `penstock_map::Dict{Int, Vector{Int}}`: Mapping of penstock numbers to unit UUIDs (multiple units can share a penstock)
-- `reverse_penstock_map::Dict{Int, Int}`: Reverse mapping from unit UUID to penstock number
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct HydroPowerPlant <: PowerPlant
     name::String
     penstock_map::Dict{Int, Vector{Int}}
-    reverse_penstock_map::Dict{Int, Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -317,7 +334,6 @@ end
 function HydroPowerPlant(
     name::String,
     penstock_map::Dict{String, <:Any},
-    reverse_penstock_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return HydroPowerPlant(
@@ -325,37 +341,34 @@ function HydroPowerPlant(
         Dict{Int, Vector{Int}}(
             parse(Int, k) => Int.(v) for (k, v) in penstock_map
         ),
-        Dict{Int, Int}(parse(Int, k) => v for (k, v) in reverse_penstock_map),
         internal,
     )
 end
 
 """
-    HydroPowerPlant(; name, penstock_map, reverse_penstock_map, internal)
+    HydroPowerPlant(; name, penstock_map, internal)
 
 Construct a [`HydroPowerPlant`](@ref).
 
 # Arguments
 - `name::String`: Name of the hydro power plant
 - `penstock_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of penstock numbers to unit UUIDs
-- `reverse_penstock_map::Dict{Int, Int}`: (default: empty dict) Reverse mapping from unit UUID to penstock number
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function HydroPowerPlant(;
     name::String,
     penstock_map::AbstractDict = Dict{Int, Vector{Int}}(),
-    reverse_penstock_map::AbstractDict = Dict{Int, Int}(),
     internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
-    return HydroPowerPlant(name, penstock_map, reverse_penstock_map, internal)
+    return HydroPowerPlant(name, penstock_map, internal)
 end
 
 """Get [`HydroPowerPlant`](@ref) `name`."""
 get_name(value::HydroPowerPlant) = value.name
 """Get [`HydroPowerPlant`](@ref) `penstock_map`."""
 get_penstock_map(value::HydroPowerPlant) = value.penstock_map
-"""Get [`HydroPowerPlant`](@ref) `reverse_penstock_map`."""
-get_reverse_penstock_map(value::HydroPowerPlant) = value.reverse_penstock_map
+"""Unit UUID -> penstock number, derived from `penstock_map`."""
+get_reverse_penstock_map(value::HydroPowerPlant) = _reverse_group_map(value.penstock_map)
 
 """
 Attribute to represent renewable power plants.
@@ -363,13 +376,11 @@ Attribute to represent renewable power plants.
 # Arguments
 - `name::String`: Name of the renewable power plant
 - `pcc_map::Dict{Int, Vector{Int}}`: Mapping of PCC numbers to unit UUIDs (multiple units can share a PCC)
-- `reverse_pcc_map::Dict{Int, Int}`: Reverse mapping from unit UUID to PCC number
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct RenewablePowerPlant <: PowerPlant
     name::String
     pcc_map::Dict{Int, Vector{Int}}
-    reverse_pcc_map::Dict{Int, Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -377,7 +388,6 @@ end
 function RenewablePowerPlant(
     name::String,
     pcc_map::Dict{String, <:Any},
-    reverse_pcc_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return RenewablePowerPlant(
@@ -385,37 +395,34 @@ function RenewablePowerPlant(
         Dict{Int, Vector{Int}}(
             parse(Int, k) => Int.(v) for (k, v) in pcc_map
         ),
-        Dict{Int, Int}(parse(Int, k) => v for (k, v) in reverse_pcc_map),
         internal,
     )
 end
 
 """
-    RenewablePowerPlant(; name, pcc_map, reverse_pcc_map, internal)
+    RenewablePowerPlant(; name, pcc_map, internal)
 
 Construct a [`RenewablePowerPlant`](@ref). This supports multiple point of common coupling (PCC) connections.
 
 # Arguments
 - `name::String`: Name of the renewable power plant
 - `pcc_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of PCC numbers to unit UUIDs
-- `reverse_pcc_map::Dict{Int, Int}`: (default: empty dict) Reverse mapping from unit UUID to PCC number
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function RenewablePowerPlant(;
     name::String,
     pcc_map::AbstractDict = Dict{Int, Vector{Int}}(),
-    reverse_pcc_map::AbstractDict = Dict{Int, Int}(),
     internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
-    return RenewablePowerPlant(name, pcc_map, reverse_pcc_map, internal)
+    return RenewablePowerPlant(name, pcc_map, internal)
 end
 
 """Get [`RenewablePowerPlant`](@ref) `name`."""
 get_name(value::RenewablePowerPlant) = value.name
 """Get [`RenewablePowerPlant`](@ref) `pcc_map`."""
 get_pcc_map(value::RenewablePowerPlant) = value.pcc_map
-"""Get [`RenewablePowerPlant`](@ref) `reverse_pcc_map`."""
-get_reverse_pcc_map(value::RenewablePowerPlant) = value.reverse_pcc_map
+"""Unit UUID -> PCC number, derived from `pcc_map`."""
+get_reverse_pcc_map(value::RenewablePowerPlant) = _reverse_group_map(value.pcc_map)
 
 """
     get_components_in_shaft(sys::System, plant::ThermalPowerPlant, shaft_number::Int)
@@ -545,7 +552,7 @@ function add_supplemental_attribute!(
     shaft_number::Int,
 )
     uuid = IS.get_id(component)
-    if haskey(attribute.reverse_shaft_map, uuid)
+    if _in_group_map(attribute.shaft_map, uuid)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
@@ -553,12 +560,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    if haskey(attribute.shaft_map, shaft_number)
-        push!(attribute.shaft_map[shaft_number], uuid)
-    else
-        attribute.shaft_map[shaft_number] = [uuid]
-    end
-    attribute.reverse_shaft_map[uuid] = shaft_number
+    _push_to_group_map!(attribute.shaft_map, uuid, shaft_number)
     return
 end
 
@@ -582,7 +584,7 @@ function add_supplemental_attribute!(
     penstock_number::Int,
 )
     uuid = IS.get_id(component)
-    if haskey(attribute.reverse_penstock_map, uuid)
+    if _in_group_map(attribute.penstock_map, uuid)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
@@ -590,12 +592,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    if haskey(attribute.penstock_map, penstock_number)
-        push!(attribute.penstock_map[penstock_number], uuid)
-    else
-        attribute.penstock_map[penstock_number] = [uuid]
-    end
-    attribute.reverse_penstock_map[uuid] = penstock_number
+    _push_to_group_map!(attribute.penstock_map, uuid, penstock_number)
     return
 end
 
@@ -638,7 +635,7 @@ function add_supplemental_attribute!(
     pcc_number::Int,
 )
     uuid = IS.get_id(component)
-    if haskey(attribute.reverse_pcc_map, uuid)
+    if _in_group_map(attribute.pcc_map, uuid)
         throw(
             IS.ArgumentError(
                 "Component $(get_name(component)) is already part of plant $(get_name(attribute))",
@@ -646,12 +643,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    if haskey(attribute.pcc_map, pcc_number)
-        push!(attribute.pcc_map[pcc_number], uuid)
-    else
-        attribute.pcc_map[pcc_number] = [uuid]
-    end
-    attribute.reverse_pcc_map[uuid] = pcc_number
+    _push_to_group_map!(attribute.pcc_map, uuid, pcc_number)
     return
 end
 
@@ -673,19 +665,15 @@ function remove_supplemental_attribute!(
     attribute::ThermalPowerPlant,
 )
     uuid = IS.get_id(component)
-    if !haskey(attribute.reverse_shaft_map, uuid)
+    shafts = _group_indices(attribute.shaft_map, uuid)
+    if isempty(shafts)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is not part of plant $(get_name(attribute))",
             ),
         )
     end
-    shaft_number = attribute.reverse_shaft_map[uuid]
-    filter!(x -> x != uuid, attribute.shaft_map[shaft_number])
-    if isempty(attribute.shaft_map[shaft_number])
-        delete!(attribute.shaft_map, shaft_number)
-    end
-    delete!(attribute.reverse_shaft_map, uuid)
+    _drop_from_group_map!(attribute.shaft_map, uuid, shafts)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -708,19 +696,15 @@ function remove_supplemental_attribute!(
     attribute::HydroPowerPlant,
 )
     uuid = IS.get_id(component)
-    if !haskey(attribute.reverse_penstock_map, uuid)
+    penstocks = _group_indices(attribute.penstock_map, uuid)
+    if isempty(penstocks)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is not part of plant $(get_name(attribute))",
             ),
         )
     end
-    penstock_number = attribute.reverse_penstock_map[uuid]
-    filter!(x -> x != uuid, attribute.penstock_map[penstock_number])
-    if isempty(attribute.penstock_map[penstock_number])
-        delete!(attribute.penstock_map, penstock_number)
-    end
-    delete!(attribute.reverse_penstock_map, uuid)
+    _drop_from_group_map!(attribute.penstock_map, uuid, penstocks)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -743,19 +727,15 @@ function remove_supplemental_attribute!(
     attribute::RenewablePowerPlant,
 )
     uuid = IS.get_id(component)
-    if !haskey(attribute.reverse_pcc_map, uuid)
+    pccs = _group_indices(attribute.pcc_map, uuid)
+    if isempty(pccs)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is not part of plant $(get_name(attribute))",
             ),
         )
     end
-    pcc_number = attribute.reverse_pcc_map[uuid]
-    filter!(x -> x != uuid, attribute.pcc_map[pcc_number])
-    if isempty(attribute.pcc_map[pcc_number])
-        delete!(attribute.pcc_map, pcc_number)
-    end
-    delete!(attribute.reverse_pcc_map, uuid)
+    _drop_from_group_map!(attribute.pcc_map, uuid, pccs)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -780,8 +760,8 @@ function add_supplemental_attribute!(
     hrsg_number::Int,
 )
     uuid = IS.get_id(component)
-    if haskey(attribute.ct_hrsg_map, uuid) && hrsg_number in attribute.ct_hrsg_map[uuid] ||
-       haskey(attribute.ca_hrsg_map, uuid) && hrsg_number in attribute.ca_hrsg_map[uuid]
+    if hrsg_number in _group_indices(attribute.hrsg_ct_map, uuid) ||
+       hrsg_number in _group_indices(attribute.hrsg_ca_map, uuid)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is already part of block $(get_name(attribute)) with $(hrsg_number)",
@@ -790,31 +770,9 @@ function add_supplemental_attribute!(
     end
     prime_mover = get_prime_mover_type(component)
     if prime_mover == PrimeMovers.CT
-        if haskey(attribute.hrsg_ct_map, hrsg_number)
-            push!(attribute.hrsg_ct_map[hrsg_number], uuid)
-        else
-            attribute.hrsg_ct_map[hrsg_number] = [uuid]
-        end
-        if haskey(attribute.ct_hrsg_map, uuid)
-            # We assume that IS has already has the association
-            push!(attribute.ct_hrsg_map[uuid], hrsg_number)
-        else
-            IS.add_supplemental_attribute!(sys.data, component, attribute)
-            attribute.ct_hrsg_map[uuid] = [hrsg_number]
-        end
+        _add_to_hrsg_map!(sys, component, attribute, attribute.hrsg_ct_map, hrsg_number)
     elseif prime_mover == PrimeMovers.CA
-        if haskey(attribute.hrsg_ca_map, hrsg_number)
-            push!(attribute.hrsg_ca_map[hrsg_number], uuid)
-        else
-            attribute.hrsg_ca_map[hrsg_number] = [uuid]
-        end
-        if haskey(attribute.ca_hrsg_map, uuid)
-            # We assume that IS has already has the association
-            push!(attribute.ca_hrsg_map[uuid], hrsg_number)
-        else
-            IS.add_supplemental_attribute!(sys.data, component, attribute)
-            attribute.ca_hrsg_map[uuid] = [hrsg_number]
-        end
+        _add_to_hrsg_map!(sys, component, attribute, attribute.hrsg_ca_map, hrsg_number)
     else
         throw(
             IS.ArgumentError(
@@ -822,6 +780,27 @@ function add_supplemental_attribute!(
             ),
         )
     end
+    return
+end
+
+"""Record `component` against `hrsg_number` in one of the block's forward HRSG maps. IS
+holds a single association per (component, attribute) pair, so a CT or CA feeding a second
+HRSG must not be attached again."""
+function _add_to_hrsg_map!(
+    sys::System,
+    component::ThermalGen,
+    attribute::CombinedCycleBlock,
+    hrsg_map::AbstractDict,
+    hrsg_number::Int,
+)
+    uuid = IS.get_id(component)
+    attached =
+        _in_group_map(attribute.hrsg_ct_map, uuid) ||
+        _in_group_map(attribute.hrsg_ca_map, uuid)
+    if !attached
+        IS.add_supplemental_attribute!(sys.data, component, attribute)
+    end
+    _push_to_group_map!(hrsg_map, uuid, hrsg_number)
     return
 end
 
@@ -843,33 +822,17 @@ function remove_supplemental_attribute!(
     attribute::CombinedCycleBlock,
 )
     uuid = IS.get_id(component)
-    # Check if this is a CT (HRSG input)
-    if haskey(attribute.ct_hrsg_map, uuid)
-        hrsg_numbers = attribute.ct_hrsg_map[uuid]
-        for hrsg_number in hrsg_numbers
-            filter!(x -> x != uuid, attribute.hrsg_ct_map[hrsg_number])
-            if isempty(attribute.hrsg_ct_map[hrsg_number])
-                delete!(attribute.hrsg_ct_map, hrsg_number)
-            end
-        end
-        delete!(attribute.ct_hrsg_map, uuid)
-        # Check if this is a CA (HRSG output)
-    elseif haskey(attribute.ca_hrsg_map, uuid)
-        hrsg_numbers = attribute.ca_hrsg_map[uuid]
-        for hrsg_number in hrsg_numbers
-            filter!(x -> x != uuid, attribute.hrsg_ca_map[hrsg_number])
-            if isempty(attribute.hrsg_ca_map[hrsg_number])
-                delete!(attribute.hrsg_ca_map, hrsg_number)
-            end
-        end
-        delete!(attribute.ca_hrsg_map, uuid)
-    else
+    ct_hrsgs = _group_indices(attribute.hrsg_ct_map, uuid)
+    ca_hrsgs = _group_indices(attribute.hrsg_ca_map, uuid)
+    if isempty(ct_hrsgs) && isempty(ca_hrsgs)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is not part of block $(get_name(attribute))",
             ),
         )
     end
+    _drop_from_group_map!(attribute.hrsg_ct_map, uuid, ct_hrsgs)
+    _drop_from_group_map!(attribute.hrsg_ca_map, uuid, ca_hrsgs)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -893,12 +856,12 @@ function add_supplemental_attribute!(
     exclusion_group::Int,
 )
     uuid = IS.get_id(component)
-    # Check if already in any exclusion group
-    if haskey(attribute.inverse_operation_exclusion_map, uuid)
+    existing_groups = _group_indices(attribute.operation_exclusion_map, uuid)
+    if !isempty(existing_groups)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is already part of plant $(get_name(attribute)) \
-                under exclusion group $(attribute.inverse_operation_exclusion_map[uuid])",
+                under exclusion group $(only(existing_groups))",
             ),
         )
     end
@@ -911,12 +874,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    if haskey(attribute.operation_exclusion_map, exclusion_group)
-        push!(attribute.operation_exclusion_map[exclusion_group], uuid)
-    else
-        attribute.operation_exclusion_map[exclusion_group] = [uuid]
-    end
-    attribute.inverse_operation_exclusion_map[uuid] = exclusion_group
+    _push_to_group_map!(attribute.operation_exclusion_map, uuid, exclusion_group)
     return
 end
 
@@ -938,19 +896,15 @@ function remove_supplemental_attribute!(
     attribute::CombinedCycleFractional,
 )
     uuid = IS.get_id(component)
-    if !haskey(attribute.inverse_operation_exclusion_map, uuid)
+    groups = _group_indices(attribute.operation_exclusion_map, uuid)
+    if isempty(groups)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is not part of plant $(get_name(attribute))",
             ),
         )
     end
-    group = attribute.inverse_operation_exclusion_map[uuid]
-    delete!(attribute.inverse_operation_exclusion_map, uuid)
-    filter!(x -> x != uuid, attribute.operation_exclusion_map[group])
-    if isempty(attribute.operation_exclusion_map[group])
-        delete!(attribute.operation_exclusion_map, group)
-    end
+    _drop_from_group_map!(attribute.operation_exclusion_map, uuid, groups)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end

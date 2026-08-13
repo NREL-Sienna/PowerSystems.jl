@@ -16,7 +16,11 @@ function _show_accessor_value(getter_func::Function, ist::Component; units = not
     # all — an explicit `units` override must not force a units argument onto
     # a getter that doesn't accept one.
     ismissing(trait_arg) && return getter_func(ist)
-    arg = units === nothing ? trait_arg : units
+    arg = if isnothing(units)
+        trait_arg
+    else
+        units
+    end
     unitful_func = IS.unitful_variant(getter_func)
     try
         return unitful_func(ist, arg)
@@ -24,7 +28,7 @@ function _show_accessor_value(getter_func::Function, ist::Component; units = not
         # An explicit `units` request that fails is a caller error worth
         # surfacing, not something display should paper over — only the
         # trait's own automatic resolution gets the never-error fallback below.
-        units !== nothing && rethrow()
+        isnothing(units) || rethrow()
         err isa ErrorException && occursin("not attached", err.msg) || rethrow()
         # NU can also fail (it may need the system base or a base voltage).
         # Automatic resolution must never error: fall back to the raw stored

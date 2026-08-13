@@ -42,10 +42,10 @@ For hydro generators with an upper reservoir, see [`HydroReservoir`](@ref)
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
-- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in minutes, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `status::Bool`: (default: `false`) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
-- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
+- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`
 - `operation_cost::OperationalCost`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
@@ -73,13 +73,13 @@ mutable struct HydroDispatch <: HydroGen
     reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
-    "Minimum up and Minimum down time limits in hours"
+    "Minimum up and Minimum down time limits in minutes"
     time_limits::Union{Nothing, UpDown}
     "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)"
     status::Bool
-    "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`"
+    "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
     "[`OperationalCost`](@ref) of generation"
     operation_cost::OperationalCost
@@ -218,3 +218,89 @@ set_operation_cost!(value::HydroDispatch, val) = value.operation_cost = val
 set_services!(value::HydroDispatch, val) = value.services = val
 """Set [`HydroDispatch`](@ref) `ext`."""
 set_ext!(value::HydroDispatch, val) = value.ext = val
+
+
+const PRIME_MOVERS_FROM_STRING = Dict{String, PrimeMovers}(string(m) => m for m in instances(PrimeMovers))
+const PRIME_MOVERS_TO_STRING = Dict{ PrimeMovers, String}(m => string(m) for m in instances(PrimeMovers))
+
+function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return HydroDispatch(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up, down = po.ramp_limits.down); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        base_power = po.base_power,
+        status = po.status,
+        time_at_status = po.time_at_status,
+        operation_cost = convert_cost(po.operation_cost),
+    )
+end
+
+function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return HydroDispatch(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up / po.base_power, down = po.ramp_limits.down / po.base_power); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        base_power = po.base_power,
+        status = po.status,
+        time_at_status = po.time_at_status,
+        operation_cost = convert_cost(po.operation_cost),
+    )
+end
+
+function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.HydroDispatch(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        base_power = _get_base_power(value),
+        status = get_status(value),
+        time_at_status = get_time_at_status(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+    )
+end
+
+function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.HydroDispatch(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        base_power = _get_base_power(value),
+        status = get_status(value),
+        time_at_status = get_time_at_status(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+    )
+end

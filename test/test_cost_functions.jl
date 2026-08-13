@@ -494,7 +494,7 @@ end
 end
 
 @testset "ImportExportCost positional compat constructor terminates" begin
-    iec = ImportExportCost(nothing, nothing, 1.0, 2.0, VariableReserve{ReserveUp}[])
+    iec = ImportExportCost(nothing, nothing, 1.0, 2.0, OnlineReserve{ReserveUp}[])
     @test iec isa ImportExportCost
     @test get_import_offer_curves(iec) == PSY.ZERO_OFFER_CURVE
     @test get_export_offer_curves(iec) == PSY.ZERO_OFFER_CURVE

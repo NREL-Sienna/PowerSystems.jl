@@ -52,16 +52,16 @@ A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s att
 - `outflow_limits::Union{Nothing, MinMax}`: Turbine/Pump outflow limits in m3/s. Set to `Nothing` if not applicable
 - `powerhouse_elevation::Float64`: Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
-- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in minutes, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `status::PumpHydroStatus`: (default: `PumpHydroStatus.OFF`) Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference
-- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
+- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`
 - `operation_cost::OperationalCost`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `active_power_pump::Float64`: (default: `0.0`) Initial active power set point of the pump unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `efficiency::TurbinePump`: (default: `(turbine = 1.0, pump = 1.0)`) Turbine/Pump efficiency [0, 1.0]
-- `transition_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Transition time in hours to switch into the specific mode.
-- `minimum_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Minimum operating time in hours for the specific mode.
-- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in hours.
+- `transition_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Transition time in minutes to switch into the specific mode.
+- `minimum_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Minimum operating time in minutes for the specific mode.
+- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in minutes.
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `must_run::Bool`: (default: `false`) Whether the unit must run (i.e., cannot be curtailed)
 - `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.PS`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
@@ -95,13 +95,13 @@ mutable struct HydroPumpTurbine <: HydroUnit
     powerhouse_elevation::Float64
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
-    "Minimum up and Minimum down time limits in hours"
+    "Minimum up and Minimum down time limits in minutes"
     time_limits::Union{Nothing, UpDown}
     "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference"
     status::PumpHydroStatus
-    "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`"
+    "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
     "[`OperationalCost`](@ref) of generation"
     operation_cost::OperationalCost
@@ -109,11 +109,11 @@ mutable struct HydroPumpTurbine <: HydroUnit
     active_power_pump::Float64
     "Turbine/Pump efficiency [0, 1.0]"
     efficiency::TurbinePump
-    "Transition time in hours to switch into the specific mode."
+    "Transition time in minutes to switch into the specific mode."
     transition_time::TurbinePump
-    "Minimum operating time in hours for the specific mode."
+    "Minimum operating time in minutes for the specific mode."
     minimum_time::TurbinePump
-    "Downstream (from reservoir into turbine) travel time in hours."
+    "Downstream (from reservoir into turbine) travel time in minutes."
     travel_time::Union{Nothing, Float64}
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64

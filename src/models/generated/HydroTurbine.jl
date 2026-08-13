@@ -46,13 +46,13 @@ A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suita
 - `operation_cost::OperationalCost`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `powerhouse_elevation::Float64`: (default: `0.0`) Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
 - `ramp_limits::Union{Nothing, UpDown}`: (default: `nothing`) ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
-- `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in minutes, validation range: `(0, nothing)`
 - `outflow_limits::Union{Nothing, MinMax}`: (default: `nothing`) Turbine outflow limits in m3/s. Set to `Nothing` if not applicable
 - `efficiency::Float64`: (default: `1.0`) Turbine efficiency [0, 1.0], validation range: `(0, 1)`
 - `turbine_type::HydroTurbineType`: (default: `HydroTurbineType.UNKNOWN`) Type of the turbine
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.HY`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
-- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in hours.
+- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in minutes.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -83,7 +83,7 @@ mutable struct HydroTurbine <: HydroUnit
     powerhouse_elevation::Float64
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
-    "Minimum up and Minimum down time limits in hours"
+    "Minimum up and Minimum down time limits in minutes"
     time_limits::Union{Nothing, UpDown}
     "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable"
     outflow_limits::Union{Nothing, MinMax}
@@ -95,7 +95,7 @@ mutable struct HydroTurbine <: HydroUnit
     conversion_factor::Float64
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers
-    "Downstream (from reservoir into turbine) travel time in hours."
+    "Downstream (from reservoir into turbine) travel time in minutes."
     travel_time::Union{Nothing, Float64}
     "Services that this device contributes to"
     services::Vector{Service}
@@ -252,3 +252,105 @@ set_travel_time!(value::HydroTurbine, val) = value.travel_time = val
 set_services!(value::HydroTurbine, val) = value.services = val
 """Set [`HydroTurbine`](@ref) `ext`."""
 set_ext!(value::HydroTurbine, val) = value.ext = val
+
+
+const HYDRO_TURBINE_TYPE_FROM_STRING = Dict{String, HydroTurbineType}(string(m) => m for m in instances(HydroTurbineType))
+const HYDRO_TURBINE_TYPE_TO_STRING = Dict{ HydroTurbineType, String}(m => string(m) for m in instances(HydroTurbineType))
+
+function from_openapi(::Type{HydroTurbine}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return HydroTurbine(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        powerhouse_elevation = po.powerhouse_elevation,
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up, down = po.ramp_limits.down); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        outflow_limits = (if isnothing(po.outflow_limits); nothing; else; (min = po.outflow_limits.min, max = po.outflow_limits.max); end),
+        efficiency = po.efficiency,
+        turbine_type = HYDRO_TURBINE_TYPE_FROM_STRING[po.turbine_type],
+        conversion_factor = po.conversion_factor,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        travel_time = po.travel_time,
+    )
+end
+
+function from_openapi(::Type{HydroTurbine}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return HydroTurbine(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        powerhouse_elevation = po.powerhouse_elevation,
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up / po.base_power, down = po.ramp_limits.down / po.base_power); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        outflow_limits = (if isnothing(po.outflow_limits); nothing; else; (min = po.outflow_limits.min, max = po.outflow_limits.max); end),
+        efficiency = po.efficiency,
+        turbine_type = HYDRO_TURBINE_TYPE_FROM_STRING[po.turbine_type],
+        conversion_factor = po.conversion_factor,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        travel_time = po.travel_time,
+    )
+end
+
+function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.HydroTurbine(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        powerhouse_elevation = get_powerhouse_elevation(value),
+        ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
+        efficiency = get_efficiency(value),
+        turbine_type = HYDRO_TURBINE_TYPE_TO_STRING[get_turbine_type(value)],
+        conversion_factor = get_conversion_factor(value),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        travel_time = get_travel_time(value),
+    )
+end
+
+function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.HydroTurbine(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        powerhouse_elevation = get_powerhouse_elevation(value),
+        ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
+        efficiency = get_efficiency(value),
+        turbine_type = HYDRO_TURBINE_TYPE_TO_STRING[get_turbine_type(value)],
+        conversion_factor = get_conversion_factor(value),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        travel_time = get_travel_time(value),
+    )
+end

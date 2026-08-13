@@ -165,3 +165,69 @@ set_conformity!(value::InterruptiblePowerLoad, val) = value.conformity = val
 set_services!(value::InterruptiblePowerLoad, val) = value.services = val
 """Set [`InterruptiblePowerLoad`](@ref) `ext`."""
 set_ext!(value::InterruptiblePowerLoad, val) = value.ext = val
+
+
+const LOAD_CONFORMITY_FROM_STRING = Dict{String, LoadConformity}(string(m) => m for m in instances(LoadConformity))
+const LOAD_CONFORMITY_TO_STRING = Dict{ LoadConformity, String}(m => string(m) for m in instances(LoadConformity))
+
+function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return InterruptiblePowerLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        max_active_power = po.max_active_power,
+        max_reactive_power = po.max_reactive_power,
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+    )
+end
+
+function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return InterruptiblePowerLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        max_active_power = po.max_active_power / po.base_power,
+        max_reactive_power = po.max_reactive_power / po.base_power,
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost),
+        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+    )
+end
+
+function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.InterruptiblePowerLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        max_active_power = get_max_active_power(value, DU),
+        max_reactive_power = get_max_reactive_power(value, DU),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+    )
+end
+
+function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.InterruptiblePowerLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        max_active_power = get_max_active_power(value, DU) * _get_base_power(value),
+        max_reactive_power = get_max_reactive_power(value, DU) * _get_base_power(value),
+        base_power = _get_base_power(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+    )
+end
