@@ -129,9 +129,9 @@ function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::DeviceBa
         name = po.name,
         available = po.available,
         active_power_flow = po.active_power_flow,
-        from_area = resolve_ref(refs, po.from_area),
-        to_area = resolve_ref(refs, po.to_area),
-        flow_limits = (from_to = po.flow_limits.from_to, to_from = po.flow_limits.to_from),
+        from_area = resolve_ref(refs, po.from_area, Area),
+        to_area = resolve_ref(refs, po.to_area, Area),
+        flow_limits = _fromto_tofrom_from_po(po.flow_limits),
         base_power = po.base_power,
     )
 end
@@ -141,9 +141,9 @@ function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::NaturalU
         name = po.name,
         available = po.available,
         active_power_flow = po.active_power_flow / po.base_power,
-        from_area = resolve_ref(refs, po.from_area),
-        to_area = resolve_ref(refs, po.to_area),
-        flow_limits = (from_to = po.flow_limits.from_to / po.base_power, to_from = po.flow_limits.to_from / po.base_power),
+        from_area = resolve_ref(refs, po.from_area, Area),
+        to_area = resolve_ref(refs, po.to_area, Area),
+        flow_limits = _fromto_tofrom_from_po(po.flow_limits, (/), po.base_power),
         base_power = po.base_power,
     )
 end

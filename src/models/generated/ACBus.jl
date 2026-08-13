@@ -162,10 +162,10 @@ function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
         bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
         angle = po.angle,
         magnitude = po.magnitude,
-        voltage_limits = (if isnothing(po.voltage_limits); nothing; else; (min = po.voltage_limits.min, max = po.voltage_limits.max); end),
+        voltage_limits = _minmax_from_po(po.voltage_limits),
         base_voltage = po.base_voltage,
-        area = resolve_ref(refs, po.area),
-        load_zone = resolve_ref(refs, po.load_zone),
+        area = resolve_ref(refs, po.area, Area),
+        load_zone = resolve_ref(refs, po.load_zone, LoadZone),
     )
 end
 
@@ -177,10 +177,10 @@ function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::NaturalUnit)
         bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
         angle = po.angle,
         magnitude = po.magnitude,
-        voltage_limits = (if isnothing(po.voltage_limits); nothing; else; (min = po.voltage_limits.min, max = po.voltage_limits.max); end),
+        voltage_limits = _minmax_from_po(po.voltage_limits),
         base_voltage = po.base_voltage,
-        area = resolve_ref(refs, po.area),
-        load_zone = resolve_ref(refs, po.load_zone),
+        area = resolve_ref(refs, po.area, Area),
+        load_zone = resolve_ref(refs, po.load_zone, LoadZone),
     )
 end
 

@@ -437,27 +437,42 @@ function openapi_scalar_exprs(field_name, conversion, nullable, bases)
     return (device, openapi_nullable_wrap(field_name, scaled))
 end
 
+"""
+Import-direction extraction helper for each compound alias
+(`src/openapi/import_generated_types.jl`).
+
+One name per alias, unlike [`OPENAPI_EXPORT_COMPOUND_CTORS`](@ref)'s four: the
+required/optional split is dispatch on `::Nothing` and the natural-units split is the
+`op`/`base` arity, so the four shapes collapse into one symbol here.
+"""
+const OPENAPI_IMPORT_COMPOUND_EXTRACTORS = Dict(
+    "MinMax" => "_minmax_from_po",
+    "UpDown" => "_updown_from_po",
+    "FromTo" => "_fromto_from_po",
+    "InOut" => "_inout_from_po",
+    "FromTo_ToFrom" => "_fromto_tofrom_from_po",
+    "StartUpShutDown" => "_startup_shutdown_from_po",
+    "StartUpStages" => "_startup_stages_from_po",
+)
+
 """Compound fields always get member-rebuilt in both methods — the PO struct's compound
 type is never PSY's `NamedTuple` alias, so even device-base is not a bare `po.<name>`
-passthrough (mirrors `minmax`/`updown`/`fromto` in the reference). A nullable compound
-additionally needs a nothing-guard in *both* methods, since member access on `nothing`
-errors regardless of unit system (mirrors `opt_minmax`/`minmax_du` there)."""
-function openapi_compound_exprs(field_name, members, conversion, nullable, bases)
-    device_body = "(" * join(("$m = po.$field_name.$m" for m in members), ", ") * ")"
-    natural_body = if conversion == :none
-        device_body
-    else
-        op, base = openapi_conversion_op_base(conversion, bases)
-        "(" *
-        join(("$m = po.$field_name.$m $op $base" for m in members), ", ") *
-        ")"
+passthrough (mirrors `minmax`/`updown`/`fromto` in the reference).
+
+The rebuild goes through the alias' extraction helper rather than inline `po.<name>.<m>`
+member access: the PO struct declares every compound field as bare `Any`, so inline
+access is a dynamic `getproperty` chain. The helper dispatches on the `PC` struct once
+and reads concrete fields after that. Its `::Nothing` methods also absorb the
+nothing-guard a nullable compound used to need in *both* directions, so `nullable` no
+longer changes the emitted expression."""
+function openapi_compound_exprs(field_name, bare, members, conversion, nullable, bases)
+    extractor = OPENAPI_IMPORT_COMPOUND_EXTRACTORS[bare]
+    device = "$extractor(po.$field_name)"
+    if conversion == :none
+        return (device, device)
     end
-    if !nullable
-        return (device_body, natural_body)
-    end
-    device = openapi_nullable_wrap(field_name, device_body)
-    natural = openapi_nullable_wrap(field_name, natural_body)
-    return (device, natural)
+    op, base = openapi_conversion_op_base(conversion, bases)
+    return (device, "$extractor(po.$field_name, ($op), $base)")
 end
 
 """
@@ -493,7 +508,11 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
             continue
         end
         if kind == :cost
-            expr = "convert_cost(po.$name)"
+            # `convert_cost` has 20-odd return types and the PO cost is a `oneOf` wrapper
+            # whose `.value` is `Any`, so the call infers as `Any`. The descriptor states
+            # the field's PSY type — assert it, so the constructor is handed something
+            # bounded and a cost that converts to the wrong family fails here.
+            expr = "convert_cost(po.$name)::$bare"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -502,8 +521,9 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
             # `resolve_ref`, not `refs[...]`: a schema-optional reference the document omits
             # arrives as `nothing`, and indexing cannot express that (`refs[nothing]` is a
             # MethodError). The helper returns `nothing` for an absent reference and still
-            # errors on one that names an unregistered id.
-            expr = "resolve_ref(refs, po.$name)"
+            # errors on one that names an unregistered id. The third argument is the PSY
+            # type the descriptor declares, which `refs`' `Dict{Int, Any}` cannot supply.
+            expr = "resolve_ref(refs, po.$name, $bare)"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -530,7 +550,7 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
         else
             members = OPENAPI_COMPOUND_MEMBERS[bare]
             device, natural =
-                openapi_compound_exprs(name, members, conversion, nullable, bases)
+                openapi_compound_exprs(name, bare, members, conversion, nullable, bases)
         end
         push!(kwargs_device, Dict("name" => name, "expr" => device))
         push!(kwargs_natural, Dict("name" => name, "expr" => natural))

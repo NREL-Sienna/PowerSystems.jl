@@ -957,6 +957,7 @@ include("models/cost_functions/HydroReservoirCost.jl")
 # further down, after base.jl defines `System`.
 include("openapi/refs.jl")
 include("openapi/cost_conversion.jl")
+include("openapi/import_generated_types.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")

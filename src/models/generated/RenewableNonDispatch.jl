@@ -161,7 +161,7 @@ function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::Dev
     return RenewableNonDispatch(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power,
         reactive_power = po.reactive_power,
         rating = po.rating,
@@ -175,7 +175,7 @@ function from_openapi(::Type{RenewableNonDispatch}, po, refs::OpenAPIRefs, ::Nat
     return RenewableNonDispatch(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power / po.base_power,
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,

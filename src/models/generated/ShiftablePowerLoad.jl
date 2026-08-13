@@ -185,15 +185,15 @@ function from_openapi(::Type{ShiftablePowerLoad}, po, refs::OpenAPIRefs, ::Devic
     return ShiftablePowerLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power,
-        active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
+        active_power_limits = _minmax_from_po(po.active_power_limits),
         reactive_power = po.reactive_power,
         max_active_power = po.max_active_power,
         max_reactive_power = po.max_reactive_power,
         base_power = po.base_power,
         load_balance_time_horizon = po.load_balance_time_horizon,
-        operation_cost = convert_cost(po.operation_cost),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
     )
 end
 
@@ -201,15 +201,15 @@ function from_openapi(::Type{ShiftablePowerLoad}, po, refs::OpenAPIRefs, ::Natur
     return ShiftablePowerLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power / po.base_power,
-        active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
+        active_power_limits = _minmax_from_po(po.active_power_limits, (/), po.base_power),
         reactive_power = po.reactive_power / po.base_power,
         max_active_power = po.max_active_power / po.base_power,
         max_reactive_power = po.max_reactive_power / po.base_power,
         base_power = po.base_power,
         load_balance_time_horizon = po.load_balance_time_horizon,
-        operation_cost = convert_cost(po.operation_cost),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
     )
 end
 

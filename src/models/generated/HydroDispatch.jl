@@ -227,19 +227,19 @@ function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::DeviceBase
     return HydroDispatch(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power,
         reactive_power = po.reactive_power,
         rating = po.rating,
         prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
-        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
-        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up, down = po.ramp_limits.down); end),
-        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        active_power_limits = _minmax_from_po(po.active_power_limits),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
+        ramp_limits = _updown_from_po(po.ramp_limits),
+        time_limits = _updown_from_po(po.time_limits),
         base_power = po.base_power,
         status = po.status,
         time_at_status = po.time_at_status,
-        operation_cost = convert_cost(po.operation_cost),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
     )
 end
 
@@ -247,19 +247,19 @@ function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::NaturalUni
     return HydroDispatch(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power / po.base_power,
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,
         prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
-        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
-        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up / po.base_power, down = po.ramp_limits.down / po.base_power); end),
-        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        active_power_limits = _minmax_from_po(po.active_power_limits, (/), po.base_power),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
+        ramp_limits = _updown_from_po(po.ramp_limits, (/), po.base_power),
+        time_limits = _updown_from_po(po.time_limits),
         base_power = po.base_power,
         status = po.status,
         time_at_status = po.time_at_status,
-        operation_cost = convert_cost(po.operation_cost),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
     )
 end
 

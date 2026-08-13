@@ -75,6 +75,17 @@ absent relationship, so `nothing` in means `nothing` out. A stated reference goe
 resolve_ref(::OpenAPIRefs, ::Nothing) = nothing
 resolve_ref(refs::OpenAPIRefs, id::Integer) = refs[id]
 
+"""
+Resolve a reference whose PSY type the descriptor already states, asserting it on the way
+out. `by_id` is a `Dict{Int, Any}` — it holds every converted type — so the 2-arg form
+returns `Any` and every generated converter that used it handed the constructor an
+untyped value. The assert costs one type check and makes a document that points a `bus`
+field at, say, an `Arc` fail there, naming both types, instead of deeper inside the
+component constructor.
+"""
+resolve_ref(::OpenAPIRefs, ::Nothing, ::Type) = nothing
+resolve_ref(refs::OpenAPIRefs, id::Integer, ::Type{T}) where {T} = refs[id]::T
+
 """Whether `id` has a component registered."""
 has_ref(refs::OpenAPIRefs, id::Integer) = haskey(refs.by_id, Int(id))
 

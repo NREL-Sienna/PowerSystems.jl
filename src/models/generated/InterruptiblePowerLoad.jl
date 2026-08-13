@@ -174,13 +174,13 @@ function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::D
     return InterruptiblePowerLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power,
         reactive_power = po.reactive_power,
         max_active_power = po.max_active_power,
         max_reactive_power = po.max_reactive_power,
         base_power = po.base_power,
-        operation_cost = convert_cost(po.operation_cost),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
         conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
     )
 end
@@ -189,13 +189,13 @@ function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::N
     return InterruptiblePowerLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         active_power = po.active_power / po.base_power,
         reactive_power = po.reactive_power / po.base_power,
         max_active_power = po.max_active_power / po.base_power,
         max_reactive_power = po.max_reactive_power / po.base_power,
         base_power = po.base_power,
-        operation_cost = convert_cost(po.operation_cost),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
         conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
     )
 end

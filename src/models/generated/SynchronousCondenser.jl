@@ -152,10 +152,10 @@ function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::Dev
     return SynchronousCondenser(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         reactive_power = po.reactive_power,
         rating = po.rating,
-        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
         base_power = po.base_power,
         active_power_losses = po.active_power_losses,
     )
@@ -165,10 +165,10 @@ function from_openapi(::Type{SynchronousCondenser}, po, refs::OpenAPIRefs, ::Nat
     return SynchronousCondenser(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,
-        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
         base_power = po.base_power,
         active_power_losses = po.active_power_losses / po.base_power,
     )

@@ -269,7 +269,7 @@ function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseU
     return StandardLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         base_power = po.base_power,
         constant_active_power = po.constant_active_power,
         constant_reactive_power = po.constant_reactive_power,
@@ -291,7 +291,7 @@ function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::NaturalUnit
     return StandardLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         base_power = po.base_power,
         constant_active_power = po.constant_active_power / po.base_power,
         constant_reactive_power = po.constant_reactive_power / po.base_power,
