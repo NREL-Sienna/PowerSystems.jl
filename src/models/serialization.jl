@@ -117,6 +117,23 @@ function IS.deserialize(::Type{Device}, data::Dict)
     return
 end
 
+# Systems serialized before the VSC control modes became scoped enums store these fields as
+# `Bool`. The generic scoped-enum deserializer only understands the value name, so dispatch on
+# `Bool` to make the mapping explicit instead of leaning on `Bool <: Integer`.
+function IS.deserialize(::Type{VSCDCControlModes}, regulates_dc_voltage::Bool)
+    if regulates_dc_voltage
+        return VSCDCControlModes.DC_VOLTAGE
+    end
+    return VSCDCControlModes.DC_POWER
+end
+
+function IS.deserialize(::Type{VSCACControlModes}, regulates_ac_voltage::Bool)
+    if regulates_ac_voltage
+        return VSCACControlModes.AC_VOLTAGE
+    end
+    return VSCACControlModes.AC_REACTIVE_POWER
+end
+
 function _check_uuid_in_component_cache(uuid::Base.UUID, component_cache)
     if !haskey(component_cache, uuid)
         error(
