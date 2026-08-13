@@ -133,7 +133,9 @@ objects only after every service is imported, so this conversion leaves the vect
 """
 function convert_cost(po::PC.MarketBidCost)
     return MarketBidCost(;
-        no_load_cost = convert_cost(_require(po.no_load_cost, "MarketBidCost.no_load_cost")),
+        no_load_cost = convert_cost(
+            _require(po.no_load_cost, "MarketBidCost.no_load_cost"),
+        ),
         start_up = convert_cost(_require(po.start_up, "MarketBidCost.start_up")),
         shut_down = convert_cost(_require(po.shut_down, "MarketBidCost.shut_down")),
         incremental_offer_curves = convert_cost(
