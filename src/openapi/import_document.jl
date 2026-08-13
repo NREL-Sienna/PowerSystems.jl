@@ -294,7 +294,7 @@ end
 Document `time_series_type` string → the PSY/IS type to reconstruct, dispatched on below
 rather than branched on.
 """
-const TIME_SERIES_TYPE_FROM_STRING = Dict{String, DataType}(
+const TIME_SERIES_TYPE_FROM_STRING = Dict{String, Type}(
     "SingleTimeSeries" => SingleTimeSeries,
     "Deterministic" => Deterministic,
     "DeterministicSingleTimeSeries" => DeterministicSingleTimeSeries,
