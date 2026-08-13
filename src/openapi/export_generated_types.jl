@@ -15,6 +15,17 @@ _updown_po_optional(nt) = PC.UpDown(; up = nt.up, down = nt.down)
 _updown_po_scaled_optional(::Nothing, base) = nothing
 _updown_po_scaled_optional(nt, base) = PC.UpDown(; up = nt.up * base, down = nt.down * base)
 
+_startup_shutdown_po_optional(::Nothing) = nothing
+_startup_shutdown_po_optional(nt) =
+    PC.StartUpShutDown(; startup = nt.startup, shutdown = nt.shutdown)
+_startup_shutdown_po_scaled_optional(::Nothing, base) = nothing
+_startup_shutdown_po_scaled_optional(nt, base) =
+    PC.StartUpShutDown(; startup = nt.startup * base, shutdown = nt.shutdown * base)
+
+_startup_stages_po_optional(::Nothing) = nothing
+_startup_stages_po_optional(nt) =
+    PC.StartUpStages(; hot = nt.hot, warm = nt.warm, cold = nt.cold)
+
 _fromto_po(nt) = PC.FromTo(; from = nt.from, to = nt.to)
 _fromto_toframe_po(nt) = PC.FromToToFrom(; from_to = nt.from_to, to_from = nt.to_from)
 _fromto_toframe_po_scaled(nt, base) =

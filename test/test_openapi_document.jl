@@ -409,3 +409,53 @@ end
     @test get_name(only(offers)) == "RESERVE"
     @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
 end
+
+@testset "ThermalMultiStart round trip: multi-start fields and MarketBidCost" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalMultiStart(nothing)
+    gen.bus = bus
+    gen.name = "ms1"
+    gen.base_power = 50.0
+    gen.active_power_limits = (min = 0.2, max = 1.0)
+    gen.ramp_limits = (up = 0.1, down = 0.1)
+    gen.power_trajectory = (startup = 0.3, shutdown = 0.25)
+    gen.time_limits = (up = 2.0, down = 1.0)
+    gen.start_time_limits = (hot = 2.0, warm = 4.0, cold = 8.0)
+    gen.start_types = 3
+    gen.must_run = true
+    add_component!(sys, gen)
+    svc = OnlineReserve{ReserveUp}(;
+        name = "RESERVE", available = true, time_frame = 10.0, requirement = 0.1)
+    add_service!(sys, svc, [gen])
+    mbc = MarketBidCost(;
+        incremental_offer_curves = make_market_bid_curve(
+            [0.0, 25.0, 50.0], [12.0, 24.0], 0.0; power_units = IS.NaturalUnit(),
+        ),
+    )
+    push!(get_ancillary_service_offers(mbc), svc)
+    set_operation_cost!(gen, mbc)
+
+    for unit_system in (:device_base, :natural_units)
+        doc = to_openapi(sys; unit_system = unit_system)
+        sys2 = from_openapi(System, doc)
+        gen2 = get_component(ThermalMultiStart, sys2, "ms1")
+        @test !isnothing(gen2)
+        @test get_base_power(gen2) == 50.0
+        @test get_active_power_limits(gen2, PSY.DU) == (min = 0.2, max = 1.0)
+        @test get_ramp_limits(gen2, PSY.DU) == (up = 0.1, down = 0.1)
+        @test get_power_trajectory(gen2, PSY.DU) == (startup = 0.3, shutdown = 0.25)
+        @test get_time_limits(gen2) == (up = 2.0, down = 1.0)
+        @test get_start_time_limits(gen2) == (hot = 2.0, warm = 4.0, cold = 8.0)
+        @test get_start_types(gen2) == 3
+        @test get_must_run(gen2)
+        mbc2 = get_operation_cost(gen2)
+        @test mbc2 isa MarketBidCost
+        @test get_incremental_offer_curves(mbc2) == get_incremental_offer_curves(mbc)
+        @test get_name(only(get_ancillary_service_offers(mbc2))) == "RESERVE"
+    end
+end

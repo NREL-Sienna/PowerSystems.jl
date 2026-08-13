@@ -266,3 +266,107 @@ set_time_at_status!(value::ThermalMultiStart, val) = value.time_at_status = val
 set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
 """Set [`ThermalMultiStart`](@ref) `ext`."""
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
+
+
+
+function from_openapi(::Type{ThermalMultiStart}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return ThermalMultiStart(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
+        active_power_limits = (min = po.active_power_limits.min, max = po.active_power_limits.max),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min, max = po.reactive_power_limits.max); end),
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up, down = po.ramp_limits.down); end),
+        power_trajectory = (if isnothing(po.power_trajectory); nothing; else; (startup = po.power_trajectory.startup, shutdown = po.power_trajectory.shutdown); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        start_time_limits = (if isnothing(po.start_time_limits); nothing; else; (hot = po.start_time_limits.hot, warm = po.start_time_limits.warm, cold = po.start_time_limits.cold); end),
+        start_types = po.start_types,
+        operation_cost = convert_cost(po.operation_cost),
+        base_power = po.base_power,
+        time_at_status = po.time_at_status,
+        must_run = po.must_run,
+    )
+end
+
+function from_openapi(::Type{ThermalMultiStart}, po, refs::OpenAPIRefs, ::NaturalUnit)
+    return ThermalMultiStart(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
+        active_power_limits = (min = po.active_power_limits.min / po.base_power, max = po.active_power_limits.max / po.base_power),
+        reactive_power_limits = (if isnothing(po.reactive_power_limits); nothing; else; (min = po.reactive_power_limits.min / po.base_power, max = po.reactive_power_limits.max / po.base_power); end),
+        ramp_limits = (if isnothing(po.ramp_limits); nothing; else; (up = po.ramp_limits.up / po.base_power, down = po.ramp_limits.down / po.base_power); end),
+        power_trajectory = (if isnothing(po.power_trajectory); nothing; else; (startup = po.power_trajectory.startup / po.base_power, shutdown = po.power_trajectory.shutdown / po.base_power); end),
+        time_limits = (if isnothing(po.time_limits); nothing; else; (up = po.time_limits.up, down = po.time_limits.down); end),
+        start_time_limits = (if isnothing(po.start_time_limits); nothing; else; (hot = po.start_time_limits.hot, warm = po.start_time_limits.warm, cold = po.start_time_limits.cold); end),
+        start_types = po.start_types,
+        operation_cost = convert_cost(po.operation_cost),
+        base_power = po.base_power,
+        time_at_status = po.time_at_status,
+        must_run = po.must_run,
+    )
+end
+
+function to_openapi(value::ThermalMultiStart, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.ThermalMultiStart(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        status = get_status(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
+        active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
+        power_trajectory = _startup_shutdown_po_optional(get_power_trajectory(value, DU)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        start_time_limits = _startup_stages_po_optional(get_start_time_limits(value)),
+        start_types = get_start_types(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+        time_at_status = get_time_at_status(value),
+        must_run = get_must_run(value),
+    )
+end
+
+function to_openapi(value::ThermalMultiStart, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.ThermalMultiStart(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        status = get_status(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
+        power_trajectory = _startup_shutdown_po_scaled_optional(get_power_trajectory(value, DU), _get_base_power(value)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        start_time_limits = _startup_stages_po_optional(get_start_time_limits(value)),
+        start_types = get_start_types(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+        time_at_status = get_time_at_status(value),
+        must_run = get_must_run(value),
+    )
+end

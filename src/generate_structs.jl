@@ -178,6 +178,8 @@ const OPENAPI_COMPOUND_MEMBERS = Dict(
     "FromTo" => ("from", "to"),
     "InOut" => ("in", "out"),
     "FromTo_ToFrom" => ("from_to", "to_from"),
+    "StartUpShutDown" => ("startup", "shutdown"),
+    "StartUpStages" => ("hot", "warm", "cold"),
 )
 const OPENAPI_CONVERSION_KINDS =
     Dict(":mva" => :power, ":ohm" => :impedance, ":siemens" => :admittance)
@@ -203,6 +205,15 @@ const OPENAPI_EXPORT_COMPOUND_CTORS = Dict(
     "FromTo_ToFrom" => (
         required = "_fromto_toframe_po", optional = nothing,
         required_scaled = "_fromto_toframe_po_scaled", optional_scaled = nothing,
+    ),
+    "StartUpShutDown" => (
+        required = nothing, optional = "_startup_shutdown_po_optional",
+        required_scaled = nothing,
+        optional_scaled = "_startup_shutdown_po_scaled_optional",
+    ),
+    "StartUpStages" => (
+        required = nothing, optional = "_startup_stages_po_optional",
+        required_scaled = nothing, optional_scaled = nothing,
     ),
 )
 
