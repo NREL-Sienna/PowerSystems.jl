@@ -302,6 +302,39 @@ end
     @test contributing_services == expected_contributing_services
 end
 
+@testset "Test GroupReserve JSON round trip resolves member UUIDs" begin
+    # GroupReserve references its contributing services by UUID, so deserialization must
+    # order it after every other service despite it being an AbstractReserve.
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+
+    sub_a = OnlineReserve{ReserveUp}(;
+        name = "SUB_A", available = true, time_frame = 10.0, requirement = 0.0)
+    sub_b = OnlineReserve{ReserveUp}(;
+        name = "SUB_B", available = true, time_frame = 10.0, requirement = 0.0)
+    add_service!(sys, sub_a, [gen])
+    add_service!(sys, sub_b, [gen])
+    group = GroupReserve{ReserveUp}(;
+        name = "GROUP", available = true, requirement = 1.0,
+        contributing_services = Service[sub_a, sub_b])
+    add_service!(sys, group)
+
+    path = joinpath(mktempdir(), "group_roundtrip.json")
+    to_json(sys, path)
+    sys2 = System(path)
+    group2 = get_component(GroupReserve{ReserveUp}, sys2, "GROUP")
+    @test !isnothing(group2)
+    @test sort!(get_name.(get_contributing_services(group2))) == ["SUB_A", "SUB_B"]
+end
+
 @testset "Test GroupReserve errors" begin
     sys = System(100.0)
     bus = ACBus(nothing)
