@@ -128,3 +128,42 @@ end
     ts = Scenarios("scalingfactor", data, Hour(1))
     @test ts isa PowerSystems.TimeSeriesData
 end
+
+@testset "Test VSC control mode enum values match the legacy Bool semantics" begin
+    # A `Bool` in these fields resolves through IS's generic `convert(::Type{T}, ::Integer)`,
+    # so the voltage-controlling mode must stay at 1 and its counterpart at 0. Reordering
+    # either enum silently inverts every legacy value.
+    @test convert(VSCDCControlModes, false) == VSCDCControlModes.DC_POWER
+    @test convert(VSCDCControlModes, true) == VSCDCControlModes.DC_VOLTAGE
+    @test convert(VSCACControlModes, false) == VSCACControlModes.AC_REACTIVE_POWER
+    @test convert(VSCACControlModes, true) == VSCACControlModes.AC_VOLTAGE
+end
+
+@testset "Test TwoTerminalVSCLine construction with Bool control modes" begin
+    bus_from = ACBus(1, "bus_from", true, ACBusTypes.REF, 0.0, 1.0,
+        (min = 0.9, max = 1.1), 230.0)
+    bus_to = ACBus(2, "bus_to", true, ACBusTypes.PV, 0.0, 1.0,
+        (min = 0.9, max = 1.1), 230.0)
+    vsc = TwoTerminalVSCLine(;
+        name = "vsc",
+        available = true,
+        arc = Arc(bus_from, bus_to),
+        active_power_flow = 0.0,
+        rating = 2.0,
+        active_power_limits_from = (min = -2.0, max = 2.0),
+        active_power_limits_to = (min = -2.0, max = 2.0),
+        dc_control_from = true,
+        ac_control_from = false,
+        dc_control_to = false,
+        ac_control_to = true,
+    )
+    @test get_dc_control_from(vsc) == VSCDCControlModes.DC_VOLTAGE
+    @test get_ac_control_from(vsc) == VSCACControlModes.AC_REACTIVE_POWER
+    @test get_dc_control_to(vsc) == VSCDCControlModes.DC_POWER
+    @test get_ac_control_to(vsc) == VSCACControlModes.AC_VOLTAGE
+
+    set_dc_control_from!(vsc, false)
+    set_ac_control_to!(vsc, false)
+    @test get_dc_control_from(vsc) == VSCDCControlModes.DC_POWER
+    @test get_ac_control_to(vsc) == VSCACControlModes.AC_REACTIVE_POWER
+end
