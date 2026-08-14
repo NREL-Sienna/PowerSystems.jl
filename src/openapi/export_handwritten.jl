@@ -7,19 +7,6 @@
 # Reuses `_minmax_po*`/`_updown_po*`/`_fromto_po`/`_scale_optional_po` from
 # export_generated_types.jl (included first) rather than redefining them.
 
-# ── Reverse enum tables (inverted from the `<ENUM>_FROM_STRING` tables in
-# import_handwritten.jl, same bijectivity argument as
-# export_generated_types.jl). ──
-
-const TRANSFORMERCONTROLOBJECTIVE_TO_STRING =
-    _invert(TRANSFORMERCONTROLOBJECTIVE_FROM_STRING)
-const TWOWINDINGTRANSFORMERSHUNTLOCATION_TO_STRING =
-    _invert(TWOWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING)
-const RESERVOIRDATATYPE_TO_STRING = _invert(RESERVOIRDATATYPE_FROM_STRING)
-const STORAGETECH_TO_STRING = _invert(STORAGETECH_FROM_STRING)
-const VSCDCCONTROLMODES_TO_STRING = _invert(VSCDCCONTROLMODES_FROM_STRING)
-const VSCACCONTROLMODES_TO_STRING = _invert(VSCACCONTROLMODES_FROM_STRING)
-
 # ── Arc ─────────────────────────────────────────────────────────────────────────
 # No unit-converted fields; both unit-system methods identical (mirrors import).
 
@@ -147,10 +134,6 @@ end
 # is declared `DU` — numerically identical for this type since its `base_power` always equals
 # the document system base (see the import-side comment), but the identity accessor for each
 # field must still match its own declared tier.
-const DISCRETECONTROLLEDBRANCHTYPE_TO_STRING =
-    Dict(v => k for (k, v) in DISCRETECONTROLLEDBRANCHTYPE_FROM_STRING)
-const DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING =
-    Dict(v => k for (k, v) in DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING)
 
 function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.DiscreteControlledACBranch(;
@@ -164,13 +147,13 @@ function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::Dev
         r = get_r(branch, SU),
         x = get_x(branch, SU),
         rating = get_rating(branch, DU),
-        discrete_branch_type = DISCRETECONTROLLEDBRANCHTYPE_TO_STRING[get_discrete_branch_type(
+        discrete_branch_type = string(get_discrete_branch_type(
             branch,
-        )],
-        branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_branch_status(branch)],
-        normal_branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_normal_branch_status(
+        )),
+        branch_status = string(get_branch_status(branch)),
+        normal_branch_status = string(get_normal_branch_status(
             branch,
-        )],
+        )),
     )
 end
 
@@ -187,13 +170,13 @@ function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::Nat
         r = get_r(branch, SU),
         x = get_x(branch, SU),
         rating = get_rating(branch, DU) * bp,
-        discrete_branch_type = DISCRETECONTROLLEDBRANCHTYPE_TO_STRING[get_discrete_branch_type(
+        discrete_branch_type = string(get_discrete_branch_type(
             branch,
-        )],
-        branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_branch_status(branch)],
-        normal_branch_status = DISCRETECONTROLLEDBRANCHSTATUS_TO_STRING[get_normal_branch_status(
+        )),
+        branch_status = string(get_branch_status(branch)),
+        normal_branch_status = string(get_normal_branch_status(
             branch,
-        )],
+        )),
     )
 end
 
@@ -216,9 +199,9 @@ function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::DeviceBase
         parameter_units = "DEVICE_BASE",
         r = get_r(circuit, DU),
         x = get_x(circuit, DU),
-        control_objective = TRANSFORMERCONTROLOBJECTIVE_TO_STRING[get_control_objective(
+        control_objective = string(get_control_objective(
             circuit,
-        )],
+        )),
         regulated_bus_number = get_regulated_bus_number(circuit),
         control_limits = _minmax_po(get_control_limits(circuit)),
         controlled_quantity_limits = _minmax_po(get_controlled_quantity_limits(circuit)),
@@ -245,9 +228,9 @@ function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::NaturalUni
         parameter_units = "DEVICE_BASE",
         r = get_r(circuit, DU),
         x = get_x(circuit, DU),
-        control_objective = TRANSFORMERCONTROLOBJECTIVE_TO_STRING[get_control_objective(
+        control_objective = string(get_control_objective(
             circuit,
-        )],
+        )),
         regulated_bus_number = get_regulated_bus_number(circuit),
         control_limits = _minmax_po(get_control_limits(circuit)),
         controlled_quantity_limits = _minmax_po(get_controlled_quantity_limits(circuit)),
@@ -276,9 +259,9 @@ function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::DeviceBase
         circuit = component_id(refs, circuit),
         admittance_units = "DEVICE_BASE",
         magnetizing_shunt = _complex_number_po(shunt),
-        shunt_location = TWOWINDINGTRANSFORMERSHUNTLOCATION_TO_STRING[get_shunt_location(
+        shunt_location = string(get_shunt_location(
             xfmr,
-        )],
+        )),
     )
 end
 
@@ -293,9 +276,6 @@ end
 # side. `primary_circuit`/`secondary_circuit`/`tertiary_circuit`/`star_bus` resolve via
 # `component_id` because the circuits are registered as standalone document rows by
 # `_plan_components` (export_document.jl), matching how import consumes them.
-
-const THREEWINDINGTRANSFORMERSHUNTLOCATION_TO_STRING =
-    _invert(THREEWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING)
 
 function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::DeviceBaseUnit)
     shunt = get_magnetizing_shunt(xfmr, DU)
@@ -318,9 +298,9 @@ function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::DeviceBa
         base_power_31 = get_base_power_31(xfmr),
         admittance_units = "DEVICE_BASE",
         magnetizing_shunt = _complex_number_po(shunt),
-        shunt_location = THREEWINDINGTRANSFORMERSHUNTLOCATION_TO_STRING[get_shunt_location(
+        shunt_location = string(get_shunt_location(
             xfmr,
-        )],
+        )),
     )
 end
 
@@ -355,8 +335,6 @@ end
 # ── SwitchedAdmittance ────────────────────────────────────────────────────────────
 # Mirrors `FixedAdmittance`: `Y`/`Y_increase` are fixed-natural DEVICE_MVAR-on-system-base,
 # independent of the document's unit system, so `NaturalUnit` delegates to `DeviceBaseUnit`.
-const SWITCHED_ADMITTANCE_CONTROL_MODE_TO_STRING =
-    Dict(v => k for (k, v) in SWITCHED_ADMITTANCE_CONTROL_MODE_FROM_STRING)
 
 function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     base_power = get_base_power(refs)
@@ -374,7 +352,7 @@ function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUn
         number_of_steps = get_number_of_steps(shunt),
         Y_increase = y_increase,
         admittance_limits = _minmax_po(get_admittance_limits(shunt)),
-        control_mode = SWITCHED_ADMITTANCE_CONTROL_MODE_TO_STRING[get_control_mode(shunt)],
+        control_mode = string(get_control_mode(shunt)),
         regulated_bus_number = get_regulated_bus_number(shunt),
     )
 end
@@ -388,10 +366,6 @@ end
 # multiplied by the document system base; `voltage_setpoint` is always exported as
 # "DEVICE_BASE" (the only basis import implements), matching TwoWindingTransformer's
 # always-"DEVICE_BASE" export posture for a similarly fixed-representation field.
-const FACTSOPERATIONMODES_TO_STRING =
-    Dict(v => k for (k, v) in FACTSOPERATIONMODES_FROM_STRING)
-const FACTSSHUNTCONTROLTYPE_TO_STRING =
-    Dict(v => k for (k, v) in FACTSSHUNTCONTROLTYPE_FROM_STRING)
 
 function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseUnit)
     base_power = get_base_power(refs)
@@ -404,16 +378,16 @@ function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseU
         control_mode = if isnothing(control_mode)
             nothing
         else
-            FACTSOPERATIONMODES_TO_STRING[control_mode]
+            string(control_mode)
         end,
         voltage_setpoint_units = "DEVICE_BASE",
         voltage_setpoint = get_voltage_setpoint(device),
         max_shunt_current = get_max_shunt_current(device, SU) * base_power,
         reactive_power_required = get_reactive_power_required(device),
         max_reactive_power = get_max_reactive_power(device, SU) * base_power,
-        shunt_control_type = FACTSSHUNTCONTROLTYPE_TO_STRING[get_shunt_control_type(
+        shunt_control_type = string(get_shunt_control_type(
             device,
-        )],
+        )),
         regulated_bus_number = get_regulated_bus_number(device),
     )
 end
@@ -725,8 +699,8 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         reactive_power_from = _vsc_power_to_openapi(
             get_reactive_power_from(vsc, SU), base_power, unit,
         ),
-        dc_control_from = VSCDCCONTROLMODES_TO_STRING[dc_control_from],
-        ac_control_from = VSCACCONTROLMODES_TO_STRING[ac_control_from],
+        dc_control_from = string(dc_control_from),
+        ac_control_from = string(ac_control_from),
         dc_setpoint_from = _vsc_dc_setpoint_to_openapi(
             vsc, get_dc_setpoint_from(vsc), Val(dc_control_from), base_power, unit,
         ),
@@ -747,8 +721,8 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         reactive_power_to = _vsc_power_to_openapi(
             get_reactive_power_to(vsc, SU), base_power, unit,
         ),
-        dc_control_to = VSCDCCONTROLMODES_TO_STRING[dc_control_to],
-        ac_control_to = VSCACCONTROLMODES_TO_STRING[ac_control_to],
+        dc_control_to = string(dc_control_to),
+        ac_control_to = string(ac_control_to),
         dc_setpoint_to = _vsc_dc_setpoint_to_openapi(
             vsc, get_dc_setpoint_to(vsc), Val(dc_control_to), base_power, unit,
         ),
@@ -829,7 +803,7 @@ function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit)
         upstream_reservoirs = _hydro_unit_ids(refs, get_upstream_reservoirs(res)),
         operation_cost = convert_cost_to_openapi(get_operation_cost(res)),
         evaporative_loss = get_evaporative_loss(res),
-        level_data_type = RESERVOIRDATATYPE_TO_STRING[get_level_data_type(res)],
+        level_data_type = string(get_level_data_type(res)),
     )
 end
 
@@ -851,10 +825,10 @@ function to_openapi(storage::EnergyReservoirStorage, refs::OpenAPIRefs, ::Device
         name = get_name(storage),
         available = get_available(storage),
         bus = component_id(refs, get_bus(storage)),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(storage)],
-        storage_technology_type = STORAGETECH_TO_STRING[get_storage_technology_type(
+        prime_mover_type = string(get_prime_mover_type(storage)),
+        storage_technology_type = string(get_storage_technology_type(
             storage,
-        )],
+        )),
         storage_capacity = get_storage_capacity(storage, DU),
         energy_units = "MWH",
         storage_level_limits = _minmax_po(get_storage_level_limits(storage)),
@@ -890,10 +864,10 @@ function to_openapi(
         name = get_name(storage),
         available = get_available(storage),
         bus = component_id(refs, get_bus(storage)),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(storage)],
-        storage_technology_type = STORAGETECH_TO_STRING[get_storage_technology_type(
+        prime_mover_type = string(get_prime_mover_type(storage)),
+        storage_technology_type = string(get_storage_technology_type(
             storage,
-        )],
+        )),
         storage_capacity = get_storage_capacity(storage, DU) * base,
         energy_units = "MWH",
         storage_level_limits = _minmax_po(get_storage_level_limits(storage)),

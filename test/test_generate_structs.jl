@@ -168,13 +168,14 @@ end
     device_body = gen[first(device_start):(first(natural_start) - 1)]
     natural_body = gen[first(natural_start):end]
 
-    # Enum table: emitted once, ahead of both methods, looked up (not `getproperty`).
-    @test occursin(
-        "const OA_TEST_STATUS_FROM_STRING = Dict{String, OATestStatus}(string(m) => m for m in instances(OATestStatus))",
-        gen,
-    )
-    @test occursin("status = OA_TEST_STATUS_FROM_STRING[po.status],", device_body)
-    @test occursin("status = OA_TEST_STATUS_FROM_STRING[po.status],", natural_body)
+    # Enum: converted through the scoped enum's own string constructor — no per-enum
+    # lookup table is emitted anywhere in the generated file.
+    @test !occursin("_FROM_STRING", gen)
+    @test !occursin("_TO_STRING", gen)
+    @test occursin("status = OATestStatus(po.status),", device_body)
+    @test occursin("status = OATestStatus(po.status),", natural_body)
+    # ... and the export direction is the inverse: `string` on the enum value.
+    @test occursin("status = string(get_status(value)),", gen)
 
     # Reference: `resolve_ref(refs, po.<name>, <PSY type>)`, identical in both methods. Not
     # `refs[po.<name>]` — a schema-optional reference the document omits arrives as

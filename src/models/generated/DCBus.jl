@@ -117,7 +117,6 @@ set_load_zone!(value::DCBus, val) = value.load_zone = val
 set_ext!(value::DCBus, val) = value.ext = val
 
 
-
 function from_openapi(po::PO.DCBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return DCBus(;
         number = po.number,

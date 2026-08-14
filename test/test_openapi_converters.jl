@@ -901,15 +901,16 @@ end
 end
 
 @testset "OpenAPI converters: Substation (hand-written, no descriptor entry)" begin
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
     po =
         PSY.PO.Substation(; id = 30, name = "SUB1", number = 7, grounding_resistance = 0.25)
-    attr = PSY.from_openapi(Substation, po)
+    attr = PSY.from_openapi(po, refs)
     @test get_name(attr) == "SUB1"
     @test get_number(attr) == 7
     @test get_grounding_resistance(attr) == 0.25
 
     default_po = PSY.PO.Substation(; id = 31, name = "SUB2", number = 8)
-    default_attr = PSY.from_openapi(Substation, default_po)
+    default_attr = PSY.from_openapi(default_po, refs)
     @test get_grounding_resistance(default_attr) == 0.1
 end
 

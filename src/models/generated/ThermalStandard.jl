@@ -238,9 +238,6 @@ set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 set_ext!(value::ThermalStandard, val) = value.ext = val
 
 
-const THERMAL_FUELS_FROM_STRING = Dict{String, ThermalFuels}(string(m) => m for m in instances(ThermalFuels))
-const THERMAL_FUELS_TO_STRING = Dict{ ThermalFuels, String}(m => string(m) for m in instances(ThermalFuels))
-
 function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ThermalStandard(;
         name = po.name,
@@ -257,8 +254,8 @@ function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUni
         base_power = po.base_power,
         time_limits = _updown_from_po(po.time_limits),
         must_run = po.must_run,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        fuel = ThermalFuels(po.fuel),
         time_at_status = po.time_at_status,
     )
 end
@@ -279,8 +276,8 @@ function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
         base_power = po.base_power,
         time_limits = _updown_from_po(po.time_limits),
         must_run = po.must_run,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        fuel = ThermalFuels(po.fuel),
         time_at_status = po.time_at_status,
     )
 end
@@ -302,8 +299,8 @@ function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
         base_power = _get_base_power(value),
         time_limits = _updown_po_optional(get_time_limits(value)),
         must_run = get_must_run(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
-        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
+        fuel = string(get_fuel(value)),
         time_at_status = get_time_at_status(value),
     )
 end
@@ -325,8 +322,8 @@ function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
         base_power = _get_base_power(value),
         time_limits = _updown_po_optional(get_time_limits(value)),
         must_run = get_must_run(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
-        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
+        fuel = string(get_fuel(value)),
         time_at_status = get_time_at_status(value),
     )
 end

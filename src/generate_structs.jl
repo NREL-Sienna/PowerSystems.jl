@@ -107,13 +107,6 @@ InfrastructureSystems.display_units_arg(::typeof({{accessor}}_unitful), ::{{unit
 {{/custom_code}}
 
 {{#openapi_type}}
-{{#openapi_enum_tables}}
-const {{const_name}} = Dict{String, {{{enum_type}}}}(string(m) => m for m in instances({{{enum_type}}}))
-{{/openapi_enum_tables}}
-{{#openapi_export_enum_tables}}
-const {{const_name}} = Dict{ {{{enum_type}}}, String}(m => string(m) for m in instances({{{enum_type}}}))
-{{/openapi_export_enum_tables}}
-
 function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return {{struct_name}}(;
         {{#openapi_kwargs_device}}
@@ -239,24 +232,6 @@ function openapi_strip_nullable(data_type::AbstractString)
     end
     return (String(m.captures[1]), true)
 end
-
-"""
-Convert a CamelCase type name to SCREAMING_SNAKE_CASE, splitting on a lowercase/digit→
-uppercase boundary (`primeMovers` style transitions) and on an acronym-run→word boundary
-(`(?<=[A-Z])(?=[A-Z][a-z])`, e.g. the `C`/`B` in `ACBusTypes`) so a leading acronym like `AC`
-stays intact while the word that follows it (`Bus`) still gets its own segment —
-`ACBusTypes` → `AC_BUS_TYPES`, `PrimeMovers` → `PRIME_MOVERS`. Deterministic; does not attempt
-to split a bare run of caps with no case signal (e.g. an all-acronym prefix followed directly
-by another acronym) since no enum type in this descriptor needs that.
-"""
-function openapi_screaming_snake_case(bare::AbstractString)
-    with_word_breaks = replace(bare, r"(?<=[A-Z])(?=[A-Z][a-z])" => "_")
-    with_word_breaks = replace(with_word_breaks, r"(?<=[a-z0-9])(?=[A-Z])" => "_")
-    return uppercase(with_word_breaks)
-end
-
-openapi_enum_table_name(bare::AbstractString) =
-    openapi_screaming_snake_case(bare) * "_FROM_STRING"
 
 """
 Classify one field's role in an OpenAPI converter. Returns `(kind, bare, nullable)` with
@@ -505,13 +480,8 @@ end
 Compute and attach the OpenAPI import-direction converter data for one annotated
 descriptor entry (mutates `item`). Only called when `haskey(item, "openapi_type")`; a
 descriptor entry without that key never reaches this function.
-
-`defined_enum_tables` is shared across the whole `generate_structs` call so an enum type
-used by more than one annotated struct gets exactly one `const ..._FROM_STRING` table
-(in whichever struct's file is processed first) instead of a duplicate-`const` error when
-every generated file is `include`d into the same module.
 """
-function compute_openapi_converter!(item, struct_names, defined_enum_tables)
+function compute_openapi_converter!(item, struct_names)
     struct_name = item["struct_name"]
     if haskey(item, "parametric")
         throw(
@@ -522,7 +492,6 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
         )
     end
     field_names = Set(f["name"] for f in item["fields"])
-    enum_tables = Vector{Dict{String, String}}()
     kwargs_device = Vector{Dict{String, String}}()
     kwargs_natural = Vector{Dict{String, String}}()
 
@@ -556,12 +525,9 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
             continue
         end
         if kind == :enum
-            table_name = openapi_enum_table_name(bare)
-            if !(table_name in defined_enum_tables)
-                push!(enum_tables, Dict("const_name" => table_name, "enum_type" => bare))
-                push!(defined_enum_tables, table_name)
-            end
-            expr = "$table_name[po.$po_name]"
+            # `@scoped_enum` types construct straight from the document's string
+            # (`ACBusTypes("PV")`), so no per-enum lookup table is emitted.
+            expr = "$bare(po.$po_name)"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -584,7 +550,6 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
     end
 
     item["openapi_po_type"] = "PO." * item["openapi_type"]
-    item["openapi_enum_tables"] = enum_tables
     item["openapi_kwargs_device"] = kwargs_device
     item["openapi_kwargs_natural"] = kwargs_natural
     return nothing
@@ -600,9 +565,6 @@ end
 # component from a PO struct's fields, and multiplies by the S_base/Z_base anchor where
 # `from_openapi` divides.
 # ──────────────────────────────────────────────────────────────────────────────────────
-
-openapi_enum_table_name_export(bare::AbstractString) =
-    openapi_screaming_snake_case(bare) * "_TO_STRING"
 
 """
 Where an exported struct reads its S_base anchor, and which unit system it requests the
@@ -815,14 +777,8 @@ end
 """
 Compute and attach the OpenAPI export-direction converter data for one annotated
 descriptor entry (mutates `item`). Only called when `haskey(item, "openapi_type")`.
-
-`defined_enum_tables` plays the same role as in `compute_openapi_converter!`, but is a
-separate set — the `_TO_STRING` and `_FROM_STRING` tables for the same enum can land in
-different structs' files depending on which one is processed first for each direction,
-though in practice it is always the same struct since both computations run back to back
-for a given item.
 """
-function compute_openapi_export_converter!(item, struct_names, defined_enum_tables)
+function compute_openapi_export_converter!(item, struct_names)
     struct_name = item["struct_name"]
     if haskey(item, "parametric")
         throw(
@@ -834,7 +790,6 @@ function compute_openapi_export_converter!(item, struct_names, defined_enum_tabl
         )
     end
     field_names = Set(f["name"] for f in item["fields"])
-    enum_tables = Vector{Dict{String, String}}()
     kwargs_device = Vector{Dict{String, String}}()
     kwargs_natural = Vector{Dict{String, String}}()
     # `id` is not a descriptor field — it is the reflexive lookup registered by the document
@@ -871,12 +826,9 @@ function compute_openapi_export_converter!(item, struct_names, defined_enum_tabl
             continue
         end
         if kind == :enum
-            table_name = openapi_enum_table_name_export(bare)
-            if !(table_name in defined_enum_tables)
-                push!(enum_tables, Dict("const_name" => table_name, "enum_type" => bare))
-                push!(defined_enum_tables, table_name)
-            end
-            expr = "$table_name[$(openapi_export_getter_name(field))(value)]"
+            # `string` on a `@scoped_enum` yields the document's exact spelling, the
+            # inverse of the import direction's `EnumType(po.field)` constructor.
+            expr = "string($(openapi_export_getter_name(field))(value))"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -923,7 +875,6 @@ function compute_openapi_export_converter!(item, struct_names, defined_enum_tabl
         push!(kwargs_natural, Dict("name" => name, "expr" => natural))
     end
 
-    item["openapi_export_enum_tables"] = enum_tables
     item["openapi_export_kwargs_device"] = kwargs_device
     item["openapi_export_kwargs_natural"] = kwargs_natural
     return nothing
@@ -947,8 +898,6 @@ function generate_structs(directory, data::Vector; print_results = true)
     unique_accessor_functions = Set{String}()
     unique_setter_functions = Set{String}()
     openapi_struct_names = Set(it["struct_name"] for it in data)
-    openapi_defined_enum_tables = Set{String}()
-    openapi_defined_enum_tables_export = Set{String}()
 
     for item in data
         openapi_check_no_orphan_unit!(item)
@@ -1100,16 +1049,8 @@ function generate_structs(directory, data::Vector; print_results = true)
         item["needs_positional_constructor"] = has_internal && has_non_default_values
 
         if haskey(item, "openapi_type")
-            compute_openapi_converter!(
-                item,
-                openapi_struct_names,
-                openapi_defined_enum_tables,
-            )
-            compute_openapi_export_converter!(
-                item,
-                openapi_struct_names,
-                openapi_defined_enum_tables_export,
-            )
+            compute_openapi_converter!(item, openapi_struct_names)
+            compute_openapi_export_converter!(item, openapi_struct_names)
         end
 
         filename = joinpath(directory, item["struct_name"] * ".jl")

@@ -108,6 +108,3 @@ end
 
 """Whether `component` has a registered id."""
 has_component_id(refs::OpenAPIRefs, component) = haskey(refs.id_by_component, component)
-
-"""String → enum lookup table for `T`, matching the document's exact spelling."""
-_enum_table(::Type{T}) where {T} = Dict{String, T}(string(m) => m for m in instances(T))

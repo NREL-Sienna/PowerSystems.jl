@@ -568,25 +568,20 @@ end
 # Per-type converters below exist for every attribute PSY hand-writes a constructor for
 # AND that has a PO analogue: EmissionsData, GeometricDistributionForcedOutage,
 # FixedForcedOutage, PlannedOutage, ThermalPowerPlant, HydroPowerPlant,
-# RenewablePowerPlant, CombinedCycleBlock, CombinedCycleFractional, and the Core
-# GeographicInfo. `Substation` (`src/substation.jl`) has neither a schema nor a generated
-# PO model anywhere in SiennaSchemas/PowerOpenAPIModels — a real, reportable gap, not
-# something to invent a converter for.
+# RenewablePowerPlant, CombinedCycleBlock, CombinedCycleFractional, ImpedanceCorrectionData,
+# and the Core GeographicInfo. `Substation`'s converter pair lives next to its hand-written
+# struct in `src/substation.jl`.
 #
-# None of these embed unit-converted fields, so unlike the per-component converters they
-# take no `Val{unit_system}`; only the three `Outage` types need `refs`, to resolve
-# document-id `monitored_components` into the UUIDs PSY stores.
-
-const POLLUTANT_TYPE_FROM_STRING = _enum_table(PollutantType)
-const EMISSION_BASIS_FROM_STRING = _enum_table(EmissionBasis)
-const MASS_UNIT_FROM_STRING = _enum_table(MassUnit)
-const ENERGY_UNIT_FROM_STRING = _enum_table(EnergyUnit)
-const COMBINED_CYCLE_CONFIGURATION_FROM_STRING = _enum_table(CombinedCycleConfiguration)
-
-function _enum_from_string(table, s, field_name)
-    haskey(table, s) || error("from_openapi: unmapped $field_name=\"$s\"")
-    return table[s]
-end
+# Same shape as the generated converters: dispatch on the concrete PO value, not on a target
+# `::Type` or an `attribute_type` string — the document's flat `supplemental_attributes`
+# array carries no per-row type, but `PowerCoreOpenAPIModels` has already resolved each row
+# through `SupplementalAttributeAssociation.attribute_type` and its type registry, so the
+# type is known here and Julia's dispatch replaces what used to be a parallel string table
+# in this file. None of these embed unit-converted fields, so unlike the per-component
+# converters they take no `Val{unit_system}`. Every method takes `refs` so the attribute
+# walk (`load_supplemental_attribute_associations!` in sqlite_load.jl) can call one
+# signature uniformly; only the three `Outage` types read it, to resolve document-id
+# `monitored_components` into the UUIDs PSY stores.
 
 """Resolve document ids to UUIDs for an `Outage`'s `monitored_components`; `nothing`
 means none declared and maps to an empty vector, matching the PSY constructors' own
@@ -598,33 +593,21 @@ function _monitored_component_uuids(refs::OpenAPIRefs, ids)
     return Base.UUID[IS.get_uuid(refs[Int(id)]) for id in ids]
 end
 
-function from_openapi(::Type{EmissionsData}, po::PO.EmissionsData)
+function from_openapi(po::PO.EmissionsData, ::OpenAPIRefs)
     return EmissionsData(;
         name = po.name,
-        pollutant = _enum_from_string(
-            POLLUTANT_TYPE_FROM_STRING,
-            po.pollutant,
-            "pollutant",
-        ),
+        pollutant = PollutantType(po.pollutant),
         emission_rate = convert_cost(po.emission_rate),
-        basis = _enum_from_string(EMISSION_BASIS_FROM_STRING, po.basis, "basis"),
+        basis = EmissionBasis(po.basis),
         start_up_adder = po.start_up_adder,
-        mass_unit = _enum_from_string(MASS_UNIT_FROM_STRING, po.mass_unit, "mass_unit"),
-        energy_unit = _enum_from_string(
-            ENERGY_UNIT_FROM_STRING,
-            po.energy_unit,
-            "energy_unit",
-        ),
+        mass_unit = MassUnit(po.mass_unit),
+        energy_unit = EnergyUnit(po.energy_unit),
         gwp = po.gwp,
         available = po.available,
     )
 end
 
-function from_openapi(
-    ::Type{GeometricDistributionForcedOutage},
-    po::PO.GeometricDistributionForcedOutage,
-    refs::OpenAPIRefs,
-)
+function from_openapi(po::PO.GeometricDistributionForcedOutage, refs::OpenAPIRefs)
     return GeometricDistributionForcedOutage(;
         mean_time_to_recovery = Float64(po.mean_time_to_recovery),
         outage_transition_probability = po.outage_transition_probability,
@@ -632,106 +615,61 @@ function from_openapi(
     )
 end
 
-function from_openapi(::Type{PlannedOutage}, po::PO.PlannedOutage, refs::OpenAPIRefs)
+function from_openapi(po::PO.PlannedOutage, refs::OpenAPIRefs)
     return PlannedOutage(;
         outage_schedule = po.outage_schedule,
         monitored_components = _monitored_component_uuids(refs, po.monitored_components),
     )
 end
 
-function from_openapi(
-    ::Type{FixedForcedOutage},
-    po::PO.FixedForcedOutage,
-    refs::OpenAPIRefs,
-)
+function from_openapi(po::PO.FixedForcedOutage, refs::OpenAPIRefs)
     return FixedForcedOutage(;
         outage_status = po.outage_status,
         monitored_components = _monitored_component_uuids(refs, po.monitored_components),
     )
 end
 
-from_openapi(::Type{ThermalPowerPlant}, po::PO.ThermalPowerPlant) =
+from_openapi(po::PO.ThermalPowerPlant, ::OpenAPIRefs) =
     ThermalPowerPlant(; name = po.name)
-from_openapi(::Type{HydroPowerPlant}, po::PO.HydroPowerPlant) =
+from_openapi(po::PO.HydroPowerPlant, ::OpenAPIRefs) =
     HydroPowerPlant(; name = po.name)
-from_openapi(::Type{RenewablePowerPlant}, po::PO.RenewablePowerPlant) =
+from_openapi(po::PO.RenewablePowerPlant, ::OpenAPIRefs) =
     RenewablePowerPlant(; name = po.name)
 
-function from_openapi(::Type{CombinedCycleBlock}, po::PO.CombinedCycleBlock)
+function from_openapi(po::PO.CombinedCycleBlock, ::OpenAPIRefs)
     return CombinedCycleBlock(;
         name = po.name,
-        configuration = _enum_from_string(
-            COMBINED_CYCLE_CONFIGURATION_FROM_STRING, po.configuration, "configuration",
-        ),
+        configuration = CombinedCycleConfiguration(po.configuration),
         heat_recovery_to_steam_factor = po.heat_recovery_to_steam_factor,
     )
 end
 
-function from_openapi(::Type{CombinedCycleFractional}, po::PO.CombinedCycleFractional)
+function from_openapi(po::PO.CombinedCycleFractional, ::OpenAPIRefs)
     return CombinedCycleFractional(;
         name = po.name,
-        configuration = _enum_from_string(
-            COMBINED_CYCLE_CONFIGURATION_FROM_STRING, po.configuration, "configuration",
-        ),
+        configuration = CombinedCycleConfiguration(po.configuration),
     )
 end
 
-from_openapi(::Type{GeographicInfo}, po::PC.GeographicInfo) =
+from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) =
     GeographicInfo(; geo_json = po.geo_json)
-
-const WINDINGCATEGORY_FROM_STRING = _enum_table(WindingCategory)
-const IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING =
-    _enum_table(ImpedanceCorrectionTransformerControlMode)
 
 """`table_number`/`transformer_winding`/`transformer_control_mode` carry no unit-bearing
 fields — a row number and two enum discriminators. `impedance_correction_curve` reuses
 `convert_cost`, the same PO->PSY `PiecewiseLinearData` converter cost curves use."""
-from_openapi(::Type{ImpedanceCorrectionData}, po::PO.ImpedanceCorrectionData) =
+from_openapi(po::PO.ImpedanceCorrectionData, ::OpenAPIRefs) =
     ImpedanceCorrectionData(;
         table_number = po.table_number,
         impedance_correction_curve = convert_cost(po.impedance_correction_curve),
-        transformer_winding = WINDINGCATEGORY_FROM_STRING[po.transformer_winding],
-        transformer_control_mode = IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING[po.transformer_control_mode],
+        transformer_winding = WindingCategory(po.transformer_winding),
+        transformer_control_mode = ImpedanceCorrectionTransformerControlMode(
+            po.transformer_control_mode,
+        ),
     )
 
-"""
-Convert one already-deserialized PO supplemental attribute to its PSY counterpart.
-
-Dispatches on the concrete PO type rather than looking up an `attribute_type` string: the
-document's flat `supplemental_attributes` array carries no per-row type, but
-`PowerCoreOpenAPIModels` has already resolved each row through
-`SupplementalAttributeAssociation.attribute_type` and its type registry, so the type is known
-here and Julia's own dispatch replaces what used to be a parallel string table in this file.
-
-Only the three `Outage` types need `refs`, to resolve `monitored_components`; the rest ignore
-it, so every method takes the same shape and the arity split does not leak into the caller.
-"""
-_attribute_from_openapi(po::PO.EmissionsData, ::OpenAPIRefs) =
-    from_openapi(EmissionsData, po)
-_attribute_from_openapi(po::PO.GeometricDistributionForcedOutage, refs::OpenAPIRefs) =
-    from_openapi(GeometricDistributionForcedOutage, po, refs)
-_attribute_from_openapi(po::PO.FixedForcedOutage, refs::OpenAPIRefs) =
-    from_openapi(FixedForcedOutage, po, refs)
-_attribute_from_openapi(po::PO.PlannedOutage, refs::OpenAPIRefs) =
-    from_openapi(PlannedOutage, po, refs)
-_attribute_from_openapi(po::PO.ThermalPowerPlant, ::OpenAPIRefs) =
-    from_openapi(ThermalPowerPlant, po)
-_attribute_from_openapi(po::PO.HydroPowerPlant, ::OpenAPIRefs) =
-    from_openapi(HydroPowerPlant, po)
-_attribute_from_openapi(po::PO.RenewablePowerPlant, ::OpenAPIRefs) =
-    from_openapi(RenewablePowerPlant, po)
-_attribute_from_openapi(po::PO.CombinedCycleBlock, ::OpenAPIRefs) =
-    from_openapi(CombinedCycleBlock, po)
-_attribute_from_openapi(po::PO.CombinedCycleFractional, ::OpenAPIRefs) =
-    from_openapi(CombinedCycleFractional, po)
-_attribute_from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) =
-    from_openapi(GeographicInfo, po)
-_attribute_from_openapi(po::PO.Substation, ::OpenAPIRefs) = from_openapi(Substation, po)
-_attribute_from_openapi(po::PO.ImpedanceCorrectionData, ::OpenAPIRefs) =
-    from_openapi(ImpedanceCorrectionData, po)
-
-"""Loud fallback: a PO attribute type with no converter is a gap to close, not a row to skip."""
-function _attribute_from_openapi(po, ::OpenAPIRefs)
+"""Loud fallback for the 2-arg supplemental-attribute shape: a PO attribute type with no
+converter is a gap to close, not a row to skip."""
+function from_openapi(po, ::OpenAPIRefs)
     error(
         "from_openapi(System, doc): no supplemental attribute converter for " *
         "$(nameof(typeof(po))) — every attribute in the document must be converted, " *

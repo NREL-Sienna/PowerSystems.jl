@@ -287,7 +287,7 @@ end
         basis = "FUEL_INPUT", start_up_adder = 0.0, mass_unit = "LB",
         energy_unit = "MMBTU", gwp = 1.0, available = true,
     )
-    emissions = PSY.from_openapi(EmissionsData, emissions_po)
+    emissions = PSY.from_openapi(emissions_po, refs)
     @test get_pollutant(emissions) == PollutantType.CO2
     @test get_basis(emissions) == EmissionBasis.FUEL_INPUT
     @test get_mass_unit(emissions) == MassUnit.LB
@@ -297,7 +297,7 @@ end
         id = 3, mean_time_to_recovery = 480, outage_transition_probability = 0.001,
         monitored_components = [1],
     )
-    outage = PSY.from_openapi(GeometricDistributionForcedOutage, outage_po, refs)
+    outage = PSY.from_openapi(outage_po, refs)
     @test get_mean_time_to_recovery(outage) == 480.0
     @test get_monitored_components(outage) == Set([IS.get_uuid(bus)])
 
@@ -306,65 +306,60 @@ end
         outage_status = 1.0,
         monitored_components = nothing,
     )
-    fixed = PSY.from_openapi(FixedForcedOutage, fixed_po, refs)
+    fixed = PSY.from_openapi(fixed_po, refs)
     @test PSY.get_outage_status(fixed) == 1.0
     @test get_monitored_components(fixed) == Set{Base.UUID}()
 
     planned_po = PSY.PO.PlannedOutage(;
         id = 5, outage_schedule = "maintenance_2024", monitored_components = [1],
     )
-    planned = PSY.from_openapi(PlannedOutage, planned_po, refs)
+    planned = PSY.from_openapi(planned_po, refs)
     @test get_outage_schedule(planned) == "maintenance_2024"
 
     plant_po = PSY.PO.ThermalPowerPlant(; id = 6, name = "plant1")
-    plant = PSY.from_openapi(ThermalPowerPlant, plant_po)
+    plant = PSY.from_openapi(plant_po, refs)
     @test get_name(plant) == "plant1"
 
     hydro_plant =
-        PSY.from_openapi(HydroPowerPlant, PSY.PO.HydroPowerPlant(; id = 7, name = "hp1"))
+        PSY.from_openapi(PSY.PO.HydroPowerPlant(; id = 7, name = "hp1"), refs)
     @test get_name(hydro_plant) == "hp1"
 
     renewable_plant =
-        PSY.from_openapi(
-            RenewablePowerPlant,
-            PSY.PO.RenewablePowerPlant(; id = 8, name = "rp1"),
-        )
+        PSY.from_openapi(PSY.PO.RenewablePowerPlant(; id = 8, name = "rp1"), refs)
     @test get_name(renewable_plant) == "rp1"
 
     cc_block_po = PSY.PO.CombinedCycleBlock(;
         id = 9, name = "cc1", configuration = "SingleShaftCombustionSteam",
         heat_recovery_to_steam_factor = 0.5,
     )
-    cc_block = PSY.from_openapi(CombinedCycleBlock, cc_block_po)
+    cc_block = PSY.from_openapi(cc_block_po, refs)
     @test get_configuration(cc_block) ==
           CombinedCycleConfiguration.SingleShaftCombustionSteam
     @test get_heat_recovery_to_steam_factor(cc_block) == 0.5
 
     cc_frac_po =
         PSY.PO.CombinedCycleFractional(; id = 10, name = "cc2", configuration = "Other")
-    cc_frac = PSY.from_openapi(CombinedCycleFractional, cc_frac_po)
+    cc_frac = PSY.from_openapi(cc_frac_po, refs)
     @test get_configuration(cc_frac) == CombinedCycleConfiguration.Other
 
     geo_po = PSY.PC.GeographicInfo(;
         id = 11,
         geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
     )
-    geo = PSY.from_openapi(GeographicInfo, geo_po)
+    geo = PSY.from_openapi(geo_po, refs)
     @test get_geo_json(geo)["type"] == "Point"
 
     # The PO layer's own OpenAPI-generated enum validation rejects an unmapped
     # pollutant before construction even completes (mirrors the reserve-direction
-    # test in test_openapi_converters.jl) — the converter's own table errors loudly
-    # too, exercised directly since a real PO struct can never carry a value outside
-    # its own enum whitelist.
+    # test in test_openapi_converters.jl) — and the scoped-enum constructor the
+    # converter uses errors loudly too, exercised directly since a real PO struct can
+    # never carry a value outside its own enum whitelist.
     @test_throws Exception PSY.PO.EmissionsData(;
         id = 12, name = "bad", pollutant = "BOGUS",
         emission_rate = emissions_po.emission_rate, basis = "FUEL_INPUT",
         mass_unit = "LB", energy_unit = "MMBTU",
     )
-    @test_throws ErrorException PSY._enum_from_string(
-        PSY.POLLUTANT_TYPE_FROM_STRING, "BOGUS", "pollutant",
-    )
+    @test_throws Exception PollutantType("BOGUS")
 end
 
 @testset "MarketBidCost round trip: fields and ancillary service offer ids" begin

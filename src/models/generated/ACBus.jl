@@ -151,15 +151,12 @@ set_load_zone!(value::ACBus, val) = value.load_zone = val
 set_ext!(value::ACBus, val) = value.ext = val
 
 
-const AC_BUS_TYPES_FROM_STRING = Dict{String, ACBusTypes}(string(m) => m for m in instances(ACBusTypes))
-const AC_BUS_TYPES_TO_STRING = Dict{ ACBusTypes, String}(m => string(m) for m in instances(ACBusTypes))
-
 function from_openapi(po::PO.ACBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ACBus(;
         number = po.number,
         name = po.name,
         available = po.available,
-        bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
+        bustype = ACBusTypes(po.bustype),
         angle = po.angle,
         magnitude = po.magnitude,
         voltage_limits = _minmax_from_po(po.voltage_limits),
@@ -174,7 +171,7 @@ function from_openapi(po::PO.ACBus, refs::OpenAPIRefs, ::NaturalUnit)
         number = po.number,
         name = po.name,
         available = po.available,
-        bustype = AC_BUS_TYPES_FROM_STRING[po.bustype],
+        bustype = ACBusTypes(po.bustype),
         angle = po.angle,
         magnitude = po.magnitude,
         voltage_limits = _minmax_from_po(po.voltage_limits),
@@ -190,7 +187,7 @@ function to_openapi(value::ACBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
         number = get_number(value),
         name = get_name(value),
         available = get_available(value),
-        bustype = AC_BUS_TYPES_TO_STRING[get_bustype(value)],
+        bustype = string(get_bustype(value)),
         angle = get_angle(value),
         magnitude = get_magnitude(value),
         voltage_limits = _minmax_po_optional(get_voltage_limits(value)),
@@ -206,7 +203,7 @@ function to_openapi(value::ACBus, refs::OpenAPIRefs, ::NaturalUnit)
         number = get_number(value),
         name = get_name(value),
         available = get_available(value),
-        bustype = AC_BUS_TYPES_TO_STRING[get_bustype(value)],
+        bustype = string(get_bustype(value)),
         angle = get_angle(value),
         magnitude = get_magnitude(value),
         voltage_limits = _minmax_po_optional(get_voltage_limits(value)),

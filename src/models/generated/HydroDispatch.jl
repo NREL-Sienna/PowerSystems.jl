@@ -220,9 +220,6 @@ set_services!(value::HydroDispatch, val) = value.services = val
 set_ext!(value::HydroDispatch, val) = value.ext = val
 
 
-const PRIME_MOVERS_FROM_STRING = Dict{String, PrimeMovers}(string(m) => m for m in instances(PrimeMovers))
-const PRIME_MOVERS_TO_STRING = Dict{ PrimeMovers, String}(m => string(m) for m in instances(PrimeMovers))
-
 function from_openapi(po::PO.HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return HydroDispatch(;
         name = po.name,
@@ -231,7 +228,7 @@ function from_openapi(po::PO.HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
         active_power = po.active_power,
         reactive_power = po.reactive_power,
         rating = po.rating,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
         active_power_limits = _minmax_from_po(po.active_power_limits),
         reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
         ramp_limits = _updown_from_po(po.ramp_limits),
@@ -251,7 +248,7 @@ function from_openapi(po::PO.HydroDispatch, refs::OpenAPIRefs, ::NaturalUnit)
         active_power = po.active_power / po.base_power,
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
         active_power_limits = _minmax_from_po(po.active_power_limits, (/), po.base_power),
         reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
         ramp_limits = _updown_from_po(po.ramp_limits, (/), po.base_power),
@@ -272,7 +269,7 @@ function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
         active_power = get_active_power(value, DU),
         reactive_power = get_reactive_power(value, DU),
         rating = get_rating(value, DU),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
         active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
         ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
@@ -293,7 +290,7 @@ function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::NaturalUnit)
         active_power = get_active_power(value, DU) * _get_base_power(value),
         reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
         rating = get_rating(value, DU) * _get_base_power(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
         active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
         reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
         ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),

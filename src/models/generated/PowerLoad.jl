@@ -158,7 +158,6 @@ set_services!(value::PowerLoad, val) = value.services = val
 set_ext!(value::PowerLoad, val) = value.ext = val
 
 
-
 function from_openapi(po::PO.PowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PowerLoad(;
         name = po.name,
@@ -169,7 +168,7 @@ function from_openapi(po::PO.PowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         base_power = po.base_power,
         max_active_power = po.max_active_power,
         max_reactive_power = po.max_reactive_power,
-        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        conformity = LoadConformity(po.conformity),
     )
 end
 
@@ -183,7 +182,7 @@ function from_openapi(po::PO.PowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
         base_power = po.base_power,
         max_active_power = po.max_active_power / po.base_power,
         max_reactive_power = po.max_reactive_power / po.base_power,
-        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        conformity = LoadConformity(po.conformity),
     )
 end
 
@@ -198,7 +197,7 @@ function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         base_power = _get_base_power(value),
         max_active_power = get_max_active_power(value, DU),
         max_reactive_power = get_max_reactive_power(value, DU),
-        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = string(get_conformity(value)),
     )
 end
 
@@ -213,6 +212,6 @@ function to_openapi(value::PowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
         base_power = _get_base_power(value),
         max_active_power = get_max_active_power(value, DU) * _get_base_power(value),
         max_reactive_power = get_max_reactive_power(value, DU) * _get_base_power(value),
-        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = string(get_conformity(value)),
     )
 end

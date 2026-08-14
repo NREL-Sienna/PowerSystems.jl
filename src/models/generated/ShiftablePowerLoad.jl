@@ -180,7 +180,6 @@ set_services!(value::ShiftablePowerLoad, val) = value.services = val
 set_ext!(value::ShiftablePowerLoad, val) = value.ext = val
 
 
-
 function from_openapi(po::PO.ShiftablePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ShiftablePowerLoad(;
         name = po.name,

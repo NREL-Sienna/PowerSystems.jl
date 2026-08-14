@@ -268,7 +268,6 @@ set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
 
 
-
 function from_openapi(po::PO.ThermalMultiStart, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ThermalMultiStart(;
         name = po.name,
@@ -278,8 +277,8 @@ function from_openapi(po::PO.ThermalMultiStart, refs::OpenAPIRefs, ::DeviceBaseU
         active_power = po.active_power,
         reactive_power = po.reactive_power,
         rating = po.rating,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        fuel = ThermalFuels(po.fuel),
         active_power_limits = _minmax_from_po(po.active_power_limits),
         reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
         ramp_limits = _updown_from_po(po.ramp_limits),
@@ -303,8 +302,8 @@ function from_openapi(po::PO.ThermalMultiStart, refs::OpenAPIRefs, ::NaturalUnit
         active_power = po.active_power / po.base_power,
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        fuel = THERMAL_FUELS_FROM_STRING[po.fuel],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        fuel = ThermalFuels(po.fuel),
         active_power_limits = _minmax_from_po(po.active_power_limits, (/), po.base_power),
         reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
         ramp_limits = _updown_from_po(po.ramp_limits, (/), po.base_power),
@@ -329,8 +328,8 @@ function to_openapi(value::ThermalMultiStart, refs::OpenAPIRefs, ::DeviceBaseUni
         active_power = get_active_power(value, DU),
         reactive_power = get_reactive_power(value, DU),
         rating = get_rating(value, DU),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
-        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
+        fuel = string(get_fuel(value)),
         active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
         ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
@@ -355,8 +354,8 @@ function to_openapi(value::ThermalMultiStart, refs::OpenAPIRefs, ::NaturalUnit)
         active_power = get_active_power(value, DU) * _get_base_power(value),
         reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
         rating = get_rating(value, DU) * _get_base_power(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
-        fuel = THERMAL_FUELS_TO_STRING[get_fuel(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
+        fuel = string(get_fuel(value)),
         active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
         reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
         ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),

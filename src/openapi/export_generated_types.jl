@@ -42,8 +42,9 @@ _scale_optional_po(v, base) = v * base
 _component_id_optional(::OpenAPIRefs, ::Nothing) = nothing
 _component_id_optional(refs::OpenAPIRefs, component) = component_id(refs, component)
 
-# Reverse enum tables, inverted from the `<ENUM>_FROM_STRING` tables rather than hand-written
-# again, so the two cannot drift. A Dict rather than `string(e)`: `@scoped_enum`'s `string`
-# routes through `_value2name(Val{value}())`, a dynamic dispatch ~7x slower that infers `Any`,
-# and these lookups run per component per enum field.
+# Scoped enums convert directly (`EnumType(s)` in, `string(e)` out — see `@scoped_enum` in
+# IS), so no enum tables exist anywhere in the converters. `_invert` remains for the
+# genuinely non-enum string maps (`RESERVE_DIRECTION`, a string → type-parameter table, and
+# `SCALING_FACTOR_MULTIPLIERS`, a string → function table), whose reverse directions are
+# derived from the forward tables rather than hand-written again, so the two cannot drift.
 _invert(d) = Dict(v => k for (k, v) in d)

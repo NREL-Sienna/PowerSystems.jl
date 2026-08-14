@@ -123,7 +123,6 @@ set_services!(value::AreaInterchange, val) = value.services = val
 set_ext!(value::AreaInterchange, val) = value.ext = val
 
 
-
 function from_openapi(po::PO.AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return AreaInterchange(;
         name = po.name,

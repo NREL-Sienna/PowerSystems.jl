@@ -147,7 +147,6 @@ set_services!(value::SynchronousCondenser, val) = value.services = val
 set_ext!(value::SynchronousCondenser, val) = value.ext = val
 
 
-
 function from_openapi(po::PO.SynchronousCondenser, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return SynchronousCondenser(;
         name = po.name,

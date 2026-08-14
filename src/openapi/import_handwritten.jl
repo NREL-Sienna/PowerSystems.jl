@@ -75,12 +75,6 @@ to an empty vector, matching `HydroReservoir.upstream_reservoirs`'s own default.
 _reservoir_devices(::OpenAPIRefs, ::Nothing) = Device[]
 _reservoir_devices(refs::OpenAPIRefs, ids) = Device[refs[id] for id in ids]
 
-const TRANSFORMERCONTROLOBJECTIVE_FROM_STRING = _enum_table(TransformerControlObjective)
-const TWOWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING =
-    _enum_table(TwoWindingTransformerShuntLocation)
-const RESERVOIRDATATYPE_FROM_STRING = _enum_table(ReservoirDataType)
-const STORAGETECH_FROM_STRING = _enum_table(StorageTech)
-
 """`ReserveDirection` is a type parameter, not an enum instance, so this is a literal table
 (mirrors the reference) rather than an `instances(...)`-derived one."""
 const RESERVE_DIRECTION = Dict(
@@ -246,10 +240,6 @@ end
 # (falling back to the document system base if a producer omits the field) exactly like Line,
 # rather than trusting `po.base_power` blindly.
 
-const DISCRETECONTROLLEDBRANCHTYPE_FROM_STRING = _enum_table(DiscreteControlledBranchType)
-const DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING =
-    _enum_table(DiscreteControlledBranchStatus)
-
 function from_openapi(
     po::PO.DiscreteControlledACBranch,
     refs::OpenAPIRefs,
@@ -264,9 +254,9 @@ function from_openapi(
         r = po.r,
         x = po.x,
         rating = po.rating,
-        discrete_branch_type = DISCRETECONTROLLEDBRANCHTYPE_FROM_STRING[po.discrete_branch_type],
-        branch_status = DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING[po.branch_status],
-        normal_branch_status = DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING[po.normal_branch_status],
+        discrete_branch_type = DiscreteControlledBranchType(po.discrete_branch_type),
+        branch_status = DiscreteControlledBranchStatus(po.branch_status),
+        normal_branch_status = DiscreteControlledBranchStatus(po.normal_branch_status),
         base_power = _resolve_base_power(refs, po.base_power),
     )
 end
@@ -286,9 +276,9 @@ function from_openapi(
         r = po.r,
         x = po.x,
         rating = po.rating / bp,
-        discrete_branch_type = DISCRETECONTROLLEDBRANCHTYPE_FROM_STRING[po.discrete_branch_type],
-        branch_status = DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING[po.branch_status],
-        normal_branch_status = DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING[po.normal_branch_status],
+        discrete_branch_type = DiscreteControlledBranchType(po.discrete_branch_type),
+        branch_status = DiscreteControlledBranchStatus(po.branch_status),
+        normal_branch_status = DiscreteControlledBranchStatus(po.normal_branch_status),
         base_power = bp,
     )
 end
@@ -334,7 +324,7 @@ function from_openapi(
         α = po.alpha,
         r = po.r,
         x = po.x,
-        control_objective = TRANSFORMERCONTROLOBJECTIVE_FROM_STRING[po.control_objective],
+        control_objective = TransformerControlObjective(po.control_objective),
         regulated_bus_number = po.regulated_bus_number,
         control_limits = _minmax(po.control_limits),
         controlled_quantity_limits = _minmax(po.controlled_quantity_limits),
@@ -364,7 +354,7 @@ function from_openapi(
         α = po.alpha,
         r = po.r,
         x = po.x,
-        control_objective = TRANSFORMERCONTROLOBJECTIVE_FROM_STRING[po.control_objective],
+        control_objective = TransformerControlObjective(po.control_objective),
         regulated_bus_number = po.regulated_bus_number,
         control_limits = _minmax(po.control_limits),
         controlled_quantity_limits = _minmax(po.controlled_quantity_limits),
@@ -404,7 +394,7 @@ function from_openapi(
         name = po.name,
         circuit = refs[po.circuit],
         magnetizing_shunt = _complex_number(po.magnetizing_shunt),
-        shunt_location = TWOWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING[po.shunt_location],
+        shunt_location = TwoWindingTransformerShuntLocation(po.shunt_location),
     )
 end
 
@@ -427,8 +417,6 @@ end
 # (`check_pairwise_impedance_block`), but DEVICE_BASE performs no arithmetic on them so no
 # nothing-guard is needed. `primary_circuit`/`secondary_circuit`/`tertiary_circuit`/`star_bus`
 # resolve through `refs`, matching `TwoWindingTransformer.circuit`.
-const THREEWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING =
-    _enum_table(ThreeWindingTransformerShuntLocation)
 
 const THREEWINDING_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
 _check_three_winding_param_units(po) = _check_unit_basis(
@@ -469,7 +457,7 @@ function from_openapi(
         base_power_23 = po.base_power_23,
         base_power_31 = po.base_power_31,
         magnetizing_shunt = _complex_number(po.magnetizing_shunt),
-        shunt_location = THREEWINDINGTRANSFORMERSHUNTLOCATION_FROM_STRING[po.shunt_location],
+        shunt_location = ThreeWindingTransformerShuntLocation(po.shunt_location),
     )
 end
 
@@ -537,9 +525,6 @@ _check_switched_admittance_units(po) = _check_unit_basis(
     " for $(po.name)",
 )
 
-const SWITCHED_ADMITTANCE_CONTROL_MODE_FROM_STRING =
-    _enum_table(SwitchedAdmittanceControlMode)
-
 _switched_admittance_y_increase(values, base_power) =
     [_complex_number(v) / base_power for v in values]
 
@@ -555,7 +540,7 @@ function from_openapi(po::PO.SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBase
         number_of_steps = po.number_of_steps,
         Y_increase = _switched_admittance_y_increase(po.Y_increase, base_power),
         admittance_limits = _minmax(po.admittance_limits),
-        control_mode = SWITCHED_ADMITTANCE_CONTROL_MODE_FROM_STRING[po.control_mode],
+        control_mode = SwitchedAdmittanceControlMode(po.control_mode),
         regulated_bus_number = po.regulated_bus_number,
     )
 end
@@ -589,9 +574,6 @@ _check_facts_voltage_setpoint_units(po) = _check_unit_basis(
     " for $(po.name)",
 )
 
-const FACTSOPERATIONMODES_FROM_STRING = _enum_table(FACTSOperationModes)
-const FACTSSHUNTCONTROLTYPE_FROM_STRING = _enum_table(FACTSShuntControlType)
-
 function from_openapi(po::PO.FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseUnit)
     _check_facts_voltage_setpoint_units(po)
     base_power = get_base_power(refs)
@@ -602,12 +584,12 @@ function from_openapi(po::PO.FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBase
         control_mode = if isnothing(po.control_mode)
             nothing
         else
-            FACTSOPERATIONMODES_FROM_STRING[po.control_mode]
+            FACTSOperationModes(po.control_mode)
         end,
         voltage_setpoint = po.voltage_setpoint,
         max_shunt_current = po.max_shunt_current / base_power,
         max_reactive_power = po.max_reactive_power / base_power,
-        shunt_control_type = FACTSSHUNTCONTROLTYPE_FROM_STRING[po.shunt_control_type],
+        shunt_control_type = FACTSShuntControlType(po.shunt_control_type),
         regulated_bus_number = po.regulated_bus_number,
         reactive_power_required = po.reactive_power_required,
     )
@@ -645,7 +627,7 @@ function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit
         downstream_turbines = _hydro_units(refs, po.downstream_turbines),
         upstream_reservoirs = _reservoir_devices(refs, po.upstream_reservoirs),
         operation_cost = convert_cost(po.operation_cost),
-        level_data_type = RESERVOIRDATATYPE_FROM_STRING[po.level_data_type],
+        level_data_type = ReservoirDataType(po.level_data_type),
     )
 end
 
@@ -679,8 +661,8 @@ function from_openapi(
         name = po.name,
         available = po.available,
         bus = refs[po.bus],
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        storage_technology_type = STORAGETECH_FROM_STRING[po.storage_technology_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        storage_technology_type = StorageTech(po.storage_technology_type),
         storage_capacity = po.storage_capacity,
         storage_level_limits = _minmax(po.storage_level_limits),
         initial_storage_capacity_level = po.initial_storage_capacity_level,
@@ -713,8 +695,8 @@ function from_openapi(
         name = po.name,
         available = po.available,
         bus = refs[po.bus],
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
-        storage_technology_type = STORAGETECH_FROM_STRING[po.storage_technology_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        storage_technology_type = StorageTech(po.storage_technology_type),
         storage_capacity = po.storage_capacity / dbp,
         storage_level_limits = _minmax(po.storage_level_limits),
         initial_storage_capacity_level = po.initial_storage_capacity_level,
@@ -1014,9 +996,6 @@ end
 const TWO_TERMINAL_VSC_ADMITTANCE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
 const TWO_TERMINAL_VSC_VOLTAGE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
 
-const VSCDCCONTROLMODES_FROM_STRING = _enum_table(VSCDCControlModes)
-const VSCACCONTROLMODES_FROM_STRING = _enum_table(VSCACControlModes)
-
 _check_vsc_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
     TWO_TERMINAL_VSC_ADMITTANCE_UNITS_IMPLEMENTED,
@@ -1109,10 +1088,10 @@ _vsc_ac_setpoint(po, _setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = error(
 function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
     _check_vsc_admittance_units(po)
     _check_vsc_voltage_units(po)
-    dc_control_from = VSCDCCONTROLMODES_FROM_STRING[po.dc_control_from]
-    dc_control_to = VSCDCCONTROLMODES_FROM_STRING[po.dc_control_to]
-    ac_control_from = VSCACCONTROLMODES_FROM_STRING[po.ac_control_from]
-    ac_control_to = VSCACCONTROLMODES_FROM_STRING[po.ac_control_to]
+    dc_control_from = VSCDCControlModes(po.dc_control_from)
+    dc_control_to = VSCDCControlModes(po.dc_control_to)
+    ac_control_from = VSCACControlModes(po.ac_control_from)
+    ac_control_to = VSCACControlModes(po.ac_control_to)
     return TwoTerminalVSCLine(;
         name = po.name,
         available = po.available,

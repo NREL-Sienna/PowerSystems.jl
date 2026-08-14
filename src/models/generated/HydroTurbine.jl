@@ -254,9 +254,6 @@ set_services!(value::HydroTurbine, val) = value.services = val
 set_ext!(value::HydroTurbine, val) = value.ext = val
 
 
-const HYDRO_TURBINE_TYPE_FROM_STRING = Dict{String, HydroTurbineType}(string(m) => m for m in instances(HydroTurbineType))
-const HYDRO_TURBINE_TYPE_TO_STRING = Dict{ HydroTurbineType, String}(m => string(m) for m in instances(HydroTurbineType))
-
 function from_openapi(po::PO.HydroTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return HydroTurbine(;
         name = po.name,
@@ -274,9 +271,9 @@ function from_openapi(po::PO.HydroTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
         time_limits = _updown_from_po(po.time_limits),
         outflow_limits = _minmax_from_po(po.outflow_limits),
         efficiency = po.efficiency,
-        turbine_type = HYDRO_TURBINE_TYPE_FROM_STRING[po.turbine_type],
+        turbine_type = HydroTurbineType(po.turbine_type),
         conversion_factor = po.conversion_factor,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
         travel_time = po.travel_time,
     )
 end
@@ -298,9 +295,9 @@ function from_openapi(po::PO.HydroTurbine, refs::OpenAPIRefs, ::NaturalUnit)
         time_limits = _updown_from_po(po.time_limits),
         outflow_limits = _minmax_from_po(po.outflow_limits),
         efficiency = po.efficiency,
-        turbine_type = HYDRO_TURBINE_TYPE_FROM_STRING[po.turbine_type],
+        turbine_type = HydroTurbineType(po.turbine_type),
         conversion_factor = po.conversion_factor,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
         travel_time = po.travel_time,
     )
 end
@@ -323,9 +320,9 @@ function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
         time_limits = _updown_po_optional(get_time_limits(value)),
         outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
         efficiency = get_efficiency(value),
-        turbine_type = HYDRO_TURBINE_TYPE_TO_STRING[get_turbine_type(value)],
+        turbine_type = string(get_turbine_type(value)),
         conversion_factor = get_conversion_factor(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
         travel_time = get_travel_time(value),
     )
 end
@@ -348,9 +345,9 @@ function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::NaturalUnit)
         time_limits = _updown_po_optional(get_time_limits(value)),
         outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
         efficiency = get_efficiency(value),
-        turbine_type = HYDRO_TURBINE_TYPE_TO_STRING[get_turbine_type(value)],
+        turbine_type = string(get_turbine_type(value)),
         conversion_factor = get_conversion_factor(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
         travel_time = get_travel_time(value),
     )
 end

@@ -8,7 +8,8 @@
 # (both this file) directly.
 #
 # Reuses, rather than duplicates, import_document.jl's per-type attribute conversion
-# (`_attribute_from_openapi`), group-index attach dispatch (`_attach_attribute!`), and
+# (the 2-arg `from_openapi(po, refs)` methods), group-index attach dispatch
+# (`_attach_attribute!`), and
 # service-membership dispatch (`_attach_service_membership!`), plus the time-series row
 # dispatcher (`_resolve_time_series_type`/`_attach_time_series_row!`, which now covers every
 # time-series type) and `has_ref`/`OpenAPIRefs` from `refs.jl`. These are module-private
@@ -122,7 +123,7 @@ function load_supplemental_attribute_associations!(
             "unresolved attribute_id=$attribute_id (entity_id=$entity_id)",
         )
         attribute = get!(converted, attribute_id) do
-            built = _attribute_from_openapi(attribute_rows[attribute_id], refs)
+            built = from_openapi(attribute_rows[attribute_id], refs)
             _check_resolved_type_matches(built, assoc.attribute_type, attribute_id)
             refs[attribute_id] = built
             return built

@@ -316,9 +316,6 @@ set_services!(value::HydroPumpTurbine, val) = value.services = val
 set_ext!(value::HydroPumpTurbine, val) = value.ext = val
 
 
-const HYDRO_PUMP_TURBINE_STATUS_FROM_STRING = Dict{String, HydroPumpTurbineStatus}(string(m) => m for m in instances(HydroPumpTurbineStatus))
-const HYDRO_PUMP_TURBINE_STATUS_TO_STRING = Dict{ HydroPumpTurbineStatus, String}(m => string(m) for m in instances(HydroPumpTurbineStatus))
-
 function from_openapi(po::PO.HydroPumpTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return HydroPumpTurbine(;
         name = po.name,
@@ -335,7 +332,7 @@ function from_openapi(po::PO.HydroPumpTurbine, refs::OpenAPIRefs, ::DeviceBaseUn
         ramp_limits = _updown_from_po(po.ramp_limits),
         time_limits = _updown_from_po(po.time_limits),
         base_power = po.base_power,
-        status = HYDRO_PUMP_TURBINE_STATUS_FROM_STRING[po.status],
+        status = HydroPumpTurbineStatus(po.status),
         time_at_status = po.time_at_status,
         operation_cost = convert_cost(po.operation_cost)::OperationalCost,
         active_power_pump = po.active_power_pump,
@@ -345,7 +342,7 @@ function from_openapi(po::PO.HydroPumpTurbine, refs::OpenAPIRefs, ::DeviceBaseUn
         travel_time = po.travel_time,
         conversion_factor = po.conversion_factor,
         must_run = po.must_run,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
     )
 end
 
@@ -365,7 +362,7 @@ function from_openapi(po::PO.HydroPumpTurbine, refs::OpenAPIRefs, ::NaturalUnit)
         ramp_limits = _updown_from_po(po.ramp_limits, (/), po.base_power),
         time_limits = _updown_from_po(po.time_limits),
         base_power = po.base_power,
-        status = HYDRO_PUMP_TURBINE_STATUS_FROM_STRING[po.status],
+        status = HydroPumpTurbineStatus(po.status),
         time_at_status = po.time_at_status,
         operation_cost = convert_cost(po.operation_cost)::OperationalCost,
         active_power_pump = po.active_power_pump / po.base_power,
@@ -375,7 +372,7 @@ function from_openapi(po::PO.HydroPumpTurbine, refs::OpenAPIRefs, ::NaturalUnit)
         travel_time = po.travel_time,
         conversion_factor = po.conversion_factor,
         must_run = po.must_run,
-        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
     )
 end
 
@@ -396,7 +393,7 @@ function to_openapi(value::HydroPumpTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit
         ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
         time_limits = _updown_po_optional(get_time_limits(value)),
         base_power = _get_base_power(value),
-        status = HYDRO_PUMP_TURBINE_STATUS_TO_STRING[get_status(value)],
+        status = string(get_status(value)),
         time_at_status = get_time_at_status(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
         active_power_pump = get_active_power_pump(value, DU),
@@ -406,7 +403,7 @@ function to_openapi(value::HydroPumpTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit
         travel_time = get_travel_time(value),
         conversion_factor = get_conversion_factor(value),
         must_run = get_must_run(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
     )
 end
 
@@ -427,7 +424,7 @@ function to_openapi(value::HydroPumpTurbine, refs::OpenAPIRefs, ::NaturalUnit)
         ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
         time_limits = _updown_po_optional(get_time_limits(value)),
         base_power = _get_base_power(value),
-        status = HYDRO_PUMP_TURBINE_STATUS_TO_STRING[get_status(value)],
+        status = string(get_status(value)),
         time_at_status = get_time_at_status(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
         active_power_pump = get_active_power_pump(value, DU) * _get_base_power(value),
@@ -437,6 +434,6 @@ function to_openapi(value::HydroPumpTurbine, refs::OpenAPIRefs, ::NaturalUnit)
         travel_time = get_travel_time(value),
         conversion_factor = get_conversion_factor(value),
         must_run = get_must_run(value),
-        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+        prime_mover_type = string(get_prime_mover_type(value)),
     )
 end

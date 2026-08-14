@@ -9,146 +9,113 @@
 # Dispatches on the PSY attribute's concrete type rather than a runtime string → function
 # table: export already knows the type. Only the emitted `attribute_type` string, read by
 # `add_supplemental_attribute!` on the way back in, is derived from it.
+#
+# Same shape as the generated component exporters: `to_openapi(attr, refs)`, with the id
+# read back via `component_id(refs, attr)` — the attribute walk registers each attribute
+# under its document id before converting, exactly as the import direction does in
+# sqlite_load.jl. None of these embed unit-converted fields, so unlike the per-component
+# exporters they take no unit-system argument.
 
-const POLLUTANT_TYPE_TO_STRING = Dict(v => k for (k, v) in POLLUTANT_TYPE_FROM_STRING)
-const EMISSION_BASIS_TO_STRING = Dict(v => k for (k, v) in EMISSION_BASIS_FROM_STRING)
-const MASS_UNIT_TO_STRING = Dict(v => k for (k, v) in MASS_UNIT_FROM_STRING)
-const ENERGY_UNIT_TO_STRING = Dict(v => k for (k, v) in ENERGY_UNIT_FROM_STRING)
-const COMBINED_CYCLE_CONFIGURATION_TO_STRING =
-    Dict(v => k for (k, v) in COMBINED_CYCLE_CONFIGURATION_FROM_STRING)
-
-"""Resolve monitored-component UUIDs (an `Outage`'s own storage) back to document ids via
-`uuid_to_component` (built once per export from every already-registered component) plus
-`component_id(refs, ...)`. Empty means no association and reverses to `nothing`, the inverse of
-`_monitored_component_uuids`'s own `nothing` -> empty-vector default."""
-function _monitored_component_ids(
-    refs::OpenAPIRefs,
-    uuid_to_component::AbstractDict,
-    uuids,
-)
+"""Resolve monitored-component UUIDs (an `Outage`'s own storage) back to document ids.
+Empty means no association and reverses to `nothing`, the inverse of
+`_monitored_component_uuids`'s own `nothing` -> empty-vector default. The uuid → id map is
+rebuilt from `refs` per call rather than threaded through every attribute converter's
+signature; outage attributes are rare enough that the O(components) rebuild does not
+matter."""
+function _monitored_component_ids(refs::OpenAPIRefs, uuids)
     if isempty(uuids)
         return nothing
     end
-    return Int[component_id(refs, uuid_to_component[u]) for u in uuids]
+    uuid_to_id = Dict{Base.UUID, Int}(
+        IS.get_uuid(c) => id for (id, c) in refs.by_id if _has_own_uuid(c)
+    )
+    return Int[uuid_to_id[u] for u in uuids]
 end
 
-function to_openapi(attr::EmissionsData, id::Int)
+function to_openapi(attr::EmissionsData, refs::OpenAPIRefs)
     return PO.EmissionsData(;
-        id = id,
+        id = component_id(refs, attr),
         name = get_name(attr),
-        pollutant = POLLUTANT_TYPE_TO_STRING[get_pollutant(attr)],
+        pollutant = string(get_pollutant(attr)),
         emission_rate = PC.ValueCurve(convert_cost_to_openapi(get_emission_rate(attr))),
-        basis = EMISSION_BASIS_TO_STRING[get_basis(attr)],
+        basis = string(get_basis(attr)),
         start_up_adder = get_start_up_adder(attr),
-        mass_unit = MASS_UNIT_TO_STRING[get_mass_unit(attr)],
-        energy_unit = ENERGY_UNIT_TO_STRING[get_energy_unit(attr)],
+        mass_unit = string(get_mass_unit(attr)),
+        energy_unit = string(get_energy_unit(attr)),
         gwp = get_gwp(attr),
         available = get_available(attr),
     )
 end
 
-function to_openapi(
-    outage::GeometricDistributionForcedOutage,
-    refs::OpenAPIRefs,
-    uuid_to_component::AbstractDict,
-    id::Int,
-)
+function to_openapi(outage::GeometricDistributionForcedOutage, refs::OpenAPIRefs)
     return PO.GeometricDistributionForcedOutage(;
-        id = id,
+        id = component_id(refs, outage),
         mean_time_to_recovery = Int(round(get_mean_time_to_recovery(outage))),
         outage_transition_probability = get_outage_transition_probability(outage),
         monitored_components = _monitored_component_ids(
-            refs, uuid_to_component, get_monitored_components(outage),
+            refs, get_monitored_components(outage),
         ),
     )
 end
 
-function to_openapi(
-    outage::PlannedOutage,
-    refs::OpenAPIRefs,
-    uuid_to_component::AbstractDict,
-    id::Int,
-)
+function to_openapi(outage::PlannedOutage, refs::OpenAPIRefs)
     return PO.PlannedOutage(;
-        id = id,
+        id = component_id(refs, outage),
         outage_schedule = get_outage_schedule(outage),
         monitored_components = _monitored_component_ids(
-            refs, uuid_to_component, get_monitored_components(outage),
+            refs, get_monitored_components(outage),
         ),
     )
 end
 
-function to_openapi(
-    outage::FixedForcedOutage,
-    refs::OpenAPIRefs,
-    uuid_to_component::AbstractDict,
-    id::Int,
-)
+function to_openapi(outage::FixedForcedOutage, refs::OpenAPIRefs)
     return PO.FixedForcedOutage(;
-        id = id,
+        id = component_id(refs, outage),
         outage_status = get_outage_status(outage),
         monitored_components = _monitored_component_ids(
-            refs, uuid_to_component, get_monitored_components(outage),
+            refs, get_monitored_components(outage),
         ),
     )
 end
 
-to_openapi(plant::ThermalPowerPlant, id::Int) =
-    PO.ThermalPowerPlant(; id = id, name = get_name(plant))
-to_openapi(plant::HydroPowerPlant, id::Int) =
-    PO.HydroPowerPlant(; id = id, name = get_name(plant))
-to_openapi(plant::RenewablePowerPlant, id::Int) =
-    PO.RenewablePowerPlant(; id = id, name = get_name(plant))
+to_openapi(plant::ThermalPowerPlant, refs::OpenAPIRefs) =
+    PO.ThermalPowerPlant(; id = component_id(refs, plant), name = get_name(plant))
+to_openapi(plant::HydroPowerPlant, refs::OpenAPIRefs) =
+    PO.HydroPowerPlant(; id = component_id(refs, plant), name = get_name(plant))
+to_openapi(plant::RenewablePowerPlant, refs::OpenAPIRefs) =
+    PO.RenewablePowerPlant(; id = component_id(refs, plant), name = get_name(plant))
 
-function to_openapi(block::CombinedCycleBlock, id::Int)
+function to_openapi(block::CombinedCycleBlock, refs::OpenAPIRefs)
     return PO.CombinedCycleBlock(;
-        id = id,
+        id = component_id(refs, block),
         name = get_name(block),
-        configuration = COMBINED_CYCLE_CONFIGURATION_TO_STRING[get_configuration(block)],
+        configuration = string(get_configuration(block)),
         heat_recovery_to_steam_factor = get_heat_recovery_to_steam_factor(block),
     )
 end
 
-function to_openapi(frac::CombinedCycleFractional, id::Int)
+function to_openapi(frac::CombinedCycleFractional, refs::OpenAPIRefs)
     return PO.CombinedCycleFractional(;
-        id = id,
+        id = component_id(refs, frac),
         name = get_name(frac),
-        configuration = COMBINED_CYCLE_CONFIGURATION_TO_STRING[get_configuration(frac)],
+        configuration = string(get_configuration(frac)),
     )
 end
 
-to_openapi(geo::GeographicInfo, id::Int) =
-    PC.GeographicInfo(; id = id, geo_json = get_geo_json(geo))
+to_openapi(geo::GeographicInfo, refs::OpenAPIRefs) =
+    PC.GeographicInfo(; id = component_id(refs, geo), geo_json = get_geo_json(geo))
 
-const WINDINGCATEGORY_TO_STRING = Dict(v => k for (k, v) in WINDINGCATEGORY_FROM_STRING)
-const IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_TO_STRING =
-    Dict(v => k for (k, v) in IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING)
-
-function to_openapi(attr::ImpedanceCorrectionData, id::Int)
+function to_openapi(attr::ImpedanceCorrectionData, refs::OpenAPIRefs)
     return PO.ImpedanceCorrectionData(;
-        id = id,
+        id = component_id(refs, attr),
         table_number = get_table_number(attr),
         impedance_correction_curve = convert_cost_to_openapi(
             get_impedance_correction_curve(attr),
         ),
-        transformer_winding = WINDINGCATEGORY_TO_STRING[get_transformer_winding(attr)],
-        transformer_control_mode = IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_TO_STRING[get_transformer_control_mode(
-            attr,
-        )],
+        transformer_winding = string(get_transformer_winding(attr)),
+        transformer_control_mode = string(get_transformer_control_mode(attr)),
     )
 end
-
-"""Dispatch helper: the three `Outage` subtypes need `refs`/`uuid_to_component` to resolve
-`monitored_components`; every other supplemental attribute type does not. Absorbs that arity
-split here (mirroring `_attribute_from_openapi` on import) so the walk below can call one
-signature uniformly."""
-_to_openapi_attribute(attr, ::OpenAPIRefs, ::AbstractDict, id::Int) = to_openapi(attr, id)
-_to_openapi_attribute(
-    attr::Union{GeometricDistributionForcedOutage, PlannedOutage, FixedForcedOutage},
-    refs::OpenAPIRefs,
-    uuid_to_component::AbstractDict,
-    id::Int,
-) = to_openapi(attr, refs, uuid_to_component, id)
 
 # ── component `ext` ──────────────────────────────────────────────────────────────
 # Written through to `doc.ext[component_id]` verbatim, the reverse of `_merge_doc_ext!` in
@@ -476,15 +443,17 @@ Ids come from the document's single counter, not a private one: SiennaGridDB's `
 keys a row by id without its type, so an id must mean exactly one thing across components *and*
 supplemental attributes. Sharing the counter is what makes that true by construction — a
 private counter here previously handed out attribute id 1 alongside component id 1.
+
+Each attribute is registered into `refs` under its id before conversion, so
+`to_openapi(attr, refs)` reads its own id back via `component_id` exactly like the generated
+component exporters — and so `refs` covers attributes the same way the import direction's
+does after `load_supplemental_attribute_associations!`.
 """
 function _export_supplemental_attributes(
     sorted_refs,
     refs::OpenAPIRefs,
     doc::PC.SystemDocument,
 )
-    uuid_to_component = Dict{Base.UUID, Any}(
-        IS.get_uuid(c) => c for c in values(refs.by_id) if _has_own_uuid(c)
-    )
     attribute_rows = Any[]
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
@@ -496,10 +465,8 @@ function _export_supplemental_attributes(
             attr_uuid = IS.get_uuid(attr)
             attr_id = get!(attr_ids, attr_uuid) do
                 id = PC.next_id!(doc)
-                push!(
-                    attribute_rows,
-                    _to_openapi_attribute(attr, refs, uuid_to_component, id),
-                )
+                refs[id] = attr
+                push!(attribute_rows, to_openapi(attr, refs))
                 return id
             end
             push!(
@@ -528,8 +495,7 @@ end
 
 # ── time series (reverse of _attach_time_series!) ───────────────────────────────
 
-const SCALING_FACTOR_MULTIPLIER_TO_STRING =
-    Dict(v => k for (k, v) in SCALING_FACTOR_MULTIPLIERS)
+const SCALING_FACTOR_MULTIPLIER_TO_STRING = _invert(SCALING_FACTOR_MULTIPLIERS)
 
 _scaling_factor_multiplier_to_string(::Nothing) = nothing
 function _scaling_factor_multiplier_to_string(f::Function)

@@ -171,9 +171,6 @@ set_services!(value::MotorLoad, val) = value.services = val
 set_ext!(value::MotorLoad, val) = value.ext = val
 
 
-const MOTOR_LOAD_TECHNOLOGY_FROM_STRING = Dict{String, MotorLoadTechnology}(string(m) => m for m in instances(MotorLoadTechnology))
-const MOTOR_LOAD_TECHNOLOGY_TO_STRING = Dict{ MotorLoadTechnology, String}(m => string(m) for m in instances(MotorLoadTechnology))
-
 function from_openapi(po::PO.MotorLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return MotorLoad(;
         name = po.name,
@@ -185,7 +182,7 @@ function from_openapi(po::PO.MotorLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         rating = po.rating,
         max_active_power = po.max_active_power,
         reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
-        motor_technology = MOTOR_LOAD_TECHNOLOGY_FROM_STRING[po.motor_technology],
+        motor_technology = MotorLoadTechnology(po.motor_technology),
     )
 end
 
@@ -200,7 +197,7 @@ function from_openapi(po::PO.MotorLoad, refs::OpenAPIRefs, ::NaturalUnit)
         rating = po.rating / po.base_power,
         max_active_power = po.max_active_power / po.base_power,
         reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
-        motor_technology = MOTOR_LOAD_TECHNOLOGY_FROM_STRING[po.motor_technology],
+        motor_technology = MotorLoadTechnology(po.motor_technology),
     )
 end
 
@@ -216,7 +213,7 @@ function to_openapi(value::MotorLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         rating = get_rating(value, DU),
         max_active_power = get_max_active_power(value, DU),
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
-        motor_technology = MOTOR_LOAD_TECHNOLOGY_TO_STRING[get_motor_technology(value)],
+        motor_technology = string(get_motor_technology(value)),
     )
 end
 
@@ -232,6 +229,6 @@ function to_openapi(value::MotorLoad, refs::OpenAPIRefs, ::NaturalUnit)
         rating = get_rating(value, DU) * _get_base_power(value),
         max_active_power = get_max_active_power(value, DU) * _get_base_power(value),
         reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
-        motor_technology = MOTOR_LOAD_TECHNOLOGY_TO_STRING[get_motor_technology(value)],
+        motor_technology = string(get_motor_technology(value)),
     )
 end
