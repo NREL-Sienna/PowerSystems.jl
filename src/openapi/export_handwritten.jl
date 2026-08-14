@@ -129,6 +129,245 @@ function to_openapi(line::Line, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+# ── Source ──────────────────────────────────────────────────────────────────────
+# Device base: the MVA/MW fields multiply back by the source's own `base_power`, not the
+# document system base.
+
+function to_openapi(src::Source, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.Source(;
+        id = component_id(refs, src),
+        name = get_name(src),
+        available = get_available(src),
+        bus = component_id(refs, get_bus(src)),
+        active_power = get_active_power(src, DU),
+        reactive_power = get_reactive_power(src, DU),
+        active_power_limits = _minmax_po(get_active_power_limits(src, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(src, DU)),
+        parameter_units = "DEVICE_BASE",
+        R_th = get_R_th(src),
+        X_th = get_X_th(src),
+        internal_voltage = get_internal_voltage(src),
+        internal_angle = get_internal_angle(src),
+        base_voltage = get_base_voltage(src),
+        base_power = _get_base_power(src),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(src)),
+    )
+end
+
+function to_openapi(src::Source, refs::OpenAPIRefs, ::NaturalUnit)
+    dbp = _get_base_power(src)
+    return PO.Source(;
+        id = component_id(refs, src),
+        name = get_name(src),
+        available = get_available(src),
+        bus = component_id(refs, get_bus(src)),
+        active_power = get_active_power(src, DU) * dbp,
+        reactive_power = get_reactive_power(src, DU) * dbp,
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(src, DU), dbp),
+        reactive_power_limits = _minmax_po_scaled_optional(
+            get_reactive_power_limits(src, DU), dbp,
+        ),
+        parameter_units = "DEVICE_BASE",
+        R_th = get_R_th(src),
+        X_th = get_X_th(src),
+        internal_voltage = get_internal_voltage(src),
+        internal_angle = get_internal_angle(src),
+        base_voltage = get_base_voltage(src),
+        base_power = dbp,
+        operation_cost = convert_cost_to_openapi(get_operation_cost(src)),
+    )
+end
+
+# ── TModelHVDCLine ──────────────────────────────────────────────────────────────
+# The MW fields are pu on the *system* base (this type has no `base_power` field, so the
+# units engine resolves them there); `base_current` is written back untouched, being the
+# anchor for `r`/`l`/`c` rather than for power.
+
+function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.TModelHVDCLine(;
+        id = component_id(refs, line),
+        name = get_name(line),
+        available = get_available(line),
+        active_power_flow = get_active_power_flow(line, SU),
+        arc = component_id(refs, get_arc(line)),
+        parameter_units = "DEVICE_BASE",
+        base_current = get_base_current(line),
+        r = get_r(line),
+        l = get_l(line),
+        c = get_c(line),
+        active_power_limits_from = _minmax_po(get_active_power_limits_from(line, SU)),
+        active_power_limits_to = _minmax_po(get_active_power_limits_to(line, SU)),
+    )
+end
+
+function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
+    sbp = get_base_power(refs)
+    return PO.TModelHVDCLine(;
+        id = component_id(refs, line),
+        name = get_name(line),
+        available = get_available(line),
+        active_power_flow = get_active_power_flow(line, SU) * sbp,
+        arc = component_id(refs, get_arc(line)),
+        parameter_units = "DEVICE_BASE",
+        base_current = get_base_current(line),
+        r = get_r(line),
+        l = get_l(line),
+        c = get_c(line),
+        active_power_limits_from = _minmax_po_scaled(
+            get_active_power_limits_from(line, SU), sbp,
+        ),
+        active_power_limits_to = _minmax_po_scaled(
+            get_active_power_limits_to(line, SU), sbp,
+        ),
+    )
+end
+
+# ── InterconnectingConverter ────────────────────────────────────────────────────
+# Device base throughout, `dc_current`/`max_dc_current` included — the descriptor tags those
+# `:mva`, so they scale with the rest rather than against a current base.
+
+function to_openapi(conv::InterconnectingConverter, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.InterconnectingConverter(;
+        id = component_id(refs, conv),
+        name = get_name(conv),
+        available = get_available(conv),
+        bus = component_id(refs, get_bus(conv)),
+        dc_bus = component_id(refs, get_dc_bus(conv)),
+        active_power = get_active_power(conv, DU),
+        rating = get_rating(conv, DU),
+        active_power_limits = _minmax_po(get_active_power_limits(conv, DU)),
+        base_power = _get_base_power(conv),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(conv, DU)),
+        dc_current = get_dc_current(conv, DU),
+        max_dc_current = get_max_dc_current(conv, DU),
+        loss_function = convert_cost_to_openapi(get_loss_function(conv)),
+        dc_control = string(get_dc_control(conv)),
+        ac_control = string(get_ac_control(conv)),
+        voltage_setpoint_units = "DEVICE_BASE",
+        dc_setpoint = get_dc_setpoint(conv),
+        ac_setpoint = get_ac_setpoint(conv),
+        dc_voltage_droop = get_dc_voltage_droop(conv),
+        remote_bus_control = get_remote_bus_control(conv),
+        rmpct = get_rmpct(conv),
+        power_factor_weighting_fraction = get_power_factor_weighting_fraction(conv),
+        voltage_limits = _minmax_po(get_voltage_limits(conv)),
+    )
+end
+
+function to_openapi(conv::InterconnectingConverter, refs::OpenAPIRefs, ::NaturalUnit)
+    dbp = _get_base_power(conv)
+    return PO.InterconnectingConverter(;
+        id = component_id(refs, conv),
+        name = get_name(conv),
+        available = get_available(conv),
+        bus = component_id(refs, get_bus(conv)),
+        dc_bus = component_id(refs, get_dc_bus(conv)),
+        active_power = get_active_power(conv, DU) * dbp,
+        rating = get_rating(conv, DU) * dbp,
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(conv, DU), dbp),
+        base_power = dbp,
+        reactive_power_limits = _minmax_po_scaled_optional(
+            get_reactive_power_limits(conv, DU), dbp,
+        ),
+        dc_current = get_dc_current(conv, DU) * dbp,
+        max_dc_current = get_max_dc_current(conv, DU) * dbp,
+        loss_function = convert_cost_to_openapi(get_loss_function(conv)),
+        dc_control = string(get_dc_control(conv)),
+        ac_control = string(get_ac_control(conv)),
+        voltage_setpoint_units = "DEVICE_BASE",
+        dc_setpoint = get_dc_setpoint(conv),
+        ac_setpoint = get_ac_setpoint(conv),
+        dc_voltage_droop = get_dc_voltage_droop(conv),
+        remote_bus_control = get_remote_bus_control(conv),
+        rmpct = get_rmpct(conv),
+        power_factor_weighting_fraction = get_power_factor_weighting_fraction(conv),
+        voltage_limits = _minmax_po(get_voltage_limits(conv)),
+    )
+end
+
+# ── MonitoredLine ───────────────────────────────────────────────────────────────
+# Mirrors `Line` above field for field, plus `flow_limits`, which scales with `rating`.
+
+function to_openapi(line::MonitoredLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.MonitoredLine(;
+        id = component_id(refs, line),
+        name = get_name(line),
+        available = get_available(line),
+        active_power_flow = get_active_power_flow(line, SU),
+        reactive_power_flow = get_reactive_power_flow(line, SU),
+        arc = component_id(refs, get_arc(line)),
+        r = get_r(line, SU),
+        x = get_x(line, SU),
+        base_power = get_base_power(refs),
+        b = _fromto_po(get_b(line, SU)),
+        flow_limits = _fromto_tofrom_po(get_flow_limits(line, SU)),
+        rating = get_rating(line, SU),
+        rating_b = get_rating_b(line, SU),
+        rating_c = get_rating_c(line, SU),
+        angle_limits = _minmax_po(get_angle_limits(line)),
+        g = _fromto_po(get_g(line, SU)),
+    )
+end
+
+function to_openapi(line::MonitoredLine, refs::OpenAPIRefs, ::NaturalUnit)
+    sbp = get_base_power(refs)
+    return PO.MonitoredLine(;
+        id = component_id(refs, line),
+        name = get_name(line),
+        available = get_available(line),
+        active_power_flow = get_active_power_flow(line, SU) * sbp,
+        reactive_power_flow = get_reactive_power_flow(line, SU) * sbp,
+        arc = component_id(refs, get_arc(line)),
+        r = get_r(line, SU),
+        x = get_x(line, SU),
+        base_power = sbp,
+        b = _fromto_po(get_b(line, SU)),
+        flow_limits = _fromto_tofrom_po_scaled(get_flow_limits(line, SU), sbp),
+        rating = get_rating(line, SU) * sbp,
+        rating_b = _scale_optional_po(get_rating_b(line, SU), sbp),
+        rating_c = _scale_optional_po(get_rating_c(line, SU), sbp),
+        angle_limits = _minmax_po(get_angle_limits(line)),
+        g = _fromto_po(get_g(line, SU)),
+    )
+end
+
+# ── GenericArcImpedance ─────────────────────────────────────────────────────────
+# `parameter_units` is stated rather than derived: the import side only accepts
+# "DEVICE_BASE", so that is what export writes.
+
+function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.GenericArcImpedance(;
+        id = component_id(refs, branch),
+        name = get_name(branch),
+        available = get_available(branch),
+        active_power_flow = get_active_power_flow(branch, SU),
+        reactive_power_flow = get_reactive_power_flow(branch, SU),
+        max_flow = get_max_flow(branch, SU),
+        arc = component_id(refs, get_arc(branch)),
+        base_power = get_base_power(refs),
+        parameter_units = "DEVICE_BASE",
+        r = get_r(branch, SU),
+        x = get_x(branch, SU),
+    )
+end
+
+function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::NaturalUnit)
+    sbp = get_base_power(refs)
+    return PO.GenericArcImpedance(;
+        id = component_id(refs, branch),
+        name = get_name(branch),
+        available = get_available(branch),
+        active_power_flow = get_active_power_flow(branch, SU) * sbp,
+        reactive_power_flow = get_reactive_power_flow(branch, SU) * sbp,
+        max_flow = get_max_flow(branch, SU) * sbp,
+        arc = component_id(refs, get_arc(branch)),
+        base_power = sbp,
+        parameter_units = "DEVICE_BASE",
+        r = get_r(branch, SU),
+        x = get_x(branch, SU),
+    )
+end
+
 # ── DiscreteControlledACBranch ───────────────────────────────────────────────────
 # `active_power_flow`/`reactive_power_flow`/`r`/`x` are declared `SU` (system base), `rating`
 # is declared `DU` — numerically identical for this type since its `base_power` always equals

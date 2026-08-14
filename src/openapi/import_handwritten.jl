@@ -228,6 +228,106 @@ function from_openapi(po::PO.Line, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+# ── MonitoredLine ───────────────────────────────────────────────────────────────
+# Same posture as `Line` directly above, field for field, plus `flow_limits`: `r`/`x`/`b`/`g`
+# are already pu on the line's base and pass through in both methods (no `base_voltage` to
+# build Zbase from), the MVA/MW fields divide by `_resolve_base_power`, and `angle_limits` is
+# radians with no conversion. `flow_limits` is the one field `Line` does not have — a
+# `FromTo_ToFrom` of natural MVA, so it scales with the same base as `rating`.
+
+_fromto_toframe(m) = (from_to = Float64(m.from_to), to_from = Float64(m.to_from))
+_fromto_toframe_du(m, base) =
+    (from_to = Float64(m.from_to) / base, to_from = Float64(m.to_from) / base)
+
+function from_openapi(po::PO.MonitoredLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return MonitoredLine(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow,
+        reactive_power_flow = po.reactive_power_flow,
+        arc = refs[po.arc],
+        r = po.r,
+        x = po.x,
+        b = _fromto(po.b),
+        flow_limits = _fromto_toframe(po.flow_limits),
+        rating = po.rating,
+        angle_limits = _minmax(po.angle_limits),
+        rating_b = po.rating_b,
+        rating_c = po.rating_c,
+        g = _fromto(po.g),
+        base_power = _resolve_base_power(refs, po.base_power),
+    )
+end
+
+function from_openapi(po::PO.MonitoredLine, refs::OpenAPIRefs, ::NaturalUnit)
+    sbp = _resolve_base_power(refs, po.base_power)
+    return MonitoredLine(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow / sbp,
+        reactive_power_flow = po.reactive_power_flow / sbp,
+        arc = refs[po.arc],
+        r = po.r,
+        x = po.x,
+        b = _fromto(po.b),
+        flow_limits = _fromto_toframe_du(po.flow_limits, sbp),
+        rating = po.rating / sbp,
+        angle_limits = _minmax(po.angle_limits),
+        rating_b = _scale_optional(po.rating_b, sbp),
+        rating_c = _scale_optional(po.rating_c, sbp),
+        g = _fromto(po.g),
+        base_power = sbp,
+    )
+end
+
+# ── GenericArcImpedance ─────────────────────────────────────────────────────────
+# `r`/`x` pass through for the same reason as `Line`'s: the descriptor tags them `:ohm` for
+# the general getter/setter machinery, but the type carries no `base_voltage` to build Zbase
+# from. Unlike `Line`, this type states the basis it was written in rather than leaving it
+# implicit, so the discriminator is checked instead of assumed — "DEVICE_BASE" is the only
+# basis with arithmetic here, and any other value errors rather than being silently treated
+# as pu.
+
+const GENERIC_ARC_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+
+_check_generic_arc_param_units(po) = _check_unit_basis(
+    po.parameter_units,
+    GENERIC_ARC_PARAM_UNITS_IMPLEMENTED,
+    "GenericArcImpedance.parameter_units",
+    " for $(po.name)",
+)
+
+function from_openapi(po::PO.GenericArcImpedance, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    _check_generic_arc_param_units(po)
+    return GenericArcImpedance(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow,
+        reactive_power_flow = po.reactive_power_flow,
+        max_flow = po.max_flow,
+        arc = refs[po.arc],
+        r = po.r,
+        x = po.x,
+        base_power = _resolve_base_power(refs, po.base_power),
+    )
+end
+
+function from_openapi(po::PO.GenericArcImpedance, refs::OpenAPIRefs, ::NaturalUnit)
+    _check_generic_arc_param_units(po)
+    sbp = _resolve_base_power(refs, po.base_power)
+    return GenericArcImpedance(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow / sbp,
+        reactive_power_flow = po.reactive_power_flow / sbp,
+        max_flow = po.max_flow / sbp,
+        arc = refs[po.arc],
+        r = po.r,
+        x = po.x,
+        base_power = sbp,
+    )
+end
+
 # ── DiscreteControlledACBranch ───────────────────────────────────────────────────
 # Same posture as `Line`: the PSY descriptor tags `r`/`x` `needs_conversion`/`:ohm` for the
 # general SU/DU/NU getter/setter machinery, but neither the struct nor the document carries a
@@ -1166,6 +1266,187 @@ end
 
 function from_openapi(po::PO.TwoTerminalVSCLine, refs::OpenAPIRefs, unit::NaturalUnit)
     return _two_terminal_vsc_line(po, refs, _resolve_base_power(refs, po.base_power), unit)
+end
+
+# ── Source ──────────────────────────────────────────────────────────────────────
+# A genuine device base: `base_power` is the unit's own rating, not the denormalized system
+# base, so the MVA/MW fields divide by `po.base_power` rather than `_resolve_base_power`.
+# `R_th`/`X_th` carry no `needs_conversion` in the descriptor — they are pu on the source's
+# own base already — but the document states which basis it wrote them in, so the
+# discriminator is checked rather than assumed. `base_voltage` is a plain kV passthrough.
+
+const SOURCE_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+
+_check_source_param_units(po) = _check_unit_basis(
+    po.parameter_units,
+    SOURCE_PARAM_UNITS_IMPLEMENTED,
+    "Source.parameter_units",
+    " for $(po.name)",
+)
+
+function from_openapi(po::PO.Source, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    _check_source_param_units(po)
+    return Source(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        active_power_limits = _minmax(po.active_power_limits),
+        reactive_power_limits = _opt_minmax(po.reactive_power_limits),
+        R_th = po.R_th,
+        X_th = po.X_th,
+        internal_voltage = po.internal_voltage,
+        internal_angle = po.internal_angle,
+        base_power = po.base_power,
+        base_voltage = po.base_voltage,
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+    )
+end
+
+function from_openapi(po::PO.Source, refs::OpenAPIRefs, ::NaturalUnit)
+    _check_source_param_units(po)
+    dbp = po.base_power
+    return Source(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power / dbp,
+        reactive_power = po.reactive_power / dbp,
+        active_power_limits = _minmax_du(po.active_power_limits, dbp),
+        reactive_power_limits = _minmax_du(po.reactive_power_limits, dbp),
+        R_th = po.R_th,
+        X_th = po.X_th,
+        internal_voltage = po.internal_voltage,
+        internal_angle = po.internal_angle,
+        base_power = dbp,
+        base_voltage = po.base_voltage,
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+    )
+end
+
+# ── TModelHVDCLine ──────────────────────────────────────────────────────────────
+# The cable exception. This type carries no `base_power` at all — its anchor is
+# `base_current` (A), which per-unitizes `l`/`c` and, under "DEVICE_BASE", `r`. It therefore
+# falls through `base_power_kind`'s `DeviceBasePower()` default to `_get_base_power(c::
+# Component) = _get_system_base_power(c)`, so the MW fields per-unitize on the *system* base
+# exactly like `Line`'s do — `base_current` never enters that arithmetic. Getting this
+# backwards (dividing MW by `base_current`) would be dimensionally meaningless, which is why
+# it is spelled out here.
+
+const TMODEL_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+
+_check_tmodel_param_units(po) = _check_unit_basis(
+    po.parameter_units,
+    TMODEL_PARAM_UNITS_IMPLEMENTED,
+    "TModelHVDCLine.parameter_units",
+    " for $(po.name)",
+)
+
+function from_openapi(po::PO.TModelHVDCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    _check_tmodel_param_units(po)
+    return TModelHVDCLine(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow,
+        arc = resolve_ref(refs, po.arc, Arc),
+        r = po.r,
+        l = po.l,
+        c = po.c,
+        active_power_limits_from = _minmax(po.active_power_limits_from),
+        active_power_limits_to = _minmax(po.active_power_limits_to),
+        base_current = po.base_current,
+    )
+end
+
+function from_openapi(po::PO.TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
+    _check_tmodel_param_units(po)
+    sbp = get_base_power(refs)
+    return TModelHVDCLine(;
+        name = po.name,
+        available = po.available,
+        active_power_flow = po.active_power_flow / sbp,
+        arc = resolve_ref(refs, po.arc, Arc),
+        r = po.r,
+        l = po.l,
+        c = po.c,
+        active_power_limits_from = _minmax_du(po.active_power_limits_from, sbp),
+        active_power_limits_to = _minmax_du(po.active_power_limits_to, sbp),
+        base_current = po.base_current,
+    )
+end
+
+# ── InterconnectingConverter ────────────────────────────────────────────────────
+# Another genuine device base: every MVA/MW/A-rated field divides by the converter's own
+# `base_power`, including `dc_current`/`max_dc_current`, which the descriptor tags `:mva`
+# rather than a current unit. `remote_bus_control` is a bus *number*, not a component
+# reference — `Union{Nothing, Int}` in PSY — so it passes through rather than resolving.
+# `loss_function` reuses the `TwoTerminalVSCLine` guard: the PSY field admits only the linear
+# and quadratic shapes, so a piecewise document curve is named here rather than surfacing as
+# a constructor `MethodError`.
+
+const IC_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+
+_check_ic_voltage_setpoint_units(po) = _check_unit_basis(
+    po.voltage_setpoint_units,
+    IC_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED,
+    "InterconnectingConverter.voltage_setpoint_units",
+    " for $(po.name)",
+)
+
+function from_openapi(po::PO.InterconnectingConverter, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    _check_ic_voltage_setpoint_units(po)
+    return InterconnectingConverter(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        dc_bus = resolve_ref(refs, po.dc_bus, DCBus),
+        active_power = po.active_power,
+        rating = po.rating,
+        active_power_limits = _minmax(po.active_power_limits),
+        base_power = po.base_power,
+        reactive_power_limits = _opt_minmax(po.reactive_power_limits),
+        dc_current = po.dc_current,
+        max_dc_current = po.max_dc_current,
+        loss_function = _vsc_converter_loss(convert_cost(po.loss_function)),
+        dc_control = VSCDCControlModes(po.dc_control),
+        ac_control = VSCACControlModes(po.ac_control),
+        dc_setpoint = po.dc_setpoint,
+        ac_setpoint = po.ac_setpoint,
+        dc_voltage_droop = po.dc_voltage_droop,
+        remote_bus_control = po.remote_bus_control,
+        rmpct = po.rmpct,
+        power_factor_weighting_fraction = po.power_factor_weighting_fraction,
+        voltage_limits = _minmax(po.voltage_limits),
+    )
+end
+
+function from_openapi(po::PO.InterconnectingConverter, refs::OpenAPIRefs, ::NaturalUnit)
+    _check_ic_voltage_setpoint_units(po)
+    dbp = po.base_power
+    return InterconnectingConverter(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        dc_bus = resolve_ref(refs, po.dc_bus, DCBus),
+        active_power = po.active_power / dbp,
+        rating = po.rating / dbp,
+        active_power_limits = _minmax_du(po.active_power_limits, dbp),
+        base_power = dbp,
+        reactive_power_limits = _minmax_du(po.reactive_power_limits, dbp),
+        dc_current = po.dc_current / dbp,
+        max_dc_current = po.max_dc_current / dbp,
+        loss_function = _vsc_converter_loss(convert_cost(po.loss_function)),
+        dc_control = VSCDCControlModes(po.dc_control),
+        ac_control = VSCACControlModes(po.ac_control),
+        dc_setpoint = po.dc_setpoint,
+        ac_setpoint = po.ac_setpoint,
+        dc_voltage_droop = po.dc_voltage_droop,
+        remote_bus_control = po.remote_bus_control,
+        rmpct = po.rmpct,
+        power_factor_weighting_fraction = po.power_factor_weighting_fraction,
+        voltage_limits = _minmax(po.voltage_limits),
+    )
 end
 
 # ── Reserves: OnlineReserve, OfflineReserve, GroupReserve ───────────────────────

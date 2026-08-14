@@ -22,6 +22,14 @@ const DOCUMENT_PLAN = [
     (po_type = PO.Arc, psy_type = Arc, key = "Arc", addable = true),
     (po_type = PO.Line, psy_type = Line, key = "Line", addable = true),
     (
+        po_type = PO.MonitoredLine, psy_type = MonitoredLine, key = "MonitoredLine",
+        addable = true,
+    ),
+    (
+        po_type = PO.GenericArcImpedance, psy_type = GenericArcImpedance,
+        key = "GenericArcImpedance", addable = true,
+    ),
+    (
         po_type = PO.DiscreteControlledACBranch, psy_type = DiscreteControlledACBranch,
         key = "DiscreteControlledACBranch", addable = true,
     ),
@@ -73,6 +81,11 @@ const DOCUMENT_PLAN = [
         key = "ShiftablePowerLoad", addable = true,
     ),
     (po_type = PO.MotorLoad, psy_type = MotorLoad, key = "MotorLoad", addable = true),
+    (po_type = PO.Source, psy_type = Source, key = "Source", addable = true),
+    (
+        po_type = PO.InterconnectingConverter, psy_type = InterconnectingConverter,
+        key = "InterconnectingConverter", addable = true,
+    ),
     (
         po_type = PO.ExponentialLoad, psy_type = ExponentialLoad,
         key = "ExponentialLoad", addable = true,
@@ -127,6 +140,10 @@ const DOCUMENT_PLAN = [
     (
         po_type = PO.TwoTerminalGenericHVDCLine, psy_type = TwoTerminalGenericHVDCLine,
         key = "TwoTerminalGenericHVDCLine", addable = true,
+    ),
+    (
+        po_type = PO.TModelHVDCLine, psy_type = TModelHVDCLine, key = "TModelHVDCLine",
+        addable = true,
     ),
     (
         po_type = PO.TwoTerminalLCCLine, psy_type = TwoTerminalLCCLine,

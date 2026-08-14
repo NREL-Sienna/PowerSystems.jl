@@ -18,6 +18,7 @@ This file is auto-generated. Do not edit.
         internal_voltage::Float64
         internal_angle::Float64
         base_power::Float64
+        base_voltage::Union{Nothing, Float64}
         operation_cost::OperationalCost
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
@@ -42,6 +43,7 @@ Commonly used in dynamics simulations to represent a very large machine on a sin
 - `internal_voltage::Float64`: (default: `1.0`) Internal Voltage (pu), validation range: `(0, nothing)`
 - `internal_angle::Float64`: (default: `0.0`) Internal Angle
 - `base_power::Float64`: (default: `100.0`) Base Power in MVA
+- `base_voltage::Union{Nothing, Float64}`: (default: `nothing`) the base voltage in kV, validation range: `(0, nothing)`
 - `operation_cost::OperationalCost`: (default: `ImportExportCost(nothing)`) [`ImportExportCost`](@ref) of the source.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -73,6 +75,8 @@ mutable struct Source <: StaticInjection
     internal_angle::Float64
     "Base Power in MVA"
     base_power::Float64
+    "the base voltage in kV"
+    base_voltage::Union{Nothing, Float64}
     "[`ImportExportCost`](@ref) of the source."
     operation_cost::OperationalCost
     "corresponding dynamic injection device"
@@ -85,12 +89,12 @@ mutable struct Source <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function Source(name, available, bus, active_power=0.0, reactive_power=0.0, active_power_limits=(min=0.0, max=0.0), reactive_power_limits=(min=0.0, max=0.0), R_th=0.0, X_th=0.0, internal_voltage=1.0, internal_angle=0.0, base_power=100.0, operation_cost=ImportExportCost(nothing), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
-    Source(name, available, bus, active_power, reactive_power, active_power_limits, reactive_power_limits, R_th, X_th, internal_voltage, internal_angle, base_power, operation_cost, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
+function Source(name, available, bus, active_power=0.0, reactive_power=0.0, active_power_limits=(min=0.0, max=0.0), reactive_power_limits=(min=0.0, max=0.0), R_th=0.0, X_th=0.0, internal_voltage=1.0, internal_angle=0.0, base_power=100.0, base_voltage=nothing, operation_cost=ImportExportCost(nothing), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    Source(name, available, bus, active_power, reactive_power, active_power_limits, reactive_power_limits, R_th, X_th, internal_voltage, internal_angle, base_power, base_voltage, operation_cost, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Source(; name, available, bus, active_power=0.0, reactive_power=0.0, active_power_limits=(min=0.0, max=0.0), reactive_power_limits=(min=0.0, max=0.0), R_th=0.0, X_th=0.0, internal_voltage=1.0, internal_angle=0.0, base_power=100.0, operation_cost=ImportExportCost(nothing), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Source(name, available, bus, active_power, reactive_power, active_power_limits, reactive_power_limits, R_th, X_th, internal_voltage, internal_angle, base_power, operation_cost, dynamic_injector, services, ext, internal, )
+function Source(; name, available, bus, active_power=0.0, reactive_power=0.0, active_power_limits=(min=0.0, max=0.0), reactive_power_limits=(min=0.0, max=0.0), R_th=0.0, X_th=0.0, internal_voltage=1.0, internal_angle=0.0, base_power=100.0, base_voltage=nothing, operation_cost=ImportExportCost(nothing), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Source(name, available, bus, active_power, reactive_power, active_power_limits, reactive_power_limits, R_th, X_th, internal_voltage, internal_angle, base_power, base_voltage, operation_cost, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -108,6 +112,7 @@ function Source(::Nothing)
         internal_voltage=0,
         internal_angle=0,
         base_power=0,
+        base_voltage=nothing,
         operation_cost=ImportExportCost(nothing),
         dynamic_injector=nothing,
         services=Device[],
@@ -155,6 +160,8 @@ get_internal_voltage(value::Source) = value.internal_voltage
 get_internal_angle(value::Source) = value.internal_angle
 
 _get_base_power(value::Source) = value.base_power
+"""Get [`Source`](@ref) `base_voltage`."""
+get_base_voltage(value::Source) = value.base_voltage
 """Get [`Source`](@ref) `operation_cost`."""
 get_operation_cost(value::Source) = value.operation_cost
 """Get [`Source`](@ref) `dynamic_injector`."""
@@ -186,6 +193,8 @@ set_X_th!(value::Source, val) = value.X_th = val
 set_internal_voltage!(value::Source, val) = value.internal_voltage = val
 """Set [`Source`](@ref) `internal_angle`."""
 set_internal_angle!(value::Source, val) = value.internal_angle = val
+"""Set [`Source`](@ref) `base_voltage`."""
+set_base_voltage!(value::Source, val) = value.base_voltage = val
 """Set [`Source`](@ref) `operation_cost`."""
 set_operation_cost!(value::Source, val) = value.operation_cost = val
 """Set [`Source`](@ref) `services`."""

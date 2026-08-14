@@ -18867,6 +18867,18 @@
                     "default": "100.0"
                 },
                 {
+                    "name": "base_voltage",
+                    "comment": "the base voltage in kV",
+                    "default": "nothing",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
                     "name": "operation_cost",
                     "null_value": "ImportExportCost(nothing)",
                     "data_type": "OperationalCost",
