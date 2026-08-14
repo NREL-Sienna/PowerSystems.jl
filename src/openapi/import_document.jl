@@ -621,14 +621,21 @@ function _system_with_sidecar(
     store = IS.open_deserialized_infrastore_store(
         String(time_series_storage_path), directory, read_only,
     )
-    manager = IS.TimeSeriesManager(; data_store = store, read_only = read_only)
+    attribute_manager = IS.SupplementalAttributeManager(store)
+    # One InfraStore store holds both the time series and the supplemental attribute
+    # associations, so a sidecar written by `to_openapi` carries the exporting System's
+    # associations too. Only the time series are wanted here: the document's
+    # `supplemental_attribute_associations` are authoritative and get replayed below, and
+    # keeping the store's copy would make every one of them a duplicate. A producer whose
+    # sidecar has none (PowerTableDataParser stages only series) is unaffected.
+    read_only || IS.clear_associations!(attribute_manager.associations)
     data = IS.SystemData(
         IS.read_validation_descriptor(POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE),
-        manager,
+        IS.TimeSeriesManager(; data_store = store, read_only = read_only),
         1,
         1,
         Dict{String, Set{Int}}(),
-        IS.SupplementalAttributeManager(store),
+        attribute_manager,
         IS.InfrastructureSystemsInternal(),
     )
     return System(data, base_power; system_kwargs...)

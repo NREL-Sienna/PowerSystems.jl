@@ -540,16 +540,30 @@ id, so the two must agree. They do for a `System` built by `from_openapi` (the l
 reproduces the original ids) and for one whose ids were never reassigned. They can diverge
 for a hand-built `System` exported with `unit_system = :device_base`/`:natural_units`, where
 `_export_id!` hands out fresh ids — hence a loud error rather than a silently unloadable pair.
+
+A supplemental attribute owning time series is rejected outright rather than id-checked.
+Export assigns attribute document ids fresh from the document's counter instead of
+reproducing them, so its catalog rows could never resolve on the way back in. Nothing this
+package produces hits it today (no producer attaches series to an attribute), and supporting
+it means teaching the ledger to carry attribute ids too — so it errors rather than writing a
+pair that reads back short.
 """
 function _check_time_series_ids_match(sorted_refs)
-    for (doc_id, component) in sorted_refs
-        _has_own_uuid(component) || continue
-        IS.supports_time_series(component) || continue
-        has_time_series(component) || continue
-        component_id = IS.get_id(component)
-        component_id == doc_id || error(
-            "to_openapi: $(summary(component)) carries time series but its document id " *
-            "($doc_id) differs from its component id ($component_id) — the sidecar catalog " *
+    for (doc_id, entity) in sorted_refs
+        _has_own_uuid(entity) || continue
+        IS.supports_time_series(entity) || continue
+        has_time_series(entity) || continue
+        if entity isa SupplementalAttribute
+            error(
+                "to_openapi: $(summary(entity)) carries time series, which is not supported " *
+                "on export — attribute document ids are assigned fresh rather than " *
+                "reproduced, so the sidecar catalog could not be resolved on import",
+            )
+        end
+        entity_id = IS.get_id(entity)
+        entity_id == doc_id || error(
+            "to_openapi: $(summary(entity)) carries time series but its document id " *
+            "($doc_id) differs from its component id ($entity_id) — the sidecar catalog " *
             "keys series by component id, so the document could not be read back. Export " *
             "with unit_system = :original from a from_openapi-built System, or drop the " *
             "time series before exporting.",
