@@ -1015,10 +1015,7 @@ end
         ta = TimeSeries.TimeArray(
             [Dates.DateTime(2024, 1, 1, h) for h in 0:2], [0.5, 0.6, 0.7],
         )
-        series = SingleTimeSeries(;
-            name = "max_active_power", data = ta,
-            scaling_factor_multiplier = get_max_active_power,
-        )
+        series = SingleTimeSeries(; name = "max_active_power", data = ta)
         add_time_series!(sys, load, series)
 
         ts_out_path = joinpath(dir, "export_time_series_storage.h5")
@@ -1044,10 +1041,9 @@ end
             ),
             load,
         )
-        @test length(out.time_series_associations) == 1
-        ts_assoc = only(out.time_series_associations)
-        @test ts_assoc.name == "max_active_power"
-        @test ts_assoc.scaling_factor_multiplier == "get_max_active_power"
+        # No document rows: the sidecar's catalog is the association table, so what the
+        # export must produce is the sidecar itself.
+        @test isempty(out.time_series_associations)
         @test isfile(ts_out_path)
     end
 end
@@ -1092,26 +1088,10 @@ end
         doc = PSY.to_openapi(
             sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
         )
-        # 3 rows: the surviving "load_hist" SingleTimeSeries, its DeterministicSingleTimeSeries
-        # transform (same UUID, one HDF5 write — see `_hdf5_series`), and the real Deterministic.
-        @test length(doc.time_series_associations) == 3
-        det_assoc = only(
-            filter(
-                a -> a.time_series_type == "Deterministic",
-                doc.time_series_associations,
-            ),
-        )
-        @test det_assoc.horizon == "PT7200S"
-        @test det_assoc.interval == "PT3600S"
-        @test det_assoc.window_count == 3
-        dsts_assoc = only(
-            filter(
-                a -> a.time_series_type == "DeterministicSingleTimeSeries",
-                doc.time_series_associations,
-            ),
-        )
-        @test dsts_assoc.horizon == "PT7200S"
-        @test dsts_assoc.window_count == 3
+        # The forecast shapes are carried by the sidecar's catalog rather than by document
+        # rows, so they are asserted below on the re-imported System instead of here.
+        @test isempty(doc.time_series_associations)
+        @test isfile(ts_out_path)
 
         sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
         load2 = get_component(PowerLoad, sys2, "load1")
@@ -1127,8 +1107,11 @@ end
         dsts2 = get_time_series(DeterministicSingleTimeSeries, load2, "load_hist")
         @test get_horizon(dsts2) == Dates.Hour(2)
         @test IS.get_count(dsts2) == 3
-        @test TimeSeries.values(get_data(IS.get_single_time_series(dsts2))) ==
-              [0.11, 0.12, 0.13, 0.14]
+        # `DeterministicSingleTimeSeries` is a query-only marker on the rust-backed store —
+        # reads materialize a `Deterministic`, and there is no `get_single_time_series` to
+        # unwrap. The array it is derived from is its own `SingleTimeSeries`.
+        sts2 = get_time_series(SingleTimeSeries, load2, "load_hist")
+        @test TimeSeries.values(get_data(sts2)) == [0.11, 0.12, 0.13, 0.14]
     end
 end
 

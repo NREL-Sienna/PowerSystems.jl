@@ -579,7 +579,10 @@ empty) `time_series_associations` rows — the store's own catalog carries the m
 function _export_all_time_series(sys::System, sorted_refs, time_series_storage_path)
     rows = PC.TimeSeriesAssociation[]
     store = sys.data.time_series_manager.data_store
-    IS.isempty(store) && return rows
+    # Counted, not `isempty(store)`: one store holds the supplemental attribute associations
+    # as well, so a System with attributes and no series has a non-empty store and would
+    # otherwise demand a sidecar it has nothing to put in.
+    IS.get_num_time_series(store) == 0 && return rows
     isnothing(time_series_storage_path) && error(
         "to_openapi: $(IS.get_num_time_series(store)) time series are attached but no " *
         "time_series_storage_path was given — cannot write the sidecar",

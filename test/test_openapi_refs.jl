@@ -43,5 +43,5 @@ end
 
     ledger = PSY.load_ledger(sys)
     @test ledger["unit_system"] == "NATURAL_UNITS"
-    @test ledger["id_to_uuid"]["1"] == string(IS.get_uuid(area))
+    @test ledger["id_to_uuid"]["1"] == IS.get_id(area)
 end

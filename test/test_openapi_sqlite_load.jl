@@ -1,5 +1,5 @@
 # Standalone exercise of `load_supplemental_attribute_associations!`/
-# `load_time_series_associations!` (`src/openapi/sqlite_load.jl`), independent of
+# `load_supplemental_attribute_associations!` (`src/openapi/sqlite_load.jl`), independent of
 # `from_openapi(::Type{System}, doc)` — that entry point does not call these yet.
 #
 # `PowerCoreOpenAPIModels.document_from_json` validates referential integrity on its own
@@ -48,16 +48,15 @@ function _sqlite_load_fixture()
 end
 
 """`make_openapi_test_doc()` with `supplemental_attributes`/`_associations`/
-`service_associations`/`time_series_associations` overridden — every id these tests
-reference (including the `entity_id = 100`-style attribute ids) must be declared under one
-of those four, or `document_from_json` rejects the document before this file's loaders run
-at all. `plant_associations`/`combined_cycle_associations` are always emptied: none of
-these tests exercises a plant-family attribute."""
+`service_associations` overridden — every id these tests reference (including the
+`entity_id = 100`-style attribute ids) must be declared under one of those three, or
+`document_from_json` rejects the document before this file's loaders run at all.
+`plant_associations`/`combined_cycle_associations` are always emptied: none of these tests
+exercises a plant-family attribute."""
 function _sqlite_load_doc(;
     supplemental_attributes = [],
     associations = [],
     service_associations = [],
-    ts_rows = [],
 )
     raw = make_openapi_test_doc()
     raw["supplemental_attributes"] = supplemental_attributes
@@ -65,52 +64,7 @@ function _sqlite_load_doc(;
     raw["plant_associations"] = []
     raw["combined_cycle_associations"] = []
     raw["service_associations"] = service_associations
-    raw["time_series_associations"] = ts_rows
-    if !isempty(ts_rows)
-        raw["time_series_storage_file"] = "sqlite_load_test_storage.h5"
-    end
     return to_test_document(raw)
-end
-
-"""A real HDF5 sidecar holding one `SingleTimeSeries`; returns
-`(path, uuid, values, resolution, initial_timestamp)`."""
-function _sqlite_load_sidecar(dir)
-    timestamps = [
-        Dates.DateTime(2024, 1, 1, 0),
-        Dates.DateTime(2024, 1, 1, 1),
-        Dates.DateTime(2024, 1, 1, 2),
-    ]
-    values = [0.5, 0.6, 0.7]
-    ta = TimeSeries.TimeArray(timestamps, values)
-    series = SingleTimeSeries(; name = "max_active_power", data = ta)
-    path = joinpath(dir, "sqlite_load_test_storage.h5")
-    storage = IS.Hdf5TimeSeriesStorage(true; filename = path)
-    IS.serialize_time_series!(storage, series)
-    return (
-        path = path,
-        uuid = string(IS.get_uuid(series)),
-        values = values,
-        resolution = Dates.Hour(1),
-        initial_timestamp = timestamps[1],
-    )
-end
-
-function _sqlite_load_ts_row(; uuid, owner_id, owner_category)
-    return Dict{String, Any}(
-        "id" => 1,
-        "time_series_uuid" => uuid,
-        "time_series_type" => "SingleTimeSeries",
-        "initial_timestamp" => "2024-01-01T00:00:00+00:00",
-        "resolution" => "PT3600S",
-        "length" => 3,
-        "name" => "max_active_power",
-        "owner_id" => owner_id,
-        "owner_type" => "irrelevant-for-this-test",
-        "owner_category" => owner_category,
-        "features" => [],
-        "scaling_factor_multiplier" => "get_max_active_power",
-        "metadata_uuid" => "11111111-1111-1111-1111-111111111111",
-    )
 end
 
 @testset "load_supplemental_attribute_associations!: shared attribute is one object" begin
@@ -144,7 +98,7 @@ end
 
     # 1: the newly-built attribute is now resolvable by document id, exactly like a
     # component from the dependency-ordered component pass.
-    @test PSY.resolve_uuid(f.refs, 100) == IS.get_uuid(only(attrs1))
+    @test PSY.resolve_uuid(f.refs, 100) == IS.get_id(only(attrs1))
 
     # 2 at the SQLite level: two rows (one per component), one distinct attribute_uuid.
     mgr = f.sys.data.supplemental_attribute_manager
@@ -233,126 +187,4 @@ end
     @test_throws ErrorException PSY.load_supplemental_attribute_associations!(
         f.sys, f.refs, doc,
     )
-end
-
-@testset "load_time_series_associations!: Component owner" begin
-    mktempdir() do dir
-        sidecar = _sqlite_load_sidecar(dir)
-        f = _sqlite_load_fixture()
-
-        doc = _sqlite_load_doc(;
-            ts_rows = [
-                _sqlite_load_ts_row(;
-                    uuid = sidecar.uuid, owner_id = 6, owner_category = "Component",
-                ),
-            ],
-        )
-        PSY.load_time_series_associations!(f.sys, f.refs, doc, sidecar.path)
-
-        ts = get_time_series(SingleTimeSeries, f.gen, "max_active_power")
-        @test TimeSeries.values(get_data(ts)) == sidecar.values
-        @test get_resolution(ts) == sidecar.resolution
-    end
-end
-
-@testset "load_time_series_associations!: SupplementalAttribute owner" begin
-    mktempdir() do dir
-        sidecar = _sqlite_load_sidecar(dir)
-        f = _sqlite_load_fixture()
-
-        # An `Outage` is the one `SupplementalAttribute` family that opts into
-        # `supports_time_series` (`src/outages.jl`); `GeographicInfo` does not, and would
-        # fail with an unrelated "does not support time series" `ArgumentError` regardless
-        # of this loader.
-        outage_po = PSY.PO.FixedForcedOutage(;
-            id = 100, outage_status = 1.0, monitored_components = nothing,
-        )
-        attr_doc = _sqlite_load_doc(;
-            supplemental_attributes = [openapi_raw(outage_po)],
-            associations = [
-                Dict{String, Any}(
-                    "attribute_id" => 100, "entity_id" => 3,
-                    "attribute_type" => "FixedForcedOutage",
-                ),
-            ],
-        )
-        PSY.load_supplemental_attribute_associations!(f.sys, f.refs, attr_doc)
-        attribute = only(get_supplemental_attributes(FixedForcedOutage, f.bus1))
-
-        # The gap import_document.jl's own `_attach_time_series!` still errors on
-        # (owner_category=SupplementalAttribute): this loader closes it.
-        # `supplemental_attributes`/`associations` are repeated here only so
-        # `document_from_json` sees id=100 declared and typed — required at the document
-        # layer regardless of what this loader itself reads.
-        ts_doc = _sqlite_load_doc(;
-            supplemental_attributes = [openapi_raw(outage_po)],
-            associations = [
-                Dict{String, Any}(
-                    "attribute_id" => 100, "entity_id" => 3,
-                    "attribute_type" => "FixedForcedOutage",
-                ),
-            ],
-            ts_rows = [
-                _sqlite_load_ts_row(;
-                    uuid = sidecar.uuid, owner_id = 100,
-                    owner_category = "SupplementalAttribute",
-                ),
-            ],
-        )
-        PSY.load_time_series_associations!(f.sys, f.refs, ts_doc, sidecar.path)
-
-        ts = get_time_series(SingleTimeSeries, attribute, "max_active_power")
-        @test TimeSeries.values(get_data(ts)) == sidecar.values
-
-        store = f.sys.data.time_series_manager.metadata_store
-        @test length(collect(IS.list_metadata(store, attribute))) == 1
-    end
-end
-
-@testset "load_time_series_associations!: loud errors" begin
-    mktempdir() do dir
-        sidecar = _sqlite_load_sidecar(dir)
-
-        # Unresolved owner_id: id=7 (load1) is a real component id in the document, but this
-        # file's own `refs` never registered it.
-        f = _sqlite_load_fixture()
-        doc = _sqlite_load_doc(;
-            ts_rows = [
-                _sqlite_load_ts_row(;
-                    uuid = sidecar.uuid, owner_id = 7, owner_category = "Component",
-                ),
-            ],
-        )
-        @test_throws ErrorException PSY.load_time_series_associations!(
-            f.sys, f.refs, doc, sidecar.path,
-        )
-
-        # owner_category mismatch: owner_id=3 (bus1) resolves to a Component, not an
-        # attribute.
-        f = _sqlite_load_fixture()
-        doc = _sqlite_load_doc(;
-            ts_rows = [
-                _sqlite_load_ts_row(;
-                    uuid = sidecar.uuid, owner_id = 3,
-                    owner_category = "SupplementalAttribute",
-                ),
-            ],
-        )
-        @test_throws ErrorException PSY.load_time_series_associations!(
-            f.sys, f.refs, doc, sidecar.path,
-        )
-
-        # Associations present but no storage path given.
-        f = _sqlite_load_fixture()
-        doc = _sqlite_load_doc(;
-            ts_rows = [
-                _sqlite_load_ts_row(;
-                    uuid = sidecar.uuid, owner_id = 3, owner_category = "Component",
-                ),
-            ],
-        )
-        @test_throws ErrorException PSY.load_time_series_associations!(
-            f.sys, f.refs, doc, nothing,
-        )
-    end
 end

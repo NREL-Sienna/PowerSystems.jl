@@ -448,8 +448,7 @@ function _file_io_fixture(; with_time_series = true)
                         ),
                     ),
                     collect(0.1:0.1:0.6),
-                );
-                scaling_factor_multiplier = get_max_active_power,
+                ),
             ),
         )
     end

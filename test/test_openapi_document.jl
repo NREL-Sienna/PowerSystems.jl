@@ -1,57 +1,51 @@
 # Document-level OpenAPI import path. A small synthetic document exercises the
-# dependency-ordered component pass, reserve membership, time series ingestion against a
-# real HDF5 sidecar, ledger round-trip, and every loud-error path.
+# dependency-ordered component pass, reserve membership, time series adoption from a real
+# InfraStore sidecar, ledger round-trip, and every loud-error path.
 
 # The shared document fixture lives in common.jl (`make_openapi_test_doc`,
 # `openapi_raw`), also used by test_openapi_export.jl.
 
-"""Build a real HDF5 sidecar holding one `SingleTimeSeries` and return
-`(storage_path, time_series_uuid, values, resolution, initial_timestamp)`."""
-function _openapi_test_sidecar(dir)
+"""Build a real InfraStore sidecar holding one `SingleTimeSeries` owned by document id
+`owner_id`, and return `(path, values, resolution, initial_timestamp)`.
+
+The store's catalog is the association table — it keys the series by owner id, name, type
+and resolution — so the document carries no `time_series_associations` row for it. Import
+adopts this store wholesale; `owner_id` is a *document* id, which is what the imported
+component's id is set to.
+"""
+function _openapi_test_sidecar(dir; owner_id = 7, owner_type = "PowerLoad")
     timestamps = [
         Dates.DateTime(2024, 1, 1, 0),
         Dates.DateTime(2024, 1, 1, 1),
         Dates.DateTime(2024, 1, 1, 2),
     ]
     values = [0.5, 0.6, 0.7]
-    ta = TimeSeries.TimeArray(timestamps, values)
-    series = SingleTimeSeries(; name = "max_active_power", data = ta)
+    series = SingleTimeSeries(;
+        name = "max_active_power",
+        data = TimeSeries.TimeArray(timestamps, values),
+    )
     path = joinpath(dir, "doc_time_series_storage.h5")
-    storage = IS.Hdf5TimeSeriesStorage(true; filename = path)
-    IS.serialize_time_series!(storage, series)
+    store = IS.Store(; in_memory = true)
+    try
+        batch = IS.make_add_batch()
+        IS.serialize_single!(
+            batch,
+            owner_id,
+            owner_type,
+            IS.get_owner_category(IS.InfrastructureSystemsComponent),
+            IS.get_name(series),
+            series,
+        )
+        IS.commit_batch!(store, batch)
+        IS.serialize(store, path)
+    finally
+        IS.close!(store)
+    end
     return (
         path = path,
-        uuid = string(IS.get_uuid(series)),
         values = values,
         resolution = Dates.Hour(1),
         initial_timestamp = timestamps[1],
-    )
-end
-
-function _ts_association_row(; uuid, owner_id = 7, owner_category = "Component",
-    time_series_type = "SingleTimeSeries",
-    scaling_factor_multiplier = "get_max_active_power",
-    horizon = nothing, interval = nothing, window_count = nothing,
-    percentiles = nothing, scenario_count = nothing)
-    return Dict{String, Any}(
-        "id" => 1,
-        "time_series_uuid" => uuid,
-        "time_series_type" => time_series_type,
-        "initial_timestamp" => "2024-01-01T00:00:00+00:00",
-        "resolution" => "PT3600S",
-        "horizon" => horizon,
-        "interval" => interval,
-        "window_count" => window_count,
-        "length" => 3,
-        "name" => "max_active_power",
-        "owner_id" => owner_id,
-        "owner_type" => "PowerLoad",
-        "owner_category" => owner_category,
-        "features" => [],
-        "scaling_factor_multiplier" => scaling_factor_multiplier,
-        "metadata_uuid" => "11111111-1111-1111-1111-111111111111",
-        "percentiles" => percentiles,
-        "scenario_count" => scenario_count,
     )
 end
 
@@ -59,9 +53,7 @@ end
     mktempdir() do dir
         sidecar = _openapi_test_sidecar(dir)
         doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [_ts_association_row(; uuid = sidecar.uuid)]
-        # A document that declares time series must also name its sidecar; the kwarg only
-        # says where to find it.
+        # The sidecar carries the series and its metadata; the document only names the file.
         doc["time_series_storage_file"] = basename(sidecar.path)
 
         sys = PSY.from_openapi(
@@ -94,19 +86,18 @@ end
         reserve = get_component(OnlineReserve, sys, "spin_up")
         @test has_service(gen, reserve)
 
-        # Time series, read back from the HDF5 sidecar.
+        # Time series, adopted from the InfraStore sidecar.
         load = get_component(PowerLoad, sys, "load1")
         ts = get_time_series(SingleTimeSeries, load, "max_active_power")
         @test get_resolution(ts) == sidecar.resolution
         @test TimeSeries.values(get_data(ts)) == sidecar.values
         @test first(TimeSeries.timestamp(get_data(ts))) == sidecar.initial_timestamp
-        @test IS.get_scaling_factor_multiplier(ts) === get_max_active_power
 
         # Ledger round-trip.
         @test PSY.has_ledger(sys)
         ledger = PSY.load_ledger(sys)
         @test ledger["unit_system"] == "NATURAL_UNITS"
-        @test ledger["id_to_uuid"]["6"] == string(IS.get_uuid(gen))
+        @test ledger["id_to_uuid"]["6"] == IS.get_id(gen)
     end
 end
 
@@ -127,54 +118,16 @@ end
         ]
         @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
 
-        # Time series declared in a well-formed document, but no storage path passed: the
-        # document names its sidecar, so the missing kwarg is the only defect.
+        # A named sidecar that is not on disk. This is the one time-series error path left:
+        # the rest — unmapped time_series_type, unmapped scaling_factor_multiplier, a
+        # mismatched owner_category, series declared with no storage path — all validated a
+        # `time_series_associations` row, and the sidecar's own catalog is the association
+        # table now, written by the store rather than by a producer filling in columns.
         doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [_ts_association_row(; uuid = sidecar.uuid)]
-        doc["time_series_storage_file"] = basename(sidecar.path)
-        @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
-
-        # `Probabilistic` is a real PSY time-series type the document does not carry — it
-        # needs a percentile-identity field the schema has no home for. A document naming
-        # it must error rather than import a series with its percentiles invented.
-        doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [
-            _ts_association_row(;
-                uuid = sidecar.uuid, time_series_type = "Probabilistic",
-                horizon = "PT10800S", interval = "PT3600S", window_count = 3,
-            ),
-        ]
         doc["time_series_storage_file"] = basename(sidecar.path)
         @test_throws DocumentError PSY.from_openapi(
-            System, to_test_document(doc); time_series_storage_path = sidecar.path,
-        )
-
-        # Unmapped scaling_factor_multiplier.
-        doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [
-            _ts_association_row(;
-                uuid = sidecar.uuid,
-                scaling_factor_multiplier = "get_bogus",
-            ),
-        ]
-        doc["time_series_storage_file"] = basename(sidecar.path)
-        @test_throws DocumentError PSY.from_openapi(
-            System, to_test_document(doc); time_series_storage_path = sidecar.path,
-        )
-
-        # A declared owner_category must match what owner_id actually resolves to. Id 7 is a
-        # Component here, so claiming SupplementalAttribute is a malformed document, not an
-        # unimplemented case — SupplementalAttribute owners are supported (see sqlite_load.jl).
-        doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [
-            _ts_association_row(;
-                uuid = sidecar.uuid,
-                owner_category = "SupplementalAttribute",
-            ),
-        ]
-        doc["time_series_storage_file"] = basename(sidecar.path)
-        @test_throws DocumentError PSY.from_openapi(
-            System, to_test_document(doc); time_series_storage_path = sidecar.path,
+            System, to_test_document(doc);
+            time_series_storage_path = joinpath(dir, "no_such_sidecar.h5"),
         )
 
         # Unmapped attribute_type: the association resolves to a real row, but no
@@ -299,7 +252,7 @@ end
     )
     outage = PSY.from_openapi(GeometricDistributionForcedOutage, outage_po, refs)
     @test get_mean_time_to_recovery(outage) == 480.0
-    @test get_monitored_components(outage) == Set([IS.get_uuid(bus)])
+    @test get_monitored_components(outage) == Set([IS.get_id(bus)])
 
     fixed_po = PSY.PO.FixedForcedOutage(;
         id = 4,

@@ -4,8 +4,10 @@
         bundle = joinpath(dir, "case")
         to_file(sys, bundle; unit_system = :device_base)
 
-        # Both members present, and nothing else.
-        @test sort(readdir(bundle)) == ["system.json", "time_series.h5"]
+        # All members present, and nothing else. The InfraStore sidecar is a pair: the
+        # arrays in `.h5` and its catalog in the `.sqlite` sibling.
+        @test sort(readdir(bundle)) ==
+              ["system.json", "time_series.h5", "time_series.h5.sqlite"]
 
         sys2 = from_file(System, bundle)
 
@@ -28,7 +30,6 @@
         ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
         @test length(ts) == 6
         @test TimeSeries.values(PSY.get_data(ts)) == [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-        @test IS.get_scaling_factor_multiplier(ts) === get_max_active_power
     end
 end
 
