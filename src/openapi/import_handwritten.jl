@@ -1526,35 +1526,6 @@ function from_openapi(po::PO.HybridSystem, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
-# ── AGC ─────────────────────────────────────────────────────────────────────────
-# `reserves` has no schema field, and deliberately so: the reserves an AGC regulates are
-# membership, which Sienna records in `service_associations` rather than as an inline array
-# on one side. So the converter builds the AGC without them and the association loader fills
-# them in, exactly as `GroupReserve.contributing_services` is handled — see
-# `_attach_service_membership!` in import_document.jl.
-#
-# None of the gains carry a `conversion_unit`: `bias` is MW/Hz, `initial_ace` MW, and the PID
-# terms and `delta_t` are dimensionless or seconds, so both unit systems are identical and
-# the natural method delegates.
-
-function from_openapi(po::PO.AGC, refs::OpenAPIRefs, ::DeviceBaseUnit)
-    return AGC(;
-        name = po.name,
-        available = po.available,
-        bias = po.bias,
-        K_p = po.K_p,
-        K_i = po.K_i,
-        K_d = po.K_d,
-        delta_t = po.delta_t,
-        area = resolve_ref(refs, po.area, Area),
-        initial_ace = po.initial_ace,
-    )
-end
-
-function from_openapi(po::PO.AGC, refs::OpenAPIRefs, ::NaturalUnit)
-    return from_openapi(po, refs, DU)
-end
-
 # ── Reserves: OnlineReserve, OfflineReserve, GroupReserve ───────────────────────
 # The parametric case: `reserve_direction` is a document enum property while PSY encodes it
 # as a type parameter, resolved through a literal table (direction is not a codegen case).

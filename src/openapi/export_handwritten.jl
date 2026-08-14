@@ -203,29 +203,6 @@ function to_openapi(hyb::HybridSystem, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
-# ── AGC ─────────────────────────────────────────────────────────────────────────
-# No unit-converted fields, so the natural method delegates. `reserves` is not written here
-# — it is a `service_associations` row, emitted by `_export_service_associations`.
-
-function to_openapi(agc::AGC, refs::OpenAPIRefs, ::DeviceBaseUnit)
-    return PO.AGC(;
-        id = component_id(refs, agc),
-        name = get_name(agc),
-        available = get_available(agc),
-        bias = get_bias(agc),
-        K_p = get_K_p(agc),
-        K_i = get_K_i(agc),
-        K_d = get_K_d(agc),
-        delta_t = get_delta_t(agc),
-        area = _component_id_optional(refs, get_area(agc)),
-        initial_ace = get_initial_ace(agc),
-    )
-end
-
-function to_openapi(agc::AGC, refs::OpenAPIRefs, ::NaturalUnit)
-    return to_openapi(agc, refs, DU)
-end
-
 # ── Source ──────────────────────────────────────────────────────────────────────
 # Device base: the MVA/MW fields multiply back by the source's own `base_power`, not the
 # document system base.

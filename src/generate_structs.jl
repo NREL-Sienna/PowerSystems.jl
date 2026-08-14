@@ -169,7 +169,11 @@ end
 # themselves only called when `haskey(item, "openapi_type")`.
 # ──────────────────────────────────────────────────────────────────────────────────────
 
-const OPENAPI_SKIP_FIELDS = Set(["ext", "internal", "services", "dynamic_injector"])
+# `reserves` is AGC's regulated-reserve list: like `services`, it is membership, carried by
+# the document's `service_associations` rows and filled in by the association loader — never
+# an inline field on one side.
+const OPENAPI_SKIP_FIELDS =
+    Set(["ext", "internal", "services", "dynamic_injector", "reserves"])
 const OPENAPI_SCALAR_TYPES = Set(["Float64", "Int", "Int32", "Int64", "String", "Bool"])
 const OPENAPI_COMPOUND_MEMBERS = Dict(
     "MinMax" => ("min", "max"),
