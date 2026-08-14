@@ -163,8 +163,9 @@ end
 # here — this generator only emits methods that compile against them.
 #
 # `from_openapi` dispatches on the PO type. It does not take the PSY type as a leading
-# `::Type{...}`: the PO type already determines it (the mapping is one-to-one across all
-# 34 converters, checked at load by `_check_document_plan_converters`), so the argument
+# `::Type{...}`: the PO type already determines it (the mapping is one-to-one across every
+# `DOCUMENT_PLAN` entry, asserted by the "converters match the declared pair" testset in
+# test_openapi_document.jl), so the argument
 # was redundant, and for the three reserve types — whose PSY types are `UnionAll` — it did
 # not pin the return type either. Naming `PO` here costs the generator nothing: the export
 # half already emits `PO.<struct_name>` constructors, and `PowerSystems` declares `const
@@ -185,6 +186,7 @@ const OPENAPI_COMPOUND_MEMBERS = Dict(
     "FromTo_ToFrom" => ("from_to", "to_from"),
     "StartUpShutDown" => ("startup", "shutdown"),
     "StartUpStages" => ("hot", "warm", "cold"),
+    "TurbinePump" => ("turbine", "pump"),
 )
 const OPENAPI_CONVERSION_KINDS =
     Dict(":mva" => :power, ":ohm" => :impedance, ":siemens" => :admittance)
@@ -208,8 +210,8 @@ const OPENAPI_EXPORT_COMPOUND_CTORS = Dict(
         required_scaled = nothing, optional_scaled = "_updown_po_scaled_optional",
     ),
     "FromTo_ToFrom" => (
-        required = "_fromto_toframe_po", optional = nothing,
-        required_scaled = "_fromto_toframe_po_scaled", optional_scaled = nothing,
+        required = "_fromto_tofrom_po", optional = nothing,
+        required_scaled = "_fromto_tofrom_po_scaled", optional_scaled = nothing,
     ),
     "StartUpShutDown" => (
         required = nothing, optional = "_startup_shutdown_po_optional",
@@ -218,6 +220,13 @@ const OPENAPI_EXPORT_COMPOUND_CTORS = Dict(
     ),
     "StartUpStages" => (
         required = nothing, optional = "_startup_stages_po_optional",
+        required_scaled = nothing, optional_scaled = nothing,
+    ),
+    # `HydroPumpTurbine`'s three `TurbinePump` fields (efficiency, transition_time,
+    # minimum_time) are all required and none carry a conversion, so only the plain
+    # constructor exists.
+    "TurbinePump" => (
+        required = "_turbinepump_po", optional = nothing,
         required_scaled = nothing, optional_scaled = nothing,
     ),
 )
@@ -421,6 +430,17 @@ function openapi_conversion_op_base(conversion, bases)
     return ("*", bases.z_base)
 end
 
+"""
+The name this field carries on the PO side, which is its PSY name unless the descriptor
+states otherwise with `openapi_name`.
+
+The two diverge when PSY uses an identifier the schema cannot: `ExponentialLoad`'s `α`/`β`
+are `alpha`/`beta` in the JSON. The override lives on the field rather than being inferred
+(e.g. by transliterating Greek) so the mapping is stated once, in the descriptor, and any
+future divergence is declared rather than guessed.
+"""
+openapi_po_field_name(field) = get(field, "openapi_name", field["name"])
+
 """Wrap `body` in the nothing-guard emitted for a nullable PO field."""
 function openapi_nullable_wrap(field_name, body)
     return "(if isnothing(po.$field_name); nothing; else; $body; end)"
@@ -458,6 +478,7 @@ const OPENAPI_IMPORT_COMPOUND_EXTRACTORS = Dict(
     "FromTo_ToFrom" => "_fromto_tofrom_from_po",
     "StartUpShutDown" => "_startup_shutdown_from_po",
     "StartUpStages" => "_startup_stages_from_po",
+    "TurbinePump" => "_turbinepump_from_po",
 )
 
 """Compound fields always get member-rebuilt in both methods — the PO struct's compound
@@ -507,6 +528,7 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
 
     for field in item["fields"]
         name = field["name"]
+        po_name = openapi_po_field_name(field)
         kind, bare, nullable = openapi_classify_field(struct_name, field, struct_names)
         pu_override = openapi_validate_unit_override(struct_name, field)
         if kind == :skip
@@ -517,7 +539,7 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
             # whose `.value` is `Any`, so the call infers as `Any`. The descriptor states
             # the field's PSY type — assert it, so the constructor is handed something
             # bounded and a cost that converts to the wrong family fails here.
-            expr = "convert_cost(po.$name)::$bare"
+            expr = "convert_cost(po.$po_name)::$bare"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -528,7 +550,7 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
             # MethodError). The helper returns `nothing` for an absent reference and still
             # errors on one that names an unregistered id. The third argument is the PSY
             # type the descriptor declares, which `refs`' `Dict{Int, Any}` cannot supply.
-            expr = "resolve_ref(refs, po.$name, $bare)"
+            expr = "resolve_ref(refs, po.$po_name, $bare)"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -539,7 +561,7 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
                 push!(enum_tables, Dict("const_name" => table_name, "enum_type" => bare))
                 push!(defined_enum_tables, table_name)
             end
-            expr = "$table_name[po.$name]"
+            expr = "$table_name[po.$po_name]"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -551,11 +573,11 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
         end
         bases = openapi_base_exprs(struct_name, name, conversion, field_names)
         if kind == :scalar
-            device, natural = openapi_scalar_exprs(name, conversion, nullable, bases)
+            device, natural = openapi_scalar_exprs(po_name, conversion, nullable, bases)
         else
             members = OPENAPI_COMPOUND_MEMBERS[bare]
             device, natural =
-                openapi_compound_exprs(name, bare, members, conversion, nullable, bases)
+                openapi_compound_exprs(po_name, bare, members, conversion, nullable, bases)
         end
         push!(kwargs_device, Dict("name" => name, "expr" => device))
         push!(kwargs_natural, Dict("name" => name, "expr" => natural))
@@ -824,7 +846,8 @@ function compute_openapi_export_converter!(item, struct_names, defined_enum_tabl
     base_source = nothing
 
     for field in item["fields"]
-        name = field["name"]
+        # The emitted kwarg is the PO field name, which `openapi_name` may override.
+        name = openapi_po_field_name(field)
         kind, bare, nullable = openapi_classify_field(struct_name, field, struct_names)
         pu_override = openapi_validate_unit_override(struct_name, field)
         if kind == :skip

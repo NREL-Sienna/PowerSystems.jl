@@ -63,6 +63,13 @@ underscore PSY's alias keeps); `nothing` in means `nothing` out."""
     (startup = op(x.startup, base), shutdown = op(x.shutdown, base))
 @inline _startup_shutdown_from_po(::Nothing, ::Any, ::Any) = nothing
 
+"""Rebuild a `TurbinePump` from its PO struct; `nothing` in means `nothing` out."""
+@inline _turbinepump_from_po(x::PC.TurbinePump) = (turbine = x.turbine, pump = x.pump)
+@inline _turbinepump_from_po(::Nothing) = nothing
+@inline _turbinepump_from_po(x::PC.TurbinePump, op::F, base) where {F} =
+    (turbine = op(x.turbine, base), pump = op(x.pump, base))
+@inline _turbinepump_from_po(::Nothing, ::Any, ::Any) = nothing
+
 """Rebuild a `StartUpStages` from its PO struct; `nothing` in means `nothing` out."""
 @inline _startup_stages_from_po(x::PC.StartUpStages) =
     (hot = x.hot, warm = x.warm, cold = x.cold)

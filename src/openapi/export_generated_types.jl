@@ -27,8 +27,8 @@ _startup_stages_po_optional(nt) =
     PC.StartUpStages(; hot = nt.hot, warm = nt.warm, cold = nt.cold)
 
 _fromto_po(nt) = PC.FromTo(; from = nt.from, to = nt.to)
-_fromto_toframe_po(nt) = PC.FromToToFrom(; from_to = nt.from_to, to_from = nt.to_from)
-_fromto_toframe_po_scaled(nt, base) =
+_fromto_tofrom_po(nt) = PC.FromToToFrom(; from_to = nt.from_to, to_from = nt.to_from)
+_fromto_tofrom_po_scaled(nt, base) =
     PC.FromToToFrom(; from_to = nt.from_to * base, to_from = nt.to_from * base)
 _inout_po(nt) = PC.InOut(; in = nt.in, out = nt.out)
 # Inverse of the import side's `_complex_number` (import_handwritten.jl).

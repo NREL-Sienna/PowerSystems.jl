@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         ramp_limits::Union{Nothing, UpDown}
         time_limits::Union{Nothing, UpDown}
         base_power::Float64
-        status::PumpHydroStatus
+        status::HydroPumpTurbineStatus
         time_at_status::Float64
         operation_cost::OperationalCost
         active_power_pump::Float64
@@ -54,7 +54,7 @@ A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s att
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in minutes, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
-- `status::PumpHydroStatus`: (default: `PumpHydroStatus.OFF`) Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference
+- `status::HydroPumpTurbineStatus`: (default: `HydroPumpTurbineStatus.OFF`) Initial Operating status of a pumped‑storage hydro unit. See [HydroPumpTurbineStatus](@ref) for reference
 - `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`
 - `operation_cost::OperationalCost`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `active_power_pump::Float64`: (default: `0.0`) Initial active power set point of the pump unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
@@ -99,8 +99,8 @@ mutable struct HydroPumpTurbine <: HydroUnit
     time_limits::Union{Nothing, UpDown}
     "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
-    "Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference"
-    status::PumpHydroStatus
+    "Initial Operating status of a pumped‑storage hydro unit. See [HydroPumpTurbineStatus](@ref) for reference"
+    status::HydroPumpTurbineStatus
     "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
     "[`OperationalCost`](@ref) of generation"
@@ -131,11 +131,11 @@ mutable struct HydroPumpTurbine <: HydroUnit
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), travel_time=nothing, conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+function HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=HydroPumpTurbineStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), travel_time=nothing, conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
     HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, travel_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), travel_time=nothing, conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function HydroPumpTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=HydroPumpTurbineStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), travel_time=nothing, conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, travel_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, internal, )
 end
 
@@ -156,7 +156,7 @@ function HydroPumpTurbine(::Nothing)
         ramp_limits=nothing,
         time_limits=nothing,
         base_power=100.0,
-        status=PumpHydroStatus.OFF,
+        status=HydroPumpTurbineStatus.OFF,
         time_at_status=INFINITE_TIME,
         operation_cost=HydroGenerationCost(nothing),
         active_power_pump=0.0,
@@ -314,3 +314,129 @@ set_prime_mover_type!(value::HydroPumpTurbine, val) = value.prime_mover_type = v
 set_services!(value::HydroPumpTurbine, val) = value.services = val
 """Set [`HydroPumpTurbine`](@ref) `ext`."""
 set_ext!(value::HydroPumpTurbine, val) = value.ext = val
+
+
+const HYDRO_PUMP_TURBINE_STATUS_FROM_STRING = Dict{String, HydroPumpTurbineStatus}(string(m) => m for m in instances(HydroPumpTurbineStatus))
+const HYDRO_PUMP_TURBINE_STATUS_TO_STRING = Dict{ HydroPumpTurbineStatus, String}(m => string(m) for m in instances(HydroPumpTurbineStatus))
+
+function from_openapi(po::PO.HydroPumpTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return HydroPumpTurbine(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        active_power_limits = _minmax_from_po(po.active_power_limits),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
+        active_power_limits_pump = _minmax_from_po(po.active_power_limits_pump),
+        outflow_limits = _minmax_from_po(po.outflow_limits),
+        powerhouse_elevation = po.powerhouse_elevation,
+        ramp_limits = _updown_from_po(po.ramp_limits),
+        time_limits = _updown_from_po(po.time_limits),
+        base_power = po.base_power,
+        status = HYDRO_PUMP_TURBINE_STATUS_FROM_STRING[po.status],
+        time_at_status = po.time_at_status,
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        active_power_pump = po.active_power_pump,
+        efficiency = _turbinepump_from_po(po.efficiency),
+        transition_time = _turbinepump_from_po(po.transition_time),
+        minimum_time = _turbinepump_from_po(po.minimum_time),
+        travel_time = po.travel_time,
+        conversion_factor = po.conversion_factor,
+        must_run = po.must_run,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+    )
+end
+
+function from_openapi(po::PO.HydroPumpTurbine, refs::OpenAPIRefs, ::NaturalUnit)
+    return HydroPumpTurbine(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        active_power_limits = _minmax_from_po(po.active_power_limits, (/), po.base_power),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
+        active_power_limits_pump = _minmax_from_po(po.active_power_limits_pump, (/), po.base_power),
+        outflow_limits = _minmax_from_po(po.outflow_limits),
+        powerhouse_elevation = po.powerhouse_elevation,
+        ramp_limits = _updown_from_po(po.ramp_limits, (/), po.base_power),
+        time_limits = _updown_from_po(po.time_limits),
+        base_power = po.base_power,
+        status = HYDRO_PUMP_TURBINE_STATUS_FROM_STRING[po.status],
+        time_at_status = po.time_at_status,
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        active_power_pump = po.active_power_pump / po.base_power,
+        efficiency = _turbinepump_from_po(po.efficiency),
+        transition_time = _turbinepump_from_po(po.transition_time),
+        minimum_time = _turbinepump_from_po(po.minimum_time),
+        travel_time = po.travel_time,
+        conversion_factor = po.conversion_factor,
+        must_run = po.must_run,
+        prime_mover_type = PRIME_MOVERS_FROM_STRING[po.prime_mover_type],
+    )
+end
+
+function to_openapi(value::HydroPumpTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.HydroPumpTurbine(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        active_power_limits_pump = _minmax_po(get_active_power_limits_pump(value, DU)),
+        outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
+        powerhouse_elevation = get_powerhouse_elevation(value),
+        ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        base_power = _get_base_power(value),
+        status = HYDRO_PUMP_TURBINE_STATUS_TO_STRING[get_status(value)],
+        time_at_status = get_time_at_status(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        active_power_pump = get_active_power_pump(value, DU),
+        efficiency = _turbinepump_po(get_efficiency(value)),
+        transition_time = _turbinepump_po(get_transition_time(value)),
+        minimum_time = _turbinepump_po(get_minimum_time(value)),
+        travel_time = get_travel_time(value),
+        conversion_factor = get_conversion_factor(value),
+        must_run = get_must_run(value),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+    )
+end
+
+function to_openapi(value::HydroPumpTurbine, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.HydroPumpTurbine(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        active_power_limits_pump = _minmax_po_scaled(get_active_power_limits_pump(value, DU), _get_base_power(value)),
+        outflow_limits = _minmax_po_optional(get_outflow_limits(value)),
+        powerhouse_elevation = get_powerhouse_elevation(value),
+        ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        base_power = _get_base_power(value),
+        status = HYDRO_PUMP_TURBINE_STATUS_TO_STRING[get_status(value)],
+        time_at_status = get_time_at_status(value),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        active_power_pump = get_active_power_pump(value, DU) * _get_base_power(value),
+        efficiency = _turbinepump_po(get_efficiency(value)),
+        transition_time = _turbinepump_po(get_transition_time(value)),
+        minimum_time = _turbinepump_po(get_minimum_time(value)),
+        travel_time = get_travel_time(value),
+        conversion_factor = get_conversion_factor(value),
+        must_run = get_must_run(value),
+        prime_mover_type = PRIME_MOVERS_TO_STRING[get_prime_mover_type(value)],
+    )
+end

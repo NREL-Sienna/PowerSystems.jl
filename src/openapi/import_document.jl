@@ -18,6 +18,7 @@ const DOCUMENT_PLAN = [
     (po_type = PO.Area, psy_type = Area, key = "Area", addable = true),
     (po_type = PO.LoadZone, psy_type = LoadZone, key = "LoadZone", addable = true),
     (po_type = PO.ACBus, psy_type = ACBus, key = "ACBus", addable = true),
+    (po_type = PO.DCBus, psy_type = DCBus, key = "DCBus", addable = true),
     (po_type = PO.Arc, psy_type = Arc, key = "Arc", addable = true),
     (po_type = PO.Line, psy_type = Line, key = "Line", addable = true),
     (
@@ -71,6 +72,11 @@ const DOCUMENT_PLAN = [
         po_type = PO.ShiftablePowerLoad, psy_type = ShiftablePowerLoad,
         key = "ShiftablePowerLoad", addable = true,
     ),
+    (po_type = PO.MotorLoad, psy_type = MotorLoad, key = "MotorLoad", addable = true),
+    (
+        po_type = PO.ExponentialLoad, psy_type = ExponentialLoad,
+        key = "ExponentialLoad", addable = true,
+    ),
     (
         po_type = PO.FixedAdmittance, psy_type = FixedAdmittance,
         key = "FixedAdmittance",
@@ -97,6 +103,10 @@ const DOCUMENT_PLAN = [
     (
         po_type = PO.HydroDispatch, psy_type = HydroDispatch, key = "HydroDispatch",
         addable = true,
+    ),
+    (
+        po_type = PO.HydroPumpTurbine, psy_type = HydroPumpTurbine,
+        key = "HydroPumpTurbine", addable = true,
     ),
     (
         po_type = PO.RenewableDispatch, psy_type = RenewableDispatch,

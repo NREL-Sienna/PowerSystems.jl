@@ -115,3 +115,59 @@ set_area!(value::DCBus, val) = value.area = val
 set_load_zone!(value::DCBus, val) = value.load_zone = val
 """Set [`DCBus`](@ref) `ext`."""
 set_ext!(value::DCBus, val) = value.ext = val
+
+
+
+function from_openapi(po::PO.DCBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return DCBus(;
+        number = po.number,
+        name = po.name,
+        available = po.available,
+        magnitude = po.magnitude,
+        voltage_limits = _minmax_from_po(po.voltage_limits),
+        base_voltage = po.base_voltage,
+        area = resolve_ref(refs, po.area, Area),
+        load_zone = resolve_ref(refs, po.load_zone, LoadZone),
+    )
+end
+
+function from_openapi(po::PO.DCBus, refs::OpenAPIRefs, ::NaturalUnit)
+    return DCBus(;
+        number = po.number,
+        name = po.name,
+        available = po.available,
+        magnitude = po.magnitude,
+        voltage_limits = _minmax_from_po(po.voltage_limits),
+        base_voltage = po.base_voltage,
+        area = resolve_ref(refs, po.area, Area),
+        load_zone = resolve_ref(refs, po.load_zone, LoadZone),
+    )
+end
+
+function to_openapi(value::DCBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.DCBus(;
+        id = component_id(refs, value),
+        number = get_number(value),
+        name = get_name(value),
+        available = get_available(value),
+        magnitude = get_magnitude(value),
+        voltage_limits = _minmax_po_optional(get_voltage_limits(value)),
+        base_voltage = get_base_voltage(value),
+        area = _component_id_optional(refs, get_area(value)),
+        load_zone = _component_id_optional(refs, get_load_zone(value)),
+    )
+end
+
+function to_openapi(value::DCBus, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.DCBus(;
+        id = component_id(refs, value),
+        number = get_number(value),
+        name = get_name(value),
+        available = get_available(value),
+        magnitude = get_magnitude(value),
+        voltage_limits = _minmax_po_optional(get_voltage_limits(value)),
+        base_voltage = get_base_voltage(value),
+        area = _component_id_optional(refs, get_area(value)),
+        load_zone = _component_id_optional(refs, get_load_zone(value)),
+    )
+end
