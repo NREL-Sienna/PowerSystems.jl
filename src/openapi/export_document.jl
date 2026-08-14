@@ -223,12 +223,19 @@ end
 # import uses; export does not need the ordering for resolution, since ids already exist or are
 # assigned fresh, but keeping it identical simplifies testing and mirrors import 1:1).
 #
-# Ids come from the ledger's `id_to_uuid` when a component's UUID is listed there (an
-# `:original` export, reproducing the document's ids); anything absent from the ledger —
-# every component when there is no ledger, or `TransformerCircuit` always
-# (`store_ledger!` skips it via `_has_own_uuid`, so it never has a ledger-backed id to
-# reproduce) — gets a fresh id from a counter that starts *after* the ledger's highest id, so
-# fresh and ledger-derived ids never collide.
+# A component's document id IS its IS component id. That keeps the document and the
+# InfraStore sidecar consistent by construction: the sidecar's catalog keys every series by
+# component id, and import resolves a series' owner by looking that id up as a document id.
+# Assigning document ids independently — as the ledger used to, reproducing them from a
+# previous document — made the two disagree for any System not built by `from_openapi`, so a
+# hand-built System carrying time series could not be exported at all.
+#
+# The ledger no longer carries ids for this reason; it survives only for `unit_system`. A
+# `from_openapi`-built System reproduces its original document ids anyway, since import sets
+# each component's id to its document id.
+#
+# `TransformerCircuit` has no id of its own (`_has_own_uuid` false — it is embedded in its
+# owning transformer), so it draws from a counter that starts above every component id.
 
 """Enumerate the live instances of a `DOCUMENT_PLAN` type. `TransformerCircuit` is a
 `DeviceParameter` embedded in its owning transformer, never a standalone System component,
@@ -244,47 +251,33 @@ function _plan_components(sys::System, ::Type{TransformerCircuit})
     return Iterators.flatten((two_winding, three_winding))
 end
 
-"""Ledger id when the component's UUID is listed there; otherwise the next fresh id.
-Components with no UUID of their own (`_has_own_uuid` false — `TransformerCircuit`) are
-never in the ledger, so they always get a fresh id."""
-function _export_id!(next_id::Base.RefValue{Int}, uuid_to_id, component)
-    if _has_own_uuid(component)
-        return get(uuid_to_id, IS.get_id(component)) do
-            fresh = next_id[]
-            next_id[] += 1
-            return fresh
-        end
-    end
+"""The component's own id, or the next fresh one for a `TransformerCircuit`, which has
+none (`_has_own_uuid` false)."""
+function _export_id!(next_id::Base.RefValue{Int}, component)
+    _has_own_uuid(component) && return IS.get_id(component)
     fresh = next_id[]
     next_id[] += 1
     return fresh
 end
 
-function _build_export_refs(
-    sys::System,
-    unit_system_string::AbstractString,
-    uuid_to_id::AbstractDict{Int, Int},
-)
+function _build_export_refs(sys::System, unit_system_string::AbstractString)
     refs = OpenAPIRefs(unit_system_string, get_base_power(sys))
-    start_id = if isempty(uuid_to_id)
-        1
-    else
-        maximum(values(uuid_to_id)) + 1
+    # Above every component id, so the ids minted for embedded circuits cannot collide with
+    # one. Computed before the walk rather than tracked during it, since a circuit can be
+    # reached before the component whose id would have raised the mark.
+    highest = 0
+    for (_po_type, psy_type, _key, _addable) in DOCUMENT_PLAN
+        for c in _plan_components(sys, psy_type)
+            _has_own_uuid(c) && (highest = max(highest, IS.get_id(c)))
+        end
     end
-    next_id = Ref(start_id)
+    next_id = Ref(highest + 1)
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
-            refs[_export_id!(next_id, uuid_to_id, c)] = c
+            refs[_export_id!(next_id, c)] = c
         end
     end
     return refs
-end
-
-function _ledger_uuid_to_id(ledger)
-    return Dict{Int, Int}(
-        component_id => parse(Int, doc_id_str) for
-        (doc_id_str, component_id) in ledger["id_to_uuid"]
-    )
 end
 
 # ── component pass ───────────────────────────────────────────────────────────────
@@ -533,40 +526,24 @@ end
 # disagree, since the result would be a document whose sidecar no importer could resolve.
 
 """
-Error unless every time-series-owning component's document id equals its IS component id.
+Error when a supplemental attribute owns time series, which export cannot represent.
 
-Import resolves a series' owner by looking the sidecar catalog's owner id up as a document
-id, so the two must agree. They do for a `System` built by `from_openapi` (the ledger
-reproduces the original ids) and for one whose ids were never reassigned. They can diverge
-for a hand-built `System` exported with `unit_system = :device_base`/`:natural_units`, where
-`_export_id!` hands out fresh ids — hence a loud error rather than a silently unloadable pair.
-
-A supplemental attribute owning time series is rejected outright rather than id-checked.
-Export assigns attribute document ids fresh from the document's counter instead of
-reproducing them, so its catalog rows could never resolve on the way back in. Nothing this
-package produces hits it today (no producer attaches series to an attribute), and supporting
-it means teaching the ledger to carry attribute ids too — so it errors rather than writing a
-pair that reads back short.
+Component-owned series need no check: a component's document id is its IS component id, so
+the sidecar catalog's owner ids and the document's ids agree by construction. Attribute
+document ids are assigned fresh from the document counter instead, so an attribute's catalog
+rows could never resolve on the way back in. Nothing this package produces hits it today —
+no producer attaches series to an attribute — and supporting it means teaching export to
+reproduce attribute ids too, so it errors rather than writing a pair that reads back short.
 """
 function _check_time_series_ids_match(sorted_refs)
-    for (doc_id, entity) in sorted_refs
-        _has_own_uuid(entity) || continue
+    for (_doc_id, entity) in sorted_refs
+        entity isa SupplementalAttribute || continue
         IS.supports_time_series(entity) || continue
         has_time_series(entity) || continue
-        if entity isa SupplementalAttribute
-            error(
-                "to_openapi: $(summary(entity)) carries time series, which is not supported " *
-                "on export — attribute document ids are assigned fresh rather than " *
-                "reproduced, so the sidecar catalog could not be resolved on import",
-            )
-        end
-        entity_id = IS.get_id(entity)
-        entity_id == doc_id || error(
-            "to_openapi: $(summary(entity)) carries time series but its document id " *
-            "($doc_id) differs from its component id ($entity_id) — the sidecar catalog " *
-            "keys series by component id, so the document could not be read back. Export " *
-            "with unit_system = :original from a from_openapi-built System, or drop the " *
-            "time series before exporting.",
+        error(
+            "to_openapi: $(summary(entity)) carries time series, which is not supported " *
+            "on export — attribute document ids are assigned fresh rather than reproduced, " *
+            "so the sidecar catalog could not be resolved on import",
         )
     end
     return nothing
@@ -625,13 +602,8 @@ function to_openapi(
     time_series_storage_path = nothing,
 )
     warn_unexportable_components(sys)
-    unit_system_string, ledger = _resolve_export_unit_system(sys, unit_system)
-    uuid_to_id = if isnothing(ledger)
-        Dict{Int, Int}()
-    else
-        _ledger_uuid_to_id(ledger)
-    end
-    refs = _build_export_refs(sys, unit_system_string, uuid_to_id)
+    unit_system_string, _ledger = _resolve_export_unit_system(sys, unit_system)
+    refs = _build_export_refs(sys, unit_system_string)
     val = _unit_val(unit_system_string)
 
     doc = PC.SystemDocument(

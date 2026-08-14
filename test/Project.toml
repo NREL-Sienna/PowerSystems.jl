@@ -11,7 +11,9 @@ JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 NLsolve = "2774e3e8-f4cf-5e23-947b-6d7e65073b56"
+PowerFlowFileParser = "bed98974-b02e-5e2f-9ee0-a103f5c450dd"
 PowerSystemCaseBuilder = "f00506e0-b84f-492a-93c2-c0a9afc4364e"
+PowerTableDataParser = "2b750c0e-0bff-11f1-9200-1befd75df6be"
 PowerSystems = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
@@ -23,6 +25,12 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 [sources]
 InfrastructureSystems = {path = "../../IS3.jl"}
 PowerSystemCaseBuilder = {path = "../../PowerSystemCaseBuilder.jl"}
+# PowerSystemCaseBuilder reaches these two, and Pkg honors [sources] only in the root
+# project -- without them both resolve from the registry, which predates the InfraStore and
+# OpenAPI work (PowerTableDataParser's add_time_series_from_pointers! extension stub in
+# particular is absent there).
+PowerTableDataParser = {path = "../../PowerTableDataParser.jl"}
+PowerFlowFileParser = {path = "../../PowerFlowFileParser.jl"}
 
 [compat]
 InfrastructureSystems = "3"

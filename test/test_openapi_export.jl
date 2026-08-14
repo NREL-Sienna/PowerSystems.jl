@@ -1035,12 +1035,9 @@ end
         @test assoc.attribute_type == "EmissionsData"
         @test length(out.service_associations) == 1
         service_assoc = only(out.service_associations)
-        @test service_assoc.entity_id == PSY.component_id(
-            PSY._build_export_refs(
-                sys, "NATURAL_UNITS", PSY._ledger_uuid_to_id(PSY.load_ledger(sys)),
-            ),
-            load,
-        )
+        # A component's document id is its IS component id, so the membership row points at
+        # the load by that id directly — no export-refs rebuild needed to resolve it.
+        @test service_assoc.entity_id == IS.get_id(load)
         # No document rows: the sidecar's catalog is the association table, so what the
         # export must produce is the sidecar itself.
         @test isempty(out.time_series_associations)
