@@ -74,11 +74,13 @@ mutable struct MotorLoad <: StaticLoad
 end
 
 function MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits=nothing, motor_technology=MotorLoadTechnology.UNDETERMINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, motor_technology, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, base_power = base_power, rating = rating, max_active_power = max_active_power, reactive_power_limits = reactive_power_limits, motor_technology = motor_technology, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    MotorLoad(name, available, bus, construct_value(MotorLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(MotorLoad, _construction_fields, Val(:reactive_power), Val(:mva)), base_power, construct_value(MotorLoad, _construction_fields, Val(:rating), Val(:mva)), construct_value(MotorLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(MotorLoad, _construction_fields, Val(:reactive_power_limits), Val(:mva)), motor_technology, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function MotorLoad(; name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits=nothing, motor_technology=MotorLoadTechnology.UNDETERMINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, motor_technology, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, base_power = base_power, rating = rating, max_active_power = max_active_power, reactive_power_limits = reactive_power_limits, motor_technology = motor_technology, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    MotorLoad(name, available, bus, construct_value(MotorLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(MotorLoad, _construction_fields, Val(:reactive_power), Val(:mva)), base_power, construct_value(MotorLoad, _construction_fields, Val(:rating), Val(:mva)), construct_value(MotorLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(MotorLoad, _construction_fields, Val(:reactive_power_limits), Val(:mva)), motor_technology, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

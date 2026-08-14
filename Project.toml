@@ -17,7 +17,8 @@ Unicode = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [sources]
-InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "IS4"}
+# TODO: restore `rev = "IS4"` once Sienna-Platform/InfrastructureSystems.jl#606 merges.
+InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "lk/unitful-constructors"}
 
 [compat]
 DataStructures = "^0.19"

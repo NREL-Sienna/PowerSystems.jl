@@ -78,11 +78,13 @@ mutable struct ExponentialLoad <: StaticLoad
 end
 
 function ExponentialLoad(name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, α = α, β = β, base_power = base_power, max_active_power = max_active_power, max_reactive_power = max_reactive_power, conformity = conformity, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    ExponentialLoad(name, available, bus, construct_value(ExponentialLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(ExponentialLoad, _construction_fields, Val(:reactive_power), Val(:mva)), α, β, base_power, construct_value(ExponentialLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(ExponentialLoad, _construction_fields, Val(:max_reactive_power), Val(:mva)), conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function ExponentialLoad(; name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, conformity, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, α = α, β = β, base_power = base_power, max_active_power = max_active_power, max_reactive_power = max_reactive_power, conformity = conformity, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    ExponentialLoad(name, available, bus, construct_value(ExponentialLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(ExponentialLoad, _construction_fields, Val(:reactive_power), Val(:mva)), α, β, base_power, construct_value(ExponentialLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(ExponentialLoad, _construction_fields, Val(:max_reactive_power), Val(:mva)), conformity, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

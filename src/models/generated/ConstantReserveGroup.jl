@@ -44,11 +44,13 @@ mutable struct ConstantReserveGroup{T <: ReserveDirection} <: Service
 end
 
 function ConstantReserveGroup{T}(name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{Service}(), ) where T <: ReserveDirection
-    ConstantReserveGroup{T}(name, available, requirement, ext, contributing_services, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, requirement = requirement, ext = ext, contributing_services = contributing_services, )
+    ConstantReserveGroup{T}(name, available, construct_value(ConstantReserveGroup{T}, _construction_fields, Val(:requirement), Val(:mva)), ext, contributing_services, InfrastructureSystemsInternal(), )
 end
 
 function ConstantReserveGroup{T}(; name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{Service}(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
-    ConstantReserveGroup{T}(name, available, requirement, ext, contributing_services, internal, )
+    _construction_fields = (name = name, available = available, requirement = requirement, ext = ext, contributing_services = contributing_services, )
+    ConstantReserveGroup{T}(name, available, construct_value(ConstantReserveGroup{T}, _construction_fields, Val(:requirement), Val(:mva)), ext, contributing_services, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

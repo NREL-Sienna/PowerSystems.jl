@@ -33,7 +33,24 @@ end
 # base_voltage_primary.
 get_base_voltage(w::TransformerCircuit) = get_base_voltage_primary(w)
 
-const UnitsBearer = Union{Component, TransformerCircuit}
+"""
+The per-unit bases of a field of a component that is still being constructed,
+resolved from the constructor's own arguments, so that we can use the unitful getter/setter
+infrastructure to convert user input to DU in the constructor (even though we don't have
+a component yet).
+
+`T` (the struct being built) and `F` (the field name) are type parameters carried
+for error messages only.
+"""
+struct UnderConstruction{T, F, P, V}
+    base_power::P
+    base_voltage::V
+end
+
+UnderConstruction{T, F}(base_power::P, base_voltage::V) where {T, F, P, V} =
+    UnderConstruction{T, F, P, V}(base_power, base_voltage)
+
+const UnitsBearer = Union{Component, TransformerCircuit, UnderConstruction}
 
 get_base_voltage(c::Branch) = get_base_voltage(get_arc(c).from)
 
@@ -248,6 +265,150 @@ set_value(c::UnitsBearer, field, val::NamedTuple{(:startup, :shutdown)}, cu::Val
 
 # ---- Nothing passthrough ----
 set_value(::UnitsBearer, _, ::Nothing, ::Val) = nothing
+
+#######################################################
+# Units-aware construction
+#
+# Getters and setters resolve their bases from the component. A constructor has
+# no component yet, so the bases come from the constructor's own arguments: the
+# generated constructors collect every argument into a `_construction_fields`
+# NamedTuple and call `construct_value` once per unit-bearing field. The
+# conversion itself is the setters' (`set_value`), so there is only one
+# conversion engine.
+#
+# Untagged numbers are taken as device base. Tagged values (`50.0 * MW`,
+# `0.5 * DU`) are converted to device-base storage. `SU` values always error, and
+# natural-unit values error for components without a `base_power` field (e.g. lines).
+#######################################################
+
+"""
+    construct_value(::Type{T}, fields::NamedTuple, field::Val, conversion_unit::Val)
+
+Convert one constructor argument to the device-base value stored in the struct.
+`fields` carries every argument of the constructor being run so the per-unit
+bases can be resolved before the component exists. Emitted by the struct
+generator; not meant to be called directly.
+"""
+construct_value(::Type{T}, fields::NamedTuple, field::Val{F}, cu::Val) where {T, F} =
+    _construct_value(_construction_base(T, fields, field), getproperty(fields, F), cu)
+
+# ---- Which arguments carry the bases for a given field ----
+# Mirrors `_conversion_base` above, reading the constructor's arguments instead
+# of the component's fields.
+_construction_base(::Type{T}, f::NamedTuple, ::Val{F}) where {T, F} =
+    UnderConstruction{T, F}(_construction_base_power(f), _construction_base_voltage(f))
+
+_construction_base_power(f::NamedTuple) =
+    hasproperty(f, :base_power) ? f.base_power : nothing
+
+function _construction_base_voltage(f::NamedTuple)
+    if hasproperty(f, :base_voltage_primary)      # TransformerCircuit
+        return f.base_voltage_primary
+    elseif hasproperty(f, :base_voltage)          # buses
+        return f.base_voltage
+    elseif hasproperty(f, :arc)                   # branches
+        return get_base_voltage(f.arc.from)
+    elseif hasproperty(f, :bus)                   # injectors
+        return get_base_voltage(f.bus)
+    else
+        return nothing
+    end
+end
+
+# A transformer's `magnetizing_shunt` is per-unit on its primary circuit, which
+# is passed in already fully formed and is its own base provider.
+_construction_base(
+    ::Type{TwoWindingTransformer},
+    f::NamedTuple,
+    ::Val{:magnetizing_shunt},
+) = f.circuit
+_construction_base(
+    ::Type{ThreeWindingTransformer},
+    f::NamedTuple,
+    ::Val{:magnetizing_shunt},
+) = f.primary_circuit
+
+# 3W pairwise PSS/E impedances: pu on `base_power_ij`, referenced to the
+# first-index circuit's base voltage (same convention as `_conversion_base`).
+for (field, base_power, circuit) in (
+    (:r_12, :base_power_12, :primary_circuit),
+    (:x_12, :base_power_12, :primary_circuit),
+    (:r_23, :base_power_23, :secondary_circuit),
+    (:x_23, :base_power_23, :secondary_circuit),
+    (:r_31, :base_power_31, :tertiary_circuit),
+    (:x_31, :base_power_31, :tertiary_circuit),
+)
+    @eval _construction_base(
+        ::Type{ThreeWindingTransformer},
+        f::NamedTuple,
+        ::Val{$(QuoteNode(field))},
+    ) = UnderConstruction{ThreeWindingTransformer, $(QuoteNode(field))}(
+        f.$base_power,
+        get_base_voltage(f.$circuit),
+    )
+end
+
+# ---- The conversion-engine interface, for a component under construction ----
+function _get_device_base_power(b::UnderConstruction{T, F}) where {T, F}
+    isnothing(b.base_power) && throw(
+        ArgumentError(
+            "Cnnot convert the `$F` argument of `$(nameof(T))`: no per-unit base is " *
+            "available at construction time. Either the type stores this field on the " *
+            "system base (it has no `base_power` field), or the base argument for this "*
+            " field was not given. Pass a device-base value instead (`x * DU`).",
+        ),
+    )
+    return b.base_power
+end
+
+_get_system_base_power(::UnderConstruction{T, F}) where {T, F} = throw(
+    ArgumentError(
+        "Cannot convert a system-base (`SU`) value for the `$F` argument of " *
+        "`$(nameof(T))`: the system base power is unknown until the component is added " *
+        "to a System. Pass a device-base value (`x * DU`) or a natural-unit value " *
+        "(e.g. `x * MW`), or set the field with `set_$(F)!` after `add_component!`.",
+    ),
+)
+
+get_base_voltage(b::UnderConstruction) = b.base_voltage
+
+Base.summary(
+    ::UnderConstruction{T, F},
+) where {T, F} = "the `$F` argument of the `$(nameof(T))` under construction"
+
+# ---- Argument → stored device-base value ----
+# Tagged values convert exactly as the setters do; untagged numbers, which the
+# setters reject, pass through as device base.
+_construct_value(base, val, cu::Val) = set_value(base, nothing, val, cu)
+_construct_value(::Any, val::Real, ::Val) = val
+_construct_value(::Any, val::Complex, ::Val) = val
+
+# Compound fields recurse here rather than through `set_value` so that untagged
+# entries keep passing through.
+_construct_value(base, val::NamedTuple{(:min, :max)}, cu::Val) = (
+    min = _construct_value(base, val.min, cu),
+    max = _construct_value(base, val.max, cu),
+)
+
+_construct_value(base, val::NamedTuple{(:up, :down)}, cu::Val) = (
+    up = _construct_value(base, val.up, cu),
+    down = _construct_value(base, val.down, cu),
+)
+
+_construct_value(base, val::NamedTuple{(:from_to, :to_from)}, cu::Val) = (
+    from_to = _construct_value(base, val.from_to, cu),
+    to_from = _construct_value(base, val.to_from, cu),
+)
+
+_construct_value(base, val::NamedTuple{(:from, :to)}, cu::Val) = (
+    from = _construct_value(base, val.from, cu),
+    to = _construct_value(base, val.to, cu),
+)
+
+_construct_value(base, val::NamedTuple{(:startup, :shutdown)}, cu::Val) = (
+    startup = _construct_value(base, val.startup, cu),
+    shutdown = _construct_value(base, val.shutdown, cu),
+)
 
 ######################################
 ########### Transformer 3W ###########

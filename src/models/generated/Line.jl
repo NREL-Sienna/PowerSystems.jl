@@ -80,11 +80,13 @@ mutable struct Line <: ACTransmission
 end
 
 function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b, rating_c, g, services, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, reactive_power_flow = reactive_power_flow, arc = arc, r = r, x = x, b = b, rating = rating, angle_limits = angle_limits, rating_b = rating_b, rating_c = rating_c, g = g, services = services, ext = ext, )
+    Line(name, available, construct_value(Line, _construction_fields, Val(:active_power_flow), Val(:mva)), construct_value(Line, _construction_fields, Val(:reactive_power_flow), Val(:mva)), arc, construct_value(Line, _construction_fields, Val(:r), Val(:ohm)), construct_value(Line, _construction_fields, Val(:x), Val(:ohm)), construct_value(Line, _construction_fields, Val(:b), Val(:siemens)), construct_value(Line, _construction_fields, Val(:rating), Val(:mva)), angle_limits, construct_value(Line, _construction_fields, Val(:rating_b), Val(:mva)), construct_value(Line, _construction_fields, Val(:rating_c), Val(:mva)), construct_value(Line, _construction_fields, Val(:g), Val(:siemens)), services, ext, InfrastructureSystemsInternal(), )
 end
 
 function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b, rating_c, g, services, ext, internal, )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, reactive_power_flow = reactive_power_flow, arc = arc, r = r, x = x, b = b, rating = rating, angle_limits = angle_limits, rating_b = rating_b, rating_c = rating_c, g = g, services = services, ext = ext, )
+    Line(name, available, construct_value(Line, _construction_fields, Val(:active_power_flow), Val(:mva)), construct_value(Line, _construction_fields, Val(:reactive_power_flow), Val(:mva)), arc, construct_value(Line, _construction_fields, Val(:r), Val(:ohm)), construct_value(Line, _construction_fields, Val(:x), Val(:ohm)), construct_value(Line, _construction_fields, Val(:b), Val(:siemens)), construct_value(Line, _construction_fields, Val(:rating), Val(:mva)), angle_limits, construct_value(Line, _construction_fields, Val(:rating_b), Val(:mva)), construct_value(Line, _construction_fields, Val(:rating_c), Val(:mva)), construct_value(Line, _construction_fields, Val(:g), Val(:siemens)), services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

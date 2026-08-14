@@ -38,11 +38,13 @@ mutable struct LoadZone <: AggregationTopology
 end
 
 function LoadZone(name, peak_active_power, peak_reactive_power, ext=Dict{String, Any}(), )
-    LoadZone(name, peak_active_power, peak_reactive_power, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, peak_active_power = peak_active_power, peak_reactive_power = peak_reactive_power, ext = ext, )
+    LoadZone(name, construct_value(LoadZone, _construction_fields, Val(:peak_active_power), Val(:mva)), construct_value(LoadZone, _construction_fields, Val(:peak_reactive_power), Val(:mva)), ext, InfrastructureSystemsInternal(), )
 end
 
 function LoadZone(; name, peak_active_power, peak_reactive_power, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    LoadZone(name, peak_active_power, peak_reactive_power, ext, internal, )
+    _construction_fields = (name = name, peak_active_power = peak_active_power, peak_reactive_power = peak_reactive_power, ext = ext, )
+    LoadZone(name, construct_value(LoadZone, _construction_fields, Val(:peak_active_power), Val(:mva)), construct_value(LoadZone, _construction_fields, Val(:peak_reactive_power), Val(:mva)), ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

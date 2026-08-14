@@ -66,11 +66,13 @@ mutable struct TwoTerminalGenericHVDCLine <: TwoTerminalHVDC
 end
 
 function TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, arc = arc, active_power_limits_from = active_power_limits_from, active_power_limits_to = active_power_limits_to, reactive_power_limits_from = reactive_power_limits_from, reactive_power_limits_to = reactive_power_limits_to, loss = loss, services = services, ext = ext, )
+    TwoTerminalGenericHVDCLine(name, available, construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:active_power_flow), Val(:mva)), arc, construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:active_power_limits_from), Val(:mva)), construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:active_power_limits_to), Val(:mva)), construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:reactive_power_limits_from), Val(:mva)), construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:reactive_power_limits_to), Val(:mva)), loss, services, ext, InfrastructureSystemsInternal(), )
 end
 
 function TwoTerminalGenericHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, arc = arc, active_power_limits_from = active_power_limits_from, active_power_limits_to = active_power_limits_to, reactive_power_limits_from = reactive_power_limits_from, reactive_power_limits_to = reactive_power_limits_to, loss = loss, services = services, ext = ext, )
+    TwoTerminalGenericHVDCLine(name, available, construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:active_power_flow), Val(:mva)), arc, construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:active_power_limits_from), Val(:mva)), construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:active_power_limits_to), Val(:mva)), construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:reactive_power_limits_from), Val(:mva)), construct_value(TwoTerminalGenericHVDCLine, _construction_fields, Val(:reactive_power_limits_to), Val(:mva)), loss, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

@@ -72,11 +72,13 @@ mutable struct RenewableNonDispatch <: RenewableGen
 end
 
 function RenewableNonDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    RenewableNonDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, rating = rating, prime_mover_type = prime_mover_type, power_factor = power_factor, base_power = base_power, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    RenewableNonDispatch(name, available, bus, construct_value(RenewableNonDispatch, _construction_fields, Val(:active_power), Val(:mva)), construct_value(RenewableNonDispatch, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(RenewableNonDispatch, _construction_fields, Val(:rating), Val(:mva)), prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function RenewableNonDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    RenewableNonDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, rating = rating, prime_mover_type = prime_mover_type, power_factor = power_factor, base_power = base_power, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    RenewableNonDispatch(name, available, bus, construct_value(RenewableNonDispatch, _construction_fields, Val(:active_power), Val(:mva)), construct_value(RenewableNonDispatch, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(RenewableNonDispatch, _construction_fields, Val(:rating), Val(:mva)), prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

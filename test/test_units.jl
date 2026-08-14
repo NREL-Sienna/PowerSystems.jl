@@ -474,3 +474,123 @@ end
         @test IS.get_base_value(w) === nothing
     end
 end
+
+# Constructors accept unit-tagged values, converting them to device-base storage
+# before the struct is built (issue #1115). The per-unit bases come from the
+# constructor's own arguments, since there is no component to read them from and
+# no System to fall back on.
+@testset "Units-aware construction" begin
+    bus = ACBus(;
+        number = 1, name = "b1", available = true,
+        bustype = ACBusTypes.PV, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 230.0,
+    )
+    bus2 = ACBus(;
+        number = 2, name = "b2", available = true,
+        bustype = ACBusTypes.PQ, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 115.0,
+    )
+    arc = Arc(; from = bus, to = bus2)
+    common = (;
+        name = "g", available = true, status = true, bus = bus,
+        operation_cost = ThermalGenerationCost(nothing), base_power = 100.0,
+    )
+
+    @testset "MW, DU and untagged agree" begin
+        bare = ThermalStandard(;
+            common..., active_power = 0.5, reactive_power = 0.1, rating = 1.0,
+            active_power_limits = (min = 0.1, max = 1.0),
+            reactive_power_limits = (min = -0.5, max = 0.5),
+            ramp_limits = (up = 0.1, down = 0.1),
+        )
+        mw = ThermalStandard(;
+            common..., active_power = 50.0u"MW", reactive_power = 10.0u"MW",
+            rating = 100.0u"MW",
+            active_power_limits = (min = 10.0u"MW", max = 100.0u"MW"),
+            reactive_power_limits = (min = -50.0u"MW", max = 50.0u"MW"),
+            ramp_limits = (up = 10.0u"MW", down = 10.0u"MW"),
+        )
+        du = ThermalStandard(;
+            common..., active_power = 0.5DU, reactive_power = 0.1DU, rating = 1.0DU,
+            active_power_limits = (min = 0.1DU, max = 1.0DU),
+            reactive_power_limits = (min = -0.5DU, max = 0.5DU),
+            ramp_limits = (up = 0.1DU, down = 0.1DU),
+        )
+        # the positional constructor converts identically to the keyword one
+        positional = ThermalStandard(
+            "g", true, true, bus, 50.0u"MW", 10.0u"MW", 100.0u"MW",
+            (min = 10.0u"MW", max = 100.0u"MW"), (min = -50.0u"MW", max = 50.0u"MW"),
+            (up = 10.0u"MW", down = 10.0u"MW"), ThermalGenerationCost(nothing), 100.0,
+        )
+        for getter in (
+            get_active_power, get_reactive_power, get_rating,
+            get_active_power_limits, get_reactive_power_limits, get_ramp_limits,
+        )
+            @test getter(mw, DU) == getter(bare, DU)
+            @test getter(du, DU) == getter(bare, DU)
+            @test getter(positional, DU) == getter(bare, DU)
+        end
+        @test get_active_power(mw, u"MW") == 50.0
+    end
+
+    @testset "construction matches construct-then-set" begin
+        args = (;
+            common..., base_power = 80.0, reactive_power = 0.1, rating = 1.0,
+            active_power_limits = (min = 0.1, max = 1.0),
+            reactive_power_limits = nothing, ramp_limits = nothing,
+        )
+        built = ThermalStandard(; args..., active_power = 42.0u"MW")
+        seeded = ThermalStandard(; args..., active_power = 0.0)
+        set_active_power!(seeded, 42.0u"MW")
+        @test get_active_power(built, DU) == get_active_power(seeded, DU)
+    end
+
+    @testset "TransformerCircuit carries its own bases" begin
+        circuit = TransformerCircuit(;
+            available = true, arc = arc, r = 5.29u"Ω", x = 52.9u"Ω",
+            rating = 50.0u"MW", base_power = 100.0,
+            base_voltage_primary = 230.0, base_voltage_secondary = 115.0,
+        )
+        @test get_r(circuit, DU) ≈ 5.29 / (230.0^2 / 100)
+        @test get_r(circuit, OHMS) ≈ 5.29
+        @test get_rating(circuit, DU) ≈ 0.5
+    end
+
+    @testset "3W pairwise fields use their pairwise base" begin
+        primary = TransformerCircuit(;
+            available = true, arc = arc, base_power = 100.0,
+            base_voltage_primary = 230.0, base_voltage_secondary = 115.0,
+        )
+        secondary = TransformerCircuit(;
+            available = true, arc = Arc(; from = bus2, to = bus), base_power = 100.0,
+            base_voltage_primary = 115.0, base_voltage_secondary = 230.0,
+        )
+        t3w = ThreeWindingTransformer(;
+            name = "t", primary_circuit = primary, secondary_circuit = secondary,
+            tertiary_circuit = deepcopy(secondary), star_bus = bus2,
+            r_12 = 5.29u"Ω", x_12 = 52.9u"Ω", base_power_12 = 15.0,
+        )
+        # r_12 is pu on base_power_12 referenced to the primary base voltage
+        @test getfield(t3w, :r_12) ≈ 5.29 / (230.0^2 / 15)
+        @test isnothing(getfield(t3w, :r_23))
+    end
+
+    @testset "unresolvable bases error" begin
+        # SU needs the system base, which is unknown before add_component!
+        @test_throws ArgumentError ThermalStandard(;
+            common..., active_power = 0.5SU, reactive_power = 0.1, rating = 1.0,
+            active_power_limits = (min = 0.1, max = 1.0),
+            reactive_power_limits = nothing, ramp_limits = nothing,
+        )
+        # Line has no base_power: its device base *is* the system base
+        line_args = (;
+            name = "l", available = true, active_power_flow = 0.0,
+            reactive_power_flow = 0.0, arc = arc, x = 0.1,
+            b = (from = 0.0, to = 0.0), rating = 1.0,
+            angle_limits = (min = -1.0, max = 1.0),
+        )
+        @test_throws ArgumentError Line(; line_args..., r = 5.29u"Ω")
+        # ...but device-base values need no base at all
+        @test get_r(Line(; line_args..., r = 0.01DU), DU) == 0.01
+    end
+end

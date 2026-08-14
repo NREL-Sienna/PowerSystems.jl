@@ -46,11 +46,13 @@ mutable struct TwoWindingTransformer <: ACTransmission
 end
 
 function TwoWindingTransformer(name, circuit, magnetizing_shunt=0.0, shunt_location=TwoWindingTransformerShuntLocation.PRIMARY, services=Device[], ext=Dict{String, Any}(), )
-    TwoWindingTransformer(name, circuit, magnetizing_shunt, shunt_location, services, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, circuit = circuit, magnetizing_shunt = magnetizing_shunt, shunt_location = shunt_location, services = services, ext = ext, )
+    TwoWindingTransformer(name, circuit, construct_value(TwoWindingTransformer, _construction_fields, Val(:magnetizing_shunt), Val(:siemens)), shunt_location, services, ext, InfrastructureSystemsInternal(), )
 end
 
 function TwoWindingTransformer(; name, circuit, magnetizing_shunt=0.0, shunt_location=TwoWindingTransformerShuntLocation.PRIMARY, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoWindingTransformer(name, circuit, magnetizing_shunt, shunt_location, services, ext, internal, )
+    _construction_fields = (name = name, circuit = circuit, magnetizing_shunt = magnetizing_shunt, shunt_location = shunt_location, services = services, ext = ext, )
+    TwoWindingTransformer(name, circuit, construct_value(TwoWindingTransformer, _construction_fields, Val(:magnetizing_shunt), Val(:siemens)), shunt_location, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

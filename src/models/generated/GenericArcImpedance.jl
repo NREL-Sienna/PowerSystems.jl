@@ -56,11 +56,13 @@ mutable struct GenericArcImpedance <: ACTransmission
 end
 
 function GenericArcImpedance(name, available, active_power_flow, reactive_power_flow, max_flow, arc, r, x, ext=Dict{String, Any}(), )
-    GenericArcImpedance(name, available, active_power_flow, reactive_power_flow, max_flow, arc, r, x, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, reactive_power_flow = reactive_power_flow, max_flow = max_flow, arc = arc, r = r, x = x, ext = ext, )
+    GenericArcImpedance(name, available, construct_value(GenericArcImpedance, _construction_fields, Val(:active_power_flow), Val(:mva)), construct_value(GenericArcImpedance, _construction_fields, Val(:reactive_power_flow), Val(:mva)), construct_value(GenericArcImpedance, _construction_fields, Val(:max_flow), Val(:mva)), arc, construct_value(GenericArcImpedance, _construction_fields, Val(:r), Val(:ohm)), construct_value(GenericArcImpedance, _construction_fields, Val(:x), Val(:ohm)), ext, InfrastructureSystemsInternal(), )
 end
 
 function GenericArcImpedance(; name, available, active_power_flow, reactive_power_flow, max_flow, arc, r, x, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    GenericArcImpedance(name, available, active_power_flow, reactive_power_flow, max_flow, arc, r, x, ext, internal, )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, reactive_power_flow = reactive_power_flow, max_flow = max_flow, arc = arc, r = r, x = x, ext = ext, )
+    GenericArcImpedance(name, available, construct_value(GenericArcImpedance, _construction_fields, Val(:active_power_flow), Val(:mva)), construct_value(GenericArcImpedance, _construction_fields, Val(:reactive_power_flow), Val(:mva)), construct_value(GenericArcImpedance, _construction_fields, Val(:max_flow), Val(:mva)), arc, construct_value(GenericArcImpedance, _construction_fields, Val(:r), Val(:ohm)), construct_value(GenericArcImpedance, _construction_fields, Val(:x), Val(:ohm)), ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

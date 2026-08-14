@@ -58,11 +58,13 @@ mutable struct ConstantReserveNonSpinning <: ReserveNonSpinning
 end
 
 function ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
-    ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, time_frame = time_frame, requirement = requirement, sustained_time = sustained_time, max_output_fraction = max_output_fraction, max_participation_factor = max_participation_factor, deployed_fraction = deployed_fraction, ext = ext, )
+    ConstantReserveNonSpinning(name, available, time_frame, construct_value(ConstantReserveNonSpinning, _construction_fields, Val(:requirement), Val(:mva)), sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
 end
 
 function ConstantReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
+    _construction_fields = (name = name, available = available, time_frame = time_frame, requirement = requirement, sustained_time = sustained_time, max_output_fraction = max_output_fraction, max_participation_factor = max_participation_factor, deployed_fraction = deployed_fraction, ext = ext, )
+    ConstantReserveNonSpinning(name, available, time_frame, construct_value(ConstantReserveNonSpinning, _construction_fields, Val(:requirement), Val(:mva)), sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

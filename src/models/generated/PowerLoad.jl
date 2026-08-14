@@ -70,11 +70,13 @@ mutable struct PowerLoad <: StaticLoad
 end
 
 function PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, base_power = base_power, max_active_power = max_active_power, max_reactive_power = max_reactive_power, conformity = conformity, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    PowerLoad(name, available, bus, construct_value(PowerLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(PowerLoad, _construction_fields, Val(:reactive_power), Val(:mva)), base_power, construct_value(PowerLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(PowerLoad, _construction_fields, Val(:max_reactive_power), Val(:mva)), conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function PowerLoad(; name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, base_power = base_power, max_active_power = max_active_power, max_reactive_power = max_reactive_power, conformity = conformity, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    PowerLoad(name, available, bus, construct_value(PowerLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(PowerLoad, _construction_fields, Val(:reactive_power), Val(:mva)), base_power, construct_value(PowerLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(PowerLoad, _construction_fields, Val(:max_reactive_power), Val(:mva)), conformity, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

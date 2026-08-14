@@ -80,11 +80,13 @@ mutable struct RenewableDispatch <: RenewableGen
 end
 
 function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, rating = rating, prime_mover_type = prime_mover_type, reactive_power_limits = reactive_power_limits, power_factor = power_factor, operation_cost = operation_cost, base_power = base_power, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    RenewableDispatch(name, available, bus, construct_value(RenewableDispatch, _construction_fields, Val(:active_power), Val(:mva)), construct_value(RenewableDispatch, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(RenewableDispatch, _construction_fields, Val(:rating), Val(:mva)), prime_mover_type, construct_value(RenewableDispatch, _construction_fields, Val(:reactive_power_limits), Val(:mva)), power_factor, operation_cost, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, rating = rating, prime_mover_type = prime_mover_type, reactive_power_limits = reactive_power_limits, power_factor = power_factor, operation_cost = operation_cost, base_power = base_power, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    RenewableDispatch(name, available, bus, construct_value(RenewableDispatch, _construction_fields, Val(:active_power), Val(:mva)), construct_value(RenewableDispatch, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(RenewableDispatch, _construction_fields, Val(:rating), Val(:mva)), prime_mover_type, construct_value(RenewableDispatch, _construction_fields, Val(:reactive_power_limits), Val(:mva)), power_factor, operation_cost, base_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
