@@ -1449,6 +1449,112 @@ function from_openapi(po::PO.InterconnectingConverter, refs::OpenAPIRefs, ::Natu
     )
 end
 
+# ── HybridSystem ────────────────────────────────────────────────────────────────
+# Four of its fields reference *abstract* PSY types — `ThermalGen`, `ElectricLoad`,
+# `Storage`, `RenewableGen` — which is what keeps this hand-written: the generator's
+# `:reference` kind resolves a concrete struct name, and these name a supertype whose
+# concrete member is whatever the document registered under that id. `resolve_ref`'s type
+# argument still applies, an abstract bound being a perfectly good assert.
+#
+# `base_power` is required rather than derived. The schema calls it "commonly the same as
+# `interconnection_rating`", and *commonly* is not *always* — silently substituting the PCC
+# rating for a missing base would rescale every other field on the device against a number
+# the producer never stated. A document that omits it is malformed, and says so.
+#
+# `interconnection_impedance` is pu and passes through; `interconnection_efficiency` is a
+# dimensionless `InOut` fraction, likewise.
+
+function _hybrid_base_power(po)
+    isnothing(po.base_power) && error(
+        "HybridSystem $(po.name): base_power is required and the document omits it. It is " *
+        "commonly equal to interconnection_rating but is not derived from it — every " *
+        "per-unit field on this device resolves against it, so substituting the PCC rating " *
+        "would rescale them against a value the producer never stated.",
+    )
+    return Float64(po.base_power)
+end
+
+"""`(in, out)` passed through unconverted, or `nothing` when absent."""
+_opt_inout(::Nothing) = nothing
+_opt_inout(m) = _inout(m)
+
+function from_openapi(po::PO.HybridSystem, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    _hybrid_base_power(po)
+    return HybridSystem(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        base_power = po.base_power,
+        operation_cost = convert_cost(po.operation_cost)::MarketBidCost,
+        thermal_unit = resolve_ref(refs, po.thermal_unit, ThermalGen),
+        electric_load = resolve_ref(refs, po.electric_load, ElectricLoad),
+        storage = resolve_ref(refs, po.storage, Storage),
+        renewable_unit = resolve_ref(refs, po.renewable_unit, RenewableGen),
+        interconnection_impedance = _complex_number(po.interconnection_impedance),
+        interconnection_rating = po.interconnection_rating,
+        input_active_power_limits = _opt_minmax(po.input_active_power_limits),
+        output_active_power_limits = _opt_minmax(po.output_active_power_limits),
+        reactive_power_limits = _opt_minmax(po.reactive_power_limits),
+        interconnection_efficiency = _opt_inout(po.interconnection_efficiency),
+    )
+end
+
+function from_openapi(po::PO.HybridSystem, refs::OpenAPIRefs, ::NaturalUnit)
+    dbp = _hybrid_base_power(po)
+    return HybridSystem(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power / dbp,
+        reactive_power = po.reactive_power / dbp,
+        base_power = dbp,
+        operation_cost = convert_cost(po.operation_cost)::MarketBidCost,
+        thermal_unit = resolve_ref(refs, po.thermal_unit, ThermalGen),
+        electric_load = resolve_ref(refs, po.electric_load, ElectricLoad),
+        storage = resolve_ref(refs, po.storage, Storage),
+        renewable_unit = resolve_ref(refs, po.renewable_unit, RenewableGen),
+        interconnection_impedance = _complex_number(po.interconnection_impedance),
+        interconnection_rating = _scale_optional(po.interconnection_rating, dbp),
+        input_active_power_limits = _minmax_du(po.input_active_power_limits, dbp),
+        output_active_power_limits = _minmax_du(po.output_active_power_limits, dbp),
+        reactive_power_limits = _minmax_du(po.reactive_power_limits, dbp),
+        interconnection_efficiency = _opt_inout(po.interconnection_efficiency),
+    )
+end
+
+# ── AGC ─────────────────────────────────────────────────────────────────────────
+# `reserves` has no schema field, and deliberately so: the reserves an AGC regulates are
+# membership, which Sienna records in `service_associations` rather than as an inline array
+# on one side. So the converter builds the AGC without them and the association loader fills
+# them in, exactly as `GroupReserve.contributing_services` is handled — see
+# `_attach_service_membership!` in import_document.jl.
+#
+# None of the gains carry a `conversion_unit`: `bias` is MW/Hz, `initial_ace` MW, and the PID
+# terms and `delta_t` are dimensionless or seconds, so both unit systems are identical and
+# the natural method delegates.
+
+function from_openapi(po::PO.AGC, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return AGC(;
+        name = po.name,
+        available = po.available,
+        bias = po.bias,
+        K_p = po.K_p,
+        K_i = po.K_i,
+        K_d = po.K_d,
+        delta_t = po.delta_t,
+        area = resolve_ref(refs, po.area, Area),
+        initial_ace = po.initial_ace,
+    )
+end
+
+function from_openapi(po::PO.AGC, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(po, refs, DU)
+end
+
 # ── Reserves: OnlineReserve, OfflineReserve, GroupReserve ───────────────────────
 # The parametric case: `reserve_direction` is a document enum property while PSY encodes it
 # as a type parameter, resolved through a literal table (direction is not a codegen case).

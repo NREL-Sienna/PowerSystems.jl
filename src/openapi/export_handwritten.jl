@@ -129,6 +129,103 @@ function to_openapi(line::Line, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+# ── HybridSystem ────────────────────────────────────────────────────────────────
+# Device base. The four subcomponent references are optional on the PSY side, so they go
+# through `_component_id_optional`. `reserves`-style membership does not apply here; the
+# subcomponents are genuine fields.
+
+function to_openapi(hyb::HybridSystem, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.HybridSystem(;
+        id = component_id(refs, hyb),
+        name = get_name(hyb),
+        available = get_available(hyb),
+        status = get_status(hyb),
+        bus = component_id(refs, get_bus(hyb)),
+        active_power = get_active_power(hyb, DU),
+        reactive_power = get_reactive_power(hyb, DU),
+        base_power = _get_base_power(hyb),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(hyb)),
+        thermal_unit = _component_id_optional(refs, get_thermal_unit(hyb)),
+        electric_load = _component_id_optional(refs, get_electric_load(hyb)),
+        storage = _component_id_optional(refs, get_storage(hyb)),
+        renewable_unit = _component_id_optional(refs, get_renewable_unit(hyb)),
+        interconnection_impedance = _complex_number_po(
+            get_interconnection_impedance(hyb),
+        ),
+        interconnection_rating = get_interconnection_rating(hyb, DU),
+        input_active_power_limits = _minmax_po_optional(
+            get_input_active_power_limits(hyb, DU),
+        ),
+        output_active_power_limits = _minmax_po_optional(
+            get_output_active_power_limits(hyb, DU),
+        ),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(hyb, DU)),
+        interconnection_efficiency = _inout_po_optional(
+            get_interconnection_efficiency(hyb),
+        ),
+    )
+end
+
+function to_openapi(hyb::HybridSystem, refs::OpenAPIRefs, ::NaturalUnit)
+    dbp = _get_base_power(hyb)
+    return PO.HybridSystem(;
+        id = component_id(refs, hyb),
+        name = get_name(hyb),
+        available = get_available(hyb),
+        status = get_status(hyb),
+        bus = component_id(refs, get_bus(hyb)),
+        active_power = get_active_power(hyb, DU) * dbp,
+        reactive_power = get_reactive_power(hyb, DU) * dbp,
+        base_power = dbp,
+        operation_cost = convert_cost_to_openapi(get_operation_cost(hyb)),
+        thermal_unit = _component_id_optional(refs, get_thermal_unit(hyb)),
+        electric_load = _component_id_optional(refs, get_electric_load(hyb)),
+        storage = _component_id_optional(refs, get_storage(hyb)),
+        renewable_unit = _component_id_optional(refs, get_renewable_unit(hyb)),
+        interconnection_impedance = _complex_number_po(
+            get_interconnection_impedance(hyb),
+        ),
+        interconnection_rating = _scale_optional_po(
+            get_interconnection_rating(hyb, DU), dbp,
+        ),
+        input_active_power_limits = _minmax_po_scaled_optional(
+            get_input_active_power_limits(hyb, DU), dbp,
+        ),
+        output_active_power_limits = _minmax_po_scaled_optional(
+            get_output_active_power_limits(hyb, DU), dbp,
+        ),
+        reactive_power_limits = _minmax_po_scaled_optional(
+            get_reactive_power_limits(hyb, DU), dbp,
+        ),
+        interconnection_efficiency = _inout_po_optional(
+            get_interconnection_efficiency(hyb),
+        ),
+    )
+end
+
+# ── AGC ─────────────────────────────────────────────────────────────────────────
+# No unit-converted fields, so the natural method delegates. `reserves` is not written here
+# — it is a `service_associations` row, emitted by `_export_service_associations`.
+
+function to_openapi(agc::AGC, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.AGC(;
+        id = component_id(refs, agc),
+        name = get_name(agc),
+        available = get_available(agc),
+        bias = get_bias(agc),
+        K_p = get_K_p(agc),
+        K_i = get_K_i(agc),
+        K_d = get_K_d(agc),
+        delta_t = get_delta_t(agc),
+        area = _component_id_optional(refs, get_area(agc)),
+        initial_ace = get_initial_ace(agc),
+    )
+end
+
+function to_openapi(agc::AGC, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(agc, refs, DU)
+end
+
 # ── Source ──────────────────────────────────────────────────────────────────────
 # Device base: the MVA/MW fields multiply back by the source's own `base_power`, not the
 # document system base.

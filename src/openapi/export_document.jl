@@ -307,6 +307,19 @@ function _export_service_associations(refs::OpenAPIRefs, sys::System)
             )
         end
     end
+    # `AGC.reserves` is the same membership shape as `GroupReserve.contributing_services`
+    # above: no schema field on either side, carried by these rows instead.
+    for agc in get_components(AGC, sys)
+        for reserve in get_reserves(agc)
+            push!(
+                rows,
+                PO.ServiceAssociation(;
+                    service_id = component_id(refs, agc),
+                    entity_id = component_id(refs, reserve),
+                ),
+            )
+        end
+    end
     return rows
 end
 

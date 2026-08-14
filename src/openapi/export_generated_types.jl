@@ -31,6 +31,8 @@ _fromto_tofrom_po(nt) = PC.FromToToFrom(; from_to = nt.from_to, to_from = nt.to_
 _fromto_tofrom_po_scaled(nt, base) =
     PC.FromToToFrom(; from_to = nt.from_to * base, to_from = nt.to_from * base)
 _inout_po(nt) = PC.InOut(; in = nt.in, out = nt.out)
+_inout_po_optional(::Nothing) = nothing
+_inout_po_optional(nt) = _inout_po(nt)
 # Inverse of the import side's `_complex_number` (import_handwritten.jl).
 _complex_number_po(c) = PC.ComplexNumber(; real = real(c), imag = imag(c))
 

@@ -165,10 +165,17 @@ const DOCUMENT_PLAN = [
         po_type = PO.GroupReserve, psy_type = GroupReserve, key = "GroupReserve",
         addable = true,
     ),
+    # After every subcomponent it can reference (thermal, load, storage, renewable).
+    (
+        po_type = PO.HybridSystem, psy_type = HybridSystem, key = "HybridSystem",
+        addable = true,
+    ),
     (
         po_type = PO.TransmissionInterface, psy_type = TransmissionInterface,
         key = "TransmissionInterface", addable = true,
     ),
+    # After the reserves it regulates; membership arrives as service_associations rows.
+    (po_type = PO.AGC, psy_type = AGC, key = "AGC", addable = true),
 ]
 
 """
@@ -283,6 +290,14 @@ no overload for `GroupReserve`, so membership is recorded by pushing onto
 `contributing_services` directly, mirroring the reference prototype."""
 function _attach_service_membership!(entity::Service, group::GroupReserve, ::System)
     push!(get_contributing_services(group), entity)
+    return nothing
+end
+
+"""Reserve regulated by an `AGC`: same shape as `GroupReserve` above — `add_service!` has no
+overload for it either, and `AGC.reserves` has no schema field precisely because this
+membership is a `service_associations` row rather than an inline array."""
+function _attach_service_membership!(entity::Reserve, agc::AGC, ::System)
+    push!(get_reserves(agc), entity)
     return nothing
 end
 
