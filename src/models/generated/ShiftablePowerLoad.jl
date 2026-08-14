@@ -181,7 +181,7 @@ set_ext!(value::ShiftablePowerLoad, val) = value.ext = val
 
 
 
-function from_openapi(::Type{ShiftablePowerLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.ShiftablePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ShiftablePowerLoad(;
         name = po.name,
         available = po.available,
@@ -197,7 +197,7 @@ function from_openapi(::Type{ShiftablePowerLoad}, po, refs::OpenAPIRefs, ::Devic
     )
 end
 
-function from_openapi(::Type{ShiftablePowerLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.ShiftablePowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return ShiftablePowerLoad(;
         name = po.name,
         available = po.available,

@@ -459,3 +459,25 @@ end
         @test get_name(only(get_ancillary_service_offers(mbc2))) == "RESERVE"
     end
 end
+
+@testset "DOCUMENT_PLAN: converters match the declared pair" begin
+    # `from_openapi` dispatches on the PO type, so `psy_type` no longer reaches the import
+    # call and a mis-paired entry would go unnoticed at run time — `is_document_exportable`
+    # is generated from it. Assert the pairing here instead: the converters exist in both
+    # directions, and `from_openapi` on the `po_type` really does return the `psy_type`.
+    #
+    # A test rather than a load-time assertion on purpose: `generate_structs` runs inside
+    # `PowerSystems`, so an assertion that fired on stale generated code would make the
+    # module unloadable and take regeneration down with it.
+    for (po_type, psy_type, key, _addable) in PSY.DOCUMENT_PLAN
+        for units in (typeof(DU), typeof(NU))
+            @test hasmethod(PSY.from_openapi, (po_type, PSY.OpenAPIRefs, units))
+            @test hasmethod(PSY.to_openapi, (psy_type, PSY.OpenAPIRefs, units))
+            returned = Base.return_types(
+                PSY.from_openapi, (po_type, PSY.OpenAPIRefs, units),
+            )
+            @test length(returned) == 1
+            @test only(returned) <: psy_type
+        end
+    end
+end

@@ -241,7 +241,7 @@ set_ext!(value::ThermalStandard, val) = value.ext = val
 const THERMAL_FUELS_FROM_STRING = Dict{String, ThermalFuels}(string(m) => m for m in instances(ThermalFuels))
 const THERMAL_FUELS_TO_STRING = Dict{ ThermalFuels, String}(m => string(m) for m in instances(ThermalFuels))
 
-function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ThermalStandard(;
         name = po.name,
         available = po.available,
@@ -263,7 +263,7 @@ function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::DeviceBa
     )
 end
 
-function from_openapi(::Type{ThermalStandard}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
     return ThermalStandard(;
         name = po.name,
         available = po.available,

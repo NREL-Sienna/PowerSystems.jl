@@ -224,7 +224,7 @@ end
         @test tx_po.direction_mapping == Dict("line1" => 1)
 
         # Round-trip: import(export(x)) == x.
-        round_tripped = PSY.from_openapi(TransmissionInterface, tx_po, refs, val)
+        round_tripped = PSY.from_openapi(tx_po, refs, val)
         @test get_active_power_flow_limits(round_tripped, DU) ==
               get_active_power_flow_limits(tx, DU)
     end
@@ -319,7 +319,7 @@ end
         @test shunt_po.Y.imag == -100.0
 
         # Round-trip: import(export(x)) == x.
-        round_tripped = PSY.from_openapi(FixedAdmittance, shunt_po, refs, val)
+        round_tripped = PSY.from_openapi(shunt_po, refs, val)
         @test get_Y(round_tripped) == get_Y(shunt)
     end
 end
@@ -398,7 +398,7 @@ end
     import_refs[1] = area1
     import_refs[2] = area2
     reimported =
-        PSY.from_openapi(AreaInterchange, device_po, import_refs, DU)
+        PSY.from_openapi(device_po, import_refs, DU)
     @test get_active_power_flow(reimported, PSY.DU) ==
           get_active_power_flow(interchange, SU)
     @test get_flow_limits(reimported, PSY.DU) == get_flow_limits(interchange, SU)

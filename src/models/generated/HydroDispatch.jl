@@ -223,7 +223,7 @@ set_ext!(value::HydroDispatch, val) = value.ext = val
 const PRIME_MOVERS_FROM_STRING = Dict{String, PrimeMovers}(string(m) => m for m in instances(PrimeMovers))
 const PRIME_MOVERS_TO_STRING = Dict{ PrimeMovers, String}(m => string(m) for m in instances(PrimeMovers))
 
-function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return HydroDispatch(;
         name = po.name,
         available = po.available,
@@ -243,7 +243,7 @@ function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::DeviceBase
     )
 end
 
-function from_openapi(::Type{HydroDispatch}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.HydroDispatch, refs::OpenAPIRefs, ::NaturalUnit)
     return HydroDispatch(;
         name = po.name,
         available = po.available,

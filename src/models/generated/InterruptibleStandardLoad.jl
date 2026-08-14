@@ -274,7 +274,7 @@ set_ext!(value::InterruptibleStandardLoad, val) = value.ext = val
 
 
 
-function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.InterruptibleStandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return InterruptibleStandardLoad(;
         name = po.name,
         available = po.available,
@@ -297,7 +297,7 @@ function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, 
     )
 end
 
-function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.InterruptibleStandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return InterruptibleStandardLoad(;
         name = po.name,
         available = po.available,

@@ -269,7 +269,7 @@ set_ext!(value::ThermalMultiStart, val) = value.ext = val
 
 
 
-function from_openapi(::Type{ThermalMultiStart}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.ThermalMultiStart, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ThermalMultiStart(;
         name = po.name,
         available = po.available,
@@ -294,7 +294,7 @@ function from_openapi(::Type{ThermalMultiStart}, po, refs::OpenAPIRefs, ::Device
     )
 end
 
-function from_openapi(::Type{ThermalMultiStart}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.ThermalMultiStart, refs::OpenAPIRefs, ::NaturalUnit)
     return ThermalMultiStart(;
         name = po.name,
         available = po.available,

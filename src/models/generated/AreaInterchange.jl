@@ -124,7 +124,7 @@ set_ext!(value::AreaInterchange, val) = value.ext = val
 
 
 
-function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return AreaInterchange(;
         name = po.name,
         available = po.available,
@@ -136,7 +136,7 @@ function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::DeviceBa
     )
 end
 
-function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.AreaInterchange, refs::OpenAPIRefs, ::NaturalUnit)
     return AreaInterchange(;
         name = po.name,
         available = po.available,

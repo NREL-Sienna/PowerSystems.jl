@@ -257,7 +257,7 @@ set_ext!(value::HydroTurbine, val) = value.ext = val
 const HYDRO_TURBINE_TYPE_FROM_STRING = Dict{String, HydroTurbineType}(string(m) => m for m in instances(HydroTurbineType))
 const HYDRO_TURBINE_TYPE_TO_STRING = Dict{ HydroTurbineType, String}(m => string(m) for m in instances(HydroTurbineType))
 
-function from_openapi(::Type{HydroTurbine}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.HydroTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return HydroTurbine(;
         name = po.name,
         available = po.available,
@@ -281,7 +281,7 @@ function from_openapi(::Type{HydroTurbine}, po, refs::OpenAPIRefs, ::DeviceBaseU
     )
 end
 
-function from_openapi(::Type{HydroTurbine}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.HydroTurbine, refs::OpenAPIRefs, ::NaturalUnit)
     return HydroTurbine(;
         name = po.name,
         available = po.available,

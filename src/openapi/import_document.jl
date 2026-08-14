@@ -166,6 +166,17 @@ end
 
 const DOCUMENT_PLAN_KEYS = _document_plan_keys(DOCUMENT_PLAN)
 
+# `from_openapi` dispatches on the PO type alone, so `psy_type` no longer reaches the
+# import call — its only remaining consumer is the `is_document_exportable` loop below.
+# Nothing at run time would notice an entry naming the wrong one, so the pairing is checked
+# in `test_openapi_document.jl` ("DOCUMENT_PLAN: converters match the declared pair"): both
+# that the converters exist in both directions and that `from_openapi` on the `po_type`
+# actually returns the `psy_type`.
+#
+# That check is deliberately a test rather than a load-time assertion. `generate_structs`
+# runs inside `PowerSystems`, so an assertion that fires on stale generated code would make
+# the module unloadable and take regeneration — the only way to fix it — down with it.
+
 """
 Whether a component type can be written to an OpenAPI document.
 
@@ -850,7 +861,7 @@ function from_openapi(
 
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for po in PC.get_components(doc, key)
-            component = from_openapi(psy_type, po, refs, unit_val)
+            component = from_openapi(po, refs, unit_val)
             extras = get(doc.ext, Int(po.id), nothing)
             isnothing(extras) || _merge_doc_ext!(component, extras)
             if addable

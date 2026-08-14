@@ -154,7 +154,7 @@ set_ext!(value::ACBus, val) = value.ext = val
 const AC_BUS_TYPES_FROM_STRING = Dict{String, ACBusTypes}(string(m) => m for m in instances(ACBusTypes))
 const AC_BUS_TYPES_TO_STRING = Dict{ ACBusTypes, String}(m => string(m) for m in instances(ACBusTypes))
 
-function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.ACBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return ACBus(;
         number = po.number,
         name = po.name,
@@ -169,7 +169,7 @@ function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     )
 end
 
-function from_openapi(::Type{ACBus}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.ACBus, refs::OpenAPIRefs, ::NaturalUnit)
     return ACBus(;
         number = po.number,
         name = po.name,

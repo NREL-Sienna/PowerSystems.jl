@@ -159,7 +159,7 @@ set_ext!(value::PowerLoad, val) = value.ext = val
 
 
 
-function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.PowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PowerLoad(;
         name = po.name,
         available = po.available,
@@ -173,7 +173,7 @@ function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit
     )
 end
 
-function from_openapi(::Type{PowerLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.PowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return PowerLoad(;
         name = po.name,
         available = po.available,

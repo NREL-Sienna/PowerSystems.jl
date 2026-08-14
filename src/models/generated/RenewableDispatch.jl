@@ -179,7 +179,7 @@ set_ext!(value::RenewableDispatch, val) = value.ext = val
 
 
 
-function from_openapi(::Type{RenewableDispatch}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.RenewableDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return RenewableDispatch(;
         name = po.name,
         available = po.available,
@@ -195,7 +195,7 @@ function from_openapi(::Type{RenewableDispatch}, po, refs::OpenAPIRefs, ::Device
     )
 end
 
-function from_openapi(::Type{RenewableDispatch}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.RenewableDispatch, refs::OpenAPIRefs, ::NaturalUnit)
     return RenewableDispatch(;
         name = po.name,
         available = po.available,

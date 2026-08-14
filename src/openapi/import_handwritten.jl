@@ -101,12 +101,12 @@ end
 # PO field names (`from_id`/`to_id`) differ from PSY's (`from`/`to`); no unit-converted
 # fields, so both unit-system methods are identical.
 
-function from_openapi(::Type{Arc}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.Arc, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return Arc(; from = refs[po.from_id], to = refs[po.to_id])
 end
 
-function from_openapi(::Type{Arc}, po, refs::OpenAPIRefs, ::NaturalUnit)
-    return from_openapi(Arc, po, refs, DU)
+function from_openapi(po::PO.Arc, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(po, refs, DU)
 end
 
 # ── Area / LoadZone ─────────────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ end
 # falling back to `get_base_power(refs)` when a producer omits it — same fallback the
 # pre-existing conversion arithmetic already used.
 
-function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.Area, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return Area(;
         name = po.name,
         peak_active_power = po.peak_active_power / get_base_power(refs),
@@ -133,11 +133,11 @@ function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     )
 end
 
-function from_openapi(::Type{Area}, po, refs::OpenAPIRefs, ::NaturalUnit)
-    return from_openapi(Area, po, refs, DU)
+function from_openapi(po::PO.Area, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(po, refs, DU)
 end
 
-function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.LoadZone, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return LoadZone(;
         name = po.name,
         peak_active_power = po.peak_active_power / get_base_power(refs),
@@ -146,8 +146,8 @@ function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     )
 end
 
-function from_openapi(::Type{LoadZone}, po, refs::OpenAPIRefs, ::NaturalUnit)
-    return from_openapi(LoadZone, po, refs, DU)
+function from_openapi(po::PO.LoadZone, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(po, refs, DU)
 end
 
 # ── TransmissionInterface ───────────────────────────────────────────────────────
@@ -160,8 +160,7 @@ end
 # The new `base_power` kwarg mirrors Area/LoadZone's `_resolve_base_power` fallback.
 
 function from_openapi(
-    ::Type{TransmissionInterface},
-    po,
+    po::PO.TransmissionInterface,
     refs::OpenAPIRefs,
     ::DeviceBaseUnit,
 )
@@ -179,12 +178,11 @@ function from_openapi(
 end
 
 function from_openapi(
-    ::Type{TransmissionInterface},
-    po,
+    po::PO.TransmissionInterface,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
-    return from_openapi(TransmissionInterface, po, refs, DU)
+    return from_openapi(po, refs, DU)
 end
 
 # ── Line ────────────────────────────────────────────────────────────────────────
@@ -197,7 +195,7 @@ end
 # `_resolve_base_power` falls back to `get_base_power(refs)` when a producer omits the field,
 # same as Area/LoadZone/TransmissionInterface above.
 
-function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.Line, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return Line(;
         name = po.name,
         available = po.available,
@@ -216,7 +214,7 @@ function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
     )
 end
 
-function from_openapi(::Type{Line}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.Line, refs::OpenAPIRefs, ::NaturalUnit)
     sbp = _resolve_base_power(refs, po.base_power)
     return Line(;
         name = po.name,
@@ -253,8 +251,7 @@ const DISCRETECONTROLLEDBRANCHSTATUS_FROM_STRING =
     _enum_table(DiscreteControlledBranchStatus)
 
 function from_openapi(
-    ::Type{DiscreteControlledACBranch},
-    po,
+    po::PO.DiscreteControlledACBranch,
     refs::OpenAPIRefs,
     ::DeviceBaseUnit,
 )
@@ -275,8 +272,7 @@ function from_openapi(
 end
 
 function from_openapi(
-    ::Type{DiscreteControlledACBranch},
-    po,
+    po::PO.DiscreteControlledACBranch,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
@@ -326,8 +322,7 @@ _check_circuit_param_units(po) = _check_unit_basis(
 )
 
 function from_openapi(
-    ::Type{TransformerCircuit},
-    po,
+    po::PO.TransformerCircuit,
     refs::OpenAPIRefs,
     ::DeviceBaseUnit,
 )
@@ -356,8 +351,7 @@ function from_openapi(
 end
 
 function from_openapi(
-    ::Type{TransformerCircuit},
-    po,
+    po::PO.TransformerCircuit,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
@@ -401,8 +395,7 @@ _check_shunt_admittance_units(po) = _check_unit_basis(
 )
 
 function from_openapi(
-    ::Type{TwoWindingTransformer},
-    po,
+    po::PO.TwoWindingTransformer,
     refs::OpenAPIRefs,
     ::DeviceBaseUnit,
 )
@@ -416,12 +409,11 @@ function from_openapi(
 end
 
 function from_openapi(
-    ::Type{TwoWindingTransformer},
-    po,
+    po::PO.TwoWindingTransformer,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
-    return from_openapi(TwoWindingTransformer, po, refs, DU)
+    return from_openapi(po, refs, DU)
 end
 
 # ── ThreeWindingTransformer ──────────────────────────────────────────────────────
@@ -455,8 +447,7 @@ _check_three_winding_shunt_admittance_units(po) = _check_unit_basis(
 )
 
 function from_openapi(
-    ::Type{ThreeWindingTransformer},
-    po,
+    po::PO.ThreeWindingTransformer,
     refs::OpenAPIRefs,
     ::DeviceBaseUnit,
 )
@@ -483,12 +474,11 @@ function from_openapi(
 end
 
 function from_openapi(
-    ::Type{ThreeWindingTransformer},
-    po,
+    po::PO.ThreeWindingTransformer,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
-    return from_openapi(ThreeWindingTransformer, po, refs, DU)
+    return from_openapi(po, refs, DU)
 end
 
 # ── FixedAdmittance ───────────────────────────────────────────────────────────────
@@ -512,7 +502,7 @@ _check_fixed_admittance_units(po) = _check_unit_basis(
 _fixed_admittance_pu(po, refs::OpenAPIRefs) =
     _complex_number(po.Y) / get_base_power(refs)
 
-function from_openapi(::Type{FixedAdmittance}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     _check_fixed_admittance_units(po)
     return FixedAdmittance(;
         name = po.name,
@@ -523,12 +513,11 @@ function from_openapi(::Type{FixedAdmittance}, po, refs::OpenAPIRefs, ::DeviceBa
 end
 
 function from_openapi(
-    ::Type{FixedAdmittance},
-    po,
+    po::PO.FixedAdmittance,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
-    return from_openapi(FixedAdmittance, po, refs, DU)
+    return from_openapi(po, refs, DU)
 end
 
 # ── SwitchedAdmittance ────────────────────────────────────────────────────────────
@@ -554,7 +543,7 @@ const SWITCHED_ADMITTANCE_CONTROL_MODE_FROM_STRING =
 _switched_admittance_y_increase(values, base_power) =
     [_complex_number(v) / base_power for v in values]
 
-function from_openapi(::Type{SwitchedAdmittance}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     _check_switched_admittance_units(po)
     base_power = get_base_power(refs)
     return SwitchedAdmittance(;
@@ -572,12 +561,11 @@ function from_openapi(::Type{SwitchedAdmittance}, po, refs::OpenAPIRefs, ::Devic
 end
 
 function from_openapi(
-    ::Type{SwitchedAdmittance},
-    po,
+    po::PO.SwitchedAdmittance,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
-    return from_openapi(SwitchedAdmittance, po, refs, DU)
+    return from_openapi(po, refs, DU)
 end
 
 # ── FACTSControlDevice ────────────────────────────────────────────────────────────
@@ -604,7 +592,7 @@ _check_facts_voltage_setpoint_units(po) = _check_unit_basis(
 const FACTSOPERATIONMODES_FROM_STRING = _enum_table(FACTSOperationModes)
 const FACTSSHUNTCONTROLTYPE_FROM_STRING = _enum_table(FACTSShuntControlType)
 
-function from_openapi(::Type{FACTSControlDevice}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseUnit)
     _check_facts_voltage_setpoint_units(po)
     base_power = get_base_power(refs)
     return FACTSControlDevice(;
@@ -625,8 +613,8 @@ function from_openapi(::Type{FACTSControlDevice}, po, refs::OpenAPIRefs, ::Devic
     )
 end
 
-function from_openapi(::Type{FACTSControlDevice}, po, refs::OpenAPIRefs, ::NaturalUnit)
-    return from_openapi(FACTSControlDevice, po, refs, DU)
+function from_openapi(po::PO.FACTSControlDevice, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(po, refs, DU)
 end
 
 # ── HydroReservoir ──────────────────────────────────────────────────────────────
@@ -639,7 +627,7 @@ end
 # `operation_cost` is converted via `convert_cost`, rather than fabricated as a placeholder
 # when missing.
 
-function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit)
     max_level = po.storage_level_limits.max
     return HydroReservoir(;
         name = po.name,
@@ -661,8 +649,8 @@ function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::DeviceBas
     )
 end
 
-function from_openapi(::Type{HydroReservoir}, po, refs::OpenAPIRefs, ::NaturalUnit)
-    return from_openapi(HydroReservoir, po, refs, DU)
+function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(po, refs, DU)
 end
 
 # ── EnergyReservoirStorage ──────────────────────────────────────────────────────
@@ -682,8 +670,7 @@ _check_energy_units(po) = _check_unit_basis(
 )
 
 function from_openapi(
-    ::Type{EnergyReservoirStorage},
-    po,
+    po::PO.EnergyReservoirStorage,
     refs::OpenAPIRefs,
     ::DeviceBaseUnit,
 )
@@ -716,8 +703,7 @@ function from_openapi(
 end
 
 function from_openapi(
-    ::Type{EnergyReservoirStorage},
-    po,
+    po::PO.EnergyReservoirStorage,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
@@ -771,8 +757,7 @@ _hvdc_loss_curve(c) = error("unmapped TwoTerminalLoss variant: $(typeof(c))")
 _hvdc_loss(l::PC.TwoTerminalLoss) = _hvdc_loss_curve(l.value)
 
 function from_openapi(
-    ::Type{TwoTerminalGenericHVDCLine},
-    po,
+    po::PO.TwoTerminalGenericHVDCLine,
     refs::OpenAPIRefs,
     ::DeviceBaseUnit,
 )
@@ -791,8 +776,7 @@ function from_openapi(
 end
 
 function from_openapi(
-    ::Type{TwoTerminalGenericHVDCLine},
-    po,
+    po::PO.TwoTerminalGenericHVDCLine,
     refs::OpenAPIRefs,
     ::NaturalUnit,
 )
@@ -866,7 +850,7 @@ _lcc_transfer_setpoint(transfer_setpoint, ::Val{true}, base_power) =
     transfer_setpoint / base_power
 _lcc_transfer_setpoint(transfer_setpoint, ::Val{false}, _base_power) = transfer_setpoint
 
-function from_openapi(::Type{TwoTerminalLCCLine}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.TwoTerminalLCCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
     _check_lcc_parameter_units(po)
     _check_lcc_dc_voltage_units(po)
     base_power = po.base_power
@@ -927,7 +911,7 @@ function from_openapi(::Type{TwoTerminalLCCLine}, po, refs::OpenAPIRefs, ::Devic
     )
 end
 
-function from_openapi(::Type{TwoTerminalLCCLine}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.TwoTerminalLCCLine, refs::OpenAPIRefs, ::NaturalUnit)
     _check_lcc_parameter_units(po)
     _check_lcc_dc_voltage_units(po)
     base_power = po.base_power
@@ -1194,15 +1178,14 @@ _vsc_minmax(m, base_power, ::NaturalUnit) = _minmax_du(m, base_power)
 _vsc_minmax(m, _base_power, ::DeviceBaseUnit) = _minmax(m)
 
 function from_openapi(
-    ::Type{TwoTerminalVSCLine},
-    po,
+    po::PO.TwoTerminalVSCLine,
     refs::OpenAPIRefs,
     unit::DeviceBaseUnit,
 )
     return _two_terminal_vsc_line(po, refs, _resolve_base_power(refs, po.base_power), unit)
 end
 
-function from_openapi(::Type{TwoTerminalVSCLine}, po, refs::OpenAPIRefs, unit::NaturalUnit)
+function from_openapi(po::PO.TwoTerminalVSCLine, refs::OpenAPIRefs, unit::NaturalUnit)
     return _two_terminal_vsc_line(po, refs, _resolve_base_power(refs, po.base_power), unit)
 end
 
@@ -1215,7 +1198,7 @@ end
 # Curve) goes through `convert_reserve_variable` (already handles the `nothing` →
 # `ZERO_OFFER_CURVE` default).
 
-function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.OnlineReserve, refs::OpenAPIRefs, ::DeviceBaseUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return OnlineReserve{direction}(;
         name = po.name,
@@ -1230,7 +1213,7 @@ function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::DeviceBase
     )
 end
 
-function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.OnlineReserve, refs::OpenAPIRefs, ::NaturalUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return OnlineReserve{direction}(;
         name = po.name,
@@ -1245,7 +1228,7 @@ function from_openapi(::Type{OnlineReserve}, po, refs::OpenAPIRefs, ::NaturalUni
     )
 end
 
-function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.OfflineReserve, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return OfflineReserve(;
         name = po.name,
         available = po.available,
@@ -1259,7 +1242,7 @@ function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::DeviceBas
     )
 end
 
-function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.OfflineReserve, refs::OpenAPIRefs, ::NaturalUnit)
     return OfflineReserve(;
         name = po.name,
         available = po.available,
@@ -1273,7 +1256,7 @@ function from_openapi(::Type{OfflineReserve}, po, refs::OpenAPIRefs, ::NaturalUn
     )
 end
 
-function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.GroupReserve, refs::OpenAPIRefs, ::DeviceBaseUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return GroupReserve{direction}(;
         name = po.name,
@@ -1282,7 +1265,7 @@ function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::DeviceBaseU
     )
 end
 
-function from_openapi(::Type{GroupReserve}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.GroupReserve, refs::OpenAPIRefs, ::NaturalUnit)
     direction = _resolve_reserve_direction(po.reserve_direction, po.name)
     return GroupReserve{direction}(;
         name = po.name,

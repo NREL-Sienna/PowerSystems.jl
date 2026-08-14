@@ -114,7 +114,7 @@ const {{const_name}} = Dict{String, {{{enum_type}}}}(string(m) => m for m in ins
 const {{const_name}} = Dict{ {{{enum_type}}}, String}(m => string(m) for m in instances({{{enum_type}}}))
 {{/openapi_export_enum_tables}}
 
-function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return {{struct_name}}(;
         {{#openapi_kwargs_device}}
         {{name}} = {{{expr}}},
@@ -122,7 +122,7 @@ function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::
     )
 end
 
-function from_openapi(::{{{openapi_type_annotation}}}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs, ::NaturalUnit)
     return {{struct_name}}(;
         {{#openapi_kwargs_natural}}
         {{name}} = {{{expr}}},
@@ -162,8 +162,13 @@ end
 # `convert_cost_to_openapi`, and the PO/PC modules are all defined in PowerSystems, not
 # here — this generator only emits methods that compile against them.
 #
-# `po` must stay untyped: annotating it would make this generator name the OpenAPI model
-# package. Dispatch is already unambiguous on `Type{...}`/`Val{...}` alone.
+# `from_openapi` dispatches on the PO type. It does not take the PSY type as a leading
+# `::Type{...}`: the PO type already determines it (the mapping is one-to-one across all
+# 34 converters, checked at load by `_check_document_plan_converters`), so the argument
+# was redundant, and for the three reserve types — whose PSY types are `UnionAll` — it did
+# not pin the return type either. Naming `PO` here costs the generator nothing: the export
+# half already emits `PO.<struct_name>` constructors, and `PowerSystems` declares `const
+# PO` before the generated files are included.
 #
 # A descriptor entry without `openapi_type` never reaches any function below — every one
 # is only called from `compute_openapi_converter!`/`compute_openapi_export_converter!`,
@@ -556,7 +561,7 @@ function compute_openapi_converter!(item, struct_names, defined_enum_tables)
         push!(kwargs_natural, Dict("name" => name, "expr" => natural))
     end
 
-    item["openapi_type_annotation"] = "Type{$struct_name}"
+    item["openapi_po_type"] = "PO." * item["openapi_type"]
     item["openapi_enum_tables"] = enum_tables
     item["openapi_kwargs_device"] = kwargs_device
     item["openapi_kwargs_natural"] = kwargs_natural

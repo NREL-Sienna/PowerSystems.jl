@@ -170,7 +170,7 @@ set_ext!(value::InterruptiblePowerLoad, val) = value.ext = val
 const LOAD_CONFORMITY_FROM_STRING = Dict{String, LoadConformity}(string(m) => m for m in instances(LoadConformity))
 const LOAD_CONFORMITY_TO_STRING = Dict{ LoadConformity, String}(m => string(m) for m in instances(LoadConformity))
 
-function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.InterruptiblePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return InterruptiblePowerLoad(;
         name = po.name,
         available = po.available,
@@ -185,7 +185,7 @@ function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::D
     )
 end
 
-function from_openapi(::Type{InterruptiblePowerLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.InterruptiblePowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return InterruptiblePowerLoad(;
         name = po.name,
         available = po.available,

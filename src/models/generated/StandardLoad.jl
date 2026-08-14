@@ -265,7 +265,7 @@ set_ext!(value::StandardLoad, val) = value.ext = val
 
 
 
-function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return StandardLoad(;
         name = po.name,
         available = po.available,
@@ -287,7 +287,7 @@ function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseU
     )
 end
 
-function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return StandardLoad(;
         name = po.name,
         available = po.available,
