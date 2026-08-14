@@ -799,7 +799,6 @@ import InfrastructureSystems:
     get_static_time_series_reader_entries,
     get_num_static_time_series_groups,
     show_time_series,
-    read_time_series_file_metadata,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,

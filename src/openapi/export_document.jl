@@ -520,128 +520,58 @@ function _export_supplemental_attributes(
     combined_cycle_association_rows
 end
 
-# ── time series (reverse of _attach_time_series!) ───────────────────────────────
-
-const SCALING_FACTOR_MULTIPLIER_TO_STRING =
-    Dict(v => k for (k, v) in SCALING_FACTOR_MULTIPLIERS)
-
-_scaling_factor_multiplier_to_string(::Nothing) = nothing
-function _scaling_factor_multiplier_to_string(f::Function)
-    haskey(SCALING_FACTOR_MULTIPLIER_TO_STRING, f) || error(
-        "to_openapi: unmapped scaling_factor_multiplier function $f — no reverse string " *
-        "registered in SCALING_FACTOR_MULTIPLIER_TO_STRING",
-    )
-    return SCALING_FACTOR_MULTIPLIER_TO_STRING[f]
-end
-
-"""ISO 8601 duration, the reverse of `_parse_iso8601_seconds` (src/openapi/import_document.jl)."""
-_iso8601_duration(period::Dates.Period) =
-    string("PT", Dates.value(Dates.Second(period)), "S")
-
-# ── per-type time series export (dispatch, not a type-string branch) ────────────
+# ── time series ────────────────────────────────────────────────────────────────
 #
-# `TimeSeriesAssociation` carries every forecast column (`horizon`, `interval`,
-# `window_count`). `Probabilistic` and `Scenarios` are not supported: each needs a structural
-# field the document has no home for (percentile identity, scenario count), so they error
-# loudly here rather than exporting a row that silently loses it.
-
-"""The series whose UUID identifies the HDF5 payload and the association row.
-`DeterministicSingleTimeSeries` has no UUID of its own — IS.get_uuid has no method for it — it
-is a view over its wrapped `SingleTimeSeries`, which is what actually gets serialized."""
-_hdf5_series(ts::TimeSeriesData) = ts
-_hdf5_series(ts::DeterministicSingleTimeSeries) = IS.get_single_time_series(ts)
-
-"""`(horizon, interval, window_count)` document columns. `nothing` for all three on a
-`SingleTimeSeries` — it is not a forecast."""
-_forecast_columns(::SingleTimeSeries) = (nothing, nothing, nothing)
-function _forecast_columns(ts::Union{Deterministic, DeterministicSingleTimeSeries})
-    return (
-        _iso8601_duration(get_horizon(ts)),
-        _iso8601_duration(IS.get_interval(ts)),
-        get_count(ts),
-    )
-end
-
-"""`length` document column. For `SingleTimeSeries`, a plain series' own length. A real
-`Deterministic`'s shape is fully described by
-`horizon`/`interval`/`window_count`, so it carries none — but `DeterministicSingleTimeSeries`
-is a view over a wrapped `SingleTimeSeries` with no association row of its own to carry
-*that* series' length (it may have none, if the original was removed after transforming), so
-this row is its only carrier; import needs it to reread the wrapped array
-(`_attach_deterministic_single_time_series!`)."""
-_document_length(ts::SingleTimeSeries) = length(ts)
-_document_length(::Deterministic) = nothing
-_document_length(ts::DeterministicSingleTimeSeries) = length(IS.get_single_time_series(ts))
+# The mirror of import's store adoption: the System's InfraStore *is* the sidecar, so export
+# serializes it rather than walking series and emitting a metadata row each. The catalog it
+# writes keys every series by (owner id, name, type, resolution/interval, features) — the
+# same tuple `TimeSeriesAssociation` carries — so no `time_series_associations` rows are
+# emitted. PowerTableDataParser writes its documents the same way.
+#
+# The catalog's owner ids are IS component ids, while the document's ids come from
+# `_export_id!`. `_check_time_series_ids_match` below refuses to write a pair whose ids
+# disagree, since the result would be a document whose sidecar no importer could resolve.
 
 """
-Emit one `PC.TimeSeriesAssociation` row per time series attached to `entity` (document id
-`entity_id`) — every [`TimeSeriesData`](@ref) subtype IS ships, dispatched per type rather
-than branched on a string. Writes each series' data to the HDF5 `storage` the first time its
-UUID is seen — a series shared by multiple owners must not be written twice.
+Error unless every time-series-owning component's document id equals its IS component id.
+
+Import resolves a series' owner by looking the sidecar catalog's owner id up as a document
+id, so the two must agree. They do for a `System` built by `from_openapi` (the ledger
+reproduces the original ids) and for one whose ids were never reassigned. They can diverge
+for a hand-built `System` exported with `unit_system = :device_base`/`:natural_units`, where
+`_export_id!` hands out fresh ids — hence a loud error rather than a silently unloadable pair.
 """
-function _export_time_series!(
-    rows::Vector{PC.TimeSeriesAssociation},
-    written::Set{Base.UUID},
-    storage::Union{Nothing, IS.Hdf5TimeSeriesStorage},
-    entity,
-    entity_id::Int,
-    owner_type::AbstractString,
-)
-    IS.supports_time_series(entity) || return nothing
-    for ts in get_time_series_multiple(entity; type = nothing)
-        hdf5_series = _hdf5_series(ts)
-        uuid = IS.get_uuid(hdf5_series)
-        if !(uuid in written)
-            isnothing(storage) && error(
-                "to_openapi: $(summary(entity)) carries time series \"$(get_name(ts))\" " *
-                "but no time_series_storage_path was given — cannot write the HDF5 sidecar",
-            )
-            IS.serialize_time_series!(storage, hdf5_series)
-            push!(written, uuid)
-        end
-        horizon, interval, window_count = _forecast_columns(ts)
-        push!(
-            rows,
-            PC.TimeSeriesAssociation(;
-                id = length(rows) + 1,
-                time_series_uuid = string(uuid),
-                time_series_type = string(nameof(typeof(ts))),
-                initial_timestamp = TimeZones.ZonedDateTime(
-                    IS.get_initial_timestamp(ts), TimeZones.tz"UTC",
-                ),
-                resolution = _iso8601_duration(get_resolution(ts)),
-                horizon = horizon,
-                interval = interval,
-                window_count = window_count,
-                length = _document_length(ts),
-                name = get_name(ts),
-                owner_id = entity_id,
-                owner_type = owner_type,
-                owner_category = "Component",
-                features = Dict{String, PC.FeatureValue}[],
-                scaling_factor_multiplier = _scaling_factor_multiplier_to_string(
-                    IS.get_scaling_factor_multiplier(ts),
-                ),
-            ),
+function _check_time_series_ids_match(sorted_refs)
+    for (doc_id, component) in sorted_refs
+        _has_own_uuid(component) || continue
+        IS.supports_time_series(component) || continue
+        has_time_series(component) || continue
+        component_id = IS.get_id(component)
+        component_id == doc_id || error(
+            "to_openapi: $(summary(component)) carries time series but its document id " *
+            "($doc_id) differs from its component id ($component_id) — the sidecar catalog " *
+            "keys series by component id, so the document could not be read back. Export " *
+            "with unit_system = :original from a from_openapi-built System, or drop the " *
+            "time series before exporting.",
         )
     end
     return nothing
 end
 
-function _export_all_time_series(sorted_refs, time_series_storage_path)
-    storage = if isnothing(time_series_storage_path)
-        nothing
-    else
-        IS.Hdf5TimeSeriesStorage(true; filename = String(time_series_storage_path))
-    end
+"""
+Write the System's time series store to `time_series_storage_path`, returning the (always
+empty) `time_series_associations` rows — the store's own catalog carries the metadata.
+"""
+function _export_all_time_series(sys::System, sorted_refs, time_series_storage_path)
     rows = PC.TimeSeriesAssociation[]
-    written = Set{Base.UUID}()
-    for (id, component) in sorted_refs
-        _has_own_uuid(component) || continue
-        _export_time_series!(
-            rows, written, storage, component, id, string(nameof(typeof(component))),
-        )
-    end
+    store = sys.data.time_series_manager.data_store
+    IS.isempty(store) && return rows
+    isnothing(time_series_storage_path) && error(
+        "to_openapi: $(IS.get_num_time_series(store)) time series are attached but no " *
+        "time_series_storage_path was given — cannot write the sidecar",
+    )
+    _check_time_series_ids_match(sorted_refs)
+    IS.serialize(store, String(time_series_storage_path))
     return rows
 end
 
@@ -714,7 +644,7 @@ function to_openapi(
     append!(doc.service_associations, _export_service_associations(refs, sys))
     append!(
         doc.time_series_associations,
-        _export_all_time_series(sorted_refs, time_series_storage_path),
+        _export_all_time_series(sys, sorted_refs, time_series_storage_path),
     )
 
     PC.validate_document(doc)

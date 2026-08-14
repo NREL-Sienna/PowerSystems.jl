@@ -1,43 +1,15 @@
-# Hand-written (not generated): the loaders that carry document association rows into IS's
-# two SQLite association stores (`IS.SupplementalAttributeAssociations`,
-# `IS.TimeSeriesMetadataStore`). The document and IS's stores are the same shape except for
-# id vs UUID, so this is the id⇄UUID bridge.
+# Hand-written (not generated): the loader that carries the document's supplemental
+# attribute, plant, combined-cycle, and service association rows into IS.
 #
 # WIRED into `from_openapi(::Type{System}, doc)` in `src/openapi/import_document.jl`, which
-# calls `load_supplemental_attribute_associations!` and `load_time_series_associations!`
-# (both this file) directly.
+# calls `load_supplemental_attribute_associations!` directly. Time series are not loaded
+# here — the sidecar store is adopted whole; see the time series note in import_document.jl.
 #
 # Reuses, rather than duplicates, import_document.jl's per-type attribute conversion
-# (`_attribute_from_openapi`), group-index attach dispatch (`_attach_attribute!`), and
-# service-membership dispatch (`_attach_service_membership!`), plus the time-series row
-# dispatcher (`_resolve_time_series_type`/`_attach_time_series_row!`, which now covers every
-# time-series type) and `has_ref`/`OpenAPIRefs` from `refs.jl`. These are module-private
-# helpers, but this file is `include`d into the same `PowerSystems` module, so calling them
-# is not an edit to the files that define them.
-
-"""
-Whether `owner` is a `Component` or a `SupplementalAttribute` — the two legal values of a
-`TimeSeriesAssociation`'s `owner_category` — as a dispatch rather than an `isa` check, so
-[`_check_owner_category_matches`](@ref) reads the answer off the resolved object instead of
-trusting the document's string in isolation.
-"""
-_owner_category(::Component) = "Component"
-_owner_category(::SupplementalAttribute) = "SupplementalAttribute"
-
-"""Loud error naming `owner_id` when the document's declared `owner_category` is absent or
-does not match what `owner_id` actually resolved to."""
-function _check_owner_category_matches(owner, declared_category, owner_id)
-    isnothing(declared_category) && error(
-        "load_time_series_associations!: time series association referencing " *
-        "owner_id=$owner_id has no owner_category",
-    )
-    actual = _owner_category(owner)
-    declared_category == actual || error(
-        "load_time_series_associations!: owner_id=$owner_id declares owner_category=" *
-        "\"$declared_category\" but resolved to a $actual",
-    )
-    return nothing
-end
+# (`_attribute_from_openapi`), group-index attach dispatch (`_attach_attribute!`),
+# service-membership dispatch (`_attach_service_membership!`), and `has_ref`/`OpenAPIRefs`
+# from `refs.jl`. These are module-private helpers, but this file is `include`d into the same
+# `PowerSystems` module, so calling them is not an edit to the files that define them.
 
 """Loud error naming `id` when the document's declared `attribute_type` is absent or does
 not match `nameof(typeof(resolved))`."""
@@ -146,62 +118,3 @@ function load_supplemental_attribute_associations!(
     return nothing
 end
 
-"""
-$(TYPEDSIGNATURES)
-
-Attach every row of `doc.time_series_associations` into `sys`, going through
-[`add_time_series!`](@ref) rather than the raw `time_series_associations` SQLite table, so
-the manager's own duplicate-detection and owner-existence checks stay in force.
-
-`owner_category` legally names either a `Component` or a `SupplementalAttribute` (both share
-the document's one id counter, so resolving `owner_id` through `refs` is a single lookup
-regardless of which). A `SupplementalAttribute` owner resolves only once
-[`load_supplemental_attribute_associations!`](@ref) has registered it under its id — call
-that function first for a document carrying both kinds of association.
-
-A series referenced by more than one owner row is read off `time_series_storage_path` once,
-via [`_materialize_time_series!`](@ref)'s `Base.UUID`-keyed cache, rather than once per row —
-every owner row still gets its own attach call.
-
-Requires `time_series_storage_path` whenever the document declares any association — no
-silent loss of the document's time series. Errors, naming the association or id, on: an
-unresolved `owner_id`, a declared `owner_category` absent or mismatched with what `owner_id`
-actually resolved to, an unmapped `time_series_type` or `scaling_factor_multiplier` (from
-the reused `_resolve_time_series_type`/`_attach_time_series_row!`), or associations present
-with no storage path given.
-"""
-function load_time_series_associations!(
-    sys::System,
-    refs::OpenAPIRefs,
-    doc::PC.SystemDocument,
-    time_series_storage_path,
-)
-    rows = doc.time_series_associations
-    isempty(rows) && return nothing
-    isnothing(time_series_storage_path) && error(
-        "load_time_series_associations!: document declares $(length(rows)) " *
-        "time_series_associations row(s) but no time_series_storage_path was given",
-    )
-    storage = IS.Hdf5TimeSeriesStorage(false; filename = String(time_series_storage_path))
-    # Shared across every row in this call: a series referenced by N owner rows is read off
-    # `storage` once via `_materialize_time_series!`, not N times.
-    materialized = Dict{Base.UUID, TimeSeriesData}()
-    for assoc in rows
-        owner_id = Int(assoc.owner_id)
-        has_ref(refs, owner_id) || error(
-            "load_time_series_associations!: association \"$(assoc.name)\" references " *
-            "unresolved owner_id=$owner_id",
-        )
-        owner = refs[owner_id]
-        _check_owner_category_matches(owner, assoc.owner_category, owner_id)
-        _attach_time_series_row!(
-            _resolve_time_series_type(assoc),
-            sys,
-            materialized,
-            storage,
-            owner,
-            assoc,
-        )
-    end
-    return nothing
-end
