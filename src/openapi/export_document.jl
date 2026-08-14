@@ -549,11 +549,106 @@ function _check_time_series_ids_match(sorted_refs)
     return nothing
 end
 
+"""ISO 8601 duration, the reverse of `_parse_iso8601_seconds` (src/openapi/import_document.jl)."""
+_iso8601_duration(period::Dates.Period) =
+    string("PT", Dates.value(Dates.Second(period)), "S")
+
+"""ISO 8601 duration for an optional period; `nothing` passes through."""
+_iso8601_or_nothing(::Nothing) = nothing
+_iso8601_or_nothing(p::Dates.Period) = _iso8601_duration(p)
+
+"""The document's `unit_system` spelling for a series' declared basis.
+
+`nothing` stays `nothing` — unspecified is not `NATURAL_UNITS`, and asserting a basis nobody
+declared would be worse than omitting the field. `SU` has no document spelling: the schemas
+carry no system-base option, since per-unit data historically on the system base records that
+base in the component's own `base_power` and rides as `DEVICE_BASE`."""
+_document_unit_system(::Nothing) = nothing
+_document_unit_system(::NaturalUnit) = "NATURAL_UNITS"
+_document_unit_system(::DeviceBaseUnit) = "DEVICE_BASE"
+_document_unit_system(::SystemBaseUnit) = error(
+    "to_openapi: a time series declares the system-base unit system, which the document " *
+    "cannot express — the schemas offer NATURAL_UNITS and DEVICE_BASE only",
+)
+
+"""`features` as the document's array-of-single-entry-objects, from the key's own dict."""
+function _document_features(key)
+    return [
+        Dict(String(k) => PC.FeatureValue(v)) for (k, v) in IS.get_features(key)
+    ]
+end
+
+"""Forecast shape columns — `(horizon, interval, window_count)` — or all three `nothing` for a
+static series, which has no forecast axis."""
+_forecast_columns(::IS.StaticTimeSeriesKey) = (nothing, nothing, nothing)
+_forecast_columns(key::IS.ForecastKey) = (
+    _iso8601_or_nothing(IS.get_horizon(key)),
+    _iso8601_or_nothing(IS.get_interval(key)),
+    IS.get_count(key),
+)
+
+"""`length` column: a static series' own length. A forecast's shape is described by
+horizon/interval/window_count instead, so it carries none."""
+_document_length(key::IS.StaticTimeSeriesKey) = IS.get_length(key)
+_document_length(::IS.ForecastKey) = nothing
+
 """
-Write the System's time series store to `time_series_storage_path`, returning the (always
-empty) `time_series_associations` rows — the store's own catalog carries the metadata.
+One `TimeSeriesAssociation` row for `key` on `entity`.
+
+Identity and shape come off the key; `units`, `quantity_type` and `unit_system` are declared
+on the series itself, so the series is read to reach them.
+
+Two optional columns are deliberately omitted. `element_type` is derived from the stored
+array's layout and InfraStore owns that derivation — duplicating it here would be a second
+source of truth for exactly the thing the schema says the writing package derives, and
+IS exposes no accessor for it. `application_data` is a package-owned payload PowerSystems
+does not set.
 """
-function _export_all_time_series(sys::System, sorted_refs, time_series_storage_path)
+function _time_series_row(doc::PC.SystemDocument, entity, entity_id::Int, key)
+    ts = get_time_series(entity, key)
+    horizon, interval, window_count = _forecast_columns(key)
+    return PC.TimeSeriesAssociation(;
+        id = PC.next_id!(doc),
+        time_series_type = string(nameof(IS.get_time_series_type(key))),
+        initial_timestamp = TimeZones.ZonedDateTime(
+            IS.get_initial_timestamp(key), TimeZones.TimeZone("UTC"),
+        ),
+        resolution = _iso8601_duration(IS.get_resolution(key)),
+        horizon = horizon,
+        interval = interval,
+        window_count = window_count,
+        length = _document_length(key),
+        name = IS.get_name(key),
+        owner_id = entity_id,
+        owner_type = string(nameof(typeof(entity))),
+        owner_category = _owner_category(entity),
+        features = _document_features(key),
+        units = IS.get_units(ts),
+        # The document spells this `quantity_type`; IS and InfraStore spell the same field
+        # `quantity_kind`. One of the two names should win; until then this is the bridge.
+        quantity_type = IS.get_quantity_kind(ts),
+        unit_system = _document_unit_system(IS.get_unit_system(ts)),
+    )
+end
+
+_owner_category(::SupplementalAttribute) = "SupplementalAttribute"
+_owner_category(::Any) = "Component"
+
+"""
+Write the System's time series to `time_series_storage_path` and describe them in the
+document.
+
+Both halves matter and neither is redundant: the sidecar holds the values, and the document
+lists one row per series so a consumer can see what a bundle contains — and in what units, on
+what basis — without opening the store. The row is an index into the sidecar, keyed the way
+the sidecar keys its own catalog: `(owner id, name, type, resolution/interval, features)`.
+"""
+function _export_all_time_series(
+    doc::PC.SystemDocument,
+    sys::System,
+    sorted_refs,
+    time_series_storage_path,
+)
     rows = PC.TimeSeriesAssociation[]
     store = sys.data.time_series_manager.data_store
     # Counted, not `isempty(store)`: one store holds the supplemental attribute associations
@@ -565,6 +660,14 @@ function _export_all_time_series(sys::System, sorted_refs, time_series_storage_p
         "time_series_storage_path was given — cannot write the sidecar",
     )
     _check_time_series_ids_match(sorted_refs)
+    for (entity_id, entity) in sorted_refs
+        _has_own_uuid(entity) || continue
+        IS.supports_time_series(entity) || continue
+        has_time_series(entity) || continue
+        for key in get_time_series_keys(entity)
+            push!(rows, _time_series_row(doc, entity, entity_id, key))
+        end
+    end
     IS.serialize(store, String(time_series_storage_path))
     return rows
 end
@@ -633,7 +736,7 @@ function to_openapi(
     append!(doc.service_associations, _export_service_associations(refs, sys))
     append!(
         doc.time_series_associations,
-        _export_all_time_series(sys, sorted_refs, time_series_storage_path),
+        _export_all_time_series(doc, sys, sorted_refs, time_series_storage_path),
     )
 
     PC.validate_document(doc)

@@ -1038,10 +1038,17 @@ end
         # A component's document id is its IS component id, so the membership row points at
         # the load by that id directly — no export-refs rebuild needed to resolve it.
         @test service_assoc.entity_id == IS.get_id(load)
-        # No document rows: the sidecar's catalog is the association table, so what the
-        # export must produce is the sidecar itself.
-        @test isempty(out.time_series_associations)
+        # The sidecar holds the values; the document lists one row per series so a consumer
+        # can see what the bundle contains without opening the store.
         @test isfile(ts_out_path)
+        ts_row = only(out.time_series_associations)
+        @test ts_row.name == "max_active_power"
+        @test ts_row.time_series_type == "SingleTimeSeries"
+        @test ts_row.owner_category == "Component"
+        @test ts_row.owner_type == "PowerLoad"
+        @test ts_row.owner_id == IS.get_id(load)
+        @test ts_row.resolution == "PT3600S"
+        @test ts_row.length == 3
     end
 end
 
@@ -1085,10 +1092,26 @@ end
         doc = PSY.to_openapi(
             sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
         )
-        # The forecast shapes are carried by the sidecar's catalog rather than by document
-        # rows, so they are asserted below on the re-imported System instead of here.
-        @test isempty(doc.time_series_associations)
         @test isfile(ts_out_path)
+        # 3 rows: the "load_hist" SingleTimeSeries, the DeterministicSingleTimeSeries its
+        # transform produced, and the real Deterministic. The forecast shape columns are
+        # carried on the rows, not just in the sidecar's catalog.
+        @test length(doc.time_series_associations) == 3
+        det_row = only(
+            filter(a -> a.time_series_type == "Deterministic", doc.time_series_associations),
+        )
+        @test det_row.horizon == "PT7200S"
+        @test det_row.interval == "PT3600S"
+        @test det_row.window_count == 3
+        @test isnothing(det_row.length)
+        dsts_row = only(
+            filter(
+                a -> a.time_series_type == "DeterministicSingleTimeSeries",
+                doc.time_series_associations,
+            ),
+        )
+        @test dsts_row.horizon == "PT7200S"
+        @test dsts_row.window_count == 3
 
         sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
         load2 = get_component(PowerLoad, sys2, "load1")
