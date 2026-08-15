@@ -46,12 +46,12 @@ This is a standard representation with options to include a minimum up time, min
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `operation_cost::OperationalCost`: [`OperationalCost`](@ref) of generation
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
-- `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in minutes, validation range: `(0, nothing)`
 - `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
 - `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.OT`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
 - `fuel::ThermalFuels`: (default: `ThermalFuels.OTHER`) Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
+- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -81,7 +81,7 @@ mutable struct ThermalStandard <: ThermalGen
     operation_cost::OperationalCost
     "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
-    "Minimum up and Minimum down time limits in hours"
+    "Minimum up and Minimum down time limits in minutes"
     time_limits::Union{Nothing, UpDown}
     "Set to `true` if the unit is must run"
     must_run::Bool
@@ -91,7 +91,7 @@ mutable struct ThermalStandard <: ThermalGen
     fuel::ThermalFuels
     "Services that this device contributes to"
     services::Vector{Service}
-    "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`"
+    "Time (e.g., `Minutes(360)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
@@ -236,3 +236,94 @@ set_services!(value::ThermalStandard, val) = value.services = val
 set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 """Set [`ThermalStandard`](@ref) `ext`."""
 set_ext!(value::ThermalStandard, val) = value.ext = val
+
+
+function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return ThermalStandard(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        active_power_limits = _minmax_from_po(po.active_power_limits),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
+        ramp_limits = _updown_from_po(po.ramp_limits),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        base_power = po.base_power,
+        time_limits = _updown_from_po(po.time_limits),
+        must_run = po.must_run,
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        fuel = ThermalFuels(po.fuel),
+        time_at_status = po.time_at_status,
+    )
+end
+
+function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
+    return ThermalStandard(;
+        name = po.name,
+        available = po.available,
+        status = po.status,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        active_power_limits = _minmax_from_po(po.active_power_limits, (/), po.base_power),
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
+        ramp_limits = _updown_from_po(po.ramp_limits, (/), po.base_power),
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        base_power = po.base_power,
+        time_limits = _updown_from_po(po.time_limits),
+        must_run = po.must_run,
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        fuel = ThermalFuels(po.fuel),
+        time_at_status = po.time_at_status,
+    )
+end
+
+function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.ThermalStandard(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        status = get_status(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        active_power_limits = _minmax_po(get_active_power_limits(value, DU)),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        ramp_limits = _updown_po_optional(get_ramp_limits(value, DU)),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        must_run = get_must_run(value),
+        prime_mover_type = string(get_prime_mover_type(value)),
+        fuel = string(get_fuel(value)),
+        time_at_status = get_time_at_status(value),
+    )
+end
+
+function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.ThermalStandard(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        status = get_status(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        active_power_limits = _minmax_po_scaled(get_active_power_limits(value, DU), _get_base_power(value)),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, DU), _get_base_power(value)),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        base_power = _get_base_power(value),
+        time_limits = _updown_po_optional(get_time_limits(value)),
+        must_run = get_must_run(value),
+        prime_mover_type = string(get_prime_mover_type(value)),
+        fuel = string(get_fuel(value)),
+        time_at_status = get_time_at_status(value),
+    )
+end

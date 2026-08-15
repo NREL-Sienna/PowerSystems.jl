@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         peak_active_power::Float64
         peak_reactive_power::Float64
         load_response::Float64
+        base_power::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -23,6 +24,7 @@ The `Area` can be specified when defining each [`ACBus`](@ref) or [`DCBus`](@ref
 - `peak_active_power::Float64`: (default: `0.0`) Peak active power in the area
 - `peak_reactive_power::Float64`: (default: `0.0`) Peak reactive power in the area
 - `load_response::Float64`: (default: `0.0`) Load-frequency damping parameter modeling how much the load in the area changes due to changes in frequency (MW/Hz). [Example here.](https://doi.org/10.1109/NAPS50074.2021.9449687)
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -35,18 +37,20 @@ mutable struct Area <: AggregationTopology
     peak_reactive_power::Float64
     "Load-frequency damping parameter modeling how much the load in the area changes due to changes in frequency (MW/Hz). [Example here.](https://doi.org/10.1109/NAPS50074.2021.9449687)"
     load_response::Float64
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, ext=Dict{String, Any}(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, ext, InfrastructureSystemsInternal(), )
+function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, base_power=100.0, ext=Dict{String, Any}(), )
+    Area(name, peak_active_power, peak_reactive_power, load_response, base_power, ext, InfrastructureSystemsInternal(), )
 end
 
-function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, ext, internal, )
+function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, base_power=100.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Area(name, peak_active_power, peak_reactive_power, load_response, base_power, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -56,6 +60,7 @@ function Area(::Nothing)
         peak_active_power=0.0,
         peak_reactive_power=0.0,
         load_response=0.0,
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -76,6 +81,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_peak_reactive_power), ::Typ
 InfrastructureSystems.display_units_arg(::typeof(get_peak_reactive_power_unitful), ::Type{Area}) = InfrastructureSystems.SU
 """Get [`Area`](@ref) `load_response`."""
 get_load_response(value::Area) = value.load_response
+
+_get_base_power(value::Area) = value.base_power
 """Get [`Area`](@ref) `ext`."""
 get_ext(value::Area) = value.ext
 """Get [`Area`](@ref) `internal`."""

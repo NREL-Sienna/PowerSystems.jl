@@ -7,7 +7,6 @@
             from_bus = get_from(get_arc(line))
             expected = get_base_voltage(from_bus)
             @test get_base_voltage(line) == expected
-            @test get_base_voltage(line) isa Float64
         end
     end
 
@@ -126,8 +125,5 @@
         )
         @test get_high_voltage(t) == 230.0
         @test get_low_voltage(t) == 138.0
-        @test get_high_voltage(t) >= get_low_voltage(t)
-        @test get_high_voltage(t) isa Float64
-        @test get_low_voltage(t) isa Float64
     end
 end

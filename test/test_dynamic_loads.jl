@@ -12,7 +12,6 @@
         B = 0.0,
         base_power = 100.0,
     )
-    @test im isa PowerSystems.Component
 
     #invalid A, B or C
     @test_throws ErrorException SingleCageInductionMachine(
@@ -50,7 +49,6 @@
         B = 0.0,
         base_power = 100.0,
     )
-    @test im isa PowerSystems.Component
 
     #invalid A, B or C
     @test_throws ErrorException SimplifiedSingleCageInductionMachine(
@@ -96,7 +94,6 @@ end
         kic = 30000.0,
         base_power = 100.0,
     )
-    @test al isa PowerSystems.Component
 
     sys = System(100.0)
     bus = ACBus(nothing)
@@ -120,7 +117,6 @@ end
         T_p = 3.0,
         T_q = 3.0,
     )
-    @test al isa PowerSystems.Component
 
     sys = System(100.0)
     bus = ACBus(nothing)

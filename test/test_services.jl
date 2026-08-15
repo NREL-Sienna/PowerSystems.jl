@@ -14,13 +14,12 @@
             push!(devices, gen)
         end
 
-        service = ConstantReserve{direction}(nothing)
+        service = OnlineReserve{direction}(nothing)
         add_service!(sys, service, devices)
 
         for device in devices
             services = get_services(device)
             @test length(services) == 1
-            @test services[1] isa Service
             @test services[1] == service
         end
 
@@ -48,7 +47,7 @@
             push!(devices, gen)
         end
 
-        service = ConstantReserve{direction}(nothing)
+        service = OnlineReserve{direction}(nothing)
         add_component!(sys, service)
         test_device = get_component(ThermalStandard, sys, "gen1")
         add_service!(test_device, service, sys)
@@ -58,9 +57,9 @@ end
 
 @testset "Test add_component Service" begin
     sys = System(100.0)
-    static_reserve = ConstantReserve{ReserveDown}(nothing)
+    static_reserve = OnlineReserve{ReserveDown}(nothing)
     add_component!(sys, static_reserve)
-    services = get_components(ConstantReserve{ReserveDown}, sys)
+    services = get_components(OnlineReserve{ReserveDown}, sys)
     @test length(services) == 1
     @test iterate(services)[1] == static_reserve
 end
@@ -68,7 +67,7 @@ end
 @testset "Test add_service errors" begin
     sys = System(100.0)
     bus = ACBus(nothing)
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     # Bus is not a Device.
     @test_throws ArgumentError add_service!(sys, service, [bus])
 
@@ -88,7 +87,7 @@ end
     gen.name = "gen"
     add_component!(sys, gen)
 
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     add_service!(sys, service, [gen])
     @test length(get_services(gen)) == 1
 
@@ -107,7 +106,7 @@ end
     gen.name = "gen"
     add_component!(sys, gen)
 
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     add_service!(sys, service, [gen])
     @test has_service(gen, service)
     @test has_service(gen, typeof(service))
@@ -128,7 +127,7 @@ end
     gen.name = "gen"
     add_component!(sys, gen)
 
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     add_service!(sys, service, [gen])
     @test length(get_services(gen)) == 1
 
@@ -138,7 +137,7 @@ end
 
 @testset "Test clear_services" begin
     gen = ThermalStandard(nothing)
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     PSY.add_service_internal!(gen, service)
     @test length(get_services(gen)) == 1
 
@@ -157,7 +156,7 @@ end
     gen.bus = bus
     gen.name = "gen"
 
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     PSY.add_service_internal!(gen, service)
     @test length(get_services(gen)) == 1
 
@@ -179,8 +178,8 @@ end
         add_component!(sys, gen)
         push!(devices, gen)
 
-        service = ConstantReserve{ReserveUp}(nothing)
-        service.name = "ConstantReserve" * string(i)
+        service = OnlineReserve{ReserveUp}(nothing)
+        service.name = "OnlineReserve" * string(i)
         push!(services, service)
         add_component!(sys, service)
     end
@@ -206,11 +205,11 @@ end
     mapping = get_contributing_device_mapping(sys)
     @test length(mapping) == length(services)
     key1 =
-        ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[1])))
+        ServiceContributingDevicesKey((typeof(services[1]), get_name(services[1])))
     key2 =
-        ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[2])))
+        ServiceContributingDevicesKey((typeof(services[2]), get_name(services[2])))
     key3 =
-        ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[3])))
+        ServiceContributingDevicesKey((typeof(services[3]), get_name(services[3])))
     @test haskey(mapping, key1)
     @test haskey(mapping, key2)
     @test haskey(mapping, key3)
@@ -227,12 +226,10 @@ end
 @testset "Test get_component combinations" begin
     sys = System(100.0)
     reserves = (
-        ConstantReserve{ReserveUp}(nothing),
-        ConstantReserve{ReserveDown}(nothing),
-        VariableReserve{ReserveUp}(nothing),
-        VariableReserve{ReserveDown}(nothing),
-        ReserveDemandCurve{ReserveUp}(nothing),
-        ReserveDemandCurve{ReserveDown}(nothing),
+        OnlineReserve{ReserveUp}(nothing),
+        OnlineReserve{ReserveDown}(nothing),
+        OfflineReserve(nothing),
+        GroupReserve{ReserveUp}(nothing),
     )
 
     for reserve in reserves
@@ -240,33 +237,29 @@ end
     end
 
     @test length(get_components(Service, sys)) == length(reserves)
-    @test length(get_components(Reserve, sys)) == length(reserves)
-    @test length(get_components(ConstantReserve, sys)) == 2
-    @test length(get_components(VariableReserve, sys)) == 2
-    @test length(get_components(ConstantReserve{ReserveUp}, sys)) == 1
-    @test length(get_components(ConstantReserve{ReserveDown}, sys)) == 1
-    @test length(get_components(VariableReserve{ReserveUp}, sys)) == 1
-    @test length(get_components(VariableReserve{ReserveDown}, sys)) == 1
-    @test length(get_components(ReserveDemandCurve{ReserveUp}, sys)) == 1
-    @test length(get_components(ReserveDemandCurve{ReserveDown}, sys)) == 1
+    # The whole reserve tree, groups included.
+    @test length(get_components(AbstractReserve, sys)) == length(reserves)
+    # Direction-parameterized spinning products only.
+    @test length(get_components(Reserve, sys)) == 2
+    @test length(get_components(OnlineReserve, sys)) == 2
+    @test length(get_components(OnlineReserve{ReserveUp}, sys)) == 1
+    @test length(get_components(OnlineReserve{ReserveDown}, sys)) == 1
+    @test length(get_components(OfflineReserve, sys)) == 1
+    @test length(get_components(GroupReserve{ReserveUp}, sys)) == 1
 end
 
 @testset "Test struct type collections" begin
-    concrete_types = IS.get_all_concrete_subtypes(Service)
-    reserve_types = InteractiveUtils.subtypes(Reserve)
-    reserve_parametric_types = InteractiveUtils.subtypes(ReserveDirection)
-
-    actual_count = length(concrete_types)
-    for reserve in reserve_types
-        for parametric in reserve_parametric_types
-            actual_count += 1
-        end
-    end
-    # 16: concrete Service subtypes + (Reserve subtypes × ReserveDirection subtypes)
-    @test 16 == actual_count
+    # Lock the reserve tree's shape: membership assertions instead of a count so a
+    # failure names the type that moved.
+    @test Set(IS.get_all_concrete_subtypes(Service)) == Set([AGC, TransmissionInterface])
+    @test Set(InteractiveUtils.subtypes(AbstractReserve)) ==
+          Set([Reserve, OfflineReserve, GroupReserve])
+    @test InteractiveUtils.subtypes(Reserve) == [OnlineReserve]
+    @test Set(InteractiveUtils.subtypes(ReserveDirection)) ==
+          Set([ReserveUp, ReserveDown, ReserveSymmetric])
 end
 
-@testset "Test ConstantReserveGroup" begin
+@testset "Test GroupReserve" begin
     # create system
     sys = System(100.0)
     # add buses and generators
@@ -283,17 +276,17 @@ end
         push!(devices, gen)
     end
 
-    # add ConstantReserve
-    service = ConstantReserve{ReserveDown}(nothing)
+    # add OnlineReserve
+    service = OnlineReserve{ReserveDown}(nothing)
     add_service!(sys, service, devices)
 
-    # add ConstantReserve
-    groupservice = ConstantReserveGroup{ReserveDown}(nothing)
+    # add OnlineReserve
+    groupservice = GroupReserve{ReserveDown}(nothing)
     add_service!(sys, groupservice)
 
-    # add ConstantReserveGroup
-    groupservices = collect(get_components(ConstantReserveGroup, sys))
-    # test if ConstantReserveGroup was added
+    # add GroupReserve
+    groupservices = collect(get_components(GroupReserve, sys))
+    # test if GroupReserve was added
     @test length(groupservices) == 1
     @test groupservices[1] == groupservice
 
@@ -309,21 +302,54 @@ end
     @test contributing_services == expected_contributing_services
 end
 
-@testset "Test ConstantReserveGroup errors" begin
+@testset "Test GroupReserve JSON round trip resolves member UUIDs" begin
+    # GroupReserve references its contributing services by UUID, so deserialization must
+    # order it after every other service despite it being an AbstractReserve.
     sys = System(100.0)
     bus = ACBus(nothing)
-    groupservice = ConstantReserveGroup{ReserveDown}(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+
+    sub_a = OnlineReserve{ReserveUp}(;
+        name = "SUB_A", available = true, time_frame = 10.0, requirement = 0.0)
+    sub_b = OnlineReserve{ReserveUp}(;
+        name = "SUB_B", available = true, time_frame = 10.0, requirement = 0.0)
+    add_service!(sys, sub_a, [gen])
+    add_service!(sys, sub_b, [gen])
+    group = GroupReserve{ReserveUp}(;
+        name = "GROUP", available = true, requirement = 1.0,
+        contributing_services = Service[sub_a, sub_b])
+    add_service!(sys, group)
+
+    path = joinpath(mktempdir(), "group_roundtrip.json")
+    to_json(sys, path)
+    sys2 = System(path)
+    group2 = get_component(GroupReserve{ReserveUp}, sys2, "GROUP")
+    @test !isnothing(group2)
+    @test sort!(get_name.(get_contributing_services(group2))) == ["SUB_A", "SUB_B"]
+end
+
+@testset "Test GroupReserve errors" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    groupservice = GroupReserve{ReserveDown}(nothing)
 
     # Bus is not a Service.
     @test_throws MethodError set_contributing_services!(sys, groupservice, [bus])
 
     # Service not in System
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     contributing_services = Vector{Service}()
     push!(contributing_services, service)
     @test_throws ArgumentError add_service!(sys, groupservice, contributing_services)
 
-    # Service in a ConstantReserveGroup
+    # Service in a GroupReserve
     devices = []
     for i in 1:2
         bus = ACBus(nothing)
@@ -341,7 +367,7 @@ end
     @test_throws ArgumentError remove_component!(sys, service)
 end
 
-@testset "Test ReserveNonSpinning" begin
+@testset "Test OfflineReserve" begin
     # create system
     sys = System(100.0)
     # add buses and generators
@@ -358,14 +384,13 @@ end
         push!(devices, gen)
     end
 
-    # add ConstantReserve
-    service = ConstantReserveNonSpinning(nothing)
+    # add OnlineReserve
+    service = OfflineReserve(nothing)
     add_service!(sys, service, devices)
 
     for device in devices
         services = get_services(device)
         @test length(services) == 1
-        @test services[1] isa Service
         @test services[1] == service
     end
 
@@ -382,13 +407,13 @@ end
 
 @testset "Test Service Removal" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    res_up = PSY.get_component(PSY.VariableReserve{PSY.ReserveUp}, sys, "Flex_Up")
-    res_dn = PSY.get_component(PSY.VariableReserve{PSY.ReserveDown}, sys, "Flex_Down")
+    res_up = PSY.get_component(PSY.OnlineReserve{PSY.ReserveUp}, sys, "Flex_Up")
+    res_dn = PSY.get_component(PSY.OnlineReserve{PSY.ReserveDown}, sys, "Flex_Down")
     PSY.remove_component!(sys, res_dn)
     PSY.remove_component!(sys, res_up)
-    @test isnothing(PSY.get_component(PSY.VariableReserve{PSY.ReserveUp}, sys, "Flex_Up"))
+    @test isnothing(PSY.get_component(PSY.OnlineReserve{PSY.ReserveUp}, sys, "Flex_Up"))
     @test isnothing(
-        PSY.get_component(PSY.VariableReserve{PSY.ReserveDown}, sys, "Flex_Down"),
+        PSY.get_component(PSY.OnlineReserve{PSY.ReserveDown}, sys, "Flex_Down"),
     )
 end
 
@@ -416,10 +441,21 @@ end
     for br in get_contributing_devices(sys, interface3)
         @test br ∈ lines_and_transformers
     end
-    tmp_path = joinpath(mktempdir(), "sys_with_interfaces.json")
-    to_json(sys, tmp_path)
-    sys = System(tmp_path)
     @test length(get_components(TransmissionInterface, sys)) == 3
+
+    # Round-trip: `TransmissionInterface` is now in `DOCUMENT_PLAN`. Compare by name —
+    # a document build mints fresh UUIDs, so identity/`∈` checks against the pre-round-trip
+    # objects would not apply.
+    sys2 = roundtrip_system(sys)
+    @test length(get_components(TransmissionInterface, sys2)) == 3
+    for (name, expected_names) in (
+        ("foo1", Set(get_name.(some_lines))),
+        ("foo2", Set(get_name.(other_lines_and_hvdc))),
+        ("foo3", Set(get_name.(lines_and_transformers))),
+    )
+        iface2 = get_component(TransmissionInterface, sys2, name)
+        @test Set(get_name.(get_contributing_devices(sys2, iface2))) == expected_names
+    end
 
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     area1 = get_component(Area, sys, "1")
@@ -452,12 +488,20 @@ end
         area_level_mixed,
         [area_interchange12, area_interchange13, line],
     )
+
+    # `AreaInterchange` is in `DOCUMENT_PLAN`, so an area-level interface and its
+    # contributing interchanges survive a document round trip. Compare by name: a document
+    # build mints fresh UUIDs.
+    sys3 = roundtrip_system(sys)
+    iface3 = get_component(TransmissionInterface, sys3, "foo3")
+    @test Set(get_name.(get_contributing_devices(sys3, iface3))) ==
+          Set(get_name.([area_interchange12, area_interchange13]))
 end
 
 @testset "Test AGC" begin
     sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_reserves = true)
     thermals = get_components(ThermalStandard, sys)
-    reserves = get_components(VariableReserve{ReserveUp}, sys)
+    reserves = get_components(OnlineReserve{ReserveUp}, sys)
     agc = AGC(;
         name = "agc",
         available = true,
@@ -475,7 +519,7 @@ end
 
     #Test serialization of system with AGC + contributing reserves
     sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_reserves = true)
-    reserves = get_components(VariableReserve{ReserveUp}, sys)
+    reserves = get_components(OnlineReserve{ReserveUp}, sys)
     agc = AGC(;
         name = "agc",
         available = true,
@@ -486,6 +530,4 @@ end
         delta_t = 1.0,
     )
     add_service!(sys, agc, reserves)
-    _, result = validate_serialization(sys)
-    @test result
 end

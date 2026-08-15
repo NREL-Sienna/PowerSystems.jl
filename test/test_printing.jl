@@ -192,13 +192,13 @@ end
     line = Line(nothing)
     @test repr(MIME"text/plain"(), line) isa String
     @test repr(MIME"text/plain"(), [line]) isa String
-    res = ConstantReserve{ReserveUp}(nothing)
+    res = OnlineReserve{ReserveUp}(nothing)
     @test repr(MIME"text/plain"(), res) isa String
 end
 
 @testset "display_units_arg resolves for parametric struct types" begin
-    @test IS.display_units_arg(get_requirement, ConstantReserve{ReserveUp}) === IS.SU
-    @test IS.display_units_arg(get_requirement_unitful, ConstantReserve{ReserveUp}) ===
+    @test IS.display_units_arg(get_requirement, OnlineReserve{ReserveUp}) === IS.SU
+    @test IS.display_units_arg(get_requirement_unitful, OnlineReserve{ReserveUp}) ===
           IS.SU
 end
 

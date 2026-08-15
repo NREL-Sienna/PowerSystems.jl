@@ -1,0 +1,13 @@
+[deps]
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+PowerCoreOpenAPIModels = "b7b40286-e793-417d-a9a0-b1583e4da1cb"
+PowerFlowFileParser = "bed98974-b02e-5e2f-9ee0-a103f5c450dd"
+PowerSystems = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
+
+# Sibling-checkout paths. This env exists only because the pipeline it exercises spans two
+# packages that must not depend on each other: PowerFlowFileParser deliberately has no
+# PowerSystems dependency, so neither package's own test env can host this check.
+[sources]
+PowerSystems = {path = "../.."}
+PowerFlowFileParser = {path = "../../../PowerFlowFileParser.jl"}
+PowerCoreOpenAPIModels = {path = "../../../PowerOpenAPIModels/PowerCoreOpenAPIModels.jl"}

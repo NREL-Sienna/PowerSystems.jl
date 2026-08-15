@@ -93,7 +93,6 @@ This classification is essential for WECC dynamic studies as it determines how l
 modeled during system disturbances and stability analysis.
 """ LoadConformity
 
-# "From PSSE POM v33 Manual"
 IS.@scoped_enum(
     FACTSOperationModes,
     OOS = 0, # out-of-service (i.e., Series and Shunt links open)
@@ -104,7 +103,6 @@ IS.@scoped_enum(
     FACTSOperationModes
 
 Enumeration defining the operational modes for FACTS (Flexible AC Transmission System) devices.
-Based on PSSE POM v33 Manual specifications.
 
 # Values
 - `OOS = 0`: Out-of-service mode where both Series and Shunt links are open
@@ -145,14 +143,14 @@ AC-side control mode of a voltage-source-converter (VSC) terminal.
 
 IS.@scoped_enum(
     FACTSShuntControlType,
-    SVC = 0,        # variable-susceptance SVC: Q = b·V² bounded by SHMX
-    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·IMX
+    SVC = 0,        # variable-susceptance SVC: Q = b·V², bounded by max susceptance
+    STATCOM = 1,    # current-limited STATCOM: |Q| ≤ V·max shunt current
 )
 @doc "Shunt-FACTS device class selecting the reactive-limit law: `SVC` bounds susceptance \
-(`Q=b·V²`, cap `SHMX`); `STATCOM` is current-limited (`|Q| ≤ V·IMX`)." FACTSShuntControlType
+(`Q=b·V²`); `STATCOM` is current-limited (`|Q| ≤ V·max_shunt_current`)." FACTSShuntControlType
 
 IS.@scoped_enum(
-    SwitchedAdmittanceControlMode,  # MODSW in PSS/E switched-shunt records
+    SwitchedAdmittanceControlMode,
     UNDEFINED = -99,
     FIXED = 0,
     DISCRETE_VOLTAGE = 1,
@@ -163,8 +161,8 @@ IS.@scoped_enum(
     DISCRETE_REACTIVE_FACTS = 6,
 )
 @doc"
-Control mode of a switched shunt. The enumerator maps the integer MODSW control-mode field
-of a switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
+Control mode of a switched shunt. The enumerator maps the integer control-mode field of a
+switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
 `CONTINUOUS_VOLTAGE` = 2, `DISCRETE_REACTIVE_PLANT` = 3, `DISCRETE_REACTIVE_VSC` = 4,
 `DISCRETE_ADMITTANCE_REMOTE` = 5, `DISCRETE_REACTIVE_FACTS` = 6; `UNDEFINED` = -99 when
 unset. The names describe each mode; consult your source data's own documentation for the
@@ -241,8 +239,7 @@ IS.@scoped_enum(
 @doc"""
     ImpedanceCorrectionTransformerControlMode
 
-Enumeration defining the control modes for impedance correction in transformers,
-based on PSS/E transformer control definitions.
+Enumeration defining the control modes for impedance correction in transformers.
 
 # Values
 - `PHASE_SHIFT_ANGLE = 1`: Control mode for phase-shifting transformers where the
@@ -253,13 +250,12 @@ based on PSS/E transformer control definitions.
   controls voltage magnitude through tap position changes.
 
 # Notes
-This enumeration corresponds to PSS/E transformer control field definitions for
-determining how impedance corrections are calculated and applied in power flow
+Determines how impedance corrections are calculated and applied in power flow
 and dynamic simulation studies.
 """ ImpedanceCorrectionTransformerControlMode
 
 IS.@scoped_enum(
-    TransformerControlObjective, # COD1 or COD2 in PSS\e
+    TransformerControlObjective,
     UNDEFINED = -99,
     VOLTAGE_DISABLED = -1,
     REACTIVE_POWER_FLOW_DISABLED = -2,
@@ -276,10 +272,8 @@ IS.@scoped_enum(
 @doc"
     TransformerControlObjective
 
-Enumeration of transformer control objectives based on PSS/E COD1 and COD2 fields.
-
-This enumeration defines the control modes for transformer tap changers and phase shifters
-as specified in the PSS/E-35 manual.
+Enumeration of transformer control objectives: the control modes for transformer tap
+changers and phase shifters.
 
 # Values
 - `UNDEFINED = -99`: Undefined control objective
@@ -414,7 +408,7 @@ IS.@scoped_enum(
     PROPANE = 14, # PG # Propane, gaseous
     SYNTHESIS_GAS_PETROLEUM_COKE = 15,  # SGP
     WASTE_OIL = 16,  # WO # including crude oil, liquid butane, liquid propane, naphtha, oil waste, re-refined motor oil, sludge oil, tar oil, or other petroleum-based liquid wastes
-    BLASTE_FURNACE_GAS = 17,  # BFG
+    BLAST_FURNACE_GAS = 17,  # BFG
     NATURAL_GAS = 18,  # NG    # Natural Gas
     OTHER_GAS = 19,  # OOG    # Other Gas and blast furnace gas
     NUCLEAR = 20,  # NUC # Nuclear Fission (Uranium, Plutonium, Thorium)
@@ -430,7 +424,7 @@ IS.@scoped_enum(
     OTHER_BIOMASS_GAS = 31, # OBG # includes digester gas, methane, and other biomass gasses
     GEOTHERMAL = 32,  # GEO
     WASTE_HEAT = 33, # WH # WH should only be reported where the fuel source for the waste heat is undetermined, and for combined-cycle steam turbines that do not have supplemental firing.
-    TIREDERIVED_FUEL = 34, # TDF
+    TIRE_DERIVED_FUEL = 34, # TDF
     OTHER = 35,  # OTH
 )
 
@@ -491,13 +485,13 @@ based on their underlying technology and storage mechanism.
 " StorageTech
 
 IS.@scoped_enum(
-    PumpHydroStatus,
+    HydroPumpTurbineStatus,
     OFF = 0,
     GEN = 1,
     PUMP = -1,
 )
 @doc"
-PumpHydroStatus
+HydroPumpTurbineStatus
 
 Operating status of a pumped‑storage hydro unit.
 
@@ -509,7 +503,7 @@ Values
 Notes
 - The sign of the value reflects the net direction of active power (positive = generation, negative = pumping).
 - Intended for use in scheduling, dispatch, and state-tracking of pumped‑storage units.
-" PumpHydroStatus
+" HydroPumpTurbineStatus
 
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 
@@ -624,35 +618,21 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
 
 const DEFAULT_SYSTEM_FREQUENCY = 60.0
 
-const DEFAULT_BASE_MVA = 100.0
-# Accumulator type for MW-sum helpers in system_checks.jl. Bare `Float64`
-# because unit-aware getters now return bare numbers; the `MW` arg merely
-# selects the unit basis (see `_sum_or_zero`).
+# Accumulator type for the MW-sum helpers in system_checks.jl.
 const MW_ACCUMULATOR_TYPE = Float64
 
-const INFINITE_TIME = 1e4
+# Sentinel for `time_at_status`: "has been in this state indefinitely". Carried
+# in minutes, matching the operational-duration convention.
+const INFINITE_TIME = 6e5
 const START_COST = 1e8
 const INFINITE_COST = 1e8
 const INFINITE_BOUND = 1e6
 const BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL = 0.01
 
-const ZERO_IMPEDANCE_REACTANCE_THRESHOLD = 1e-4
-
 # Absolute threshold below which a shunt admittance component (conductance or
 # susceptance) is treated as zero for capability detection, so negligible
 # admittances do not force their host bus to be kept during network reduction.
 const ZERO_ADMITTANCE_THRESHOLD = 1e-4
-
-const WINDING_NAMES = Dict(
-    WindingCategory.PRIMARY_WINDING => "primary",
-    WindingCategory.SECONDARY_WINDING => "secondary",
-    WindingCategory.TERTIARY_WINDING => "tertiary",
-)
-
-const TRANSFORMER3W_PARAMETER_NAMES = [
-    "COD", "CONT", "NOMV", "WINDV", "RMA", "RMI",
-    "NTP", "VMA", "VMI", "RATA", "RATB", "RATC",
-]
 
 # Emissions enums
 
@@ -664,6 +644,8 @@ IS.@scoped_enum(
     N2O = 4,
     NOX = 10,
     SO2 = 11,
+    CO = 12,
+    VOC = 13,
     PM25 = 20,
     PM10 = 21,
     HG = 30,
@@ -680,6 +662,8 @@ Enumeration of pollutant types for emissions tracking.
 - `N2O = 4`: Nitrous oxide
 - `NOX = 10`: Nitrogen oxides
 - `SO2 = 11`: Sulfur dioxide
+- `CO = 12`: Carbon monoxide
+- `VOC = 13`: Volatile organic compounds
 - `PM25 = 20`: Particulate matter (2.5 μm)
 - `PM10 = 21`: Particulate matter (10 μm)
 - `HG = 30`: Mercury

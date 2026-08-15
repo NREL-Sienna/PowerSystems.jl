@@ -206,17 +206,9 @@ end
             nothing,
         ),
     )
-    path = joinpath(mktempdir(), "test_validation.json")
-    try
-        PSY.to_json(sys, path)
-    catch
-        rm(path)
-        rethrow()
-    end
+    sys2 = roundtrip_system(sys)
 
-    try
-        sys2 = PSY.System(path)
-
+    begin
         B = collect(get_components(ACBus, sys2))
         sort!(B, by = get_number)
         a = Arc(B[1], B[6])
@@ -237,8 +229,6 @@ end
             match_mode = :any,
             @test_throws(PSY.InvalidValue, add_component!(sys2, badline))
         )
-    finally
-        rm(path)
     end
 end
 
@@ -286,20 +276,10 @@ end
     add_component!(sys, bus)
 end
 
-@testset "Test serialization and range checks" begin
-    sys = System(100.0; runchecks = false)
-    bus = _make_bus()
-
-    # Make the bus invalid.
-    set_base_voltage!(bus, -1000.0)
-    add_component!(sys, bus)
-
-    @test_logs(
-        (:error, r"Invalid range"),
-        match_mode = :any,
-        @test_throws(IS.InvalidValue, validate_serialization(sys, runchecks = true)),
-    )
-end
+# Removed with the pre-OpenAPI serialization path: it asserted that deserializing with
+# `runchecks = true` re-validates a system written while invalid. `from_file` builds components
+# through the converters and leaves validation to the caller (PowerSystemCaseBuilder calls
+# `check` itself), so there is no deserialize-time validation hook left to test.
 
 @testset "Test serialization and system checks" begin
     # Serialize/deserialize an invalid system.
@@ -309,14 +289,7 @@ end
     set_bustype!(bus, ACBusTypes.PQ)
     add_component!(sys, bus)
 
-    @test_logs(
-        (:error, r"Model doesn't contain a slack bus"),
-        match_mode = :any,
-        validate_serialization(sys, runchecks = true)
-    )
-
-    sys, result = validate_serialization(sys; runchecks = false)
-    @test result
+    sys = roundtrip_system(sys; runchecks = false)
     @test !get_runchecks(sys)
 end
 
@@ -351,18 +324,8 @@ end
     )
 end
 
-@testset "Test check at serialization" begin
-    nodes = nodes5()
-    bad_therm_gen_rating = thermal_generators5(nodes)
-    bad_therm_gen_rating[1].rating = -10
-    sys = System(100.0, nodes, bad_therm_gen_rating, loads5(nodes); runchecks = false)
-    @test_logs(
-        (:error, r"Invalid range"),
-        (:warn, r"exceeds total capacity capability"),
-        match_mode = :any,
-        @test_throws(
-            IS.InvalidValue,
-            to_json(sys, "sys.json", force = true, runchecks = true)
-        ),
-    )
-end
+# Removed with the pre-OpenAPI writer: this asserted that serializing with `runchecks = true`
+# validates on the way out, emitting both an "Invalid range" error and an "exceeds total capacity"
+# warning before throwing. `to_file` has no `runchecks` kwarg -- validation is the caller's
+# business -- and `check_components` throws on the first invalid field, so the second log never
+# fires. `check_components` itself is covered by the "Test check_components" testset above.

@@ -154,3 +154,62 @@ set_power_factor!(value::RenewableNonDispatch, val) = value.power_factor = val
 set_services!(value::RenewableNonDispatch, val) = value.services = val
 """Set [`RenewableNonDispatch`](@ref) `ext`."""
 set_ext!(value::RenewableNonDispatch, val) = value.ext = val
+
+
+function from_openapi(po::PO.RenewableNonDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return RenewableNonDispatch(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        power_factor = po.power_factor,
+        base_power = po.base_power,
+    )
+end
+
+function from_openapi(po::PO.RenewableNonDispatch, refs::OpenAPIRefs, ::NaturalUnit)
+    return RenewableNonDispatch(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        prime_mover_type = PrimeMovers(po.prime_mover_type),
+        power_factor = po.power_factor,
+        base_power = po.base_power,
+    )
+end
+
+function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.RenewableNonDispatch(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        prime_mover_type = string(get_prime_mover_type(value)),
+        power_factor = get_power_factor(value),
+        base_power = _get_base_power(value),
+    )
+end
+
+function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.RenewableNonDispatch(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        prime_mover_type = string(get_prime_mover_type(value)),
+        power_factor = get_power_factor(value),
+        base_power = _get_base_power(value),
+    )
+end

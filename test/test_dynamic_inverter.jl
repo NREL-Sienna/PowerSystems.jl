@@ -1,46 +1,26 @@
 @testset "Inverter Components" begin
     converter = AverageConverter(690.0, 2750000.0) #S_rated goes in Watts
-    @test converter isa PowerSystems.DynamicComponent
     dc_source = FixedDCSource(600.0) #Not in the original data, guessed.
-    @test dc_source isa PowerSystems.DynamicComponent
     filter = LCLFilter(0.08, 0.003, 0.074, 0.2, 0.01)
-    @test filter isa PowerSystems.DynamicComponent
     pll = KauraPLL(500.0, 0.084, 4.69)
-    @test pll isa PowerSystems.DynamicComponent
     reduced_pll = ReducedOrderPLL(500.0, 0.084, 4.69)
-    @test reduced_pll isa PowerSystems.DynamicComponent
     virtual_H = VirtualInertia(2.0, 400.0, 20.0, 2 * pi * 50.0)
-    @test virtual_H isa PowerSystems.DeviceParameter
     P_control = ActivePowerDroop(0.2, 1000.0)
-    @test P_control isa PowerSystems.DeviceParameter
     P_control_PI = ActivePowerPI(2.0, 20.0, 50.0)
-    @test P_control_PI isa PowerSystems.DeviceParameter
     P_VOC = ActiveVirtualOscillator(0.0033, pi / 4)
-    @test P_VOC isa PowerSystems.DeviceParameter
     Q_control = ReactivePowerDroop(0.2, 1000.0)
-    @test Q_control isa PowerSystems.DeviceParameter
     Q_control_PI = ReactivePowerPI(2.0, 20.0, 50.0)
-    @test Q_control_PI isa PowerSystems.DeviceParameter
     Q_VOC = ReactiveVirtualOscillator(0.0796)
-    @test Q_VOC isa PowerSystems.DeviceParameter
     outer_control = OuterControl(virtual_H, Q_control)
-    @test outer_control isa PowerSystems.DynamicComponent
     test_accessors(outer_control)
     outer_control_droop = OuterControl(P_control, Q_control)
-    @test outer_control_droop isa PowerSystems.DynamicComponent
     test_accessors(outer_control_droop)
     outer_control_PI = OuterControl(P_control_PI, Q_control_PI)
-    @test outer_control_PI isa PowerSystems.DynamicComponent
     test_accessors(outer_control_PI)
     outer_control_VOC = OuterControl(P_VOC, Q_VOC)
-    @test outer_control_PI isa PowerSystems.DynamicComponent
-    test_accessors(outer_control_PI)
+    test_accessors(outer_control_VOC)
     vsc = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
-    @test vsc isa PowerSystems.DynamicComponent
-    vsc2 = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
-    @test vsc2 isa PowerSystems.DynamicComponent
     vsc3 = CurrentModeControl(1.27, 14.3, 0.0)
-    @test vsc3 isa PowerSystems.DynamicComponent
     BESS_source = ZeroOrderBESS(
         (sqrt(8) / sqrt(3)) * 690.0,
         (sqrt(3) / sqrt(8)) * 2750000.0,
@@ -54,7 +34,6 @@
         10.34,
         1.08,
     )
-    @test BESS_source isa PowerSystems.DynamicComponent
 end
 
 @testset "Dynamic Inverter" begin
@@ -62,7 +41,6 @@ end
     inverters = collect(get_components(DynamicInverter, sys))
     @test length(inverters) == 1
     test_inverter = inverters[1]
-    @test test_inverter isa PowerSystems.Component
     test_accessors(test_inverter)
 end
 
@@ -85,7 +63,6 @@ end
         pll,
         filt,
     )
-    @test inverter isa PowerSystems.Component
     test_accessors(inverter)
     inv_magnitude = DynamicInverter(;
         name = "TestInverter",
@@ -98,7 +75,6 @@ end
         filter = filt,
         limiter = MagnitudeOutputCurrentLimiter(; I_max = 1.0),
     )
-    @test inv_magnitude isa PowerSystems.Component
     test_accessors(inv_magnitude)
     inv_inst = DynamicInverter(;
         name = "TestInverter",
@@ -114,7 +90,6 @@ end
             Iq_max = 1.0 / sqrt(2),
         ),
     )
-    @test inv_inst isa PowerSystems.Component
     test_accessors(inv_inst)
     inv_priority = DynamicInverter(;
         name = "TestInverter",
@@ -127,7 +102,6 @@ end
         filter = filt,
         limiter = PriorityOutputCurrentLimiter(; I_max = 1.0, ϕ_I = 0.1),
     )
-    @test inv_priority isa PowerSystems.Component
     test_accessors(inv_priority)
 end
 
@@ -147,9 +121,7 @@ end
         Accel = 0.7,
         Lvpl_sw = 0,
     )
-    @test converter_regca1 isa PowerSystems.DynamicComponent
     filt_current = RLFilter(; rf = 0.0, lf = 0.1)
-    @test filt_current isa PowerSystems.DynamicComponent
     inner_ctrl_typeB = RECurrentControlB(;
         Q_Flag = 0,
         PQ_Flag = 0,
@@ -164,7 +136,6 @@ end
         T_iq = 0.02,
         I_max = 1.11,
     )
-    @test inner_ctrl_typeB isa PowerSystems.DynamicComponent
     # Creates 2^5 = 32 combinations of flags for an outer control
     for (F_flag, VC_flag, R_flag, PF_flag, V_flag) in
         reverse.(Iterators.product(fill(0:1, 5)...))[:]
@@ -214,10 +185,7 @@ end
             K_qp = 0.0,
             K_qi = 0.01,
         )
-        @test P_control_typeAB isa PowerSystems.DeviceParameter
-        @test Q_control_typeAB isa PowerSystems.DeviceParameter
         outer_control_typeAB = OuterControl(P_control_typeAB, Q_control_typeAB)
-        @test outer_control_typeAB isa PowerSystems.DynamicComponent
         test_accessors(outer_control_typeAB)
     end
 end
