@@ -21,6 +21,7 @@ This file is auto-generated. Do not edit.
         rating_c::Union{Nothing, Float64}
         g::FromTo
         services::Vector{Service}
+        base_power::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -45,6 +46,7 @@ For example, monitored lines can be used to restrict line flow following a conti
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `g::FromTo`: (default: `(from=0.0, to=0.0)`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -79,18 +81,20 @@ mutable struct MonitoredLine <: ACTransmission
     g::FromTo
     "Services that this device contributes to"
     services::Vector{Service}
+    "System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA)"
+    base_power::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b, rating_c, g, services, ext, InfrastructureSystemsInternal(), )
+function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], base_power=100.0, ext=Dict{String, Any}(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b, rating_c, g, services, base_power, ext, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b, rating_c, g, services, ext, internal, )
+function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], base_power=100.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b, rating_c, g, services, base_power, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -111,6 +115,7 @@ function MonitoredLine(::Nothing)
         rating_c=0.0,
         g=(from=0.0, to=0.0),
         services=Device[],
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -185,6 +190,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_g), ::Type{MonitoredLine}) 
 InfrastructureSystems.display_units_arg(::typeof(get_g_unitful), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 """Get [`MonitoredLine`](@ref) `services`."""
 get_services(value::MonitoredLine) = value.services
+
+_get_base_power(value::MonitoredLine) = value.base_power
 """Get [`MonitoredLine`](@ref) `ext`."""
 get_ext(value::MonitoredLine) = value.ext
 """Get [`MonitoredLine`](@ref) `internal`."""

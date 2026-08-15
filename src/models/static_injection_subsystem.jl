@@ -46,10 +46,6 @@ function make_subsystem_time_series_name(subcomponent::Component, ts::TimeSeries
     return make_subsystem_time_series_name(typeof(subcomponent), get_name(ts))
 end
 
-function make_subsystem_time_series_name(subcomponent::Component, label::String)
-    return make_subsystem_time_series_name(typeof(subcomponent), label)
-end
-
 function make_subsystem_time_series_name(subcomponent::Type{<:Component}, label::String)
     return IS.strip_module_name(subcomponent) * "__" * label
 end

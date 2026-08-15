@@ -47,3 +47,20 @@ get_number(value::Substation) = value.number
 get_grounding_resistance(value::Substation) = value.grounding_resistance
 """Get [`Substation`](@ref) `internal`."""
 get_internal(value::Substation) = value.internal
+
+# `Substation` has no descriptor entry, so both OpenAPI directions are hand-written here,
+# in the same supplemental-attribute converter shape as src/openapi/import_document.jl /
+# export_document.jl: value-dispatched, `refs` in both directions, id via `component_id`.
+
+from_openapi(po::PO.Substation, ::OpenAPIRefs) = Substation(;
+    name = po.name,
+    number = po.number,
+    grounding_resistance = po.grounding_resistance,
+)
+
+to_openapi(attr::Substation, refs::OpenAPIRefs) = PO.Substation(;
+    id = component_id(refs, attr),
+    name = get_name(attr),
+    number = get_number(attr),
+    grounding_resistance = get_grounding_resistance(attr),
+)

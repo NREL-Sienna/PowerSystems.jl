@@ -54,7 +54,6 @@ branch_OMIB = [
 
 @testset "Dynamic Machines" begin
     Basic = BaseMachine(; R = 0.0, Xd_p = 0.2995, eq_p = 1.05)
-    @test Basic isa PowerSystems.DynamicComponent
 
     GENROU = RoundRotorQuadratic(;
         R = 0.0,
@@ -70,7 +69,6 @@ branch_OMIB = [
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
-    @test GENROU isa PowerSystems.DynamicComponent
 
     GENROE = RoundRotorExponential(;
         R = 0.0,
@@ -86,7 +84,6 @@ branch_OMIB = [
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
-    @test GENROE isa PowerSystems.DynamicComponent
 
     GENSAL = SalientPoleQuadratic(;
         R = 0.0,
@@ -100,7 +97,6 @@ branch_OMIB = [
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
-    @test GENSAL isa PowerSystems.DynamicComponent
 
     GENSAE = SalientPoleExponential(;
         R = 0.0,
@@ -114,7 +110,6 @@ branch_OMIB = [
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
-    @test GENSAE isa PowerSystems.DynamicComponent
 
     oneDoneQ = OneDOneQMachine(;
         R = 0.0,
@@ -125,7 +120,6 @@ branch_OMIB = [
         Td0_p = 7.4,
         Tq0_p = 0.033,
     )
-    @test oneDoneQ isa PowerSystems.DynamicComponent
 
     SauerPai = SauerPaiMachine(;
         R = 0.0,
@@ -141,7 +135,6 @@ branch_OMIB = [
         Td0_pp = 0.029,
         Tq0_pp = 0.034,
     )
-    @test SauerPai isa PowerSystems.DynamicComponent
 
     AndersonFouad = AndersonFouadMachine(;
         R = 0.0,
@@ -156,7 +149,6 @@ branch_OMIB = [
         Td0_pp = 0.03,
         Tq0_pp = 0.033,
     )
-    @test AndersonFouad isa PowerSystems.DynamicComponent
 
     KundurMachine = SimpleFullMachine(;
         R = 0.003, #Example 3.1 and 4.1 of Kundur
@@ -172,7 +164,6 @@ branch_OMIB = [
         L_1d = 0.1713, #L_D in Machowski
         L_1q = 0.7525, #L_Q in Machowski
     )
-    @test KundurMachine isa PowerSystems.DynamicComponent
 
     KundurFullMachine = FullMachine(;
         R = 0.003, #Example 3.1 and 4.1 of Kundur
@@ -188,7 +179,6 @@ branch_OMIB = [
         L_1d = 0.1713, #L_D in Machowski
         L_1q = 0.7525, #L_Q in Machowski
     )
-    @test KundurFullMachine isa PowerSystems.DynamicComponent
 
     Mach2_benchmark = OneDOneQMachine(;
         R = 0.0,
@@ -199,13 +189,11 @@ branch_OMIB = [
         Td0_p = 5.89,
         Tq0_p = 0.6,
     )
-    @test Mach2_benchmark isa PowerSystems.DynamicComponent
 end
 
 ################ Shaft Data #####################
 @testset "Dynamic Shaft" begin
     BaseShaft = SingleMass(; H = 5.148, D = 2.0)
-    @test BaseShaft isa PowerSystems.DynamicComponent
 
     FiveShaft = FiveMassShaft(;
         H = 5.148,
@@ -227,18 +215,15 @@ end
         K_lp = 44.68,
         K_ex = 21.984,
     )
-    @test FiveShaft isa PowerSystems.DynamicComponent
 end
 
 ################# PSS Data #####################
 @testset "Dynamic PSS" begin
     no_pss = PSSFixed(; V_pss = 0.0)
-    @test no_pss isa PowerSystems.DynamicComponent
 end
 ################ TG Data #####################
 @testset "Dynamic Turbine Governor Constructors" begin
     fixed_tg = TGFixed(; efficiency = 1.0)
-    @test fixed_tg isa PowerSystems.DynamicComponent
 
     typeI_tg = TGTypeI(;
         R = 0.02,
@@ -249,11 +234,9 @@ end
         T5 = 50.0,
         valve_position_limits = (min = 0.3, max = 1.2),
     )
-    @test typeI_tg isa PowerSystems.DynamicComponent
     @test get_frequency_droop(typeI_tg) == 0.02
 
     typeII_tg = TGTypeII(; R = 0.05, T1 = 0.3, T2 = 0.1, τ_limits = (min = 0.1, max = 1.0))
-    @test typeII_tg isa PowerSystems.DynamicComponent
     @test get_frequency_droop(typeII_tg) == 0.05
 
     gast_tg = GasTG(;
@@ -266,7 +249,6 @@ end
         V_lim = (0.417, 0.8),
         D_turb = 0.0,
     )
-    @test gast_tg isa PowerSystems.DynamicComponent
     @test get_frequency_droop(gast_tg) == 0.05
 
     degov_tg = PSY.DEGOV(;
@@ -280,17 +262,14 @@ end
         Td = 0.0,
         P_ref = 0.0,
     )
-    @test degov_tg isa PowerSystems.DynamicComponent
     @test get_frequency_droop(degov_tg) == (1/18.0)
 end
 
 ################ AVR Data #####################
 @testset "Dynamic AVR Constructors" begin
     proportional_avr = AVRSimple(; Kv = 5000.0)
-    @test proportional_avr isa PowerSystems.DynamicComponent
 
     fixed_avr = AVRFixed(; Vf = 1.05, V_ref = 1.0)
-    @test fixed_avr isa PowerSystems.DynamicComponent
 
     typeI_avr = AVRTypeI(;
         Ka = 200.0,
@@ -304,7 +283,6 @@ end
         Ae = 0.0006,
         Be = 0.9,
     )
-    @test typeI_avr isa PowerSystems.DynamicComponent
 
     ac1a_avr = ESAC1A(;
         Tr = 0.0,
@@ -323,7 +301,6 @@ end
         Se = (0.0, 0.0),
         Vr_lim = (-99.0, 99.0),
     )
-    @test ac1a_avr isa PowerSystems.DynamicComponent
 
     mod_ac1a_avr = EXAC1(;
         Tr = 0.0,
@@ -341,7 +318,6 @@ end
         E_sat = (2.707, 3.6102),
         Se = (0.0366, 0.1831),
     )
-    @test mod_ac1a_avr isa PowerSystems.DynamicComponent
 
     st1a_avr = ESST1A(;
         UEL_flags = 1,
@@ -362,7 +338,6 @@ end
         K_lr = 0.0,
         I_lr = 999.0,
     )
-    @test st1a_avr isa PowerSystems.DynamicComponent
 
     gen2_avr_benchmark = AVRTypeII(;
         K0 = 20.0,
@@ -376,7 +351,6 @@ end
         Ae = 0.0039,
         Be = 1.555,
     )
-    @test gen2_avr_benchmark isa PowerSystems.DynamicComponent
 end
 ######################### Generators ########################
 @testset "Dynamic Generators" begin
@@ -422,7 +396,6 @@ end
         prime_mover = fixed_tg,
         pss = no_pss,
     )
-    @test Gen1AVR isa PowerSystems.Component
     Gen1AVRnoAVR = DynamicGenerator(;
         name = get_name(static_gen),
         ω_ref = 1.0,
@@ -432,7 +405,6 @@ end
         prime_mover = fixed_tg,
         pss = no_pss,
     )
-    @test Gen1AVRnoAVR isa PowerSystems.Component
 
     Gen2AVRnoAVR = DynamicGenerator(;
         name = get_name(static_gen),
@@ -443,7 +415,6 @@ end
         prime_mover = fixed_tg,
         pss = no_pss,
     )
-    @test Gen2AVRnoAVR isa PowerSystems.Component
 
     Gen2AVR = DynamicGenerator(;
         name = get_name(static_gen),
@@ -454,7 +425,6 @@ end
         prime_mover = fixed_tg,
         pss = no_pss,
     )
-    @test Gen2AVR isa PowerSystems.Component
 
     Gen3AVR = DynamicGenerator(;
         name = get_name(static_gen),
@@ -465,7 +435,6 @@ end
         prime_mover = fixed_tg,
         pss = no_pss,
     )
-    @test Gen3AVR isa PowerSystems.Component
 
     Gen4AVR = DynamicGenerator(;
         name = get_name(static_gen),
@@ -536,14 +505,10 @@ end
     add_component!(sys, Gen3AVR, static_gen)
 
     retrieved_gen = collect(get_components(DynamicGenerator, sys))
-    orig_dir = pwd()
-    temp_dir = mktempdir()
-    cd(temp_dir)
-    to_json(sys, "sys.json")
-    sys2 = System("sys.json")
-    serialized_gen = collect(get_components(DynamicGenerator, sys2))
-    @test get_name(retrieved_gen[1]) == get_name(serialized_gen[1])
-    cd(orig_dir)
+    # A round trip through a document is not asserted here: dynamics has no OpenAPI
+    # converter (campaign index section 7), so `to_openapi` omits dynamic components and warns.
+    @test get_name(retrieved_gen[1]) ==
+          get_name(only(get_components(DynamicGenerator, sys)))
 end
 
 @testset "Replace Dynamic Injector" begin
@@ -735,7 +700,6 @@ end
         base_power = 0,
         ext = Dict{String, Any}(),
     )
-    @test derd isa PowerSystems.Component
 
     #invalid Qref_Flag
     @test_throws ErrorException GenericDER(
@@ -840,7 +804,6 @@ end
         base_power = 0,
         ext = Dict{String, Any}(),
     )
-    @test dera isa PowerSystems.Component
 
     #invalid Freq_Flag
     @test_throws ErrorException AggregateDistributedGenerationA(

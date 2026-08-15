@@ -135,3 +135,62 @@ set_initial_ace!(value::AGC, val) = value.initial_ace = val
 set_reserves!(value::AGC, val) = value.reserves = val
 """Set [`AGC`](@ref) `ext`."""
 set_ext!(value::AGC, val) = value.ext = val
+
+
+function from_openapi(po::PO.AGC, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return AGC(;
+        name = po.name,
+        available = po.available,
+        bias = po.bias,
+        K_p = po.K_p,
+        K_i = po.K_i,
+        K_d = po.K_d,
+        delta_t = po.delta_t,
+        area = resolve_ref(refs, po.area, Area),
+        initial_ace = po.initial_ace,
+    )
+end
+
+function from_openapi(po::PO.AGC, refs::OpenAPIRefs, ::NaturalUnit)
+    return AGC(;
+        name = po.name,
+        available = po.available,
+        bias = po.bias,
+        K_p = po.K_p,
+        K_i = po.K_i,
+        K_d = po.K_d,
+        delta_t = po.delta_t,
+        area = resolve_ref(refs, po.area, Area),
+        initial_ace = po.initial_ace,
+    )
+end
+
+function to_openapi(value::AGC, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.AGC(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bias = get_bias(value),
+        K_p = get_K_p(value),
+        K_i = get_K_i(value),
+        K_d = get_K_d(value),
+        delta_t = get_delta_t(value),
+        area = _component_id_optional(refs, get_area(value)),
+        initial_ace = get_initial_ace(value),
+    )
+end
+
+function to_openapi(value::AGC, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.AGC(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bias = get_bias(value),
+        K_p = get_K_p(value),
+        K_i = get_K_i(value),
+        K_d = get_K_d(value),
+        delta_t = get_delta_t(value),
+        area = _component_id_optional(refs, get_area(value)),
+        initial_ace = get_initial_ace(value),
+    )
+end

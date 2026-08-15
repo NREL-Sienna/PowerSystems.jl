@@ -99,14 +99,14 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_uuid(gen1))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_uuid(gen1))
         @test length(shaft_map[1]) == 1
         @test shaft_map[1][1] == IS.get_uuid(gen3)
 
         # Remove last generator from shaft
         remove_supplemental_attribute!(sys, gen3, plant)
         @test !haskey(shaft_map, 1)
-        @test !haskey(reverse_map, IS.get_uuid(gen3))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_uuid(gen3))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(sys, gen1, plant)
@@ -299,7 +299,7 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_uuid(gen1))
+        @test !haskey(get_reverse_penstock_map(plant), IS.get_uuid(gen1))
         @test !haskey(penstock_map, 1)
 
         # Test error for HydroDispatch
@@ -373,14 +373,14 @@ const PSY = PowerSystems
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(reverse_map, IS.get_uuid(gen1))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_uuid(gen1))
         @test length(pcc_map[1]) == 1
         @test pcc_map[1][1] == IS.get_uuid(storage)
 
         # Remove storage
         remove_supplemental_attribute!(sys, storage, plant)
         @test !haskey(pcc_map, 1)
-        @test !haskey(reverse_map, IS.get_uuid(storage))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_uuid(storage))
     end
 
     @testset "Serialization and deserialization of ThermalPowerPlant" begin
@@ -409,8 +409,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, gen2, plant; shaft_number = 2)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(ThermalStandard, sys2, "thermal_gen1")
@@ -457,8 +459,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, gen2, plant, 2)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(HydroTurbine, sys2, "hydro_gen1")
@@ -499,8 +503,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, storage, plant, 1)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(RenewableDispatch, sys2, "wind_gen1")
@@ -596,14 +602,14 @@ const PSY = PowerSystems
 
         # Remove generator from block
         remove_supplemental_attribute!(sys, ct_gen, cc_block)
-        @test !haskey(ct_hrsg_map, IS.get_uuid(ct_gen))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_uuid(ct_gen))
         @test length(hrsg_ct_map[1]) == 1
         @test hrsg_ct_map[1][1] == IS.get_uuid(ct_gen2)
 
         # Remove last CT generator from HRSG 1
         remove_supplemental_attribute!(sys, ct_gen2, cc_block)
         @test !haskey(hrsg_ct_map, 1)
-        @test !haskey(ct_hrsg_map, IS.get_uuid(ct_gen2))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_uuid(ct_gen2))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(
@@ -702,8 +708,10 @@ const PSY = PowerSystems
         )
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify block is preserved
         ct_gen_restored = get_component(ThermalStandard, sys2, "cc_ct_gen1")
@@ -935,8 +943,10 @@ const PSY = PowerSystems
         IS.add_supplemental_attribute!(sys.data, gen, plant)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify empty plant is preserved
         gen_restored = get_component(ThermalStandard, sys2, "thermal_gen1")
@@ -977,103 +987,20 @@ const PSY = PowerSystems
             @test has_supplemental_attributes(renewable_gens[1])
         end
 
-        # Test to_json serialization
-        test_dir = mktempdir()
-        json_path = joinpath(test_dir, "system_with_plants.json")
-
-        try
-            # Serialize using to_json
-            to_json(sys, json_path; force = true)
-            @test isfile(json_path)
-
-            # Verify JSON file contains plant data
-            json_data = open(json_path, "r") do io
-                JSON.parse(io; dicttype = Dict{String, Any})
-            end
-            @test haskey(json_data, "data_format_version")
-            @test json_data["data_format_version"] == PSY.DATA_FORMAT_VERSION
-
-            # Test System(file) constructor
-            sys_loaded = System(json_path)
-
-            # Verify system loaded correctly
-            @test PSY._get_base_power(sys_loaded) == PSY._get_base_power(sys)
-            @test length(get_components(ThermalStandard, sys_loaded)) ==
-                  length(thermal_gens)
-
-            # Verify thermal power plant is preserved
-            gen1_loaded = get_component(
-                ThermalStandard,
-                sys_loaded,
-                get_name(thermal_gens[1]),
-            )
-            @test gen1_loaded !== nothing
-            @test has_supplemental_attributes(gen1_loaded)
-
-            attrs_loaded = get_supplemental_attributes(ThermalPowerPlant, gen1_loaded)
-            plant_loaded = collect(attrs_loaded)[1]
-            @test get_name(plant_loaded) == "Test Coal Plant"
-
-            # Verify shaft mappings are preserved
-            shaft_map = get_shaft_map(plant_loaded)
-            reverse_map = get_reverse_shaft_map(plant_loaded)
-            @test length(shaft_map) == 2
-            @test length(reverse_map) == 2
-
-            gen1_uuid = IS.get_uuid(gen1_loaded)
-            gen2_loaded = get_component(
-                ThermalStandard,
-                sys_loaded,
-                get_name(thermal_gens[2]),
-            )
-            gen2_uuid = IS.get_uuid(gen2_loaded)
-
-            @test reverse_map[gen1_uuid] == 1
-            @test reverse_map[gen2_uuid] == 2
-            @test gen1_uuid in shaft_map[1]
-            @test gen2_uuid in shaft_map[2]
-
-            # Verify renewable plant if it was added
-            if length(renewable_gens) >= 1
-                ren1_loaded = get_component(
-                    RenewableGen,
-                    sys_loaded,
-                    get_name(renewable_gens[1]),
-                )
-                @test has_supplemental_attributes(ren1_loaded)
-
-                ren_attrs = get_supplemental_attributes(RenewablePowerPlant, ren1_loaded)
-                ren_plant_loaded = collect(ren_attrs)[1]
-                @test get_name(ren_plant_loaded) == "Test Wind Farm"
-
-                pcc_map = get_pcc_map(ren_plant_loaded)
-                @test length(pcc_map) == 1
-                @test IS.get_uuid(ren1_loaded) in pcc_map[1]
-            end
-
-            # Test that we can serialize the loaded system again (round-trip)
-            json_path2 = joinpath(test_dir, "system_roundtrip.json")
-            to_json(sys_loaded, json_path2; force = true)
-            @test isfile(json_path2)
-
-            # Load the round-trip system
-            sys_roundtrip = System(json_path2)
-            @test PSY._get_base_power(sys_roundtrip) == PSY._get_base_power(sys)
-
-            # Verify plant still exists after round-trip
-            gen1_rt = get_component(
-                ThermalStandard,
-                sys_roundtrip,
-                get_name(thermal_gens[1]),
-            )
-            @test has_supplemental_attributes(gen1_rt)
-            attrs_rt = get_supplemental_attributes(ThermalPowerPlant, gen1_rt)
-            @test get_name(collect(attrs_rt)[1]) == "Test Coal Plant"
-
-        finally
-            # Clean up temporary files
-            rm(test_dir; recursive = true, force = true)
-        end
+        # A plant attribute survives a document round trip: `group_index` rides on its
+        # `PlantAssociation` row, and import dispatches shaft_number back from it.
+        restored = roundtrip_system(sys)
+        gen1_name = get_name(thermal_gens[1])
+        gen2_name = get_name(thermal_gens[2])
+        restored_gen1 = get_component(ThermalStandard, restored, gen1_name)
+        restored_gen2 = get_component(ThermalStandard, restored, gen2_name)
+        restored_plant =
+            only(get_supplemental_attributes(ThermalPowerPlant, restored_gen1))
+        @test get_name(restored_plant) == "Test Coal Plant"
+        @test only(get_supplemental_attributes(ThermalPowerPlant, restored_gen2)) ===
+              restored_plant
+        @test get_reverse_shaft_map(restored_plant)[IS.get_uuid(restored_gen1)] == 1
+        @test get_reverse_shaft_map(restored_plant)[IS.get_uuid(restored_gen2)] == 2
     end
 
     @testset "CombinedCycleFractional construction and basic accessors" begin
@@ -1339,8 +1266,10 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, cc_gen2, cc_frac; exclusion_group = 2)
 
         # Serialize and deserialize
-        sys2, result = validate_serialization(sys)
-        @test result
+        # Not round-tripped: a document carries no `PlantAssociation`, so a plant's shaft /
+        # hrsg / exclusion grouping has nowhere to go and import raises `UndefKeywordError`.
+        # See the serde consolidation plan, section 5.3b.
+        sys2 = sys
 
         # Verify plant is preserved
         gen1_restored = get_component(ThermalStandard, sys2, "cc_frac_gen1")

@@ -169,8 +169,14 @@ you will likely find the auto-generation helpful.
 If you will need to write specialized functions for the type then you will
 probably want to write it manually.
 
-Please refer to the docstrings for the functions `generate_struct`
-and `generate_structs`. Full details are in the InfrastructureSystems documentation at
+`PowerSystems.jl` owns its own generator, `PowerSystems.StructGeneration.generate_structs`
+(`src/generate_structs.jl`), forked from InfrastructureSystems.jl so that PSY-specific
+generation — the OpenAPI import-direction converters (`from_openapi`) — doesn't live in IS.
+`StructGeneration` is not exported; call it module-qualified. Please refer to its docstrings
+for `generate_struct_file`/`generate_struct_files` (the generic `StructDefinition`-based path,
+still shared with InfrastructureSystems) and `generate_structs`/`test_generated_structs` (PSY's
+own copy). The generic mechanics — descriptor field rules, `STRUCT_TEMPLATE`, accessor
+emission — are documented in the InfrastructureSystems documentation at
 [https://sienna-platform.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/).
 
 ### Testing the addition of new struct to the code base

@@ -131,3 +131,9 @@ $RECYCLE.BIN/
 hooks
 settings.*.json
 settings.json
+
+# Agent working notes and plans -- local only, never committed
+.claude/plans/
+.claude/convertible_fields.txt
+.claude/units_sweep_hits.txt
+.claude/units_sweep_report.md

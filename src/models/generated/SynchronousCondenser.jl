@@ -145,3 +145,58 @@ set_active_power_losses!(value::SynchronousCondenser, val) = value.active_power_
 set_services!(value::SynchronousCondenser, val) = value.services = val
 """Set [`SynchronousCondenser`](@ref) `ext`."""
 set_ext!(value::SynchronousCondenser, val) = value.ext = val
+
+
+function from_openapi(po::PO.SynchronousCondenser, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return SynchronousCondenser(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        reactive_power = po.reactive_power,
+        rating = po.rating,
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
+        base_power = po.base_power,
+        active_power_losses = po.active_power_losses,
+    )
+end
+
+function from_openapi(po::PO.SynchronousCondenser, refs::OpenAPIRefs, ::NaturalUnit)
+    return SynchronousCondenser(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        reactive_power = po.reactive_power / po.base_power,
+        rating = po.rating / po.base_power,
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
+        base_power = po.base_power,
+        active_power_losses = po.active_power_losses / po.base_power,
+    )
+end
+
+function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.SynchronousCondenser(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        reactive_power = get_reactive_power(value, DU),
+        rating = get_rating(value, DU),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        base_power = _get_base_power(value),
+        active_power_losses = get_active_power_losses(value, DU),
+    )
+end
+
+function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.SynchronousCondenser(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        base_power = _get_base_power(value),
+        active_power_losses = get_active_power_losses(value, DU) * _get_base_power(value),
+    )
+end

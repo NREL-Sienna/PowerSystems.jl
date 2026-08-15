@@ -205,20 +205,37 @@ function get_start_up(
     return IS.build_static_tuple(get_start_up(cost), device, start_time)
 end
 
-# ── STATIC ReserveDemandCurve GETTERS ──────────────────────────────────────
-
-get_variable_cost(service::ReserveDemandCurve; kwargs...) = get_variable(service)
-
-# ── TIME-SERIES ReserveDemandTimeSeriesCurve GETTERS ──────────────────────
+# ── ORDC variable-cost getters (any AbstractReserve, groups included) ────────
+# Static curve: return it. Time-series curve: resolve at `start_time`.
 
 function get_variable_cost(
-    service::ReserveDemandTimeSeriesCurve;
+    service::AbstractReserve;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
+    return _get_reserve_variable_cost(service, get_variable(service), start_time, len)
+end
+
+_get_reserve_variable_cost(
+    ::AbstractReserve,
+    variable::CostCurve{PiecewiseIncrementalCurve},
+    ::Union{Nothing, Dates.DateTime},
+    ::Union{Nothing, Int},
+) = variable
+
+function _get_reserve_variable_cost(
+    service::AbstractReserve,
+    variable::CostCurve{TimeSeriesPiecewiseIncrementalCurve},
+    start_time::Union{Nothing, Dates.DateTime},
+    len::Union{Nothing, Int},
+)
     isnothing(start_time) &&
-        throw(ArgumentError("start_time is required for ReserveDemandTimeSeriesCurve"))
-    return _resolve_ts_cost_curve(service, get_variable(service), start_time, len)
+        throw(
+            ArgumentError(
+                "start_time is required for a time-series-backed reserve demand curve",
+            ),
+        )
+    return _resolve_ts_cost_curve(service, variable, start_time, len)
 end
 
 # ── Helpers for FuelCurve and service bids (still use _process_get_cost) ──
@@ -545,11 +562,11 @@ function set_export_variable_cost!(
     return
 end
 
-# ── ReserveDemandCurve Setters ─────────────────────────────────────────────
+# ── ORDC Setters (any AbstractReserve, groups included) ────────────────────
 
 function set_variable_cost!(
     ::System,
-    component::ReserveDemandCurve,
+    component::AbstractReserve,
     data::CostCurve{PiecewiseIncrementalCurve, U},
 ) where {U <: IS.AbstractUnitSystem}
     name = get_name(component)

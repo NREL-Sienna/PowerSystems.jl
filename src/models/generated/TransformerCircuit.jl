@@ -39,11 +39,11 @@ A [`TwoWindingTransformer`](@ref) has one circuit; a [`ThreeWindingTransformer`]
 - `α::Float64`: (default: `0.0`) Initial condition of phase shift (radians) across this circuit
 - `r::Float64`: (default: `0.0`) Circuit resistance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent, validation range: `(-2, 4)`
 - `x::Float64`: (default: `0.0`) Circuit reactance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent, validation range: `(-2, 4)`
-- `control_objective::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Tap-changer / phase-shifter control objective (PSS/E COD). `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)
-- `regulated_bus_number::Int`: (default: `0`) Controlled bus number (PSS/E CONT; sign = regulation side)
-- `control_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Control band (PSS/E RMA/RMI): tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control
-- `controlled_quantity_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Controlled-quantity band (PSS/E VMA/VMI): pu voltage / Mvar / MW bounds depending on `control_objective`
-- `number_of_tap_positions::Int`: (default: `33`) Number of tap positions (PSS/E NTP)
+- `control_objective::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Tap-changer / phase-shifter control objective. `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)
+- `regulated_bus_number::Int`: (default: `0`) Controlled bus number; the sign indicates the regulation side
+- `control_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Control band: tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control
+- `controlled_quantity_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`
+- `number_of_tap_positions::Int`: (default: `33`) Number of tap positions
 - `rating::Union{Nothing, Float64}`: (default: `nothing`) Thermal rating (MVA) stored in device base per unit on `base_power`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
@@ -67,15 +67,15 @@ mutable struct TransformerCircuit <: DeviceParameter
     r::Float64
     "Circuit reactance in pu (device base on `base_power`) referenced to `base_voltage_primary`. For a two-winding transformer this is the series impedance; for a three-winding transformer it is the star-leg equivalent"
     x::Float64
-    "Tap-changer / phase-shifter control objective (PSS/E COD). `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)"
+    "Tap-changer / phase-shifter control objective. `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)"
     control_objective::TransformerControlObjective
-    "Controlled bus number (PSS/E CONT; sign = regulation side)"
+    "Controlled bus number; the sign indicates the regulation side"
     regulated_bus_number::Int
-    "Control band (PSS/E RMA/RMI): tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control"
+    "Control band: tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control"
     control_limits::MinMax
-    "Controlled-quantity band (PSS/E VMA/VMI): pu voltage / Mvar / MW bounds depending on `control_objective`"
+    "Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`"
     controlled_quantity_limits::MinMax
-    "Number of tap positions (PSS/E NTP)"
+    "Number of tap positions"
     number_of_tap_positions::Int
     "Thermal rating (MVA) stored in device base per unit on `base_power`"
     rating::Union{Nothing, Float64}

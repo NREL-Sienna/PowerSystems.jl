@@ -176,9 +176,7 @@ end
 
 @testset "EnergyReservoirStorage standing_loss serialization round-trip" begin
     sys, storage = _sys_with_storage(; standing_loss = 0.03)
-    path = joinpath(mktempdir(), "standing_loss_sys.json")
-    to_json(sys, path)
-    sys2 = System(path)
+    sys2 = roundtrip_system(sys)
     storage2 = get_component(EnergyReservoirStorage, sys2, "storage1")
     @test get_standing_loss(storage2, DU) ≈ 0.03
 end

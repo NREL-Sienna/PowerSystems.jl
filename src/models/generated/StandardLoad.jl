@@ -262,3 +262,94 @@ set_conformity!(value::StandardLoad, val) = value.conformity = val
 set_services!(value::StandardLoad, val) = value.services = val
 """Set [`StandardLoad`](@ref) `ext`."""
 set_ext!(value::StandardLoad, val) = value.ext = val
+
+
+function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return StandardLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        base_power = po.base_power,
+        constant_active_power = po.constant_active_power,
+        constant_reactive_power = po.constant_reactive_power,
+        impedance_active_power = po.impedance_active_power,
+        impedance_reactive_power = po.impedance_reactive_power,
+        current_active_power = po.current_active_power,
+        current_reactive_power = po.current_reactive_power,
+        max_constant_active_power = po.max_constant_active_power,
+        max_constant_reactive_power = po.max_constant_reactive_power,
+        max_impedance_active_power = po.max_impedance_active_power,
+        max_impedance_reactive_power = po.max_impedance_reactive_power,
+        max_current_active_power = po.max_current_active_power,
+        max_current_reactive_power = po.max_current_reactive_power,
+        conformity = LoadConformity(po.conformity),
+    )
+end
+
+function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
+    return StandardLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        base_power = po.base_power,
+        constant_active_power = po.constant_active_power / po.base_power,
+        constant_reactive_power = po.constant_reactive_power / po.base_power,
+        impedance_active_power = po.impedance_active_power / po.base_power,
+        impedance_reactive_power = po.impedance_reactive_power / po.base_power,
+        current_active_power = po.current_active_power / po.base_power,
+        current_reactive_power = po.current_reactive_power / po.base_power,
+        max_constant_active_power = po.max_constant_active_power / po.base_power,
+        max_constant_reactive_power = po.max_constant_reactive_power / po.base_power,
+        max_impedance_active_power = po.max_impedance_active_power / po.base_power,
+        max_impedance_reactive_power = po.max_impedance_reactive_power / po.base_power,
+        max_current_active_power = po.max_current_active_power / po.base_power,
+        max_current_reactive_power = po.max_current_reactive_power / po.base_power,
+        conformity = LoadConformity(po.conformity),
+    )
+end
+
+function to_openapi(value::StandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.StandardLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        base_power = _get_base_power(value),
+        constant_active_power = get_constant_active_power(value, DU),
+        constant_reactive_power = get_constant_reactive_power(value, DU),
+        impedance_active_power = get_impedance_active_power(value, DU),
+        impedance_reactive_power = get_impedance_reactive_power(value, DU),
+        current_active_power = get_current_active_power(value, DU),
+        current_reactive_power = get_current_reactive_power(value, DU),
+        max_constant_active_power = get_max_constant_active_power(value, DU),
+        max_constant_reactive_power = get_max_constant_reactive_power(value, DU),
+        max_impedance_active_power = get_max_impedance_active_power(value, DU),
+        max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU),
+        max_current_active_power = get_max_current_active_power(value, DU),
+        max_current_reactive_power = get_max_current_reactive_power(value, DU),
+        conformity = string(get_conformity(value)),
+    )
+end
+
+function to_openapi(value::StandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.StandardLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        base_power = _get_base_power(value),
+        constant_active_power = get_constant_active_power(value, DU) * _get_base_power(value),
+        constant_reactive_power = get_constant_reactive_power(value, DU) * _get_base_power(value),
+        impedance_active_power = get_impedance_active_power(value, DU) * _get_base_power(value),
+        impedance_reactive_power = get_impedance_reactive_power(value, DU) * _get_base_power(value),
+        current_active_power = get_current_active_power(value, DU) * _get_base_power(value),
+        current_reactive_power = get_current_reactive_power(value, DU) * _get_base_power(value),
+        max_constant_active_power = get_max_constant_active_power(value, DU) * _get_base_power(value),
+        max_constant_reactive_power = get_max_constant_reactive_power(value, DU) * _get_base_power(value),
+        max_impedance_active_power = get_max_impedance_active_power(value, DU) * _get_base_power(value),
+        max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU) * _get_base_power(value),
+        max_current_active_power = get_max_current_active_power(value, DU) * _get_base_power(value),
+        max_current_reactive_power = get_max_current_reactive_power(value, DU) * _get_base_power(value),
+        conformity = string(get_conformity(value)),
+    )
+end

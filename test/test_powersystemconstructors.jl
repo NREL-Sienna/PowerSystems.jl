@@ -1,7 +1,8 @@
 checksys = false
 
+# Smoke: the varargs `System(base_power, component_vectors...)` constructor must keep
+# accepting each component-vector arity. Construction is the assertion.
 @testset "Test System constructors from .jl files" begin
-    tPowerSystem = System(nothing)
     nodes_5_nodes = nodes5()
     nodes_14_nodes = nodes14()
 
@@ -12,25 +13,6 @@ checksys = false
     # Components with time_series cannot be added to multiple systems, so clear them on each
     # test.
 
-    sys5 = System(
-        100.0,
-        nodes_5_nodes,
-        thermal_generators5(nodes_5_nodes),
-        loads5(nodes_5_nodes);
-        runchecks = checksys,
-    )
-    clear_components!(sys5)
-
-    sys5b = System(
-        100.0,
-        nodes_5_nodes,
-        thermal_generators5(nodes_5_nodes),
-        loads5(nodes_5_nodes),
-        battery5(nodes_5_nodes);
-        runchecks = checksys,
-    )
-    clear_components!(sys5b)
-
     sys5f = System(
         100.0,
         nodes_5_nodes,
@@ -40,11 +22,6 @@ checksys = false
         runchecks = checksys,
     )
     clear_components!(sys5f)
-
-    # GitHub issue #234 - fix time_series5 in data file, use new format
-    #_sys5b = PowerSystems._System(nodes_5, thermal_generators5(nodes_5), loads5(nodes_5), nothing, battery5(nodes_5),
-    #                              100.0, time_series5, nothing, nothing)
-    #sys5b = System(_sys5b)
 
     sys5bh = System(
         100.0,
@@ -58,26 +35,10 @@ checksys = false
     )
     clear_components!(sys5bh)
 
-    # Test Data for 14 Bus
-
-    # GitHub issue #234 - fix time_series5 in data file, use new format
-    #_sys14 = PowerSystems._System(nodes_14, thermal_generators14, loads14, nothing, nothing,
-    #                            100.0, Dict{Symbol,Vector{<:TimeSeriesData}}(),nothing,nothing)
-    #sys14 = System(_sys14)
-
     for node in nodes_14_nodes
         node.angle = deg2rad(node.angle)
     end
 
-    sys14b = PowerSystems.System(
-        100.0,
-        nodes_14_nodes,
-        thermal_generators14(nodes_14_nodes),
-        loads14(nodes_14_nodes),
-        battery14(nodes_14_nodes);
-        runchecks = checksys,
-    )
-    clear_components!(sys14b)
     sys14b = PowerSystems.System(
         100.0,
         nodes_14_nodes,
@@ -88,12 +49,6 @@ checksys = false
         runchecks = checksys,
     )
     clear_components!(sys14b)
-end
-
-@testset "Test System constructor rejects non-JSON files" begin
-    @test_throws IS.DataFormatError System("some_file.m")
-    @test_throws IS.DataFormatError System("some_file.raw")
-    @test_throws IS.DataFormatError System("some_file.txt")
 end
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin

@@ -115,25 +115,6 @@ function FACTSControlDevice(
     )
 end
 
-"""Allows construction of a reserve from an iterator."""
-function ConstantReserve(
-    name,
-    contributingdevices::IS.FlattenIteratorWrapper,
-    timeframe,
-    requirement,
-    time_series,
-    internal,
-)
-    return ConstantReserve(
-        name,
-        collect(contributingdevices),
-        timeframe,
-        requirement,
-        time_series,
-        internal,
-    )
-end
-
 """Allows construction of a EnergyReservoirStorage without the specification of a cost."""
 function EnergyReservoirStorage(
     name::AbstractString,

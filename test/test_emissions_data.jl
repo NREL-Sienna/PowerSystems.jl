@@ -382,11 +382,8 @@
             add_supplemental_attribute!(sys, t2, co2)
         end
 
-        mktempdir() do path
-            json_path = joinpath(path, "test_emissions.json")
-            to_json(sys, json_path)
-
-            sys2 = System(json_path)
+        begin
+            sys2 = roundtrip_system(sys)
             t1_name = get_name(t1)
             t2_name = get_name(t2)
             t1_2 = get_component(ThermalStandard, sys2, t1_name)
@@ -447,11 +444,8 @@
             add_supplemental_attribute!(sys, t2, nox)
         end
 
-        mktempdir() do path
-            json_path = joinpath(path, "test_emissions_curves.json")
-            to_json(sys, json_path)
-
-            sys2 = System(json_path)
+        begin
+            sys2 = roundtrip_system(sys)
             t1_name = get_name(t1)
             t2_name = get_name(t2)
             t1_2 = get_component(ThermalStandard, sys2, t1_name)
