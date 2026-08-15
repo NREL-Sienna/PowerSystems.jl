@@ -827,16 +827,22 @@ end
 # on the PSY side (its docstring gives the constant term in physical MW directly) and passes
 # through unconverted in both methods.
 
+# A `oneOf` field holds its member wrapped only after deserialization; a document built in
+# memory assigns the member directly. Unwrap by dispatch, the way `convert_cost` does
+# (`cost_conversion.jl`), so both shapes read the same.
+_unwrap_oneof(x::OpenAPI.OneOfAPIModel) = _unwrap_oneof(x.value)
+_unwrap_oneof(x) = x
+
 _linear_curve_from_function_data(fd::PC.LinearFunctionData) =
     LinearCurve(fd.proportional_term, fd.constant_term)
 _linear_curve_from_function_data(fd) =
     error("unmapped TwoTerminalLoss FunctionData variant: $(typeof(fd))")
 
 _hvdc_loss_curve(c::PC.InputOutputCurve) =
-    _linear_curve_from_function_data(c.function_data.value)
+    _linear_curve_from_function_data(_unwrap_oneof(c.function_data))
 _hvdc_loss_curve(c) = error("unmapped TwoTerminalLoss variant: $(typeof(c))")
 
-_hvdc_loss(l::PC.TwoTerminalLoss) = _hvdc_loss_curve(l.value)
+_hvdc_loss(l::PC.TwoTerminalLoss) = _hvdc_loss_curve(_unwrap_oneof(l))
 
 function from_openapi(
     po::PO.TwoTerminalGenericHVDCLine,
