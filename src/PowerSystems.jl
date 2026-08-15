@@ -21,6 +21,7 @@ export AreaInterchange
 export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
+export DataSource
 export get_geo_json
 export PowerPlant
 export ThermalPowerPlant
@@ -742,6 +743,9 @@ import InfrastructureSystems:
     InvalidRange,
     InvalidValue,
     GeographicInfo,
+    DataSource,
+    from_openapi,
+    to_openapi,
     get_geo_json,
     copy_time_series!,
     get_available,

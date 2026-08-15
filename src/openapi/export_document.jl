@@ -102,8 +102,12 @@ function to_openapi(frac::CombinedCycleFractional, refs::OpenAPIRefs)
     )
 end
 
+# The InfrastructureSystems-owned attributes: IS holds the field mapping and takes the id
+# directly, so these resolve it from `refs` and delegate.
 to_openapi(geo::GeographicInfo, refs::OpenAPIRefs) =
-    PC.GeographicInfo(; id = component_id(refs, geo), geo_json = get_geo_json(geo))
+    to_openapi(geo, component_id(refs, geo))
+to_openapi(ds::DataSource, refs::OpenAPIRefs) =
+    to_openapi(ds, component_id(refs, ds))
 
 function to_openapi(attr::ImpedanceCorrectionData, refs::OpenAPIRefs)
     return PO.ImpedanceCorrectionData(;

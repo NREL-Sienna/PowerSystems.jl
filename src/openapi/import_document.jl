@@ -683,8 +683,12 @@ function from_openapi(po::PO.CombinedCycleFractional, ::OpenAPIRefs)
     )
 end
 
-from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) =
-    GeographicInfo(; geo_json = po.geo_json)
+# `GeographicInfo` and `DataSource` are InfrastructureSystems types and their converters live
+# there, taking no `OpenAPIRefs` — that registry carries the document's `unit_system` and
+# `base_power`, which IS has no notion of. These two methods only reconcile the arity the
+# attribute walk calls with, so IS stays the single owner of the field mapping.
+from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) = from_openapi(po)
+from_openapi(po::PC.DataSource, ::OpenAPIRefs) = from_openapi(po)
 
 """`table_number`/`transformer_winding`/`transformer_control_mode` carry no unit-bearing
 fields — a row number and two enum discriminators. `impedance_correction_curve` reuses

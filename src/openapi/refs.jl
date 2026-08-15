@@ -1,12 +1,7 @@
-"""
-Convert an OpenAPI-model (PO) instance of `T` into the matching PSY component or value type.
-"""
-function from_openapi end
-
-"""
-Convert a PSY component or value into its OpenAPI-model (PO) representation.
-"""
-function to_openapi end
+# `from_openapi`/`to_openapi` are declared in InfrastructureSystems and imported in
+# PowerSystems.jl, not declared here: IS owns converters for its own supplemental attributes
+# (`GeographicInfo`, `DataSource`), so the generic functions have to live at the layer both
+# packages can extend. The methods below and throughout src/openapi/ extend them.
 
 """
 $(TYPEDEF)
