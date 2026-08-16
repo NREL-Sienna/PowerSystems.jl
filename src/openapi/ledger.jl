@@ -13,13 +13,13 @@
 const OPENAPI_LEDGER_KEY = "_openapi_ledger"
 
 """
-Whether `x` carries its own UUID and belongs in the id⇄UUID ledger.
+Whether `x` carries an id of its own, and so can supply the document id it is exported under.
 
 `TransformerCircuit` is embedded in its owning transformer and has no `internal` field, so no
-UUID — but it is still registered in `OpenAPIRefs`, and must be skipped rather than error.
+id — but it is still registered in `OpenAPIRefs`, and must be skipped rather than error.
 """
-_has_own_uuid(::Any) = true
-_has_own_uuid(::TransformerCircuit) = false
+_has_own_id(::Any) = true
+_has_own_id(::TransformerCircuit) = false
 
 """
 Persist `refs`' id⇄component registry and unit system into `sys`'s `ext` so a later
@@ -35,7 +35,7 @@ function store_ledger!(sys::System, refs::OpenAPIRefs)
     id_to_uuid = Dict{String, Int}(
         string(id) => IS.get_id(component)
         for (id, component) in refs.by_id
-        if _has_own_uuid(component) && component isa Component
+        if _has_own_id(component) && component isa Component
     )
     get_ext(sys)[OPENAPI_LEDGER_KEY] = Dict{String, Any}(
         "unit_system" => get_unit_system(refs),

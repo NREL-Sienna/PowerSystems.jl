@@ -1172,7 +1172,7 @@ Get the component by integer id.
 IS.get_component(sys::System, id::Int) = IS.get_component(sys.data, id)
 
 """
-Change the UUID of a component.
+Assign a new id to a component, updating every reference to its old one.
 """
 IS.assign_new_id!(sys::System, x::Component) = IS.assign_new_id!(sys.data, x)
 
@@ -1769,7 +1769,7 @@ end
 
 """
 Reclaim the space that removed time series left behind, returning an
-`InfrastructureSystems.CompactionReport` (`slots_reclaimed`, `feature_sets_reclaimed`,
+`InfraStore.CompactionReport` (`slots_reclaimed`, `feature_sets_reclaimed`,
 `timestamp_sets_reclaimed`, `bytes_reclaimed`).
 
 HDF5 cannot hand freed space back in place, so removing time series — including
@@ -1898,13 +1898,13 @@ function add_supplemental_attribute!(
     outage::Outage,
 )
     if get_runchecks(sys)
-        for uuid in get_monitored_components(outage)
-            comp = IS.get_component(sys, uuid)  # throws ArgumentError on miss
+        for id in get_monitored_components(outage)
+            comp = IS.get_component(sys, id)  # throws ArgumentError on miss
             if !(comp isa Device)
                 throw(
                     ArgumentError(
-                        "monitored_components on $(typeof(outage)) references UUID " *
-                        "$(uuid), which resolves to $(typeof(comp)); only " *
+                        "monitored_components on $(typeof(outage)) references id " *
+                        "$(id), which resolves to $(typeof(comp)); only " *
                         "Device subtypes are allowed",
                     ),
                 )

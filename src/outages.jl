@@ -9,7 +9,7 @@ Concrete subtypes include [`GeometricDistributionForcedOutage`](@ref),
 Subtypes are expected to provide the following fields, or override the matching
 accessors via multiple dispatch:
 
-- `monitored_components::Set{Int}` — UUIDs of devices whose
+- `monitored_components::Set{Int}` — ids of devices whose
   post-contingency state should be modeled. The default
   [`get_monitored_components`](@ref) reads `value.monitored_components`; override
   it if your subtype does not carry the field directly.
@@ -118,7 +118,7 @@ series.
 # Arguments
 - `mean_time_to_recovery::Float64`: Time elapsed to recovery after a failure, in minutes.
 - `outage_transition_probability::Float64`: Characterizes the probability of failure (1 - p) in the geometric distribution.
-- `monitored_components::Set{Int}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
+- `monitored_components::Set{Int}`: ids of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct GeometricDistributionForcedOutage <: UnplannedOutage
@@ -165,7 +165,7 @@ Attribute that contains information regarding planned outages.
 
 # Arguments
 - `outage_schedule::String`: String name of the time series used for the scheduled outages
-- `monitored_components::Set{Int}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
+- `monitored_components::Set{Int}`: ids of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct PlannedOutage <: Outage
@@ -205,7 +205,7 @@ The time series data for fixed outages can be obtained from the simulation of a 
 
 # Arguments
 - `outage_status::Float64`: The forced outage status in the model. 1 represents outaged and 0 represents available.
-- `monitored_components::Set{Int}`: UUIDs of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
+- `monitored_components::Set{Int}`: ids of devices whose post-contingency state should be modeled when this outage occurs. Empty by default; semantics of an empty set are decided by the downstream consumer.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct FixedForcedOutage <: UnplannedOutage

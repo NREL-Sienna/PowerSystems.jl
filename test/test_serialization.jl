@@ -1,6 +1,8 @@
 @testset "Test JSON serialization of RTS data with immutable time series" begin
-    sys =
-        PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; time_series_read_only = true)
+    # Built writable: the builder adds time series and then transforms them, and a
+    # transform deletes the derived forecasts before re-deriving them, which a read-only
+    # store rejects. It is the deserialized system that this covers being immutable.
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     sys2, result = validate_serialization(sys; time_series_read_only = true)
     @test result
     @test_throws ArgumentError clear_time_series!(sys2)
@@ -31,7 +33,7 @@ end
     @test result
 end
 
-@testset "Test JSON serialization of StaticGroupReserve" begin
+@testset "Test JSON serialization of GroupReserve" begin
     sys = System(100.0)
     devices = []
     for i in 1:2
@@ -48,10 +50,10 @@ end
         push!(devices, gen)
     end
 
-    service = ConstantReserve{ReserveDown}(nothing)
+    service = OnlineReserve{ReserveDown}(nothing)
     add_service!(sys, service, devices)
 
-    groupservice = ConstantReserveGroup{ReserveDown}(nothing)
+    groupservice = GroupReserve{ReserveDown}(nothing)
     add_service!(sys, groupservice)
     members = Vector{Service}()
     push!(members, service)
@@ -97,7 +99,7 @@ end
         add_component!(sys, gen)
         ta = TimeSeries.TimeArray(dates, data)
         power_units = IS.NaturalUnit()
-        service = ConstantReserve{ReserveDown}(;
+        service = OnlineReserve{ReserveDown}(;
             name = "init_$i",
             available = false,
             time_frame = 0.0,
@@ -122,7 +124,9 @@ end
     @test result
 end
 
-@testset "Test JSON serialization of ReserveDemandCurve" begin
+# The standalone `ReserveDemandCurve` was retired; an ORDC is now the reserve's own
+# `variable`, so this covers a reserve carrying one.
+@testset "Test JSON serialization of a reserve with a demand curve" begin
     sys = System(100.0)
     devices = []
     for i in 1:2
@@ -142,7 +146,7 @@ end
     cc = CostCurve(
         PiecewiseIncrementalCurve(0.0, [0.0, 100.0, 200.0], [25.0, 30.0]),
     )
-    service = ReserveDemandCurve{ReserveDown}(;
+    service = OnlineReserve{ReserveDown}(;
         variable = cc,
         name = "init",
         available = false,
@@ -297,12 +301,12 @@ end
             ta_vals = TimeSeries.values(ta)
             @test get_time_series_values(
                 gen2,
-                ts1b,
-                start_time = initial_time;
+                ts1b;
+                start_time = initial_time,
             ) == ta_vals
             @test get_time_series_values(
                 gen2,
-                ts2b,
+                ts2b;
                 start_time = initial_time,
             ) == ta_vals
         end

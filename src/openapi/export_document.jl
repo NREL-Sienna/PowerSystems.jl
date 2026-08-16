@@ -16,20 +16,25 @@
 # sqlite_load.jl. None of these embed unit-converted fields, so unlike the per-component
 # exporters they take no unit-system argument.
 
-"""Resolve monitored-component UUIDs (an `Outage`'s own storage) back to document ids.
+"""Resolve monitored-component ids (an `Outage`'s own storage) to document ids.
 Empty means no association and reverses to `nothing`, the inverse of
-`_monitored_component_uuids`'s own `nothing` -> empty-vector default. The uuid → id map is
-rebuilt from `refs` per call rather than threaded through every attribute converter's
-signature; outage attributes are rare enough that the O(components) rebuild does not
-matter."""
-function _monitored_component_ids(refs::OpenAPIRefs, uuids)
-    if isempty(uuids)
+`_monitored_component_uuids`'s own `nothing` -> empty-vector default.
+
+An `Outage` stores the monitored components' IS ids, and `_export_id!` gives every component
+that has an id of its own that same id in the document, so this is the identity on ids. It
+still resolves each one through `refs` rather than passing it straight through: an id naming
+something the document does not carry would otherwise be written as a dangling reference,
+and only the reader would find out."""
+function _monitored_component_ids(refs::OpenAPIRefs, ids)
+    if isempty(ids)
         return nothing
     end
-    uuid_to_id = Dict{Base.UUID, Int}(
-        IS.get_uuid(c) => id for (id, c) in refs.by_id if _has_own_uuid(c)
-    )
-    return Int[uuid_to_id[u] for u in uuids]
+    document_ids = Int[]
+    for id in ids
+        refs[Int(id)]  # errors when the document carries no such component
+        push!(document_ids, Int(id))
+    end
+    return document_ids
 end
 
 function to_openapi(attr::EmissionsData, refs::OpenAPIRefs)
@@ -205,14 +210,33 @@ end
 # `from_openapi`-built System reproduces its original document ids anyway, since import sets
 # each component's id to its document id.
 #
-# `TransformerCircuit` has no id of its own (`_has_own_uuid` false — it is embedded in its
+# `TransformerCircuit` has no id of its own (`_has_own_id` false — it is embedded in its
 # owning transformer), so it draws from a counter that starts above every component id.
+
+"""
+The subcomponents a `HybridSystem` owns.
+
+`add_component!(sys, hybrid)` moves them out of the System's own enumeration, so a
+`get_components` walk never sees them — but the hybrid exports each one by id, so they have
+to be registered and converted as components in their own right or the reference dangles.
+All four subcomponent types are planned before `HybridSystem`, so they are registered by the
+time the hybrid is converted.
+"""
+_hybrid_subcomponents(sys::System) = (
+    sub for hybrid in get_components(HybridSystem, sys) for
+    sub in get_subcomponents(hybrid)
+)
 
 """Enumerate the live instances of a `DOCUMENT_PLAN` type. `TransformerCircuit` is a
 `DeviceParameter` embedded in its owning transformer, never a standalone System component,
 so it enumerates through the owners — both `TwoWindingTransformer` (one circuit) and
-`ThreeWindingTransformer` (three, via `get_circuits`)."""
-_plan_components(sys::System, ::Type{T}) where {T} = get_components(T, sys)
+`ThreeWindingTransformer` (three, via `get_circuits`). `HybridSystem` subcomponents are
+owned rather than embedded, but are equally invisible to `get_components`, so they are
+folded back in per type."""
+_plan_components(sys::System, ::Type{T}) where {T} = Iterators.flatten((
+    get_components(T, sys),
+    (sub for sub in _hybrid_subcomponents(sys) if sub isa T),
+))
 function _plan_components(sys::System, ::Type{TransformerCircuit})
     two_winding = (get_circuit(twt) for twt in get_components(TwoWindingTransformer, sys))
     three_winding = (
@@ -223,9 +247,9 @@ function _plan_components(sys::System, ::Type{TransformerCircuit})
 end
 
 """The component's own id, or the next fresh one for a `TransformerCircuit`, which has
-none (`_has_own_uuid` false)."""
+none (`_has_own_id` false)."""
 function _export_id!(next_id::Base.RefValue{Int}, component)
-    _has_own_uuid(component) && return IS.get_id(component)
+    _has_own_id(component) && return IS.get_id(component)
     fresh = next_id[]
     next_id[] += 1
     return fresh
@@ -239,7 +263,7 @@ function _build_export_refs(sys::System, unit_system_string::AbstractString)
     highest = 0
     for (_po_type, psy_type, _key, _addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
-            _has_own_uuid(c) && (highest = max(highest, IS.get_id(c)))
+            _has_own_id(c) && (highest = max(highest, IS.get_id(c)))
         end
     end
     next_id = Ref(highest + 1)
@@ -470,7 +494,7 @@ function _export_supplemental_attributes(
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
     attr_ids = Dict{Int, Int}()
     for (entity_id, entity) in sorted_refs
-        _has_own_uuid(entity) || continue
+        _has_own_id(entity) || continue
         for attr in get_supplemental_attributes(entity)
             attr_uuid = IS.get_id(attr)
             attr_id = get!(attr_ids, attr_uuid) do
@@ -651,7 +675,7 @@ function _export_all_time_series(
     )
     _check_time_series_ids_match(sorted_refs)
     for (entity_id, entity) in sorted_refs
-        _has_own_uuid(entity) || continue
+        _has_own_id(entity) || continue
         IS.supports_time_series(entity) || continue
         has_time_series(entity) || continue
         for key in get_time_series_keys(entity)
