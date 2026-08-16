@@ -1,12 +1,7 @@
-"""
-Convert an OpenAPI-model (PO) instance of `T` into the matching PSY component or value type.
-"""
-function from_openapi end
-
-"""
-Convert a PSY component or value into its OpenAPI-model (PO) representation.
-"""
-function to_openapi end
+# `from_openapi`/`to_openapi` are declared in InfrastructureSystems and imported in
+# PowerSystems.jl, not declared here: IS owns converters for its own supplemental attributes
+# (`GeographicInfo`, `DataSource`), so the generic functions have to live at the layer both
+# packages can extend. The methods below and throughout src/openapi/ extend them.
 
 """
 $(TYPEDEF)
@@ -75,6 +70,17 @@ absent relationship, so `nothing` in means `nothing` out. A stated reference goe
 resolve_ref(::OpenAPIRefs, ::Nothing) = nothing
 resolve_ref(refs::OpenAPIRefs, id::Integer) = refs[id]
 
+"""
+Resolve a reference whose PSY type the descriptor already states, asserting it on the way
+out. `by_id` is a `Dict{Int, Any}` — it holds every converted type — so the 2-arg form
+returns `Any` and every generated converter that used it handed the constructor an
+untyped value. The assert costs one type check and makes a document that points a `bus`
+field at, say, an `Arc` fail there, naming both types, instead of deeper inside the
+component constructor.
+"""
+resolve_ref(::OpenAPIRefs, ::Nothing, ::Type) = nothing
+resolve_ref(refs::OpenAPIRefs, id::Integer, ::Type{T}) where {T} = refs[id]::T
+
 """Whether `id` has a component registered."""
 has_ref(refs::OpenAPIRefs, id::Integer) = haskey(refs.by_id, Int(id))
 
@@ -97,6 +103,3 @@ end
 
 """Whether `component` has a registered id."""
 has_component_id(refs::OpenAPIRefs, component) = haskey(refs.id_by_component, component)
-
-"""String → enum lookup table for `T`, matching the document's exact spelling."""
-_enum_table(::Type{T}) where {T} = Dict{String, T}(string(m) => m for m in instances(T))

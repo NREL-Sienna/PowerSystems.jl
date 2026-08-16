@@ -228,8 +228,8 @@ end
     reserves = (
         OnlineReserve{ReserveUp}(nothing),
         OnlineReserve{ReserveDown}(nothing),
-        ReserveDemandCurve{ReserveUp}(nothing),
-        ReserveDemandCurve{ReserveDown}(nothing),
+        OfflineReserve(nothing),
+        GroupReserve{ReserveUp}(nothing),
     )
 
     for reserve in reserves
@@ -237,27 +237,26 @@ end
     end
 
     @test length(get_components(Service, sys)) == length(reserves)
-    @test length(get_components(Reserve, sys)) == length(reserves)
+    # The whole reserve tree, groups included.
+    @test length(get_components(AbstractReserve, sys)) == length(reserves)
+    # Direction-parameterized spinning products only.
+    @test length(get_components(Reserve, sys)) == 2
     @test length(get_components(OnlineReserve, sys)) == 2
     @test length(get_components(OnlineReserve{ReserveUp}, sys)) == 1
     @test length(get_components(OnlineReserve{ReserveDown}, sys)) == 1
-    @test length(get_components(ReserveDemandCurve{ReserveUp}, sys)) == 1
-    @test length(get_components(ReserveDemandCurve{ReserveDown}, sys)) == 1
+    @test length(get_components(OfflineReserve, sys)) == 1
+    @test length(get_components(GroupReserve{ReserveUp}, sys)) == 1
 end
 
 @testset "Test struct type collections" begin
-    concrete_types = IS.get_all_concrete_subtypes(Service)
-    reserve_types = InteractiveUtils.subtypes(Reserve)
-    reserve_parametric_types = InteractiveUtils.subtypes(ReserveDirection)
-
-    actual_count = length(concrete_types)
-    for reserve in reserve_types
-        for parametric in reserve_parametric_types
-            actual_count += 1
-        end
-    end
-    # 11: concrete Service subtypes + (Reserve subtypes × ReserveDirection subtypes)
-    @test 11 == actual_count
+    # Lock the reserve tree's shape: membership assertions instead of a count so a
+    # failure names the type that moved.
+    @test Set(IS.get_all_concrete_subtypes(Service)) == Set([AGC, TransmissionInterface])
+    @test Set(InteractiveUtils.subtypes(AbstractReserve)) ==
+          Set([Reserve, OfflineReserve, GroupReserve])
+    @test InteractiveUtils.subtypes(Reserve) == [OnlineReserve]
+    @test Set(InteractiveUtils.subtypes(ReserveDirection)) ==
+          Set([ReserveUp, ReserveDown, ReserveSymmetric])
 end
 
 @testset "Test GroupReserve" begin
@@ -301,6 +300,39 @@ end
     # check if expected contributing services is iqual to contributing services
     sort!(contributing_services; by = x -> get_name(x))
     @test contributing_services == expected_contributing_services
+end
+
+@testset "Test GroupReserve JSON round trip resolves member UUIDs" begin
+    # GroupReserve references its contributing services by UUID, so deserialization must
+    # order it after every other service despite it being an AbstractReserve.
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+
+    sub_a = OnlineReserve{ReserveUp}(;
+        name = "SUB_A", available = true, time_frame = 10.0, requirement = 0.0)
+    sub_b = OnlineReserve{ReserveUp}(;
+        name = "SUB_B", available = true, time_frame = 10.0, requirement = 0.0)
+    add_service!(sys, sub_a, [gen])
+    add_service!(sys, sub_b, [gen])
+    group = GroupReserve{ReserveUp}(;
+        name = "GROUP", available = true, requirement = 1.0,
+        contributing_services = Service[sub_a, sub_b])
+    add_service!(sys, group)
+
+    path = joinpath(mktempdir(), "group_roundtrip.json")
+    to_json(sys, path)
+    sys2 = System(path)
+    group2 = get_component(GroupReserve{ReserveUp}, sys2, "GROUP")
+    @test !isnothing(group2)
+    @test sort!(get_name.(get_contributing_services(group2))) == ["SUB_A", "SUB_B"]
 end
 
 @testset "Test GroupReserve errors" begin

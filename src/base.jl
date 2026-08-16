@@ -2452,7 +2452,12 @@ function deserialize_components!(sys::System, raw)
     # Static injection devices can contain dynamic injection devices.
     # StaticInjectionSubsystem instances have StaticInjection subcomponents.
     deserialize_and_add!(; include_types = [Area, LoadZone])
-    deserialize_and_add!(; include_types = [AbstractReserve])
+    # GroupReserve is an AbstractReserve but references its contributing services by UUID,
+    # so it waits for its dedicated stage below, after every other service exists.
+    deserialize_and_add!(;
+        include_types = [AbstractReserve],
+        skip_types = [GroupReserve],
+    )
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;

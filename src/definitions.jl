@@ -158,13 +158,15 @@ IS.@scoped_enum(
     DISCRETE_REACTIVE_PLANT = 3,
     DISCRETE_REACTIVE_VSC = 4,
     DISCRETE_ADMITTANCE_REMOTE = 5,
+    DISCRETE_REACTIVE_FACTS = 6,
 )
 @doc"
 Control mode of a switched shunt. The enumerator maps the integer control-mode field of a
 switched-shunt record to a named mode: `FIXED` = 0, `DISCRETE_VOLTAGE` = 1,
 `CONTINUOUS_VOLTAGE` = 2, `DISCRETE_REACTIVE_PLANT` = 3, `DISCRETE_REACTIVE_VSC` = 4,
-`DISCRETE_ADMITTANCE_REMOTE` = 5; `UNDEFINED` = -99 when unset. The names describe each mode;
-consult your source data's own documentation for the precise definition of each control mode.
+`DISCRETE_ADMITTANCE_REMOTE` = 5, `DISCRETE_REACTIVE_FACTS` = 6; `UNDEFINED` = -99 when
+unset. The names describe each mode; consult your source data's own documentation for the
+precise definition of each control mode.
 " SwitchedAdmittanceControlMode
 
 IS.@scoped_enum(
@@ -406,7 +408,7 @@ IS.@scoped_enum(
     PROPANE = 14, # PG # Propane, gaseous
     SYNTHESIS_GAS_PETROLEUM_COKE = 15,  # SGP
     WASTE_OIL = 16,  # WO # including crude oil, liquid butane, liquid propane, naphtha, oil waste, re-refined motor oil, sludge oil, tar oil, or other petroleum-based liquid wastes
-    BLASTE_FURNACE_GAS = 17,  # BFG
+    BLAST_FURNACE_GAS = 17,  # BFG
     NATURAL_GAS = 18,  # NG    # Natural Gas
     OTHER_GAS = 19,  # OOG    # Other Gas and blast furnace gas
     NUCLEAR = 20,  # NUC # Nuclear Fission (Uranium, Plutonium, Thorium)
@@ -422,7 +424,7 @@ IS.@scoped_enum(
     OTHER_BIOMASS_GAS = 31, # OBG # includes digester gas, methane, and other biomass gasses
     GEOTHERMAL = 32,  # GEO
     WASTE_HEAT = 33, # WH # WH should only be reported where the fuel source for the waste heat is undetermined, and for combined-cycle steam turbines that do not have supplemental firing.
-    TIREDERIVED_FUEL = 34, # TDF
+    TIRE_DERIVED_FUEL = 34, # TDF
     OTHER = 35,  # OTH
 )
 
@@ -483,13 +485,13 @@ based on their underlying technology and storage mechanism.
 " StorageTech
 
 IS.@scoped_enum(
-    PumpHydroStatus,
+    HydroPumpTurbineStatus,
     OFF = 0,
     GEN = 1,
     PUMP = -1,
 )
 @doc"
-PumpHydroStatus
+HydroPumpTurbineStatus
 
 Operating status of a pumped‑storage hydro unit.
 
@@ -501,7 +503,7 @@ Values
 Notes
 - The sign of the value reflects the net direction of active power (positive = generation, negative = pumping).
 - Intended for use in scheduling, dispatch, and state-tracking of pumped‑storage units.
-" PumpHydroStatus
+" HydroPumpTurbineStatus
 
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 

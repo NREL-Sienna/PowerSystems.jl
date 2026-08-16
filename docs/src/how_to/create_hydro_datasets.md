@@ -169,7 +169,7 @@ pump_turbine = HydroPumpTurbine(;
     base_power = 100.0,
     ramp_limits = (up = 20.0, down = 20.0),
     time_limits = nothing,
-    status = PSY.PumpHydroStatusModule.PumpHydroStatus.OFF,
+    status = PSY.HydroPumpTurbineStatusModule.HydroPumpTurbineStatus.OFF,
     time_at_status = 0.0,
     efficiency = (turbine = 0.9, pump = 0.85),
     transition_time = (turbine = 0.25, pump = 0.25),  # hours
@@ -258,7 +258,7 @@ Key fields specific to [`HydroPumpTurbine`](@ref):
 
   - `active_power_limits::MinMax`: Power limits for turbine (generation) mode
   - `active_power_limits_pump::MinMax`: Power limits for pump mode
-  - `status::PumpHydroStatus`: Operating status (`PumpHydroStatus.OFF`, `PumpHydroStatus.PUMP`, `PumpHydroStatus.GEN`)
+  - `status::HydroPumpTurbineStatus`: Operating status (`HydroPumpTurbineStatus.OFF`, `HydroPumpTurbineStatus.PUMP`, `HydroPumpTurbineStatus.GEN`)
   - `efficiency::TurbinePump`: Separate efficiencies for turbine and pump modes `(turbine = 0.9, pump = 0.85)`
   - `transition_time::TurbinePump`: Time to switch modes `(turbine = 0.25, pump = 0.25)`
   - `minimum_time::TurbinePump`: Minimum operating time in each mode `(turbine = 1.0, pump = 1.0)`

@@ -264,12 +264,11 @@ set_services!(value::StandardLoad, val) = value.services = val
 set_ext!(value::StandardLoad, val) = value.ext = val
 
 
-
-function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return StandardLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         base_power = po.base_power,
         constant_active_power = po.constant_active_power,
         constant_reactive_power = po.constant_reactive_power,
@@ -283,15 +282,15 @@ function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseU
         max_impedance_reactive_power = po.max_impedance_reactive_power,
         max_current_active_power = po.max_current_active_power,
         max_current_reactive_power = po.max_current_reactive_power,
-        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        conformity = LoadConformity(po.conformity),
     )
 end
 
-function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return StandardLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         base_power = po.base_power,
         constant_active_power = po.constant_active_power / po.base_power,
         constant_reactive_power = po.constant_reactive_power / po.base_power,
@@ -305,7 +304,7 @@ function from_openapi(::Type{StandardLoad}, po, refs::OpenAPIRefs, ::NaturalUnit
         max_impedance_reactive_power = po.max_impedance_reactive_power / po.base_power,
         max_current_active_power = po.max_current_active_power / po.base_power,
         max_current_reactive_power = po.max_current_reactive_power / po.base_power,
-        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        conformity = LoadConformity(po.conformity),
     )
 end
 
@@ -328,7 +327,7 @@ function to_openapi(value::StandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU),
         max_current_active_power = get_max_current_active_power(value, DU),
         max_current_reactive_power = get_max_current_reactive_power(value, DU),
-        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = string(get_conformity(value)),
     )
 end
 
@@ -351,6 +350,6 @@ function to_openapi(value::StandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
         max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU) * _get_base_power(value),
         max_current_active_power = get_max_current_active_power(value, DU) * _get_base_power(value),
         max_current_reactive_power = get_max_current_reactive_power(value, DU) * _get_base_power(value),
-        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = string(get_conformity(value)),
     )
 end

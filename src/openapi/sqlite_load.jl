@@ -6,10 +6,11 @@
 # here — the sidecar store is adopted whole; see the time series note in import_document.jl.
 #
 # Reuses, rather than duplicates, import_document.jl's per-type attribute conversion
-# (`_attribute_from_openapi`), group-index attach dispatch (`_attach_attribute!`),
-# service-membership dispatch (`_attach_service_membership!`), and `has_ref`/`OpenAPIRefs`
-# from `refs.jl`. These are module-private helpers, but this file is `include`d into the same
-# `PowerSystems` module, so calling them is not an edit to the files that define them.
+# (the 2-arg `from_openapi(po, refs)` methods), group-index attach dispatch
+# (`_attach_attribute!`), service-membership dispatch (`_attach_service_membership!`), and
+# `has_ref`/`OpenAPIRefs` from `refs.jl`. These are module-private helpers, but this file is
+# `include`d into the same `PowerSystems` module, so calling them is not an edit to the files
+# that define them.
 
 """Loud error naming `id` when the document's declared `attribute_type` is absent or does
 not match `nameof(typeof(resolved))`."""
@@ -94,7 +95,7 @@ function load_supplemental_attribute_associations!(
             "unresolved attribute_id=$attribute_id (entity_id=$entity_id)",
         )
         attribute = get!(converted, attribute_id) do
-            built = _attribute_from_openapi(attribute_rows[attribute_id], refs)
+            built = from_openapi(attribute_rows[attribute_id], refs)
             _check_resolved_type_matches(built, assoc.attribute_type, attribute_id)
             refs[attribute_id] = built
             return built

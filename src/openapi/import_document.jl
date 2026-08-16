@@ -18,8 +18,17 @@ const DOCUMENT_PLAN = [
     (po_type = PO.Area, psy_type = Area, key = "Area", addable = true),
     (po_type = PO.LoadZone, psy_type = LoadZone, key = "LoadZone", addable = true),
     (po_type = PO.ACBus, psy_type = ACBus, key = "ACBus", addable = true),
+    (po_type = PO.DCBus, psy_type = DCBus, key = "DCBus", addable = true),
     (po_type = PO.Arc, psy_type = Arc, key = "Arc", addable = true),
     (po_type = PO.Line, psy_type = Line, key = "Line", addable = true),
+    (
+        po_type = PO.MonitoredLine, psy_type = MonitoredLine, key = "MonitoredLine",
+        addable = true,
+    ),
+    (
+        po_type = PO.GenericArcImpedance, psy_type = GenericArcImpedance,
+        key = "GenericArcImpedance", addable = true,
+    ),
     (
         po_type = PO.DiscreteControlledACBranch, psy_type = DiscreteControlledACBranch,
         key = "DiscreteControlledACBranch", addable = true,
@@ -47,6 +56,11 @@ const DOCUMENT_PLAN = [
         key = "ThermalStandard",
         addable = true,
     ),
+    (
+        po_type = PO.ThermalMultiStart, psy_type = ThermalMultiStart,
+        key = "ThermalMultiStart",
+        addable = true,
+    ),
     (po_type = PO.PowerLoad, psy_type = PowerLoad, key = "PowerLoad", addable = true),
     (
         po_type = PO.StandardLoad,
@@ -65,6 +79,16 @@ const DOCUMENT_PLAN = [
     (
         po_type = PO.ShiftablePowerLoad, psy_type = ShiftablePowerLoad,
         key = "ShiftablePowerLoad", addable = true,
+    ),
+    (po_type = PO.MotorLoad, psy_type = MotorLoad, key = "MotorLoad", addable = true),
+    (po_type = PO.Source, psy_type = Source, key = "Source", addable = true),
+    (
+        po_type = PO.InterconnectingConverter, psy_type = InterconnectingConverter,
+        key = "InterconnectingConverter", addable = true,
+    ),
+    (
+        po_type = PO.ExponentialLoad, psy_type = ExponentialLoad,
+        key = "ExponentialLoad", addable = true,
     ),
     (
         po_type = PO.FixedAdmittance, psy_type = FixedAdmittance,
@@ -94,6 +118,10 @@ const DOCUMENT_PLAN = [
         addable = true,
     ),
     (
+        po_type = PO.HydroPumpTurbine, psy_type = HydroPumpTurbine,
+        key = "HydroPumpTurbine", addable = true,
+    ),
+    (
         po_type = PO.RenewableDispatch, psy_type = RenewableDispatch,
         key = "RenewableDispatch", addable = true,
     ),
@@ -112,6 +140,10 @@ const DOCUMENT_PLAN = [
     (
         po_type = PO.TwoTerminalGenericHVDCLine, psy_type = TwoTerminalGenericHVDCLine,
         key = "TwoTerminalGenericHVDCLine", addable = true,
+    ),
+    (
+        po_type = PO.TModelHVDCLine, psy_type = TModelHVDCLine, key = "TModelHVDCLine",
+        addable = true,
     ),
     (
         po_type = PO.TwoTerminalLCCLine, psy_type = TwoTerminalLCCLine,
@@ -133,10 +165,17 @@ const DOCUMENT_PLAN = [
         po_type = PO.GroupReserve, psy_type = GroupReserve, key = "GroupReserve",
         addable = true,
     ),
+    # After every subcomponent it can reference (thermal, load, storage, renewable).
+    (
+        po_type = PO.HybridSystem, psy_type = HybridSystem, key = "HybridSystem",
+        addable = true,
+    ),
     (
         po_type = PO.TransmissionInterface, psy_type = TransmissionInterface,
         key = "TransmissionInterface", addable = true,
     ),
+    # After the reserves it regulates; membership arrives as service_associations rows.
+    (po_type = PO.AGC, psy_type = AGC, key = "AGC", addable = true),
 ]
 
 """
@@ -160,6 +199,17 @@ function _document_plan_keys(plan)
 end
 
 const DOCUMENT_PLAN_KEYS = _document_plan_keys(DOCUMENT_PLAN)
+
+# `from_openapi` dispatches on the PO type alone, so `psy_type` no longer reaches the
+# import call — its only remaining consumer is the `is_document_exportable` loop below.
+# Nothing at run time would notice an entry naming the wrong one, so the pairing is checked
+# in `test_openapi_document.jl` ("DOCUMENT_PLAN: converters match the declared pair"): both
+# that the converters exist in both directions and that `from_openapi` on the `po_type`
+# actually returns the `psy_type`.
+#
+# That check is deliberately a test rather than a load-time assertion. `generate_structs`
+# runs inside `PowerSystems`, so an assertion that fires on stale generated code would make
+# the module unloadable and take regeneration — the only way to fix it — down with it.
 
 """
 Whether a component type can be written to an OpenAPI document.
@@ -243,6 +293,14 @@ function _attach_service_membership!(entity::Service, group::GroupReserve, ::Sys
     return nothing
 end
 
+"""Reserve regulated by an `AGC`: same shape as `GroupReserve` above — `add_service!` has no
+overload for it either, and `AGC.reserves` has no schema field precisely because this
+membership is a `service_associations` row rather than an inline array."""
+function _attach_service_membership!(entity::Reserve, agc::AGC, ::System)
+    push!(get_reserves(agc), entity)
+    return nothing
+end
+
 function _attach_service_membership!(entity, service, ::System)
     error(
         "from_openapi(System, doc): unmapped service membership pair — entity=" *
@@ -268,25 +326,20 @@ end
 # Per-type converters below exist for every attribute PSY hand-writes a constructor for
 # AND that has a PO analogue: EmissionsData, GeometricDistributionForcedOutage,
 # FixedForcedOutage, PlannedOutage, ThermalPowerPlant, HydroPowerPlant,
-# RenewablePowerPlant, CombinedCycleBlock, CombinedCycleFractional, and the Core
-# GeographicInfo. `Substation` (`src/substation.jl`) has neither a schema nor a generated
-# PO model anywhere in SiennaSchemas/PowerOpenAPIModels — a real, reportable gap, not
-# something to invent a converter for.
+# RenewablePowerPlant, CombinedCycleBlock, CombinedCycleFractional, ImpedanceCorrectionData,
+# and the Core GeographicInfo. `Substation`'s converter pair lives next to its hand-written
+# struct in `src/substation.jl`.
 #
-# None of these embed unit-converted fields, so unlike the per-component converters they
-# take no `Val{unit_system}`; only the three `Outage` types need `refs`, to resolve
-# document-id `monitored_components` into the UUIDs PSY stores.
-
-const POLLUTANT_TYPE_FROM_STRING = _enum_table(PollutantType)
-const EMISSION_BASIS_FROM_STRING = _enum_table(EmissionBasis)
-const MASS_UNIT_FROM_STRING = _enum_table(MassUnit)
-const ENERGY_UNIT_FROM_STRING = _enum_table(EnergyUnit)
-const COMBINED_CYCLE_CONFIGURATION_FROM_STRING = _enum_table(CombinedCycleConfiguration)
-
-function _enum_from_string(table, s, field_name)
-    haskey(table, s) || error("from_openapi: unmapped $field_name=\"$s\"")
-    return table[s]
-end
+# Same shape as the generated converters: dispatch on the concrete PO value, not on a target
+# `::Type` or an `attribute_type` string — the document's flat `supplemental_attributes`
+# array carries no per-row type, but `PowerCoreOpenAPIModels` has already resolved each row
+# through `SupplementalAttributeAssociation.attribute_type` and its type registry, so the
+# type is known here and Julia's dispatch replaces what used to be a parallel string table
+# in this file. None of these embed unit-converted fields, so unlike the per-component
+# converters they take no `Val{unit_system}`. Every method takes `refs` so the attribute
+# walk (`load_supplemental_attribute_associations!` in sqlite_load.jl) can call one
+# signature uniformly; only the three `Outage` types read it, to resolve document-id
+# `monitored_components` into the UUIDs PSY stores.
 
 """Resolve document ids to UUIDs for an `Outage`'s `monitored_components`; `nothing`
 means none declared and maps to an empty vector, matching the PSY constructors' own
@@ -298,33 +351,21 @@ function _monitored_component_uuids(refs::OpenAPIRefs, ids)
     return Int[IS.get_id(refs[Int(id)]) for id in ids]
 end
 
-function from_openapi(::Type{EmissionsData}, po::PO.EmissionsData)
+function from_openapi(po::PO.EmissionsData, ::OpenAPIRefs)
     return EmissionsData(;
         name = po.name,
-        pollutant = _enum_from_string(
-            POLLUTANT_TYPE_FROM_STRING,
-            po.pollutant,
-            "pollutant",
-        ),
+        pollutant = PollutantType(po.pollutant),
         emission_rate = convert_cost(po.emission_rate),
-        basis = _enum_from_string(EMISSION_BASIS_FROM_STRING, po.basis, "basis"),
+        basis = EmissionBasis(po.basis),
         start_up_adder = po.start_up_adder,
-        mass_unit = _enum_from_string(MASS_UNIT_FROM_STRING, po.mass_unit, "mass_unit"),
-        energy_unit = _enum_from_string(
-            ENERGY_UNIT_FROM_STRING,
-            po.energy_unit,
-            "energy_unit",
-        ),
+        mass_unit = MassUnit(po.mass_unit),
+        energy_unit = EnergyUnit(po.energy_unit),
         gwp = po.gwp,
         available = po.available,
     )
 end
 
-function from_openapi(
-    ::Type{GeometricDistributionForcedOutage},
-    po::PO.GeometricDistributionForcedOutage,
-    refs::OpenAPIRefs,
-)
+function from_openapi(po::PO.GeometricDistributionForcedOutage, refs::OpenAPIRefs)
     return GeometricDistributionForcedOutage(;
         mean_time_to_recovery = Float64(po.mean_time_to_recovery),
         outage_transition_probability = po.outage_transition_probability,
@@ -332,106 +373,65 @@ function from_openapi(
     )
 end
 
-function from_openapi(::Type{PlannedOutage}, po::PO.PlannedOutage, refs::OpenAPIRefs)
+function from_openapi(po::PO.PlannedOutage, refs::OpenAPIRefs)
     return PlannedOutage(;
         outage_schedule = po.outage_schedule,
         monitored_components = _monitored_component_uuids(refs, po.monitored_components),
     )
 end
 
-function from_openapi(
-    ::Type{FixedForcedOutage},
-    po::PO.FixedForcedOutage,
-    refs::OpenAPIRefs,
-)
+function from_openapi(po::PO.FixedForcedOutage, refs::OpenAPIRefs)
     return FixedForcedOutage(;
         outage_status = po.outage_status,
         monitored_components = _monitored_component_uuids(refs, po.monitored_components),
     )
 end
 
-from_openapi(::Type{ThermalPowerPlant}, po::PO.ThermalPowerPlant) =
+from_openapi(po::PO.ThermalPowerPlant, ::OpenAPIRefs) =
     ThermalPowerPlant(; name = po.name)
-from_openapi(::Type{HydroPowerPlant}, po::PO.HydroPowerPlant) =
+from_openapi(po::PO.HydroPowerPlant, ::OpenAPIRefs) =
     HydroPowerPlant(; name = po.name)
-from_openapi(::Type{RenewablePowerPlant}, po::PO.RenewablePowerPlant) =
+from_openapi(po::PO.RenewablePowerPlant, ::OpenAPIRefs) =
     RenewablePowerPlant(; name = po.name)
 
-function from_openapi(::Type{CombinedCycleBlock}, po::PO.CombinedCycleBlock)
+function from_openapi(po::PO.CombinedCycleBlock, ::OpenAPIRefs)
     return CombinedCycleBlock(;
         name = po.name,
-        configuration = _enum_from_string(
-            COMBINED_CYCLE_CONFIGURATION_FROM_STRING, po.configuration, "configuration",
-        ),
+        configuration = CombinedCycleConfiguration(po.configuration),
         heat_recovery_to_steam_factor = po.heat_recovery_to_steam_factor,
     )
 end
 
-function from_openapi(::Type{CombinedCycleFractional}, po::PO.CombinedCycleFractional)
+function from_openapi(po::PO.CombinedCycleFractional, ::OpenAPIRefs)
     return CombinedCycleFractional(;
         name = po.name,
-        configuration = _enum_from_string(
-            COMBINED_CYCLE_CONFIGURATION_FROM_STRING, po.configuration, "configuration",
-        ),
+        configuration = CombinedCycleConfiguration(po.configuration),
     )
 end
 
-from_openapi(::Type{GeographicInfo}, po::PC.GeographicInfo) =
-    GeographicInfo(; geo_json = po.geo_json)
-
-const WINDINGCATEGORY_FROM_STRING = _enum_table(WindingCategory)
-const IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING =
-    _enum_table(ImpedanceCorrectionTransformerControlMode)
+# `GeographicInfo` and `DataSource` are InfrastructureSystems types and their converters live
+# there, taking no `OpenAPIRefs` — that registry carries the document's `unit_system` and
+# `base_power`, which IS has no notion of. These two methods only reconcile the arity the
+# attribute walk calls with, so IS stays the single owner of the field mapping.
+from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) = from_openapi(po)
+from_openapi(po::PC.DataSource, ::OpenAPIRefs) = from_openapi(po)
 
 """`table_number`/`transformer_winding`/`transformer_control_mode` carry no unit-bearing
 fields — a row number and two enum discriminators. `impedance_correction_curve` reuses
 `convert_cost`, the same PO->PSY `PiecewiseLinearData` converter cost curves use."""
-from_openapi(::Type{ImpedanceCorrectionData}, po::PO.ImpedanceCorrectionData) =
+from_openapi(po::PO.ImpedanceCorrectionData, ::OpenAPIRefs) =
     ImpedanceCorrectionData(;
         table_number = po.table_number,
         impedance_correction_curve = convert_cost(po.impedance_correction_curve),
-        transformer_winding = WINDINGCATEGORY_FROM_STRING[po.transformer_winding],
-        transformer_control_mode = IMPEDANCECORRECTIONTRANSFORMERCONTROLMODE_FROM_STRING[po.transformer_control_mode],
+        transformer_winding = WindingCategory(po.transformer_winding),
+        transformer_control_mode = ImpedanceCorrectionTransformerControlMode(
+            po.transformer_control_mode,
+        ),
     )
 
-"""
-Convert one already-deserialized PO supplemental attribute to its PSY counterpart.
-
-Dispatches on the concrete PO type rather than looking up an `attribute_type` string: the
-document's flat `supplemental_attributes` array carries no per-row type, but
-`PowerCoreOpenAPIModels` has already resolved each row through
-`SupplementalAttributeAssociation.attribute_type` and its type registry, so the type is known
-here and Julia's own dispatch replaces what used to be a parallel string table in this file.
-
-Only the three `Outage` types need `refs`, to resolve `monitored_components`; the rest ignore
-it, so every method takes the same shape and the arity split does not leak into the caller.
-"""
-_attribute_from_openapi(po::PO.EmissionsData, ::OpenAPIRefs) =
-    from_openapi(EmissionsData, po)
-_attribute_from_openapi(po::PO.GeometricDistributionForcedOutage, refs::OpenAPIRefs) =
-    from_openapi(GeometricDistributionForcedOutage, po, refs)
-_attribute_from_openapi(po::PO.FixedForcedOutage, refs::OpenAPIRefs) =
-    from_openapi(FixedForcedOutage, po, refs)
-_attribute_from_openapi(po::PO.PlannedOutage, refs::OpenAPIRefs) =
-    from_openapi(PlannedOutage, po, refs)
-_attribute_from_openapi(po::PO.ThermalPowerPlant, ::OpenAPIRefs) =
-    from_openapi(ThermalPowerPlant, po)
-_attribute_from_openapi(po::PO.HydroPowerPlant, ::OpenAPIRefs) =
-    from_openapi(HydroPowerPlant, po)
-_attribute_from_openapi(po::PO.RenewablePowerPlant, ::OpenAPIRefs) =
-    from_openapi(RenewablePowerPlant, po)
-_attribute_from_openapi(po::PO.CombinedCycleBlock, ::OpenAPIRefs) =
-    from_openapi(CombinedCycleBlock, po)
-_attribute_from_openapi(po::PO.CombinedCycleFractional, ::OpenAPIRefs) =
-    from_openapi(CombinedCycleFractional, po)
-_attribute_from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) =
-    from_openapi(GeographicInfo, po)
-_attribute_from_openapi(po::PO.Substation, ::OpenAPIRefs) = from_openapi(Substation, po)
-_attribute_from_openapi(po::PO.ImpedanceCorrectionData, ::OpenAPIRefs) =
-    from_openapi(ImpedanceCorrectionData, po)
-
-"""Loud fallback: a PO attribute type with no converter is a gap to close, not a row to skip."""
-function _attribute_from_openapi(po, ::OpenAPIRefs)
+"""Loud fallback for the 2-arg supplemental-attribute shape: a PO attribute type with no
+converter is a gap to close, not a row to skip."""
+function from_openapi(po, ::OpenAPIRefs)
     error(
         "from_openapi(System, doc): no supplemental attribute converter for " *
         "$(nameof(typeof(po))) — every attribute in the document must be converted, " *
@@ -571,7 +571,7 @@ function from_openapi(
 
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for po in PC.get_components(doc, key)
-            component = from_openapi(psy_type, po, refs, unit_val)
+            component = from_openapi(po, refs, unit_val)
             extras = get(doc.ext, Int(po.id), nothing)
             isnothing(extras) || _merge_doc_ext!(component, extras)
             if addable
@@ -584,6 +584,8 @@ function from_openapi(
             refs[Int(po.id)] = component
         end
     end
+
+    _load_market_bid_service_offers!(refs, doc)
 
     load_supplemental_attribute_associations!(sys, refs, doc)
 
@@ -639,4 +641,33 @@ function _system_with_sidecar(
         IS.InfrastructureSystemsInternal(),
     )
     return System(data, base_power; system_kwargs...)
+end
+
+"""
+Resolve each imported `MarketBidCost`'s `ancillary_service_offers` ids to the now-imported
+`Service` objects. `convert_cost(::PC.MarketBidCost)` leaves the vector empty because
+services may not exist yet when the carrying device converts; this runs after the full
+component pass. Errors on an unresolved id rather than dropping the offer.
+"""
+function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PC.SystemDocument)
+    for po_components in values(doc.components), po in po_components
+        hasproperty(po, :operation_cost) || continue
+        po_cost = po.operation_cost
+        po_cost isa PC.MarketBidCost || continue
+        ids = po_cost.ancillary_service_offers
+        (isnothing(ids) || isempty(ids)) && continue
+        component = refs.by_id[Int(po.id)]
+        offers = get_ancillary_service_offers(get_operation_cost(component))
+        for id in ids
+            service = get(refs.by_id, Int(id), nothing)
+            isnothing(service) && throw(
+                IS.DataFormatError(
+                    "MarketBidCost on component id=$(po.id) offers into unresolved " *
+                    "component id=$id",
+                ),
+            )
+            push!(offers, service)
+        end
+    end
+    return nothing
 end

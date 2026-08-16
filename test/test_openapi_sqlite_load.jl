@@ -128,7 +128,8 @@ end
 
 @testset "load_supplemental_attribute_associations!: loud errors" begin
     geo_po = PSY.PC.GeographicInfo(;
-        id = 100, geo_json = Dict{String, Any}("type" => "Point"),
+        id = 100,
+        geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
     )
 
     # Unresolved entity_id: id=7 (load1) is a real component id in the document, but this
@@ -154,7 +155,8 @@ end
     # (checked against the same `supplemental_attributes` list the loader indexes) rejects
     # it before a document with one can even be constructed.
 
-    # attribute_type mismatch: declares "EmissionsData" but the row builds a GeographicInfo.
+    # attribute_type mismatch: declares "EmissionsData" but the row builds a GeographicInfo,
+    # falls to IS's enum constructor
     f = _sqlite_load_fixture()
     doc = _sqlite_load_doc(;
         supplemental_attributes = [openapi_raw(geo_po)],
@@ -165,7 +167,7 @@ end
             ),
         ],
     )
-    @test_throws ErrorException PSY.load_supplemental_attribute_associations!(
+    @test_throws MethodError PSY.load_supplemental_attribute_associations!(
         f.sys, f.refs, doc,
     )
 

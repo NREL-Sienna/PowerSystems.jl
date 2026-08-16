@@ -169,3 +169,66 @@ set_motor_technology!(value::MotorLoad, val) = value.motor_technology = val
 set_services!(value::MotorLoad, val) = value.services = val
 """Set [`MotorLoad`](@ref) `ext`."""
 set_ext!(value::MotorLoad, val) = value.ext = val
+
+
+function from_openapi(po::PO.MotorLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return MotorLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power,
+        reactive_power = po.reactive_power,
+        base_power = po.base_power,
+        rating = po.rating,
+        max_active_power = po.max_active_power,
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits),
+        motor_technology = MotorLoadTechnology(po.motor_technology),
+    )
+end
+
+function from_openapi(po::PO.MotorLoad, refs::OpenAPIRefs, ::NaturalUnit)
+    return MotorLoad(;
+        name = po.name,
+        available = po.available,
+        bus = resolve_ref(refs, po.bus, ACBus),
+        active_power = po.active_power / po.base_power,
+        reactive_power = po.reactive_power / po.base_power,
+        base_power = po.base_power,
+        rating = po.rating / po.base_power,
+        max_active_power = po.max_active_power / po.base_power,
+        reactive_power_limits = _minmax_from_po(po.reactive_power_limits, (/), po.base_power),
+        motor_technology = MotorLoadTechnology(po.motor_technology),
+    )
+end
+
+function to_openapi(value::MotorLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.MotorLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU),
+        reactive_power = get_reactive_power(value, DU),
+        base_power = _get_base_power(value),
+        rating = get_rating(value, DU),
+        max_active_power = get_max_active_power(value, DU),
+        reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
+        motor_technology = string(get_motor_technology(value)),
+    )
+end
+
+function to_openapi(value::MotorLoad, refs::OpenAPIRefs, ::NaturalUnit)
+    return PO.MotorLoad(;
+        id = component_id(refs, value),
+        name = get_name(value),
+        available = get_available(value),
+        bus = component_id(refs, get_bus(value)),
+        active_power = get_active_power(value, DU) * _get_base_power(value),
+        reactive_power = get_reactive_power(value, DU) * _get_base_power(value),
+        base_power = _get_base_power(value),
+        rating = get_rating(value, DU) * _get_base_power(value),
+        max_active_power = get_max_active_power(value, DU) * _get_base_power(value),
+        reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
+        motor_technology = string(get_motor_technology(value)),
+    )
+end

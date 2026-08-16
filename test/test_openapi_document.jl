@@ -240,7 +240,7 @@ end
         basis = "FUEL_INPUT", start_up_adder = 0.0, mass_unit = "LB",
         energy_unit = "MMBTU", gwp = 1.0, available = true,
     )
-    emissions = PSY.from_openapi(EmissionsData, emissions_po)
+    emissions = PSY.from_openapi(emissions_po, refs)
     @test get_pollutant(emissions) == PollutantType.CO2
     @test get_basis(emissions) == EmissionBasis.FUEL_INPUT
     @test get_mass_unit(emissions) == MassUnit.LB
@@ -250,7 +250,7 @@ end
         id = 3, mean_time_to_recovery = 480, outage_transition_probability = 0.001,
         monitored_components = [1],
     )
-    outage = PSY.from_openapi(GeometricDistributionForcedOutage, outage_po, refs)
+    outage = PSY.from_openapi(outage_po, refs)
     @test get_mean_time_to_recovery(outage) == 480.0
     @test get_monitored_components(outage) == Set([IS.get_id(bus)])
 
@@ -259,63 +259,173 @@ end
         outage_status = 1.0,
         monitored_components = nothing,
     )
-    fixed = PSY.from_openapi(FixedForcedOutage, fixed_po, refs)
+    fixed = PSY.from_openapi(fixed_po, refs)
     @test PSY.get_outage_status(fixed) == 1.0
     @test get_monitored_components(fixed) == Set{Base.UUID}()
 
     planned_po = PSY.PO.PlannedOutage(;
         id = 5, outage_schedule = "maintenance_2024", monitored_components = [1],
     )
-    planned = PSY.from_openapi(PlannedOutage, planned_po, refs)
+    planned = PSY.from_openapi(planned_po, refs)
     @test get_outage_schedule(planned) == "maintenance_2024"
 
     plant_po = PSY.PO.ThermalPowerPlant(; id = 6, name = "plant1")
-    plant = PSY.from_openapi(ThermalPowerPlant, plant_po)
+    plant = PSY.from_openapi(plant_po, refs)
     @test get_name(plant) == "plant1"
 
     hydro_plant =
-        PSY.from_openapi(HydroPowerPlant, PSY.PO.HydroPowerPlant(; id = 7, name = "hp1"))
+        PSY.from_openapi(PSY.PO.HydroPowerPlant(; id = 7, name = "hp1"), refs)
     @test get_name(hydro_plant) == "hp1"
 
     renewable_plant =
-        PSY.from_openapi(
-            RenewablePowerPlant,
-            PSY.PO.RenewablePowerPlant(; id = 8, name = "rp1"),
-        )
+        PSY.from_openapi(PSY.PO.RenewablePowerPlant(; id = 8, name = "rp1"), refs)
     @test get_name(renewable_plant) == "rp1"
 
     cc_block_po = PSY.PO.CombinedCycleBlock(;
         id = 9, name = "cc1", configuration = "SingleShaftCombustionSteam",
         heat_recovery_to_steam_factor = 0.5,
     )
-    cc_block = PSY.from_openapi(CombinedCycleBlock, cc_block_po)
+    cc_block = PSY.from_openapi(cc_block_po, refs)
     @test get_configuration(cc_block) ==
           CombinedCycleConfiguration.SingleShaftCombustionSteam
     @test get_heat_recovery_to_steam_factor(cc_block) == 0.5
 
     cc_frac_po =
         PSY.PO.CombinedCycleFractional(; id = 10, name = "cc2", configuration = "Other")
-    cc_frac = PSY.from_openapi(CombinedCycleFractional, cc_frac_po)
+    cc_frac = PSY.from_openapi(cc_frac_po, refs)
     @test get_configuration(cc_frac) == CombinedCycleConfiguration.Other
 
     geo_po = PSY.PC.GeographicInfo(;
         id = 11,
         geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
     )
-    geo = PSY.from_openapi(GeographicInfo, geo_po)
+    geo = PSY.from_openapi(geo_po, refs)
     @test get_geo_json(geo)["type"] == "Point"
 
     # The PO layer's own OpenAPI-generated enum validation rejects an unmapped
     # pollutant before construction even completes (mirrors the reserve-direction
-    # test in test_openapi_converters.jl) — the converter's own table errors loudly
-    # too, exercised directly since a real PO struct can never carry a value outside
-    # its own enum whitelist.
+    # test in test_openapi_converters.jl) — and the scoped-enum constructor the
+    # converter uses errors loudly too, exercised directly since a real PO struct can
+    # never carry a value outside its own enum whitelist.
     @test_throws Exception PSY.PO.EmissionsData(;
         id = 12, name = "bad", pollutant = "BOGUS",
         emission_rate = emissions_po.emission_rate, basis = "FUEL_INPUT",
         mass_unit = "LB", energy_unit = "MMBTU",
     )
-    @test_throws ErrorException PSY._enum_from_string(
-        PSY.POLLUTANT_TYPE_FROM_STRING, "BOGUS", "pollutant",
+    @test_throws Exception PollutantType("BOGUS")
+end
+
+@testset "MarketBidCost round trip: fields and ancillary service offer ids" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+    svc = OnlineReserve{ReserveUp}(;
+        name = "RESERVE", available = true, time_frame = 10.0, requirement = 0.1)
+    add_service!(sys, svc, [gen])
+
+    mbc = MarketBidCost(;
+        no_load_cost = LinearCurve(5.0),
+        start_up = (hot = 100.0, warm = 200.0, cold = 300.0),
+        shut_down = LinearCurve(2.0),
+        incremental_offer_curves = make_market_bid_curve(
+            [0.0, 50.0, 100.0], [10.0, 20.0], 0.0; power_units = IS.NaturalUnit(),
+        ),
     )
+    push!(get_ancillary_service_offers(mbc), svc)
+    set_operation_cost!(gen, mbc)
+
+    doc = to_openapi(sys; unit_system = :natural_units)
+    sys2 = from_openapi(System, doc)
+
+    gen2 = get_component(ThermalStandard, sys2, "gen1")
+    mbc2 = get_operation_cost(gen2)
+    @test mbc2 isa MarketBidCost
+    @test get_no_load_cost(mbc2) == LinearCurve(5.0)
+    @test get_start_up(mbc2) == (hot = 100.0, warm = 200.0, cold = 300.0)
+    @test get_shut_down(mbc2) == LinearCurve(2.0)
+    @test get_incremental_offer_curves(mbc2) == get_incremental_offer_curves(mbc)
+    @test get_decremental_offer_curves(mbc2) == get_decremental_offer_curves(mbc)
+    offers = get_ancillary_service_offers(mbc2)
+    @test length(offers) == 1
+    @test get_name(only(offers)) == "RESERVE"
+    @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
+end
+
+@testset "ThermalMultiStart round trip: multi-start fields and MarketBidCost" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalMultiStart(nothing)
+    gen.bus = bus
+    gen.name = "ms1"
+    gen.base_power = 50.0
+    gen.active_power_limits = (min = 0.2, max = 1.0)
+    gen.ramp_limits = (up = 0.1, down = 0.1)
+    gen.power_trajectory = (startup = 0.3, shutdown = 0.25)
+    gen.time_limits = (up = 2.0, down = 1.0)
+    gen.start_time_limits = (hot = 2.0, warm = 4.0, cold = 8.0)
+    gen.start_types = 3
+    gen.must_run = true
+    add_component!(sys, gen)
+    svc = OnlineReserve{ReserveUp}(;
+        name = "RESERVE", available = true, time_frame = 10.0, requirement = 0.1)
+    add_service!(sys, svc, [gen])
+    mbc = MarketBidCost(;
+        incremental_offer_curves = make_market_bid_curve(
+            [0.0, 25.0, 50.0], [12.0, 24.0], 0.0; power_units = IS.NaturalUnit(),
+        ),
+    )
+    push!(get_ancillary_service_offers(mbc), svc)
+    set_operation_cost!(gen, mbc)
+
+    for unit_system in (:device_base, :natural_units)
+        doc = to_openapi(sys; unit_system = unit_system)
+        sys2 = from_openapi(System, doc)
+        gen2 = get_component(ThermalMultiStart, sys2, "ms1")
+        @test !isnothing(gen2)
+        @test get_base_power(gen2) == 50.0
+        @test get_active_power_limits(gen2, PSY.DU) == (min = 0.2, max = 1.0)
+        @test get_ramp_limits(gen2, PSY.DU) == (up = 0.1, down = 0.1)
+        @test get_power_trajectory(gen2, PSY.DU) == (startup = 0.3, shutdown = 0.25)
+        @test get_time_limits(gen2) == (up = 2.0, down = 1.0)
+        @test get_start_time_limits(gen2) == (hot = 2.0, warm = 4.0, cold = 8.0)
+        @test get_start_types(gen2) == 3
+        @test get_must_run(gen2)
+        mbc2 = get_operation_cost(gen2)
+        @test mbc2 isa MarketBidCost
+        @test get_incremental_offer_curves(mbc2) == get_incremental_offer_curves(mbc)
+        @test get_name(only(get_ancillary_service_offers(mbc2))) == "RESERVE"
+    end
+end
+
+@testset "DOCUMENT_PLAN: converters match the declared pair" begin
+    # `from_openapi` dispatches on the PO type, so `psy_type` no longer reaches the import
+    # call and a mis-paired entry would go unnoticed at run time — `is_document_exportable`
+    # is generated from it. Assert the pairing here instead: the converters exist in both
+    # directions, and `from_openapi` on the `po_type` really does return the `psy_type`.
+    #
+    # A test rather than a load-time assertion on purpose: `generate_structs` runs inside
+    # `PowerSystems`, so an assertion that fired on stale generated code would make the
+    # module unloadable and take regeneration down with it.
+    for (po_type, psy_type, key, _addable) in PSY.DOCUMENT_PLAN
+        for units in (typeof(DU), typeof(NU))
+            @test hasmethod(PSY.from_openapi, (po_type, PSY.OpenAPIRefs, units))
+            @test hasmethod(PSY.to_openapi, (psy_type, PSY.OpenAPIRefs, units))
+            returned = Base.return_types(
+                PSY.from_openapi, (po_type, PSY.OpenAPIRefs, units),
+            )
+            @test length(returned) == 1
+            @test only(returned) <: psy_type
+        end
+    end
 end

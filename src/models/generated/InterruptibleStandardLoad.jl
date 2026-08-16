@@ -273,15 +273,14 @@ set_services!(value::InterruptibleStandardLoad, val) = value.services = val
 set_ext!(value::InterruptibleStandardLoad, val) = value.ext = val
 
 
-
-function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.InterruptibleStandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return InterruptibleStandardLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         base_power = po.base_power,
-        operation_cost = convert_cost(po.operation_cost),
-        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        conformity = LoadConformity(po.conformity),
         constant_active_power = po.constant_active_power,
         constant_reactive_power = po.constant_reactive_power,
         impedance_active_power = po.impedance_active_power,
@@ -297,14 +296,14 @@ function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, 
     )
 end
 
-function from_openapi(::Type{InterruptibleStandardLoad}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.InterruptibleStandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
     return InterruptibleStandardLoad(;
         name = po.name,
         available = po.available,
-        bus = resolve_ref(refs, po.bus),
+        bus = resolve_ref(refs, po.bus, ACBus),
         base_power = po.base_power,
-        operation_cost = convert_cost(po.operation_cost),
-        conformity = LOAD_CONFORMITY_FROM_STRING[po.conformity],
+        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        conformity = LoadConformity(po.conformity),
         constant_active_power = po.constant_active_power / po.base_power,
         constant_reactive_power = po.constant_reactive_power / po.base_power,
         impedance_active_power = po.impedance_active_power / po.base_power,
@@ -328,7 +327,7 @@ function to_openapi(value::InterruptibleStandardLoad, refs::OpenAPIRefs, ::Devic
         bus = component_id(refs, get_bus(value)),
         base_power = _get_base_power(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
-        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = string(get_conformity(value)),
         constant_active_power = get_constant_active_power(value, DU),
         constant_reactive_power = get_constant_reactive_power(value, DU),
         impedance_active_power = get_impedance_active_power(value, DU),
@@ -352,7 +351,7 @@ function to_openapi(value::InterruptibleStandardLoad, refs::OpenAPIRefs, ::Natur
         bus = component_id(refs, get_bus(value)),
         base_power = _get_base_power(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
-        conformity = LOAD_CONFORMITY_TO_STRING[get_conformity(value)],
+        conformity = string(get_conformity(value)),
         constant_active_power = get_constant_active_power(value, DU) * _get_base_power(value),
         constant_reactive_power = get_constant_reactive_power(value, DU) * _get_base_power(value),
         impedance_active_power = get_impedance_active_power(value, DU) * _get_base_power(value),

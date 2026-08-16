@@ -123,27 +123,26 @@ set_services!(value::AreaInterchange, val) = value.services = val
 set_ext!(value::AreaInterchange, val) = value.ext = val
 
 
-
-function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::DeviceBaseUnit)
+function from_openapi(po::PO.AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return AreaInterchange(;
         name = po.name,
         available = po.available,
         active_power_flow = po.active_power_flow,
-        from_area = resolve_ref(refs, po.from_area),
-        to_area = resolve_ref(refs, po.to_area),
-        flow_limits = (from_to = po.flow_limits.from_to, to_from = po.flow_limits.to_from),
+        from_area = resolve_ref(refs, po.from_area, Area),
+        to_area = resolve_ref(refs, po.to_area, Area),
+        flow_limits = _fromto_tofrom_from_po(po.flow_limits),
         base_power = po.base_power,
     )
 end
 
-function from_openapi(::Type{AreaInterchange}, po, refs::OpenAPIRefs, ::NaturalUnit)
+function from_openapi(po::PO.AreaInterchange, refs::OpenAPIRefs, ::NaturalUnit)
     return AreaInterchange(;
         name = po.name,
         available = po.available,
         active_power_flow = po.active_power_flow / po.base_power,
-        from_area = resolve_ref(refs, po.from_area),
-        to_area = resolve_ref(refs, po.to_area),
-        flow_limits = (from_to = po.flow_limits.from_to / po.base_power, to_from = po.flow_limits.to_from / po.base_power),
+        from_area = resolve_ref(refs, po.from_area, Area),
+        to_area = resolve_ref(refs, po.to_area, Area),
+        flow_limits = _fromto_tofrom_from_po(po.flow_limits, (/), po.base_power),
         base_power = po.base_power,
     )
 end
@@ -156,7 +155,7 @@ function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
         active_power_flow = get_active_power_flow(value, SU),
         from_area = component_id(refs, get_from_area(value)),
         to_area = component_id(refs, get_to_area(value)),
-        flow_limits = _fromto_toframe_po(get_flow_limits(value, SU)),
+        flow_limits = _fromto_tofrom_po(get_flow_limits(value, SU)),
         base_power = get_base_power(refs),
     )
 end
@@ -169,7 +168,7 @@ function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::NaturalUnit)
         active_power_flow = get_active_power_flow(value, SU) * get_base_power(refs),
         from_area = component_id(refs, get_from_area(value)),
         to_area = component_id(refs, get_to_area(value)),
-        flow_limits = _fromto_toframe_po_scaled(get_flow_limits(value, SU), get_base_power(refs)),
+        flow_limits = _fromto_tofrom_po_scaled(get_flow_limits(value, SU), get_base_power(refs)),
         base_power = get_base_power(refs),
     )
 end

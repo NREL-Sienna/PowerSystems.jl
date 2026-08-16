@@ -186,6 +186,31 @@ function convert_cost_to_openapi(cost::LoadCost)
     )
 end
 
+"""
+Static market bid. `ancillary_service_offers` holds `Service` objects but the document
+stores component ids, and this converter has no id registry, so it exports the list empty;
+`_export_market_bid_service_offers!` fills the ids in a document-level pass.
+"""
+function convert_cost_to_openapi(cost::MarketBidCost)
+    start_up = get_start_up(cost)
+    return PC.MarketBidCost(;
+        no_load_cost = convert_cost_to_openapi(get_no_load_cost(cost)),
+        start_up = PC.StartUpStages(;
+            hot = start_up.hot,
+            warm = start_up.warm,
+            cold = start_up.cold,
+        ),
+        shut_down = convert_cost_to_openapi(get_shut_down(cost)),
+        incremental_offer_curves = convert_cost_to_openapi(
+            get_incremental_offer_curves(cost),
+        ),
+        decremental_offer_curves = convert_cost_to_openapi(
+            get_decremental_offer_curves(cost),
+        ),
+        ancillary_service_offers = Int64[],
+    )
+end
+
 function convert_cost_to_openapi(cost::HydroReservoirCost)
     return PC.HydroReservoirCost(;
         level_shortage_cost = get_level_shortage_cost(cost),

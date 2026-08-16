@@ -168,23 +168,32 @@ end
     device_body = gen[first(device_start):(first(natural_start) - 1)]
     natural_body = gen[first(natural_start):end]
 
-    # Enum table: emitted once, ahead of both methods, looked up (not `getproperty`).
+    # Enum: converted through the scoped enum's own string constructor — no per-enum
+    # lookup table is emitted anywhere in the generated file.
+    @test !occursin("_FROM_STRING", gen)
+    @test !occursin("_TO_STRING", gen)
+    @test occursin("status = OATestStatus(po.status),", device_body)
+    @test occursin("status = OATestStatus(po.status),", natural_body)
+    # ... and the export direction is the inverse: `string` on the enum value.
+    @test occursin("status = string(get_status(value)),", gen)
+
+    # Reference: `resolve_ref(refs, po.<name>, <PSY type>)`, identical in both methods. Not
+    # `refs[po.<name>]` — a schema-optional reference the document omits arrives as
+    # `nothing`, and `refs[nothing]` is a MethodError. The third argument is the type the
+    # descriptor declares, which `refs`' `Dict{Int, Any}` cannot supply.
+    @test occursin("bus = resolve_ref(refs, po.bus, OATestBus),", device_body)
+    @test occursin("bus = resolve_ref(refs, po.bus, OATestBus),", natural_body)
+
+    # Cost hook: identical in both methods, asserting the declared field type — the call
+    # itself infers as `Any`.
     @test occursin(
-        "const OA_TEST_STATUS_FROM_STRING = Dict{String, OATestStatus}(string(m) => m for m in instances(OATestStatus))",
-        gen,
+        "operation_cost = convert_cost(po.operation_cost)::OperationalCost,",
+        device_body,
     )
-    @test occursin("status = OA_TEST_STATUS_FROM_STRING[po.status],", device_body)
-    @test occursin("status = OA_TEST_STATUS_FROM_STRING[po.status],", natural_body)
-
-    # Reference: `resolve_ref(refs, po.<name>)`, identical in both methods. Not `refs[po.<name>]`
-    # — a schema-optional reference the document omits arrives as `nothing`, and `refs[nothing]`
-    # is a MethodError.
-    @test occursin("bus = resolve_ref(refs, po.bus),", device_body)
-    @test occursin("bus = resolve_ref(refs, po.bus),", natural_body)
-
-    # Cost hook: identical in both methods.
-    @test occursin("operation_cost = convert_cost(po.operation_cost),", device_body)
-    @test occursin("operation_cost = convert_cost(po.operation_cost),", natural_body)
+    @test occursin(
+        "operation_cost = convert_cost(po.operation_cost)::OperationalCost,",
+        natural_body,
+    )
 
     # skip fields never appear as constructor kwargs inside either method.
     @test !occursin("ext =", device_body)
@@ -206,25 +215,22 @@ end
         natural_body,
     )
 
-    # Compound IMPEDANCE conversion: both methods member-rebuild (the PO type is never
-    # PSY's NamedTuple alias); natural-units divides each member by Z_base = V_base^2/S_base.
+    # Compound IMPEDANCE conversion: both methods rebuild through the alias' extraction
+    # helper (the PO type is never PSY's NamedTuple alias, and it declares the field `Any`,
+    # so inline member access would be a dynamic getproperty chain); natural-units divides
+    # each member by Z_base = V_base^2/S_base, passing `/` so the arithmetic stays division.
+    @test occursin("impedance_limits = _minmax_from_po(po.impedance_limits),", device_body)
     @test occursin(
-        "impedance_limits = (min = po.impedance_limits.min, max = po.impedance_limits.max),",
-        device_body,
-    )
-    @test occursin(
-        "impedance_limits = (min = po.impedance_limits.min / (po.base_voltage^2 / po.base_power), max = po.impedance_limits.max / (po.base_voltage^2 / po.base_power)),",
+        "impedance_limits = _minmax_from_po(po.impedance_limits, (/), (po.base_voltage^2 / po.base_power)),",
         natural_body,
     )
 
-    # Nullable compound POWER conversion: both methods need the nothing-guard (member
-    # access on `nothing` fails regardless of unit system).
+    # Nullable compound POWER conversion: no emitted nothing-guard in either method — the
+    # helper's ::Nothing method is the guard, so nullability no longer changes the
+    # expression.
+    @test occursin("optional_limits = _minmax_from_po(po.optional_limits),", device_body)
     @test occursin(
-        "optional_limits = (if isnothing(po.optional_limits); nothing; else; (min = po.optional_limits.min, max = po.optional_limits.max); end),",
-        device_body,
-    )
-    @test occursin(
-        "optional_limits = (if isnothing(po.optional_limits); nothing; else; (min = po.optional_limits.min / po.base_power, max = po.optional_limits.max / po.base_power); end),",
+        "optional_limits = _minmax_from_po(po.optional_limits, (/), po.base_power),",
         natural_body,
     )
 end
@@ -272,16 +278,10 @@ end
     @test occursin("r = po.r,", device_body)
     @test occursin("r = po.r,", natural_body)
 
-    # Compound pu-override: still member-rebuilt (PO type isn't PSY's NamedTuple alias)
-    # but never scaled.
-    @test occursin(
-        "impedance_limits = (min = po.impedance_limits.min, max = po.impedance_limits.max),",
-        device_body,
-    )
-    @test occursin(
-        "impedance_limits = (min = po.impedance_limits.min, max = po.impedance_limits.max),",
-        natural_body,
-    )
+    # Compound pu-override: still rebuilt through the extraction helper (PO type isn't
+    # PSY's NamedTuple alias) but never scaled — no `op`/`base` arguments in either method.
+    @test occursin("impedance_limits = _minmax_from_po(po.impedance_limits),", device_body)
+    @test occursin("impedance_limits = _minmax_from_po(po.impedance_limits),", natural_body)
 
     # An unmapped openapi_unit value must error rather than be silently ignored.
     bad_value = [

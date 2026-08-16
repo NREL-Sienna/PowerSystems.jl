@@ -224,7 +224,7 @@ end
         @test tx_po.direction_mapping == Dict("line1" => 1)
 
         # Round-trip: import(export(x)) == x.
-        round_tripped = PSY.from_openapi(TransmissionInterface, tx_po, refs, val)
+        round_tripped = PSY.from_openapi(tx_po, refs, val)
         @test get_active_power_flow_limits(round_tripped, DU) ==
               get_active_power_flow_limits(tx, DU)
     end
@@ -319,7 +319,7 @@ end
         @test shunt_po.Y.imag == -100.0
 
         # Round-trip: import(export(x)) == x.
-        round_tripped = PSY.from_openapi(FixedAdmittance, shunt_po, refs, val)
+        round_tripped = PSY.from_openapi(shunt_po, refs, val)
         @test get_Y(round_tripped) == get_Y(shunt)
     end
 end
@@ -398,7 +398,7 @@ end
     import_refs[1] = area1
     import_refs[2] = area2
     reimported =
-        PSY.from_openapi(AreaInterchange, device_po, import_refs, DU)
+        PSY.from_openapi(device_po, import_refs, DU)
     @test get_active_power_flow(reimported, PSY.DU) ==
           get_active_power_flow(interchange, SU)
     @test get_flow_limits(reimported, PSY.DU) == get_flow_limits(interchange, SU)
@@ -786,6 +786,9 @@ end
 end
 
 @testset "OpenAPI export: supplemental attribute converters" begin
+    # The exporters read their own id back from `refs` via `component_id`, exactly like
+    # the generated component exporters, so each attribute registers first.
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
     emissions = EmissionsData(;
         name = "gen1_CO2", pollutant = PollutantType.CO2,
         emission_rate = IncrementalCurve(;
@@ -794,14 +797,19 @@ end
         basis = EmissionBasis.FUEL_INPUT, start_up_adder = 0.0, mass_unit = MassUnit.LB,
         energy_unit = EnergyUnit.MMBTU, gwp = 1.0, available = true,
     )
-    po = PSY.to_openapi(emissions, 1)
+    refs[1] = emissions
+    po = PSY.to_openapi(emissions, refs)
+    @test po.id == 1
     @test po.pollutant == "CO2"
     @test po.basis == "FUEL_INPUT"
     @test po.mass_unit == "LB"
     @test po.energy_unit == "MMBTU"
 
-    geo = GeographicInfo(; geo_json = Dict{String, Any}("type" => "Point"))
-    geo_po = PSY.to_openapi(geo, 2)
+    geo = GeographicInfo(;
+        geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
+    )
+    refs[2] = geo
+    geo_po = PSY.to_openapi(geo, refs)
     @test geo_po.geo_json["type"] == "Point"
 
     cc_block = CombinedCycleBlock(;
@@ -809,23 +817,26 @@ end
         configuration = CombinedCycleConfiguration.SingleShaftCombustionSteam,
         heat_recovery_to_steam_factor = 0.5,
     )
-    cc_po = PSY.to_openapi(cc_block, 3)
+    refs[3] = cc_block
+    cc_po = PSY.to_openapi(cc_block, refs)
     @test cc_po.configuration == "SingleShaftCombustionSteam"
     @test cc_po.heat_recovery_to_steam_factor == 0.5
 
     plant = ThermalPowerPlant(; name = "plant1")
-    plant_po = PSY.to_openapi(plant, 4)
+    refs[4] = plant
+    plant_po = PSY.to_openapi(plant, refs)
     @test plant_po.name == "plant1"
 
     # Substation has no descriptor entry, so both directions are hand-written in
     # src/substation.jl.
     substation = Substation(; name = "SUB1", number = 7, grounding_resistance = 0.25)
-    substation_po = PSY.to_openapi(substation, 5)
+    refs[5] = substation
+    substation_po = PSY.to_openapi(substation, refs)
     @test substation_po.id == 5
     @test substation_po.name == "SUB1"
     @test substation_po.number == 7
     @test substation_po.grounding_resistance == 0.25
-    reimported = PSY.from_openapi(Substation, substation_po)
+    reimported = PSY.from_openapi(substation_po, refs)
     @test get_name(reimported) == get_name(substation)
     @test get_number(reimported) == get_number(substation)
     @test get_grounding_resistance(reimported) == get_grounding_resistance(substation)

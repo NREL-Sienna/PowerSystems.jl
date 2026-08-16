@@ -213,11 +213,11 @@ function get_start_up(
     return StartUpStages(raw)
 end
 
-# ── ORDC variable-cost getters (OnlineReserve / OfflineReserve) ──────────────
+# ── ORDC variable-cost getters (any AbstractReserve, groups included) ────────
 # Static curve: return it. Time-series curve: resolve at `start_time`.
 
 function get_variable_cost(
-    service::Union{OnlineReserve, OfflineReserve, GroupReserve};
+    service::AbstractReserve;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
@@ -225,20 +225,24 @@ function get_variable_cost(
 end
 
 _get_reserve_variable_cost(
-    ::Union{OnlineReserve, OfflineReserve, GroupReserve},
+    ::AbstractReserve,
     variable::CostCurve{PiecewiseIncrementalCurve},
     ::Union{Nothing, Dates.DateTime},
     ::Union{Nothing, Int},
 ) = variable
 
 function _get_reserve_variable_cost(
-    service::Union{OnlineReserve, OfflineReserve, GroupReserve},
+    service::AbstractReserve,
     variable::CostCurve{TimeSeriesPiecewiseIncrementalCurve},
     start_time::Union{Nothing, Dates.DateTime},
     len::Union{Nothing, Int},
 )
     isnothing(start_time) &&
-        throw(ArgumentError("start_time is required for a time-series-backed reserve demand curve"))
+        throw(
+            ArgumentError(
+                "start_time is required for a time-series-backed reserve demand curve",
+            ),
+        )
     return _resolve_ts_cost_curve(service, variable, start_time, len)
 end
 
@@ -566,11 +570,11 @@ function set_export_variable_cost!(
     return
 end
 
-# ── ORDC Setters (OnlineReserve / OfflineReserve) ──────────────────────────
+# ── ORDC Setters (any AbstractReserve, groups included) ────────────────────
 
 function set_variable_cost!(
     ::System,
-    component::Union{OnlineReserve, OfflineReserve, GroupReserve},
+    component::AbstractReserve,
     data::CostCurve{PiecewiseIncrementalCurve, U},
 ) where {U <: IS.AbstractUnitSystem}
     name = get_name(component)

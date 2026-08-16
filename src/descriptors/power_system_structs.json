@@ -370,6 +370,7 @@
         },
         {
             "struct_name": "DCBus",
+            "openapi_type": "DCBus",
             "docstring": "A DC bus",
             "fields": [
                 {
@@ -3163,6 +3164,7 @@
         },
         {
             "struct_name": "MotorLoad",
+            "openapi_type": "MotorLoad",
             "docstring": "A [static](@ref S) power load, most commonly used for operational models such as power flow and operational optimizations.\n\nThis load consumes a set amount of power (set by `active_power` for a power flow simulation or a `max_active_power` time series for an operational simulation). For loads that can be compensated for load interruptions through demand response programs, see [`InterruptiblePowerLoad`](@ref). For voltage-dependent loads used in [dynamics](@ref D) modeling, see [`StandardLoad`](@ref)",
             "fields": [
                 {
@@ -3468,6 +3470,7 @@
         },
         {
             "struct_name": "ExponentialLoad",
+            "openapi_type": "ExponentialLoad",
             "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nAn `ExponentialLoad` models active power as P = P0 * V^α and reactive power as Q = Q0 * V^β, where the exponents α and β select govern the voltage dependency. For an alternative three-part formulation of the ZIP model, see [`StandardLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref)",
             "fields": [
                 {
@@ -3507,6 +3510,7 @@
                 },
                 {
                     "name": "α",
+                    "openapi_name": "alpha",
                     "comment": "Exponent relating voltage dependency for active power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -3518,6 +3522,7 @@
                 },
                 {
                     "name": "β",
+                    "openapi_name": "beta",
                     "comment": "Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -5023,6 +5028,7 @@
         },
         {
             "struct_name": "HydroPumpTurbine",
+            "openapi_type": "HydroPumpTurbine",
             "docstring": "A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s attached, suitable for modeling independent pumped hydro with reservoirs.",
             "fields": [
                 {
@@ -5168,11 +5174,11 @@
                 },
                 {
 
-                    "null_value": "PumpHydroStatus.OFF",
-                    "default": "PumpHydroStatus.OFF",
+                    "null_value": "HydroPumpTurbineStatus.OFF",
+                    "default": "HydroPumpTurbineStatus.OFF",
                     "name": "status",
-                    "comment": "Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference",
-                    "data_type": "PumpHydroStatus"
+                    "comment": "Initial Operating status of a pumped‑storage hydro unit. See [HydroPumpTurbineStatus](@ref) for reference",
+                    "data_type": "HydroPumpTurbineStatus"
                 },
                 {
                     "null_value": "INFINITE_TIME",
@@ -5959,6 +5965,7 @@
         },
         {
             "struct_name": "ThermalMultiStart",
+            "openapi_type": "ThermalMultiStart",
             "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, that can start-up again from a *hot*, *warm*, or *cold* state.\n\n`ThermalMultiStart` has a detailed representation of the start-up process based on the time elapsed since the last shut down, as well as a detailed shut-down process. The model is based on [\"Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem.\"](https://doi.org/10.1109/TPWRS.2013.2251373). For a simplified representation of the start-up and shut-down processes, see [`ThermalStandard`](@ref)",
             "fields": [
                 {
@@ -6605,6 +6612,7 @@
         },
         {
             "struct_name": "AGC",
+            "openapi_type": "AGC",
             "docstring": "Automatic generation control (AGC) for the system or a certain `Area` within the system.\n\nThis model uses a proportional–integral–derivative (PID) control to simulate a \"smooth\" response of the AGC to the area control error (ACE). Refer to [\"AGC Simulation Model for Large Renewable Energy Penetration Studies.\"](https://doi.org/10.1109/NAPS50074.2021.9449687)",
             "fields": [
                 {
@@ -18858,6 +18866,18 @@
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
+                },
+                {
+                    "name": "base_voltage",
+                    "comment": "the base voltage in kV",
+                    "default": "nothing",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "operation_cost",

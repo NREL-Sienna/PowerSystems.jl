@@ -126,19 +126,20 @@ test_costs = Dict(
     @test get_decremental_offer_curves(mbc) == PSY.ZERO_OFFER_CURVE
 end
 
-@testset "Test static ReserveDemandCurve" begin
+@testset "Test static ORDC on OnlineReserve" begin
     sys = System(100.0)
 
     cc = CostCurve(
         PiecewiseIncrementalCurve(0.0, [0.0, 100.0, 200.0], [25.0, 30.0]),
     )
-    reserve = ReserveDemandCurve{ReserveUp}(;
+    reserve = OnlineReserve{ReserveUp}(;
         variable = cc,
         name = "TestReserve",
         available = true,
         time_frame = 10.0,
     )
     add_component!(sys, reserve)
+    @test has_demand_curve(reserve)
     @test get_variable_cost(reserve) == cc
     @test get_variable(reserve) isa IS.AnyCostCurve{PiecewiseIncrementalCurve}
 
@@ -149,11 +150,12 @@ end
     set_variable_cost!(sys, reserve, cc2)
     @test get_variable_cost(reserve) == cc2
 
-    # Nothing constructor
-    reserve_nil = ReserveDemandCurve{ReserveUp}(nothing)
+    # Nothing constructor carries the zero-offer sentinel: no demand curve.
+    reserve_nil = OnlineReserve{ReserveUp}(nothing)
     @test get_name(reserve_nil) == "init"
     @test get_available(reserve_nil) == false
     @test get_variable(reserve_nil) == PSY.ZERO_OFFER_CURVE
+    @test !has_demand_curve(reserve_nil)
 end
 
 function build_iec_sys()
@@ -469,7 +471,7 @@ end
     @test_throws ArgumentError get_export_variable_cost(generator, iec)
 end
 
-@testset "ReserveDemandTimeSeriesCurve resolves variable cost at start_time" begin
+@testset "Time-series ORDC resolves variable cost at start_time" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     # `ForecastKey` identifies a time series by name/type/timing — it does not
     # bind to a specific component, so we can bootstrap a key from a throwaway
@@ -478,7 +480,7 @@ end
     ts_key = _attach_pwl_forecast(sys, bootstrap, "ordc")
 
     curve = CostCurve(TimeSeriesPiecewiseIncrementalCurve(ts_key, nothing, nothing))
-    reserve = ReserveDemandTimeSeriesCurve{ReserveUp}(;
+    reserve = OnlineReserve{ReserveUp}(;
         variable = curve,
         name = "TestOrdc",
         available = true,
