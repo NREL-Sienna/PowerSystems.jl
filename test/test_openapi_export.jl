@@ -805,7 +805,9 @@ end
     @test po.mass_unit == "LB"
     @test po.energy_unit == "MMBTU"
 
-    geo = GeographicInfo(; geo_json = Dict{String, Any}("type" => "Point"))
+    geo = GeographicInfo(;
+        geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
+    )
     refs[2] = geo
     geo_po = PSY.to_openapi(geo, refs)
     @test geo_po.geo_json["type"] == "Point"

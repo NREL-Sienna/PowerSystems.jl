@@ -174,7 +174,8 @@ end
 
 @testset "load_supplemental_attribute_associations!: loud errors" begin
     geo_po = PSY.PC.GeographicInfo(;
-        id = 100, geo_json = Dict{String, Any}("type" => "Point"),
+        id = 100,
+        geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
     )
 
     # Unresolved entity_id: id=7 (load1) is a real component id in the document, but this
