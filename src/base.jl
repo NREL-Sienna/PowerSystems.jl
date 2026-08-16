@@ -1769,7 +1769,7 @@ end
 
 """
 Reclaim the space that removed time series left behind, returning an
-`InfraStore.CompactionReport` (`slots_reclaimed`, `feature_sets_reclaimed`,
+`InfrastructureSystems.CompactionReport` (`slots_reclaimed`, `feature_sets_reclaimed`,
 `timestamp_sets_reclaimed`, `bytes_reclaimed`).
 
 HDF5 cannot hand freed space back in place, so removing time series — including
