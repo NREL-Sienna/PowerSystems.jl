@@ -235,6 +235,18 @@ function convert_cost_to_openapi(cost::StorageCost)
     )
 end
 
+"""`ancillary_service_offers` has no counterpart in the `PC.ImportExportCost` schema (unlike
+`MarketBidCost`, which resolves its `Service` ids in a document-level pass), so it is dropped
+here rather than exported."""
+function convert_cost_to_openapi(cost::ImportExportCost)
+    return PC.ImportExportCost(;
+        import_offer_curves = convert_cost_to_openapi(get_import_offer_curves(cost)),
+        export_offer_curves = convert_cost_to_openapi(get_export_offer_curves(cost)),
+        energy_import_weekly_limit = get_energy_import_weekly_limit(cost),
+        energy_export_weekly_limit = get_energy_export_weekly_limit(cost),
+    )
+end
+
 # ── Reserve Operating Reserve Demand Curve ─────────────────────────────────────
 
 """Convert a reserve's `variable` (Operating Reserve Demand Curve) to its PO representation:

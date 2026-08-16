@@ -638,6 +638,11 @@ function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
         bus = component_id(refs, get_bus(shunt)),
         admittance_units = "DEVICE_MVAR",
         Y = _complex_number_po(y),
+        # FixedAdmittance's base_power_kind is SystemBasePower (components.jl): the field
+        # is kept in sync by add_component!, not authoritative on its own, so read the
+        # document-level anchor (per openapi_export_base_source in generate_structs.jl),
+        # same as `y` above.
+        base_power = get_base_power(refs),
     )
 end
 
