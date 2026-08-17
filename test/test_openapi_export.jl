@@ -1164,9 +1164,11 @@ end
     @test natural_po.rating == 200.0
     @test natural_po.active_power_limits_from.min == -200.0
     @test natural_po.reactive_power_limits_to.max == 100.0
-    # DC_POWER setpoint scales with the other power fields; the DC_VOLTAGE one is pu → kV.
+    # DC_POWER setpoint scales with the other power fields; the voltage-regulating ones are
+    # written per-unit as stored, tagged by `setpoint_voltage_units`.
     @test natural_po.dc_setpoint_from == 40.0
-    @test natural_po.dc_setpoint_to == 204.0
+    @test natural_po.dc_setpoint_to == 1.02
+    @test natural_po.setpoint_voltage_units == "DEVICE_BASE"
     # pu → siemens against Ybase = 100 / 200^2.
     @test natural_po.g == 0.5
     @test natural_po.admittance_units == "NATURAL_UNITS"
@@ -1179,7 +1181,8 @@ end
     @test device_po.active_power_flow == 0.5
     @test device_po.active_power_limits_from.min == -2.0
     @test device_po.dc_setpoint_from == 0.4
-    @test device_po.dc_setpoint_to == 204.0
+    @test device_po.dc_setpoint_to == 1.02
+    @test device_po.setpoint_voltage_units == "DEVICE_BASE"
     @test device_po.g == 0.5
 end
 

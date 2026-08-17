@@ -1116,9 +1116,11 @@ _check_vsc_voltage_units(po) = _check_unit_basis(
     " for $(po.name)",
 )
 
-# PSY stores every voltage-regulating setpoint per-unit, and no AC base voltage is recorded to
-# convert a kV one against, so `DEVICE_BASE` is the only basis a document may declare.
-const TWO_TERMINAL_VSC_SETPOINT_VOLTAGE_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+# Both bases are implemented: PSY stores these setpoints per-unit, and each kV one has a base to
+# divide by — `rated_dc_voltage` on the DC side, the connected bus's `base_voltage` on the AC
+# side. Unlike `voltage_units`, which tags `voltage_limits_*` only.
+const TWO_TERMINAL_VSC_SETPOINT_VOLTAGE_UNITS_IMPLEMENTED =
+    Set(["NATURAL_UNITS", "DEVICE_BASE"])
 
 _check_vsc_setpoint_voltage_units(po) = _check_unit_basis(
     po.setpoint_voltage_units,
@@ -1179,18 +1181,58 @@ _vsc_dc_setpoint(
 _vsc_dc_setpoint(
     _po, setpoint, ::Val{VSCDCControlModes.DC_POWER}, _base_power, ::DeviceBaseUnit,
 ) = setpoint
-_vsc_dc_setpoint(_po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit) = setpoint
-_vsc_dc_setpoint(
-    _po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
-) = setpoint
+function _vsc_dc_setpoint(po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit)
+    return _vsc_dc_voltage_setpoint(po, setpoint, _vsc_setpoint_basis(po))
+end
+function _vsc_dc_setpoint(
+    po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
+)
+    return _vsc_dc_voltage_setpoint(po, setpoint, _vsc_setpoint_basis(po))
+end
+
+"""
+The basis `setpoint_voltage_units` declares for the voltage-regulating setpoints. PSY stores
+them per-unit, so `DEVICE_BASE` passes through and only `NATURAL_UNITS` divides by a base.
+"""
+_vsc_setpoint_basis(po) = Val(Symbol(po.setpoint_voltage_units))
+
+_vsc_dc_voltage_setpoint(_po, setpoint, ::Val{:DEVICE_BASE}) = setpoint
+_vsc_dc_voltage_setpoint(po, setpoint, ::Val{:NATURAL_UNITS}) =
+    setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
 
 """
 `ac_setpoint_*` follows `ac_control_*`: a dimensionless power factor under
-`AC_REACTIVE_POWER`, an AC-side voltage under `AC_VOLTAGE`. Both are per-unit on both sides —
-`setpoint_voltage_units` is checked to be `DEVICE_BASE` — so neither needs a base.
+`AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE` — per-unit in PSY, and in the
+document whichever `setpoint_voltage_units` says. `bus` is the converter's own AC terminal,
+whose `base_voltage` is the kV base that side is expressed against.
 """
-_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) = setpoint
-_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = setpoint
+_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}, _bus) = setpoint
+function _vsc_ac_setpoint(po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}, bus)
+    return _vsc_ac_voltage_setpoint(po, setpoint, bus, _vsc_setpoint_basis(po))
+end
+
+_vsc_ac_voltage_setpoint(_po, setpoint, _bus, ::Val{:DEVICE_BASE}) = setpoint
+_vsc_ac_voltage_setpoint(po, setpoint, bus, ::Val{:NATURAL_UNITS}) =
+    setpoint / _vsc_ac_base_voltage(po, bus, setpoint)
+
+"""
+Mirrors `_vsc_dc_base_voltage` on the AC side: the terminal bus's `base_voltage`, needed only
+when a non-zero kV setpoint actually has to be converted.
+"""
+function _vsc_ac_base_voltage(po, bus, value)
+    base = get_base_voltage(bus)
+    if !isnothing(base) && !iszero(base)
+        return base
+    end
+    if iszero(value)
+        return one(value)
+    end
+    return error(
+        "TwoTerminalVSCLine \"$(po.name)\": ac_setpoint is $value kV but its AC terminal " *
+        "\"$(get_name(bus))\" records no base_voltage to express that in per-unit against — " *
+        "set the bus base_voltage, or emit the setpoint on DEVICE_BASE",
+    )
+end
 
 """The shared body of both unit-system methods; only `unit` and `base_power` differ."""
 function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
@@ -1201,10 +1243,11 @@ function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
     dc_control_to = VSCDCControlModes(po.dc_control_to)
     ac_control_from = VSCACControlModes(po.ac_control_from)
     ac_control_to = VSCACControlModes(po.ac_control_to)
+    arc = refs[po.arc]
     return TwoTerminalVSCLine(;
         name = po.name,
         available = po.available,
-        arc = refs[po.arc],
+        arc = arc,
         active_power_flow = _vsc_power(po.active_power_flow, base_power, unit),
         rating = _vsc_power(po.rating, base_power, unit),
         active_power_limits_from = _vsc_minmax(
@@ -1221,7 +1264,9 @@ function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
         dc_setpoint_from = _vsc_dc_setpoint(
             po, po.dc_setpoint_from, Val(dc_control_from), base_power, unit,
         ),
-        ac_setpoint_from = _vsc_ac_setpoint(po, po.ac_setpoint_from, Val(ac_control_from)),
+        ac_setpoint_from = _vsc_ac_setpoint(
+            po, po.ac_setpoint_from, Val(ac_control_from), get_from(arc),
+        ),
         converter_loss_from = _vsc_converter_loss(convert_cost(po.converter_loss_from)),
         max_dc_current_from = po.max_dc_current_from,
         rating_from = _vsc_power(po.rating_from, base_power, unit),
@@ -1237,7 +1282,9 @@ function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
         dc_setpoint_to = _vsc_dc_setpoint(
             po, po.dc_setpoint_to, Val(dc_control_to), base_power, unit,
         ),
-        ac_setpoint_to = _vsc_ac_setpoint(po, po.ac_setpoint_to, Val(ac_control_to)),
+        ac_setpoint_to = _vsc_ac_setpoint(
+            po, po.ac_setpoint_to, Val(ac_control_to), get_to(arc),
+        ),
         converter_loss_to = _vsc_converter_loss(convert_cost(po.converter_loss_to)),
         max_dc_current_to = po.max_dc_current_to,
         rating_to = _vsc_power(po.rating_to, base_power, unit),

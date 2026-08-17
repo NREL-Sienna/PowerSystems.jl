@@ -1121,16 +1121,59 @@ end
     @test get_converter_loss_to(vsc) == QuadraticCurve(0.01, 1.1, 0.4)
 end
 
+@testset "OpenAPI converters: TwoTerminalVSCLine setpoint_voltage_units selects the basis" begin
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    refs[10] =
+        PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
+
+    # NATURAL_UNITS: kV in the document, divided by the base each side is expressed against —
+    # `rated_dc_voltage` (200.0) on the DC side, the terminal bus's base_voltage (138.0) on the
+    # AC side. Both buses carry 138.0, so from- and to-side use the same divisor here.
+    natural = _vsc_po_minimal()
+    natural.setpoint_voltage_units = "NATURAL_UNITS"
+    natural.dc_control_to = "DC_VOLTAGE"
+    natural.dc_setpoint_to = 204.0
+    natural.ac_control_from = "AC_VOLTAGE"
+    natural.ac_setpoint_from = 141.45
+    vsc_natural = PSY.from_openapi(natural, refs, NU)
+    @test get_dc_setpoint_to(vsc_natural) == 204.0 / 200.0
+    @test get_ac_setpoint_from(vsc_natural) == 141.45 / 138.0
+
+    # DEVICE_BASE: already the per-unit PSY stores, so both pass through untouched.
+    device = _vsc_po_minimal()
+    device.setpoint_voltage_units = "DEVICE_BASE"
+    device.dc_control_to = "DC_VOLTAGE"
+    device.dc_setpoint_to = 1.02
+    device.ac_control_from = "AC_VOLTAGE"
+    device.ac_setpoint_from = 1.025
+    vsc_device = PSY.from_openapi(device, refs, NU)
+    @test get_dc_setpoint_to(vsc_device) == 1.02
+    @test get_ac_setpoint_from(vsc_device) == 1.025
+
+    # A basis outside the schema's two never reaches PSY: the generated PO struct validates the
+    # enum on assignment, which is why `_check_vsc_setpoint_voltage_units` only ever sees a
+    # legal value.
+    bad_basis = _vsc_po_minimal()
+    @test_throws PSY.PO.OpenAPI.ValidationException bad_basis.setpoint_voltage_units = "SYSTEM_BASE"
+end
+
 @testset "OpenAPI converters: TwoTerminalVSCLine unconvertible inputs error" begin
     refs = _refs_with_area_bus(; base_power = 100.0)
     refs[10] =
         PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
 
-    # An AC_VOLTAGE setpoint is kV here and per-unit of an AC base voltage in PSY that
-    # neither side records — the one branch with no faithful conversion.
-    ac_voltage = _vsc_po_minimal()
-    ac_voltage.ac_control_from = "AC_VOLTAGE"
-    @test_throws ErrorException PSY.from_openapi(ac_voltage, refs, NU)
+    # An AC_VOLTAGE setpoint converts against the terminal bus's own base_voltage, so it only
+    # fails when that bus records none. `_bus_po` sets 138.0, so this arc can convert.
+    no_ac_base = _vsc_po_minimal()
+    no_ac_base.ac_control_from = "AC_VOLTAGE"
+    no_ac_base.ac_setpoint_from = 141.45
+    baseless_refs = _refs_with_area_bus(; base_power = 100.0)
+    baseless_bus = _bus_po(5)
+    baseless_bus.base_voltage = nothing
+    baseless_refs[5] = PSY.from_openapi(baseless_bus, baseless_refs, NU)
+    baseless_refs[10] =
+        PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 5, to_id = 4), baseless_refs, NU)
+    @test_throws ErrorException PSY.from_openapi(no_ac_base, baseless_refs, NU)
 
     # Only NATURAL_UNITS is implemented for either unit-basis selector.
     bad_admittance = _vsc_po_minimal()
