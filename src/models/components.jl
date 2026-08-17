@@ -383,10 +383,25 @@ _construction_base_power(::DeviceBasePower, f::NamedTuple) =
     hasproperty(f, :base_power) ? f.base_power : nothing
 _construction_base_power(::SystemBasePower, ::NamedTuple) = nothing
 
+# The branches key on the *presence* of an argument, not on its value, and must
+# keep doing so: this has to mirror `get_base_voltage` exactly, or a value
+# per-unitized at construction is read back against a different base.
+#
+# The two types that own a nullable voltage field *and* an `arc`/`bus`
+# (`TransformerCircuit`, `Source`) resolve it at runtime straight from that
+# field -- `get_base_voltage(w::TransformerCircuit) = get_base_voltage_primary(w)`
+# and the generated `get_base_voltage(::Source) = value.base_voltage` -- with no
+# fallback to the connected bus. Falling through to `arc`/`bus` here when the
+# field is `nothing` would therefore make construction *more* permissive than the
+# setters: `TransformerCircuit(; base_voltage_primary = nothing, arc, r = 5.29u"Ω")`
+# would silently store `r` per-unitized on the bus's voltage, and reading it back
+# in Ω would then error. Erroring on both paths is the consistent behavior.
+# (Teaching the runtime resolver to fall back is a separate change to the engine;
+# if that ever happens, this function must follow it.)
 function _construction_base_voltage(f::NamedTuple)
     if hasproperty(f, :base_voltage_primary)      # TransformerCircuit
         return f.base_voltage_primary
-    elseif hasproperty(f, :base_voltage)          # buses
+    elseif hasproperty(f, :base_voltage)          # buses, Source
         return f.base_voltage
     elseif hasproperty(f, :arc)                   # branches
         return get_base_voltage(f.arc.from)

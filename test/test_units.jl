@@ -583,4 +583,32 @@ end
         @test get_r(line(0.01), DU) ≈ 0.01
         @test get_r(line(0.01 * DU), DU) ≈ 0.01
     end
+
+    @testset "a missing base voltage errors on construction exactly as on set" begin
+        # `_construction_base_voltage` keys on the presence of the argument, not
+        # its value, because `get_base_voltage(::TransformerCircuit)` reads
+        # `base_voltage_primary` with no fallback to the arc. Falling through to
+        # `arc.from` here would make construction succeed where the setter fails,
+        # storing a pu value that cannot be read back. Both must refuse.
+        detached = TransformerCircuit(;
+            available = true,
+            arc = Arc(bus, bus),
+            r = 0.0,
+            base_power = 100.0,
+            base_voltage_primary = nothing,
+            base_voltage_secondary = nothing,
+        )
+        @test PSY.get_base_voltage(detached) === nothing
+        # The arc's from-bus does carry a base voltage; neither path may use it.
+        @test get_base_voltage(bus) == 230.0
+        @test_throws ErrorException set_r!(detached, 5.29u"Ω")
+        @test_throws ErrorException TransformerCircuit(;
+            available = true,
+            arc = Arc(bus, bus),
+            r = 5.29u"Ω",
+            base_power = 100.0,
+            base_voltage_primary = nothing,
+            base_voltage_secondary = nothing,
+        )
+    end
 end
