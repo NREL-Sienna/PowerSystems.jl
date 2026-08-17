@@ -46,11 +46,13 @@ mutable struct Area <: AggregationTopology
 end
 
 function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, base_power=100.0, ext=Dict{String, Any}(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, base_power, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, peak_active_power = peak_active_power, peak_reactive_power = peak_reactive_power, load_response = load_response, base_power = base_power, ext = ext, )
+    Area(name, construct_value(Area, _construction_fields, Val(:peak_active_power), Val(:mva)), construct_value(Area, _construction_fields, Val(:peak_reactive_power), Val(:mva)), load_response, base_power, ext, InfrastructureSystemsInternal(), )
 end
 
 function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, base_power=100.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, base_power, ext, internal, )
+    _construction_fields = (name = name, peak_active_power = peak_active_power, peak_reactive_power = peak_reactive_power, load_response = load_response, base_power = base_power, ext = ext, )
+    Area(name, construct_value(Area, _construction_fields, Val(:peak_active_power), Val(:mva)), construct_value(Area, _construction_fields, Val(:peak_reactive_power), Val(:mva)), load_response, base_power, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

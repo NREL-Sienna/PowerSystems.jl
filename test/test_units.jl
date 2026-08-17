@@ -461,3 +461,126 @@ end
         @test IS.get_base_value(w) === nothing
     end
 end
+
+@testset "Units-aware construction" begin
+    # Getters and setters read their per-unit bases off the component; a
+    # constructor has none yet, so the bases come from its own arguments.
+    bus = ACBus(;
+        number = 1,
+        name = "b",
+        available = true,
+        bustype = ACBusTypes.PV,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+
+    thermal(; active_power, rating, active_power_limits = (min = 0.0, max = 1.0)) =
+        ThermalStandard(;
+            name = "t",
+            available = true,
+            status = true,
+            bus = bus,
+            active_power = active_power,
+            reactive_power = 0.0,
+            rating = rating,
+            active_power_limits = active_power_limits,
+            reactive_power_limits = nothing,
+            ramp_limits = nothing,
+            operation_cost = ThermalGenerationCost(nothing),
+            base_power = 100.0,
+        )
+
+    @testset "MW, DU and untagged agree" begin
+        tagged = thermal(; active_power = 50.0u"MW", rating = 100.0u"MW")
+        device = thermal(; active_power = 0.5 * DU, rating = 1.0 * DU)
+        untagged = thermal(; active_power = 0.5, rating = 1.0)
+        for t in (tagged, device, untagged)
+            @test get_active_power(t, DU) ≈ 0.5
+            @test get_rating(t, DU) ≈ 1.0
+        end
+    end
+
+    @testset "positional and keyword forms agree" begin
+        # The kwarg constructor passes `internal`, so it calls the all-fields
+        # constructor rather than the positional one: both need the conversion.
+        positional = ThermalStandard(
+            "t",
+            true,
+            true,
+            bus,
+            50.0u"MW",
+            0.0,
+            100.0u"MW",
+            (min = 0.0, max = 1.0),
+            nothing,
+            nothing,
+            ThermalGenerationCost(nothing),
+            100.0,
+        )
+        @test get_active_power(positional, DU) ≈ 0.5
+        @test get_active_power(positional, DU) ≈
+              get_active_power(thermal(; active_power = 50.0u"MW", rating = 1.0), DU)
+    end
+
+    @testset "construction ≡ construct-then-set" begin
+        constructed = thermal(; active_power = 50.0u"MW", rating = 1.0)
+        mutated = thermal(; active_power = 0.0, rating = 1.0)
+        set_active_power!(mutated, 50.0u"MW")
+        @test get_active_power(constructed, DU) == get_active_power(mutated, DU)
+    end
+
+    @testset "compound fields convert entry-wise" begin
+        # Untagged entries inside a compound field must keep passing through.
+        t = thermal(;
+            active_power = 0.5,
+            rating = 1.0,
+            active_power_limits = (min = 0.0, max = 80.0u"MW"),
+        )
+        limits = get_active_power_limits(t, DU)
+        @test limits.min ≈ 0.0
+        @test limits.max ≈ 0.8
+    end
+
+    @testset "TransformerCircuit converts from Ω while detached" begin
+        # It carries base_power and base_voltage_primary itself, so it is a
+        # complete base provider before ever reaching a System.
+        w = TransformerCircuit(;
+            available = true,
+            arc = Arc(bus, bus),
+            r = 5.29u"Ω",
+            base_power = 100.0,
+            base_voltage_primary = 230.0,
+            base_voltage_secondary = 230.0,
+        )
+        @test get_r(w, DU) ≈ 5.29 / (230.0^2 / 100.0)
+    end
+
+    @testset "SU always errors" begin
+        # The system base is unknown until `add_component!`.
+        @test_throws ArgumentError thermal(; active_power = 0.5 * SU, rating = 1.0)
+    end
+
+    @testset "natural units error on system-base types" begin
+        # `Line`'s `base_power` only records the system base and `add_component!`
+        # resyncs it, so a pu value frozen against the constructor's argument
+        # could silently disagree with the system. Device base is unaffected.
+        arc = Arc(bus, bus)
+        line(r) = Line(;
+            name = "l",
+            available = true,
+            active_power_flow = 0.0,
+            reactive_power_flow = 0.0,
+            arc = arc,
+            r = r,
+            x = 0.1,
+            b = (from = 0.0, to = 0.0),
+            rating = 1.0,
+            angle_limits = (min = -1.0, max = 1.0),
+        )
+        @test_throws ArgumentError line(5.29u"Ω")
+        @test get_r(line(0.01), DU) ≈ 0.01
+        @test get_r(line(0.01 * DU), DU) ≈ 0.01
+    end
+end

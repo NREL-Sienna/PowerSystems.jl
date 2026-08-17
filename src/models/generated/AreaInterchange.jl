@@ -56,11 +56,13 @@ mutable struct AreaInterchange <: Branch
 end
 
 function AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, base_power=100.0, services=Service[], ext=Dict{String, Any}(), )
-    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, base_power, services, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, from_area = from_area, to_area = to_area, flow_limits = flow_limits, base_power = base_power, services = services, ext = ext, )
+    AreaInterchange(name, available, construct_value(AreaInterchange, _construction_fields, Val(:active_power_flow), Val(:mva)), from_area, to_area, construct_value(AreaInterchange, _construction_fields, Val(:flow_limits), Val(:mva)), base_power, services, ext, InfrastructureSystemsInternal(), )
 end
 
 function AreaInterchange(; name, available, active_power_flow, from_area, to_area, flow_limits, base_power=100.0, services=Service[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, base_power, services, ext, internal, )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, from_area = from_area, to_area = to_area, flow_limits = flow_limits, base_power = base_power, services = services, ext = ext, )
+    AreaInterchange(name, available, construct_value(AreaInterchange, _construction_fields, Val(:active_power_flow), Val(:mva)), from_area, to_area, construct_value(AreaInterchange, _construction_fields, Val(:flow_limits), Val(:mva)), base_power, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

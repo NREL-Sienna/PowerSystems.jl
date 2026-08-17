@@ -78,11 +78,13 @@ mutable struct FACTSControlDevice <: StaticInjection
 end
 
 function FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=9999.0, max_reactive_power=9999.0, shunt_control_type=FACTSShuntControlType.STATCOM, regulated_bus_number=0, reactive_power_required=0.0, base_power=100.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, max_shunt_current, max_reactive_power, shunt_control_type, regulated_bus_number, reactive_power_required, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, control_mode = control_mode, voltage_setpoint = voltage_setpoint, max_shunt_current = max_shunt_current, max_reactive_power = max_reactive_power, shunt_control_type = shunt_control_type, regulated_bus_number = regulated_bus_number, reactive_power_required = reactive_power_required, base_power = base_power, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, construct_value(FACTSControlDevice, _construction_fields, Val(:max_shunt_current), Val(:mva)), construct_value(FACTSControlDevice, _construction_fields, Val(:max_reactive_power), Val(:mva)), shunt_control_type, regulated_bus_number, reactive_power_required, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function FACTSControlDevice(; name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=9999.0, max_reactive_power=9999.0, shunt_control_type=FACTSShuntControlType.STATCOM, regulated_bus_number=0, reactive_power_required=0.0, base_power=100.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, max_shunt_current, max_reactive_power, shunt_control_type, regulated_bus_number, reactive_power_required, base_power, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, control_mode = control_mode, voltage_setpoint = voltage_setpoint, max_shunt_current = max_shunt_current, max_reactive_power = max_reactive_power, shunt_control_type = shunt_control_type, regulated_bus_number = regulated_bus_number, reactive_power_required = reactive_power_required, base_power = base_power, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, construct_value(FACTSControlDevice, _construction_fields, Val(:max_shunt_current), Val(:mva)), construct_value(FACTSControlDevice, _construction_fields, Val(:max_reactive_power), Val(:mva)), shunt_control_type, regulated_bus_number, reactive_power_required, base_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

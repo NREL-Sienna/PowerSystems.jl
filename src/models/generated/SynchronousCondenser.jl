@@ -64,11 +64,13 @@ mutable struct SynchronousCondenser <: StaticInjection
 end
 
 function SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, reactive_power = reactive_power, rating = rating, reactive_power_limits = reactive_power_limits, base_power = base_power, active_power_losses = active_power_losses, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    SynchronousCondenser(name, available, bus, construct_value(SynchronousCondenser, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(SynchronousCondenser, _construction_fields, Val(:rating), Val(:mva)), construct_value(SynchronousCondenser, _construction_fields, Val(:reactive_power_limits), Val(:mva)), base_power, construct_value(SynchronousCondenser, _construction_fields, Val(:active_power_losses), Val(:mva)), services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function SynchronousCondenser(; name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, reactive_power = reactive_power, rating = rating, reactive_power_limits = reactive_power_limits, base_power = base_power, active_power_losses = active_power_losses, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    SynchronousCondenser(name, available, bus, construct_value(SynchronousCondenser, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(SynchronousCondenser, _construction_fields, Val(:rating), Val(:mva)), construct_value(SynchronousCondenser, _construction_fields, Val(:reactive_power_limits), Val(:mva)), base_power, construct_value(SynchronousCondenser, _construction_fields, Val(:active_power_losses), Val(:mva)), services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

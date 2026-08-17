@@ -70,11 +70,13 @@ mutable struct TModelHVDCLine <: DCBranch
 end
 
 function TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, base_current, services=Device[], ext=Dict{String, Any}(), )
-    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, base_current, services, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, arc = arc, r = r, l = l, c = c, active_power_limits_from = active_power_limits_from, active_power_limits_to = active_power_limits_to, base_current = base_current, services = services, ext = ext, )
+    TModelHVDCLine(name, available, construct_value(TModelHVDCLine, _construction_fields, Val(:active_power_flow), Val(:mva)), arc, r, l, c, construct_value(TModelHVDCLine, _construction_fields, Val(:active_power_limits_from), Val(:mva)), construct_value(TModelHVDCLine, _construction_fields, Val(:active_power_limits_to), Val(:mva)), base_current, services, ext, InfrastructureSystemsInternal(), )
 end
 
 function TModelHVDCLine(; name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, base_current, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, base_current, services, ext, internal, )
+    _construction_fields = (name = name, available = available, active_power_flow = active_power_flow, arc = arc, r = r, l = l, c = c, active_power_limits_from = active_power_limits_from, active_power_limits_to = active_power_limits_to, base_current = base_current, services = services, ext = ext, )
+    TModelHVDCLine(name, available, construct_value(TModelHVDCLine, _construction_fields, Val(:active_power_flow), Val(:mva)), arc, r, l, c, construct_value(TModelHVDCLine, _construction_fields, Val(:active_power_limits_from), Val(:mva)), construct_value(TModelHVDCLine, _construction_fields, Val(:active_power_limits_to), Val(:mva)), base_current, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

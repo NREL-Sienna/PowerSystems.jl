@@ -74,11 +74,13 @@ mutable struct InterruptiblePowerLoad <: ControllableLoad
 end
 
 function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, max_active_power = max_active_power, max_reactive_power = max_reactive_power, base_power = base_power, operation_cost = operation_cost, conformity = conformity, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    InterruptiblePowerLoad(name, available, bus, construct_value(InterruptiblePowerLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(InterruptiblePowerLoad, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(InterruptiblePowerLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(InterruptiblePowerLoad, _construction_fields, Val(:max_reactive_power), Val(:mva)), base_power, operation_cost, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
 function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity, services, dynamic_injector, ext, internal, )
+    _construction_fields = (name = name, available = available, bus = bus, active_power = active_power, reactive_power = reactive_power, max_active_power = max_active_power, max_reactive_power = max_reactive_power, base_power = base_power, operation_cost = operation_cost, conformity = conformity, services = services, dynamic_injector = dynamic_injector, ext = ext, )
+    InterruptiblePowerLoad(name, available, bus, construct_value(InterruptiblePowerLoad, _construction_fields, Val(:active_power), Val(:mva)), construct_value(InterruptiblePowerLoad, _construction_fields, Val(:reactive_power), Val(:mva)), construct_value(InterruptiblePowerLoad, _construction_fields, Val(:max_active_power), Val(:mva)), construct_value(InterruptiblePowerLoad, _construction_fields, Val(:max_reactive_power), Val(:mva)), base_power, operation_cost, conformity, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

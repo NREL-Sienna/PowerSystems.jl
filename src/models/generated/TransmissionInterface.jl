@@ -46,11 +46,13 @@ mutable struct TransmissionInterface <: Service
 end
 
 function TransmissionInterface(name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), base_power=100.0, )
-    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, base_power, InfrastructureSystemsInternal(), )
+    _construction_fields = (name = name, available = available, active_power_flow_limits = active_power_flow_limits, violation_penalty = violation_penalty, direction_mapping = direction_mapping, base_power = base_power, )
+    TransmissionInterface(name, available, construct_value(TransmissionInterface, _construction_fields, Val(:active_power_flow_limits), Val(:mva)), violation_penalty, direction_mapping, base_power, InfrastructureSystemsInternal(), )
 end
 
 function TransmissionInterface(; name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), base_power=100.0, internal=InfrastructureSystemsInternal(), )
-    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, base_power, internal, )
+    _construction_fields = (name = name, available = available, active_power_flow_limits = active_power_flow_limits, violation_penalty = violation_penalty, direction_mapping = direction_mapping, base_power = base_power, )
+    TransmissionInterface(name, available, construct_value(TransmissionInterface, _construction_fields, Val(:active_power_flow_limits), Val(:mva)), violation_penalty, direction_mapping, base_power, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
