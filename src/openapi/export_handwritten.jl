@@ -932,14 +932,14 @@ end
 
 # ── TwoTerminalVSCLine ──────────────────────────────────────────────────────────
 # Mirrors import: always exports "NATURAL_UNITS" for `admittance_units`/`voltage_units` (the
-# only basis implemented), so `g` converts pu → siemens in BOTH methods, and the DC-voltage
-# `dc_setpoint_*` branches convert pu → kV in both. Only the document-unit-system-governed power
+# only basis implemented), so `g` converts pu → siemens in BOTH methods. Only the
+# document-unit-system-governed power
 # fields and `dc_setpoint_*`'s `DC_POWER` branch multiply by the system base under `NaturalUnit`.
 # `voltage_limits_*`, `dc_voltage_droop_*`, the current fields, `rmpct_*`, the weighting
 # fractions, and `rated_dc_voltage` pass through — see import_handwritten.jl's header for why
-# each one is left alone. `ac_setpoint_*` under `AC_VOLTAGE` errors on the way out for the same
-# missing-AC-base reason it errors on the way in, rather than writing a per-unit magnitude into a
-# field the document declares in kV.
+# each one is left alone. The voltage-regulating `dc_setpoint_*`/`ac_setpoint_*` branches also
+# pass through, tagged `setpoint_voltage_units = "DEVICE_BASE"`: PSY stores them per-unit and
+# no AC base voltage exists to express an `AC_VOLTAGE` one in kV.
 
 """pu → siemens via `Ybase = base_power / rated_dc_voltage^2` (kV, MVA)."""
 function _vsc_pu_to_siemens(vsc::TwoTerminalVSCLine, base_power)
@@ -970,24 +970,16 @@ _vsc_dc_setpoint_to_openapi(
 _vsc_dc_setpoint_to_openapi(
     _vsc, setpoint, ::Val{VSCDCControlModes.DC_POWER}, _base_power, ::DeviceBaseUnit,
 ) = setpoint
-function _vsc_dc_setpoint_to_openapi(
-    vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit,
-)
-    return setpoint * _vsc_export_dc_base_voltage(vsc, setpoint, "dc_setpoint")
-end
-function _vsc_dc_setpoint_to_openapi(
-    vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
-)
-    return setpoint * _vsc_export_dc_base_voltage(vsc, setpoint, "dc_setpoint")
-end
+_vsc_dc_setpoint_to_openapi(
+    _vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit,
+) = setpoint
+_vsc_dc_setpoint_to_openapi(
+    _vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
+) = setpoint
 
 _vsc_ac_setpoint_to_openapi(_vsc, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) =
     setpoint
-_vsc_ac_setpoint_to_openapi(vsc, _setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = error(
-    "TwoTerminalVSCLine \"$(get_name(vsc))\": ac_control is AC_VOLTAGE, whose ac_setpoint is " *
-    "per-unit of the converter's AC base voltage in PowerSystems and kV in the document — " *
-    "neither the component nor the document carries that base, so the value cannot be converted",
-)
+_vsc_ac_setpoint_to_openapi(_vsc, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = setpoint
 
 """The shared body of both unit-system methods; only `unit` decides the power scaling."""
 function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAPIRefs, unit)
@@ -1034,6 +1026,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         power_factor_weighting_fraction_from =
         get_power_factor_weighting_fraction_from(vsc),
         voltage_units = "NATURAL_UNITS",
+        setpoint_voltage_units = "DEVICE_BASE",
         voltage_limits_from = _minmax_po(get_voltage_limits_from(vsc)),
         dc_voltage_droop_from = get_dc_voltage_droop_from(vsc),
         reactive_power_to = _vsc_power_to_openapi(

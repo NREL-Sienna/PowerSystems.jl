@@ -1116,6 +1116,17 @@ _check_vsc_voltage_units(po) = _check_unit_basis(
     " for $(po.name)",
 )
 
+# PSY stores every voltage-regulating setpoint per-unit, and no AC base voltage is recorded to
+# convert a kV one against, so `DEVICE_BASE` is the only basis a document may declare.
+const TWO_TERMINAL_VSC_SETPOINT_VOLTAGE_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+
+_check_vsc_setpoint_voltage_units(po) = _check_unit_basis(
+    po.setpoint_voltage_units,
+    TWO_TERMINAL_VSC_SETPOINT_VOLTAGE_UNITS_IMPLEMENTED,
+    "TwoTerminalVSCLine.setpoint_voltage_units",
+    " for $(po.name)",
+)
+
 """
 `rated_dc_voltage` when it can serve as a base, erroring when `value` needs a base the
 document declined to give. `0.0` is the schema's "unspecified", not a usable base.
@@ -1154,8 +1165,8 @@ _vsc_converter_loss(curve) = error(
 
 """
 `dc_setpoint_*` follows `dc_control_*`: MW under `DC_POWER` (a power field, so it divides
-with its siblings only under `NaturalUnit`), and kV under either DC-voltage-regulating mode,
-which PSY stores as per-unit of `rated_dc_voltage` in both methods.
+with its siblings only under `NaturalUnit`), and per-unit under either DC-voltage-regulating
+mode — `setpoint_voltage_units` is checked to be `DEVICE_BASE`, so no base is applied.
 """
 _vsc_dc_setpoint(
     po,
@@ -1168,32 +1179,24 @@ _vsc_dc_setpoint(
 _vsc_dc_setpoint(
     _po, setpoint, ::Val{VSCDCControlModes.DC_POWER}, _base_power, ::DeviceBaseUnit,
 ) = setpoint
-function _vsc_dc_setpoint(po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit)
-    return setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
-end
-function _vsc_dc_setpoint(
-    po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
-)
-    return setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
-end
+_vsc_dc_setpoint(_po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit) = setpoint
+_vsc_dc_setpoint(
+    _po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
+) = setpoint
 
 """
 `ac_setpoint_*` follows `ac_control_*`: a dimensionless power factor under
-`AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE` — kV in the document, per-unit
-of a converter AC base voltage in PSY, which neither side records. That branch errors instead
-of storing a kV magnitude in a per-unit field.
+`AC_REACTIVE_POWER`, an AC-side voltage under `AC_VOLTAGE`. Both are per-unit on both sides —
+`setpoint_voltage_units` is checked to be `DEVICE_BASE` — so neither needs a base.
 """
 _vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) = setpoint
-_vsc_ac_setpoint(po, _setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = error(
-    "TwoTerminalVSCLine \"$(po.name)\": ac_control is AC_VOLTAGE, whose ac_setpoint is kV in " *
-    "the document and per-unit of the converter's AC base voltage in PowerSystems — neither " *
-    "the component nor the document carries that base, so the value cannot be converted",
-)
+_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = setpoint
 
 """The shared body of both unit-system methods; only `unit` and `base_power` differ."""
 function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
     _check_vsc_admittance_units(po)
     _check_vsc_voltage_units(po)
+    _check_vsc_setpoint_voltage_units(po)
     dc_control_from = VSCDCControlModes(po.dc_control_from)
     dc_control_to = VSCDCControlModes(po.dc_control_to)
     ac_control_from = VSCACControlModes(po.ac_control_from)
