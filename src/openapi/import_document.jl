@@ -110,16 +110,19 @@ const DOCUMENT_PLAN = [
         addable = true,
     ),
     (
-        po_type = PO.HydroReservoir, psy_type = HydroReservoir, key = "HydroReservoir",
-        addable = true,
-    ),
-    (
         po_type = PO.HydroDispatch, psy_type = HydroDispatch, key = "HydroDispatch",
         addable = true,
     ),
     (
         po_type = PO.HydroPumpTurbine, psy_type = HydroPumpTurbine,
         key = "HydroPumpTurbine", addable = true,
+    ),
+    # After BOTH `HydroUnit` subtypes: `upstream_turbines`/`downstream_turbines` resolve
+    # through `_hydro_units`, so a reservoir pointing at a pump turbine cannot be converted
+    # before `HydroPumpTurbine` is registered.
+    (
+        po_type = PO.HydroReservoir, psy_type = HydroReservoir, key = "HydroReservoir",
+        addable = true,
     ),
     (
         po_type = PO.RenewableDispatch, psy_type = RenewableDispatch,

@@ -33,6 +33,7 @@ _fromto_tofrom_po_scaled(nt, base) =
 _inout_po(nt) = PC.InOut(; in = nt.in, out = nt.out)
 _inout_po_optional(::Nothing) = nothing
 _inout_po_optional(nt) = _inout_po(nt)
+_turbinepump_po(nt) = PC.TurbinePump(; turbine = nt.turbine, pump = nt.pump)
 # Inverse of the import side's `_complex_number` (import_handwritten.jl).
 _complex_number_po(c) = PC.ComplexNumber(; real = real(c), imag = imag(c))
 
