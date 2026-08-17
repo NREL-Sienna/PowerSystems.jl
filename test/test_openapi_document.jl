@@ -455,6 +455,15 @@ end
     end
 end
 
+@testset "DOCUMENT_PLAN: turbines convert before the reservoirs referencing them" begin
+    # `HydroReservoir`'s `upstream_turbines`/`downstream_turbines` hold ids of either turbine
+    # type, and `refs[id]` errors on an id not yet registered — so both must precede it.
+    order = [p.key for p in PSY.DOCUMENT_PLAN]
+    plan_position(key) = findfirst(==(key), order)
+    @test plan_position("HydroTurbine") < plan_position("HydroReservoir")
+    @test plan_position("HydroPumpTurbine") < plan_position("HydroReservoir")
+end
+
 @testset "DOCUMENT_PLAN: converters match the declared pair" begin
     # `from_openapi` dispatches on the PO type, so `psy_type` no longer reaches the import
     # call and a mis-paired entry would go unnoticed at run time — `is_document_exportable`
