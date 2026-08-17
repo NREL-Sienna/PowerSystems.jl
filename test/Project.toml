@@ -23,14 +23,10 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [sources]
-InfrastructureSystems = {path = "../../IS3.jl"}
-PowerSystemCaseBuilder = {path = "../../PowerSystemCaseBuilder.jl"}
-# PowerSystemCaseBuilder reaches these two, and Pkg honors [sources] only in the root
-# project -- without them both resolve from the registry, which predates the InfraStore and
-# OpenAPI work (PowerTableDataParser's add_time_series_from_pointers! extension stub in
-# particular is absent there).
-PowerTableDataParser = {path = "../../PowerTableDataParser.jl"}
-PowerFlowFileParser = {path = "../../PowerFlowFileParser.jl"}
+InfrastructureSystems = {rev = "feat/infrastore-integration", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
+PowerTableDataParser = {rev = "feat/infrastore-integration", url = "https://github.com/Sienna-Platform/PowerTableDataParser.jl"}
+PowerFlowFileParser = {rev = "feat/infrastore-integration", url = "https://github.com/Sienna-Platform/PowerFlowFileParser.jl"}
+PowerSystemCaseBuilder = {rev = "psy6", url = "https://github.com/Sienna-Platform/PowerSystemCaseBuilder.jl"}
 
 [compat]
 InfrastructureSystems = "3"
