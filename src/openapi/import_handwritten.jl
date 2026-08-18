@@ -55,8 +55,22 @@ _resolve_base_power(::OpenAPIRefs, base_power) = Float64(base_power)
 """Reservoir level fields arrive absolute (per `level_data_type`'s units); PSY wants them
 as a fraction of `storage_level_limits.max`. Semantic, not a unit conversion — same in
 both `DeviceBaseUnit`/`NaturalUnit` methods."""
-_level_fraction(::Nothing, max_level) = nothing
-_level_fraction(v, max_level) = v / max_level
+_level_fraction(::Nothing, max_level, name, field) = nothing
+
+function _level_fraction(v, max_level, name, field)
+    if iszero(max_level)
+        iszero(v) || error(
+            "HydroReservoir $name: $field is $v but storage_level_limits.max is 0, so the " *
+            "fraction PSY stores it as is undefined. A reservoir with no capacity cannot " *
+            "hold a level — emit a nonzero max, or a zero $field.",
+        )
+        # Zero capacity and zero level: no fraction is meaningful, and 0 is the value that
+        # survives the inverse (export multiplies the fraction by this same zero max).
+        # Placeholder reservoirs are built this way, so this must not error.
+        return 0.0
+    end
+    return v / max_level
+end
 
 _complex_number(c) = Complex(c.real, c.imag)
 
@@ -715,11 +729,21 @@ function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit
         name = po.name,
         available = po.available,
         storage_level_limits = _minmax(po.storage_level_limits),
-        initial_level = _level_fraction(po.initial_level, max_level),
+        initial_level = _level_fraction(
+            po.initial_level,
+            max_level,
+            po.name,
+            "initial_level",
+        ),
         spillage_limits = _opt_minmax(po.spillage_limits),
         inflow = po.inflow,
         outflow = po.outflow,
-        level_targets = _level_fraction(po.level_targets, max_level),
+        level_targets = _level_fraction(
+            po.level_targets,
+            max_level,
+            po.name,
+            "level_targets",
+        ),
         intake_elevation = po.intake_elevation,
         head_to_volume_factor = convert_cost(po.head_to_volume_factor),
         evaporative_loss = po.evaporative_loss,
