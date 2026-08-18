@@ -155,75 +155,75 @@ get_operation_cost(value::InterruptibleStandardLoad) = value.operation_cost
 """Get [`InterruptibleStandardLoad`](@ref) `conformity`."""
 get_conformity(value::InterruptibleStandardLoad) = value.conformity
 """Get [`InterruptibleStandardLoad`](@ref) `constant_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_constant_active_power_unitful`](@ref)."""
-get_constant_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:constant_active_power), Val(:mva), units))
+get_constant_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:constant_active_power), Val(:mw), units))
 """Get [`InterruptibleStandardLoad`](@ref) `constant_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_constant_active_power`](@ref)."""
-get_constant_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:constant_active_power), Val(:mva), units)
+get_constant_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:constant_active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_constant_active_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_constant_active_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `constant_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_constant_reactive_power_unitful`](@ref)."""
-get_constant_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:constant_reactive_power), Val(:mva), units))
+get_constant_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:constant_reactive_power), Val(:mvar), units))
 """Get [`InterruptibleStandardLoad`](@ref) `constant_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_constant_reactive_power`](@ref)."""
-get_constant_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:constant_reactive_power), Val(:mva), units)
+get_constant_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:constant_reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_constant_reactive_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_constant_reactive_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `impedance_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_impedance_active_power_unitful`](@ref)."""
-get_impedance_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:impedance_active_power), Val(:mva), units))
+get_impedance_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:impedance_active_power), Val(:mw), units))
 """Get [`InterruptibleStandardLoad`](@ref) `impedance_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_impedance_active_power`](@ref)."""
-get_impedance_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:impedance_active_power), Val(:mva), units)
+get_impedance_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:impedance_active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_impedance_active_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_impedance_active_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_impedance_reactive_power_unitful`](@ref)."""
-get_impedance_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:impedance_reactive_power), Val(:mva), units))
+get_impedance_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:impedance_reactive_power), Val(:mvar), units))
 """Get [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_impedance_reactive_power`](@ref)."""
-get_impedance_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:impedance_reactive_power), Val(:mva), units)
+get_impedance_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:impedance_reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_impedance_reactive_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_impedance_reactive_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `current_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_current_active_power_unitful`](@ref)."""
-get_current_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:current_active_power), Val(:mva), units))
+get_current_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:current_active_power), Val(:mw), units))
 """Get [`InterruptibleStandardLoad`](@ref) `current_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_current_active_power`](@ref)."""
-get_current_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:current_active_power), Val(:mva), units)
+get_current_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:current_active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_current_active_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_current_active_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `current_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_current_reactive_power_unitful`](@ref)."""
-get_current_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:current_reactive_power), Val(:mva), units))
+get_current_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:current_reactive_power), Val(:mvar), units))
 """Get [`InterruptibleStandardLoad`](@ref) `current_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_current_reactive_power`](@ref)."""
-get_current_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:current_reactive_power), Val(:mva), units)
+get_current_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:current_reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_current_reactive_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_current_reactive_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `max_constant_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_max_constant_active_power_unitful`](@ref)."""
-get_max_constant_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_constant_active_power), Val(:mva), units))
+get_max_constant_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_constant_active_power), Val(:mw), units))
 """Get [`InterruptibleStandardLoad`](@ref) `max_constant_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_constant_active_power`](@ref)."""
-get_max_constant_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_constant_active_power), Val(:mva), units)
+get_max_constant_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_constant_active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_constant_active_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_constant_active_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_max_constant_reactive_power_unitful`](@ref)."""
-get_max_constant_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_constant_reactive_power), Val(:mva), units))
+get_max_constant_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_constant_reactive_power), Val(:mvar), units))
 """Get [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_constant_reactive_power`](@ref)."""
-get_max_constant_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_constant_reactive_power), Val(:mva), units)
+get_max_constant_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_constant_reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_constant_reactive_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_constant_reactive_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_max_impedance_active_power_unitful`](@ref)."""
-get_max_impedance_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_impedance_active_power), Val(:mva), units))
+get_max_impedance_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_impedance_active_power), Val(:mw), units))
 """Get [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_impedance_active_power`](@ref)."""
-get_max_impedance_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_impedance_active_power), Val(:mva), units)
+get_max_impedance_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_impedance_active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_active_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_active_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_max_impedance_reactive_power_unitful`](@ref)."""
-get_max_impedance_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_impedance_reactive_power), Val(:mva), units))
+get_max_impedance_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_impedance_reactive_power), Val(:mvar), units))
 """Get [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_impedance_reactive_power`](@ref)."""
-get_max_impedance_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva), units)
+get_max_impedance_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_impedance_reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_reactive_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_reactive_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `max_current_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_max_current_active_power_unitful`](@ref)."""
-get_max_current_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_current_active_power), Val(:mva), units))
+get_max_current_active_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_current_active_power), Val(:mw), units))
 """Get [`InterruptibleStandardLoad`](@ref) `max_current_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_current_active_power`](@ref)."""
-get_max_current_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_current_active_power), Val(:mva), units)
+get_max_current_active_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_current_active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_current_active_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_current_active_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_max_current_reactive_power_unitful`](@ref)."""
-get_max_current_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_current_reactive_power), Val(:mva), units))
+get_max_current_reactive_power(value::InterruptibleStandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_current_reactive_power), Val(:mvar), units))
 """Get [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_current_reactive_power`](@ref)."""
-get_max_current_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_current_reactive_power), Val(:mva), units)
+get_max_current_reactive_power_unitful(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_current_reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_current_reactive_power), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_current_reactive_power_unitful), ::Type{InterruptibleStandardLoad}) = InfrastructureSystems.SU
 """Get [`InterruptibleStandardLoad`](@ref) `services`."""
@@ -244,29 +244,29 @@ set_operation_cost!(value::InterruptibleStandardLoad, val) = value.operation_cos
 """Set [`InterruptibleStandardLoad`](@ref) `conformity`."""
 set_conformity!(value::InterruptibleStandardLoad, val) = value.conformity = val
 """Set [`InterruptibleStandardLoad`](@ref) `constant_active_power`."""
-set_constant_active_power!(value::InterruptibleStandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
+set_constant_active_power!(value::InterruptibleStandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mw))
 """Set [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`."""
-set_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), val, Val(:mva))
+set_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), val, Val(:mvar))
 """Set [`InterruptibleStandardLoad`](@ref) `impedance_active_power`."""
-set_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), val, Val(:mva))
+set_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), val, Val(:mw))
 """Set [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power`."""
-set_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), val, Val(:mva))
+set_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), val, Val(:mvar))
 """Set [`InterruptibleStandardLoad`](@ref) `current_active_power`."""
-set_current_active_power!(value::InterruptibleStandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), val, Val(:mva))
+set_current_active_power!(value::InterruptibleStandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), val, Val(:mw))
 """Set [`InterruptibleStandardLoad`](@ref) `current_reactive_power`."""
-set_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), val, Val(:mva))
+set_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), val, Val(:mvar))
 """Set [`InterruptibleStandardLoad`](@ref) `max_constant_active_power`."""
-set_max_constant_active_power!(value::InterruptibleStandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), val, Val(:mva))
+set_max_constant_active_power!(value::InterruptibleStandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), val, Val(:mw))
 """Set [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power`."""
-set_max_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), val, Val(:mva))
+set_max_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), val, Val(:mvar))
 """Set [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power`."""
-set_max_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), val, Val(:mva))
+set_max_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), val, Val(:mw))
 """Set [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power`."""
-set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), val, Val(:mva))
+set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), val, Val(:mvar))
 """Set [`InterruptibleStandardLoad`](@ref) `max_current_active_power`."""
-set_max_current_active_power!(value::InterruptibleStandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mva))
+set_max_current_active_power!(value::InterruptibleStandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mw))
 """Set [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`."""
-set_max_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mva))
+set_max_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mvar))
 """Set [`InterruptibleStandardLoad`](@ref) `services`."""
 set_services!(value::InterruptibleStandardLoad, val) = value.services = val
 """Set [`InterruptibleStandardLoad`](@ref) `ext`."""

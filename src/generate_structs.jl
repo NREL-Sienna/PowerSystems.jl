@@ -185,8 +185,15 @@ const OPENAPI_COMPOUND_MEMBERS = Dict(
     "StartUpStages" => ("hot", "warm", "cold"),
     "TurbinePump" => ("turbine", "pump"),
 )
-const OPENAPI_CONVERSION_KINDS =
-    Dict(":mva" => :power, ":ohm" => :impedance, ":siemens" => :admittance)
+# The three power tokens share one per-unit base (S_base) and so one conversion
+# rule; they differ only in the natural unit the units engine prints them as.
+const OPENAPI_CONVERSION_KINDS = Dict(
+    ":mw" => :power,
+    ":mvar" => :power,
+    ":mva" => :power,
+    ":ohm" => :impedance,
+    ":siemens" => :admittance,
+)
 
 """
 Export-direction PO constructor helpers for each compound alias (`src/openapi/
@@ -397,8 +404,8 @@ function openapi_base_exprs(struct_name, field_name, conversion, field_names)
     return (s_base = nothing, z_base = nothing)
 end
 
-"""Operator and base expression for one `conversion` kind: POWER divides by S_base,
-IMPEDANCE divides by Z_base, ADMITTANCE multiplies by Z_base."""
+"""Operator and base expression for one `conversion` kind: power divides by S_base,
+impedance divides by Z_base, admittance multiplies by Z_base."""
 function openapi_conversion_op_base(conversion, bases)
     if conversion == :power
         return ("/", bases.s_base)
@@ -648,8 +655,8 @@ function openapi_export_base_exprs(
 end
 
 """Operator and base expression for one `conversion` kind, export direction — the inverse
-of `openapi_conversion_op_base`: POWER and IMPEDANCE multiply (device pu * base = natural
-value, undoing the import side's divide), ADMITTANCE divides (undoing import's multiply)."""
+of `openapi_conversion_op_base`: power and impedance multiply (device pu * base = natural
+value, undoing the import side's divide), admittance divides (undoing import's multiply)."""
 function openapi_export_conversion_op_base(conversion, bases)
     if conversion == :power
         return ("*", bases.s_base)

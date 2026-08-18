@@ -100,12 +100,12 @@ function check_rating_values(line::Union{Line, MonitoredLine})
             @assert field ∈ (:rating_b, :rating_c)
             continue
         end
-        rating_mw = rating_value * device_base_power
-        if rating_mw >= 2.0 * closest_rate_range.max
-            @warn "$(field) $(round(rating_mw; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        rating_mva = rating_value * device_base_power
+        if rating_mva >= 2.0 * closest_rate_range.max
+            @warn "$(field) $(round(rating_mva; digits=2)) MVA for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MVA for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
-        elseif rating_mw >= closest_rate_range.max || rating_mw <= closest_rate_range.min
-            @info "$(field) $(round(rating_mw; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+        elseif rating_mva >= closest_rate_range.max || rating_mva <= closest_rate_range.min
+            @info "$(field) $(round(rating_mva; digits=2)) MVA for $(get_name(line)) is outside the expected range $(closest_rate_range) MVA for Line at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         end
     end
@@ -302,11 +302,11 @@ function check_rating_values(xfrm::TwoWindingTransformer)
             return false
         end
         if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
-            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Transformer at a $(closest_v_level) kV Voltage level." _group =
+            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MVA for $(get_name(xfrm)) is 2x larger than the max expected rating $(closest_rate_range.max) MVA for Transformer at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         elseif (rating_value * device_base_power >= closest_rate_range.max) ||
                (rating_value * device_base_power <= closest_rate_range.min)
-            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is outside the expected range $(closest_rate_range) MW for Transformer at a $(closest_v_level) kV Voltage level." _group =
+            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MVA for $(get_name(xfrm)) is outside the expected range $(closest_rate_range) MVA for Transformer at a $(closest_v_level) kV Voltage level." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         end
     end

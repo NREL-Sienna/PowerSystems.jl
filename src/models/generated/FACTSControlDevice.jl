@@ -122,9 +122,9 @@ get_max_shunt_current_unitful(value::FACTSControlDevice, units) = get_value(valu
 InfrastructureSystems.display_units_arg(::typeof(get_max_shunt_current), ::Type{FACTSControlDevice}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_shunt_current_unitful), ::Type{FACTSControlDevice}) = InfrastructureSystems.SU
 """Get [`FACTSControlDevice`](@ref) `max_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_max_reactive_power_unitful`](@ref)."""
-get_max_reactive_power(value::FACTSControlDevice, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_reactive_power), Val(:mva), units))
+get_max_reactive_power(value::FACTSControlDevice, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_reactive_power), Val(:mvar), units))
 """Get [`FACTSControlDevice`](@ref) `max_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_reactive_power`](@ref)."""
-get_max_reactive_power_unitful(value::FACTSControlDevice, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
+get_max_reactive_power_unitful(value::FACTSControlDevice, units) = get_value(value, Val(:max_reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power), ::Type{FACTSControlDevice}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power_unitful), ::Type{FACTSControlDevice}) = InfrastructureSystems.SU
 """Get [`FACTSControlDevice`](@ref) `shunt_control_type`."""
@@ -155,7 +155,7 @@ set_voltage_setpoint!(value::FACTSControlDevice, val) = value.voltage_setpoint =
 """Set [`FACTSControlDevice`](@ref) `max_shunt_current`."""
 set_max_shunt_current!(value::FACTSControlDevice, val) = value.max_shunt_current = set_value(value, Val(:max_shunt_current), val, Val(:mva))
 """Set [`FACTSControlDevice`](@ref) `max_reactive_power`."""
-set_max_reactive_power!(value::FACTSControlDevice, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mva))
+set_max_reactive_power!(value::FACTSControlDevice, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mvar))
 """Set [`FACTSControlDevice`](@ref) `shunt_control_type`."""
 set_shunt_control_type!(value::FACTSControlDevice, val) = value.shunt_control_type = val
 """Set [`FACTSControlDevice`](@ref) `regulated_bus_number`."""

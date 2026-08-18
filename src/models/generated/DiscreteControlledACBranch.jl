@@ -103,15 +103,15 @@ get_name(value::DiscreteControlledACBranch) = value.name
 """Get [`DiscreteControlledACBranch`](@ref) `available`."""
 get_available(value::DiscreteControlledACBranch) = value.available
 """Get [`DiscreteControlledACBranch`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
-get_active_power_flow(value::DiscreteControlledACBranch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mva), units))
+get_active_power_flow(value::DiscreteControlledACBranch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mw), units))
 """Get [`DiscreteControlledACBranch`](@ref) `active_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow`](@ref)."""
-get_active_power_flow_unitful(value::DiscreteControlledACBranch, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+get_active_power_flow_unitful(value::DiscreteControlledACBranch, units) = get_value(value, Val(:active_power_flow), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{DiscreteControlledACBranch}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{DiscreteControlledACBranch}) = InfrastructureSystems.SU
 """Get [`DiscreteControlledACBranch`](@ref) `reactive_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_flow_unitful`](@ref)."""
-get_reactive_power_flow(value::DiscreteControlledACBranch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mva), units))
+get_reactive_power_flow(value::DiscreteControlledACBranch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mvar), units))
 """Get [`DiscreteControlledACBranch`](@ref) `reactive_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_flow`](@ref)."""
-get_reactive_power_flow_unitful(value::DiscreteControlledACBranch, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
+get_reactive_power_flow_unitful(value::DiscreteControlledACBranch, units) = get_value(value, Val(:reactive_power_flow), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow), ::Type{DiscreteControlledACBranch}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow_unitful), ::Type{DiscreteControlledACBranch}) = InfrastructureSystems.SU
 """Get [`DiscreteControlledACBranch`](@ref) `arc`."""
@@ -150,9 +150,9 @@ get_internal(value::DiscreteControlledACBranch) = value.internal
 """Set [`DiscreteControlledACBranch`](@ref) `available`."""
 set_available!(value::DiscreteControlledACBranch, val) = value.available = val
 """Set [`DiscreteControlledACBranch`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::DiscreteControlledACBranch, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
+set_active_power_flow!(value::DiscreteControlledACBranch, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
 """Set [`DiscreteControlledACBranch`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::DiscreteControlledACBranch, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
+set_reactive_power_flow!(value::DiscreteControlledACBranch, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
 """Set [`DiscreteControlledACBranch`](@ref) `arc`."""
 set_arc!(value::DiscreteControlledACBranch, val) = value.arc = val
 """Set [`DiscreteControlledACBranch`](@ref) `r`."""

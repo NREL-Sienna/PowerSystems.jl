@@ -158,15 +158,15 @@ get_status(value::ThermalMultiStart) = value.status
 """Get [`ThermalMultiStart`](@ref) `bus`."""
 get_bus(value::ThermalMultiStart) = value.bus
 """Get [`ThermalMultiStart`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
-get_active_power(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+get_active_power(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mw), units))
 """Get [`ThermalMultiStart`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
-get_active_power_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:active_power), Val(:mva), units)
+get_active_power_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 """Get [`ThermalMultiStart`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
-get_reactive_power(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+get_reactive_power(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mvar), units))
 """Get [`ThermalMultiStart`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
-get_reactive_power_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+get_reactive_power_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 """Get [`ThermalMultiStart`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_unitful`](@ref)."""
@@ -180,27 +180,27 @@ get_prime_mover_type(value::ThermalMultiStart) = value.prime_mover_type
 """Get [`ThermalMultiStart`](@ref) `fuel`."""
 get_fuel(value::ThermalMultiStart) = value.fuel
 """Get [`ThermalMultiStart`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
-get_active_power_limits(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mva), units))
+get_active_power_limits(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mw), units))
 """Get [`ThermalMultiStart`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits`](@ref)."""
-get_active_power_limits_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
+get_active_power_limits_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:active_power_limits), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 """Get [`ThermalMultiStart`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
-get_reactive_power_limits(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
+get_reactive_power_limits(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mvar), units))
 """Get [`ThermalMultiStart`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
-get_reactive_power_limits_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+get_reactive_power_limits_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:reactive_power_limits), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 """Get [`ThermalMultiStart`](@ref) `ramp_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_ramp_limits_unitful`](@ref)."""
-get_ramp_limits(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:ramp_limits), Val(:mva), units))
+get_ramp_limits(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:ramp_limits), Val(:mw), units))
 """Get [`ThermalMultiStart`](@ref) `ramp_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_ramp_limits`](@ref)."""
-get_ramp_limits_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:ramp_limits), Val(:mva), units)
+get_ramp_limits_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:ramp_limits), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 """Get [`ThermalMultiStart`](@ref) `power_trajectory` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_power_trajectory_unitful`](@ref)."""
-get_power_trajectory(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:power_trajectory), Val(:mva), units))
+get_power_trajectory(value::ThermalMultiStart, units) = InfrastructureSystems._strip_units(get_value(value, Val(:power_trajectory), Val(:mw), units))
 """Get [`ThermalMultiStart`](@ref) `power_trajectory` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_power_trajectory`](@ref)."""
-get_power_trajectory_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:power_trajectory), Val(:mva), units)
+get_power_trajectory_unitful(value::ThermalMultiStart, units) = get_value(value, Val(:power_trajectory), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_power_trajectory), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_power_trajectory_unitful), ::Type{ThermalMultiStart}) = InfrastructureSystems.SU
 """Get [`ThermalMultiStart`](@ref) `time_limits`."""
@@ -233,9 +233,9 @@ set_status!(value::ThermalMultiStart, val) = value.status = val
 """Set [`ThermalMultiStart`](@ref) `bus`."""
 set_bus!(value::ThermalMultiStart, val) = value.bus = val
 """Set [`ThermalMultiStart`](@ref) `active_power`."""
-set_active_power!(value::ThermalMultiStart, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
+set_active_power!(value::ThermalMultiStart, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
 """Set [`ThermalMultiStart`](@ref) `reactive_power`."""
-set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
+set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
 """Set [`ThermalMultiStart`](@ref) `rating`."""
 set_rating!(value::ThermalMultiStart, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`ThermalMultiStart`](@ref) `prime_mover_type`."""
@@ -243,13 +243,13 @@ set_prime_mover_type!(value::ThermalMultiStart, val) = value.prime_mover_type = 
 """Set [`ThermalMultiStart`](@ref) `fuel`."""
 set_fuel!(value::ThermalMultiStart, val) = value.fuel = val
 """Set [`ThermalMultiStart`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
+set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mw))
 """Set [`ThermalMultiStart`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
+set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
 """Set [`ThermalMultiStart`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
+set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mw))
 """Set [`ThermalMultiStart`](@ref) `power_trajectory`."""
-set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = set_value(value, Val(:power_trajectory), val, Val(:mva))
+set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = set_value(value, Val(:power_trajectory), val, Val(:mw))
 """Set [`ThermalMultiStart`](@ref) `time_limits`."""
 set_time_limits!(value::ThermalMultiStart, val) = value.time_limits = val
 """Set [`ThermalMultiStart`](@ref) `start_time_limits`."""

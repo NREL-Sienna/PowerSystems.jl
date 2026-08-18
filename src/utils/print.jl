@@ -148,7 +148,11 @@ function show_component(io::IO, ist::Component; units = nothing)
         else
             val = getproperty(ist, name)
         end
-        print(io, "\n   ", name, ": ", val)
+        # `display_string` spells `DU`/`SU` out as "p.u. in {device,system} base":
+        # the terse tags read as jargon in a component's verbose display, where
+        # there is room to be explicit. Terse contexts (the compact one-line
+        # `show`, table cells) keep the short tags.
+        print(io, "\n   ", name, ": ", IS.display_string(val))
     end
     print(
         io,
@@ -158,10 +162,65 @@ function show_component(io::IO, ist::Component; units = nothing)
         string(has_supplemental_attributes(ist)),
     )
     print(io, "\n   ", "has_time_series", ": ", string(has_time_series(ist)))
+    note = _device_base_note(ist)
+    isnothing(note) || print(io, "\n   (", note, ")")
     return
 end
 
 show_component(ist::Component; units = nothing) = show_component(stdout, ist; units = units)
+
+# Dynamic models are not wired into the units engine: their parameters are plain
+# `Float64`s with no `needs_conversion` descriptor entry, so display cannot tag them
+# field by field. They are, by the modeling convention every dynamics parser and
+# simulator assumes, per-unitized on the device's own `base_power` — state that once
+# as a footer rather than leaving the numbers unlabeled.
+_device_base_note(::Component) = nothing
+function _device_base_note(d::DynamicInjection)
+    # Read the field, not `_get_base_power`: the dynamic injection types that have
+    # no `base_power` field of their own fall back to the system base, which errors
+    # for a detached component — and display must never error.
+    base = hasfield(typeof(d), :base_power) ? " of $(d.base_power) MVA" : ""
+    return "parameters of the dynamic components above are in p.u. on the device base$base"
+end
+
+# The dynamic-model parameter blocks: machines, shafts, AVRs, turbine governors, PSSs,
+# and the inverter-side converters, filters, and controls. `ActivePowerControl` and
+# `ReactivePowerControl` sit directly under `DeviceParameter` rather than under
+# `DynamicComponent`, so they are named separately.
+const DynamicParameterBlock =
+    Union{DynamicComponent, ActivePowerControl, ReactivePowerControl}
+
+"""
+Print a dynamic-model parameter block (a machine, shaft, AVR, turbine governor, PSS,
+converter, filter, control, ...) to `io` field by field, in the same shape as
+[`show_component`](@ref). These blocks are [`DeviceParameter`](@ref)s rather than
+[`Component`](@ref)s, so without this they fall back to Julia's single-line struct dump.
+
+The footer records that the values are per-unitized on the parent device's `base_power`:
+dynamic models are not wired into the explicit-units engine, so there is no per-field unit
+to print.
+
+# Examples
+```julia
+show_device_parameter(get_machine(dyn_gen))
+```
+"""
+function show_device_parameter(io::IO, tech::DynamicParameterBlock)
+    print(io, IS.strip_module_name(typeof(tech)), ":")
+    for name in fieldnames(typeof(tech))
+        obj = getproperty(tech, name)
+        obj isa InfrastructureSystemsInternal && continue
+        val = obj isa InfrastructureSystemsType ? summary(obj) : IS.display_string(obj)
+        print(io, "\n   ", name, ": ", val)
+    end
+    print(io, "\n   (parameters in p.u. on the parent device's base power)")
+    return
+end
+
+show_device_parameter(tech::DynamicParameterBlock) = show_device_parameter(stdout, tech)
+
+Base.show(io::IO, ::MIME"text/plain", tech::DynamicParameterBlock) =
+    show_device_parameter(io, tech)
 
 function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     if !has_units_setting(ist)
@@ -188,10 +247,12 @@ Show all components of the given type in a table.
   fields are printed with an explicit unit suffix (e.g. `"30.0 MW"`, `"1.0 DU"`).
 
 # Keyword Arguments
-- `units`: When `additional_columns` is a `Vector`, force every unit-converted column to
-  display in this unit system (e.g. `MW`, `SU`, `DU`, `NU`) instead of each field's own
-  `display_units_arg` default. Ignored for `Dict`-form `additional_columns`, whose
-  functions compute their own values.
+- `units`: When `additional_columns` is a `Vector`, force unit-converted columns to
+  display in a given unit system (e.g. `MW`, `SU`, `DU`, `NU`) instead of each field's
+  own `display_units_arg` default. Pass a single unit to apply it to every column, or a
+  column-to-unit mapping (`Dict` or `NamedTuple`) to set units per field; columns absent
+  from the mapping keep their own default. Ignored for `Dict`-form `additional_columns`,
+  whose functions compute their own values.
 - Remaining keyword arguments are forwarded to `PrettyTables.pretty_table`.
 
 # Examples
@@ -200,6 +261,8 @@ show_components(sys, ThermalStandard)
 show_components(sys, ThermalStandard, Dict("has_time_series" => x -> has_time_series(x)))
 show_components(sys, ThermalStandard, [:active_power, :reactive_power])
 show_components(sys, ThermalStandard, [:rating]; units = MW)
+show_components(sys, ThermalStandard, [:active_power, :rating];
+    units = Dict(:active_power => MW, :rating => DU))
 ```
 """
 function show_components(

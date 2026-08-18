@@ -125,15 +125,15 @@ get_name(value::MonitoredLine) = value.name
 """Get [`MonitoredLine`](@ref) `available`."""
 get_available(value::MonitoredLine) = value.available
 """Get [`MonitoredLine`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
-get_active_power_flow(value::MonitoredLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mva), units))
+get_active_power_flow(value::MonitoredLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mw), units))
 """Get [`MonitoredLine`](@ref) `active_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow`](@ref)."""
-get_active_power_flow_unitful(value::MonitoredLine, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+get_active_power_flow_unitful(value::MonitoredLine, units) = get_value(value, Val(:active_power_flow), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 """Get [`MonitoredLine`](@ref) `reactive_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_flow_unitful`](@ref)."""
-get_reactive_power_flow(value::MonitoredLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mva), units))
+get_reactive_power_flow(value::MonitoredLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mvar), units))
 """Get [`MonitoredLine`](@ref) `reactive_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_flow`](@ref)."""
-get_reactive_power_flow_unitful(value::MonitoredLine, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
+get_reactive_power_flow_unitful(value::MonitoredLine, units) = get_value(value, Val(:reactive_power_flow), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow_unitful), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 """Get [`MonitoredLine`](@ref) `arc`."""
@@ -157,9 +157,9 @@ get_b_unitful(value::MonitoredLine, units) = get_value(value, Val(:b), Val(:siem
 InfrastructureSystems.display_units_arg(::typeof(get_b), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_b_unitful), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 """Get [`MonitoredLine`](@ref) `flow_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_flow_limits_unitful`](@ref)."""
-get_flow_limits(value::MonitoredLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:flow_limits), Val(:mva), units))
+get_flow_limits(value::MonitoredLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:flow_limits), Val(:mw), units))
 """Get [`MonitoredLine`](@ref) `flow_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_flow_limits`](@ref)."""
-get_flow_limits_unitful(value::MonitoredLine, units) = get_value(value, Val(:flow_limits), Val(:mva), units)
+get_flow_limits_unitful(value::MonitoredLine, units) = get_value(value, Val(:flow_limits), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_flow_limits), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_flow_limits_unitful), ::Type{MonitoredLine}) = InfrastructureSystems.SU
 """Get [`MonitoredLine`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_unitful`](@ref)."""
@@ -200,9 +200,9 @@ get_internal(value::MonitoredLine) = value.internal
 """Set [`MonitoredLine`](@ref) `available`."""
 set_available!(value::MonitoredLine, val) = value.available = val
 """Set [`MonitoredLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
+set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
 """Set [`MonitoredLine`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
+set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
 """Set [`MonitoredLine`](@ref) `arc`."""
 set_arc!(value::MonitoredLine, val) = value.arc = val
 """Set [`MonitoredLine`](@ref) `r`."""
@@ -212,7 +212,7 @@ set_x!(value::MonitoredLine, val) = value.x = set_value(value, Val(:x), val, Val
 """Set [`MonitoredLine`](@ref) `b`."""
 set_b!(value::MonitoredLine, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
 """Set [`MonitoredLine`](@ref) `flow_limits`."""
-set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mva))
+set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mw))
 """Set [`MonitoredLine`](@ref) `rating`."""
 set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `angle_limits`."""
