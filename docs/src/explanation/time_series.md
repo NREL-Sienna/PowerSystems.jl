@@ -142,22 +142,15 @@ large datasets from overwhelming system memory. Refer to this
 [page](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/dev_guide/time_series/#Data-Format)
 for details on how the time series data is stored.
 
-Time series data can be stored actual component values (for instance MW) or scaling
-factors intended to be multiplied by a scalar to generate the component values.
-By default PowerSystems treats the values in the time
-series data as physical units. In order to specify them as scaling factors, you
-must pass the accessor function that provides the multiplier value (e.g.,
-`get_time_series_array`). The scaling factor multiplier
-must be passed into the forecast when you create it to use this option.
+Time series data stores actual component values (for instance MW). A series is not scaled
+on retrieval: the values you read back are the values that were stored.
 
-The time series contains fields for `scaling_factor_multiplier` and `data`
-to identify the details of  th `Component` field that the time series describes, and the
-time series `data`. For example: we commonly want to use a time series to
-describe the maximum active power capability of a renewable generator. In this case, we
-can create a `SingleTimeSeries` with a `TimeArray` and an accessor function to the
-maximum active power field in the struct describing the generator. In this way, we can
-store a scaling factor time series that will get multiplied by the maximum active power
-rather than the magnitudes of the maximum active power time series.
+A series declares what its values mean through `units`, `quantity_kind`, and `unit_system`,
+alongside `data` and the `name` identifying the `Component` field it describes. For example:
+to describe the maximum active power capability of a renewable generator, create a
+`SingleTimeSeries` named `"max_active_power"` whose `TimeArray` already holds that
+generator's power values. A normalized profile must therefore be multiplied by the
+component's field value before it is stored, rather than at retrieval.
 
 Examples of how to create and add time series to system can be found in the
 [Add Time Series Example](https://sienna-platform.github.io/PowerSystems.jl/stable/tutorials/add_forecasts/)

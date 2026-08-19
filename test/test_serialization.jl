@@ -183,7 +183,7 @@ end
     sys2, result = validate_serialization(sys; assign_new_ids = true)
     @test result
     # The System retains a UUID, reassigned when deserialized with assign_new_ids.
-    @test get_uuid(sys) != get_uuid(sys2)
+    @test get_system_uuid(sys) != get_system_uuid(sys2)
     for component1 in get_components(Component, sys)
         component2 = get_component(typeof(component1), sys2, get_name(component1))
         @test IS.get_id(component1) != IS.get_id(component2)

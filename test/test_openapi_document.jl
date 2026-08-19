@@ -119,8 +119,8 @@ end
         @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
 
         # A named sidecar that is not on disk. This is the one time-series error path left:
-        # the rest — unmapped time_series_type, unmapped scaling_factor_multiplier, a
-        # mismatched owner_category, series declared with no storage path — all validated a
+        # the rest — unmapped time_series_type, a mismatched owner_category, series
+        # declared with no storage path — all validated a
         # `time_series_associations` row, and the sidecar's own catalog is the association
         # table now, written by the store rather than by a producer filling in columns.
         doc = make_openapi_test_doc()

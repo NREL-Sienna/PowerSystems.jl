@@ -124,8 +124,7 @@ time_series_transaction(sys) do txn
         forecast = Deterministic(
             "max_active_power",
             data,
-            resolution;
-            scaling_factor_multiplier = get_max_active_power,
+            resolution,
         )
         add_time_series!(txn, gen, forecast)
     end
@@ -148,8 +147,7 @@ time_series_transaction(sys) do txn
         forecast = Deterministic(
             "max_active_power",
             component_data,
-            resolution;
-            scaling_factor_multiplier = get_max_active_power,
+            resolution,
         )
         add_time_series!(txn, component, forecast)
     end

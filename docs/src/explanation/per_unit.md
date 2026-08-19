@@ -53,13 +53,13 @@ stateful-override mechanism (`set_units_base_system!`, `with_units_base`, `get_u
 has been removed — it caused real bugs and, once units became explicit at every call
 site, had no effect on any conversion result to begin with.
 
-| PowerSystems 5 (stateful)                                                       | PowerSystems 6 (explicit)                                                                       |
-|:------------------------------------------------------------------------------- |:----------------------------------------------------------------------------------------------- |
-| `set_units_base_system!(sys, "SYSTEM_BASE"); get_active_power(gen)`             | `get_active_power(gen, SU)`                                                                     |
-| `with_units_base(sys, UnitSystem.NATURAL_UNITS) do; get_active_power(gen); end` | `get_active_power(gen, NU)`                                                                     |
-| `set_active_power!(gen, 0.9)` (interpreted via system setting)                  | `set_active_power!(gen, 0.9 * SU)`                                                              |
-| `get_rating(line)`                                                              | `get_rating(line, SU)`                                                                          |
-| `scaling_factor_multiplier = get_max_active_power` (1-arg)                      | same name; the multiplier is invoked as `get_max_active_power(gen, units)` with `SU` by default |
+| PowerSystems 5 (stateful)                                                       | PowerSystems 6 (explicit)                                                                 |
+|:------------------------------------------------------------------------------- |:----------------------------------------------------------------------------------------- |
+| `set_units_base_system!(sys, "SYSTEM_BASE"); get_active_power(gen)`             | `get_active_power(gen, SU)`                                                               |
+| `with_units_base(sys, UnitSystem.NATURAL_UNITS) do; get_active_power(gen); end` | `get_active_power(gen, NU)`                                                               |
+| `set_active_power!(gen, 0.9)` (interpreted via system setting)                  | `set_active_power!(gen, 0.9 * SU)`                                                        |
+| `get_rating(line)`                                                              | `get_rating(line, SU)`                                                                    |
+| `scaling_factor_multiplier = get_max_active_power` (1-arg)                      | removed; store actual per-device quantities in the series instead of a normalized profile |
 
 Notes:
 

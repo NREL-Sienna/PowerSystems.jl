@@ -574,7 +574,7 @@ export set_number!  # Remove this in v5.0.
 export get_name
 export set_name!
 export get_component_ids
-export get_uuid
+export get_system_uuid
 export get_description
 export set_description!
 export get_frequency

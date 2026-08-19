@@ -427,18 +427,18 @@ data frame, and build and attach each solar generator's time series:
 
 ```julia
 for row in eachrow(solar_gens)
-    norm = maximum(solar_time_series[:, row[name]])
     solar_data_MW = solar_time_series[:, row[name]]
-    base = row[rate]
-    if any((solar_data_MW ./ base) .> 1.0)
-        @warn "Generator $(row[name]) has a production larger than its base power. Normalizing by its maximum"
-        base = norm
+    if any((solar_data_MW ./ row[rate]) .> 1.0)
+        @warn "Generator $(row[name]) has a production larger than its base power"
     end
-    solar_array = TimeArray(timestamps, (solar_data_MW ./ base)) # normalize data
+    # Stored as actual power, not normalized: a time series is not rescaled on retrieval.
+    solar_array = TimeArray(timestamps, solar_data_MW)
     solar_TS = SingleTimeSeries(;
         name = "max_active_power",
         data = solar_array,
-        scaling_factor_multiplier = get_max_active_power,
+        units = "MW",
+        quantity_kind = "ActivePower",
+        unit_system = NU,
     )
     solar = RenewableDispatch(;
         name = row[name],
@@ -531,18 +531,18 @@ data frame, and build and attach each hydro generator's time series:
 
 ```julia
 for row in eachrow(hydro_gens)
-    norm = maximum(hydro_time_series[:, row[name]])
     hydro_data_MW = hydro_time_series[:, row[name]]
-    base = row[rate]
-    if any((hydro_data_MW ./ base) .> 1.0)
-        @warn "Generator $(row[name]) has a production larger than its base power. Normalizing by its maximum"
-        base = norm
+    if any((hydro_data_MW ./ row[rate]) .> 1.0)
+        @warn "Generator $(row[name]) has a production larger than its base power"
     end
-    hydro_array = TimeArray(timestamps, (hydro_data_MW ./ base)) # normalize data
+    # Stored as actual power, not normalized: a time series is not rescaled on retrieval.
+    hydro_array = TimeArray(timestamps, hydro_data_MW)
     hydro_TS = SingleTimeSeries(;
         name = "max_active_power",
         data = hydro_array,
-        scaling_factor_multiplier = get_max_active_power,
+        units = "MW",
+        quantity_kind = "ActivePower",
+        unit_system = NU,
     )
     hydro = HydroDispatch(;
         name = row[name],
@@ -658,15 +658,14 @@ maximum.
 regions = unique(load_params[:, region])
 
 for reg in regions
-    norm = maximum(load_time_series[:, reg])
-    load_array = TimeArray(
-        timestamps,
-        (load_time_series[:, reg] ./ norm),
-    )
+    # Stored as actual power, not normalized: a time series is not rescaled on retrieval.
+    load_array = TimeArray(timestamps, load_time_series[:, reg])
     load_TS = SingleTimeSeries(;
         name = "max_active_power",
         data = load_array,
-        scaling_factor_multiplier = get_max_active_power,
+        units = "MW",
+        quantity_kind = "ActivePower",
+        unit_system = NU,
     )
     region = get_component(Area, sys, reg)
     time_series_transaction(sys) do txn

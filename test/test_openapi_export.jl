@@ -1109,7 +1109,10 @@ end
         # carried on the rows, not just in the sidecar's catalog.
         @test length(doc.time_series_associations) == 3
         det_row = only(
-            filter(a -> a.time_series_type == "Deterministic", doc.time_series_associations),
+            filter(
+                a -> a.time_series_type == "Deterministic",
+                doc.time_series_associations,
+            ),
         )
         @test det_row.horizon == "PT7200S"
         @test det_row.interval == "PT3600S"

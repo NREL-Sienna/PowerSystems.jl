@@ -445,7 +445,7 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
-        "uuid" => string(get_uuid(sys)),
+        "uuid" => string(get_system_uuid(sys)),
         "frequency" => sys.frequency,
         "time_series_resolutions_milliseconds" => resolutions,
         "component_counts" => IS.get_component_counts_by_type(sys.data),
@@ -549,7 +549,7 @@ get_name(sys::System) = sys.metadata.name
 Get the UUID of the system. Unlike components and supplemental attributes (which are
 identified by an integer id), the `System` retains a UUID for identity.
 """
-get_uuid(sys::System) = sys.metadata.uuid
+get_system_uuid(sys::System) = sys.metadata.uuid
 
 """
 Set the description of the system.

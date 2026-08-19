@@ -710,8 +710,7 @@ requirement — every id already exists or is assigned fresh before it is ever r
 `get_base_power(sys)` exactly — not reconstructed.
 
 Component `ext` is written through verbatim to `doc.ext`. Errors loudly rather than silently
-dropping data: a time series with no `time_series_storage_path` given, or an unmapped
-`scaling_factor_multiplier` function.
+dropping data: a time series with no `time_series_storage_path` given.
 """
 function to_openapi(
     sys::System;
