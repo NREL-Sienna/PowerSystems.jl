@@ -597,15 +597,31 @@ end
 """Forecast shape columns — `(horizon, interval, window_count)` — or all three `nothing` for a
 static series, which has no forecast axis."""
 _forecast_columns(::IS.StaticTimeSeriesKey) = (nothing, nothing, nothing)
+_forecast_columns(::IS.NonSequentialTimeSeriesKey) = (nothing, nothing, nothing)
 _forecast_columns(key::IS.ForecastKey) = (
     _iso8601_or_nothing(IS.get_horizon(key)),
     _iso8601_or_nothing(IS.get_interval(key)),
     IS.get_count(key),
 )
 
+"""
+Grid columns — `(initial_timestamp, resolution)`.
+
+`NonSequentialTimeSeriesKey` is a sibling of the other key types, not a subtype: it carries
+neither field, because an irregular series has no `initial + k * resolution` grid to describe.
+Its explicit timestamp vector lives in the store, so the row identifies it by `name` and
+`length` and leaves both columns empty.
+"""
+_grid_columns(::IS.NonSequentialTimeSeriesKey) = (nothing, nothing)
+_grid_columns(key::IS.TimeSeriesKey) = (
+    TimeZones.ZonedDateTime(IS.get_initial_timestamp(key), TimeZones.TimeZone("UTC")),
+    _iso8601_duration(IS.get_resolution(key)),
+)
+
 """`length` column: a static series' own length. A forecast's shape is described by
 horizon/interval/window_count instead, so it carries none."""
 _document_length(key::IS.StaticTimeSeriesKey) = IS.get_length(key)
+_document_length(key::IS.NonSequentialTimeSeriesKey) = IS.get_length(key)
 _document_length(::IS.ForecastKey) = nothing
 
 """
@@ -623,13 +639,12 @@ does not set.
 function _time_series_row(doc::PC.SystemDocument, entity, entity_id::Int, key)
     ts = get_time_series(entity, key)
     horizon, interval, window_count = _forecast_columns(key)
+    initial_timestamp, resolution = _grid_columns(key)
     return PC.TimeSeriesAssociation(;
         id = PC.next_id!(doc),
         time_series_type = string(nameof(IS.get_time_series_type(key))),
-        initial_timestamp = TimeZones.ZonedDateTime(
-            IS.get_initial_timestamp(key), TimeZones.TimeZone("UTC"),
-        ),
-        resolution = _iso8601_duration(IS.get_resolution(key)),
+        initial_timestamp = initial_timestamp,
+        resolution = resolution,
         horizon = horizon,
         interval = interval,
         window_count = window_count,

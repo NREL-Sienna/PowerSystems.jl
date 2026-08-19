@@ -124,3 +124,104 @@ end
     @test PSY.PC.get_ext(exported, 3) == extras
     @test isempty(PSY.PC.get_ext(exported, 4))
 end
+
+@testset "export needs no ledger: a hand-built System serializes" begin
+    # The point of this testset. Before the ledger was deleted, `unit_system` defaulted to
+    # `:original`, which read an id/unit-system map out of `System.ext` that only
+    # `from_openapi` ever wrote. A System assembled with `add_component!` therefore had no
+    # ledger and could not be exported at its own default — the very case a user hits first.
+    #
+    # The unit-system assertions use the time-series-free fixture so that `to_openapi` needs
+    # no sidecar path; the bundle round trip below covers the time-series case.
+    sys = _file_io_fixture(; with_time_series = false)
+
+    # No ledger is written, and nothing is stashed in `ext` on the way out.
+    @test isempty(get_ext(sys))
+    @test !haskey(get_ext(sys), "_openapi_ledger")
+
+    # The default path works with no ledger present. This is the regression guard.
+    @test PSY.PC.get_unit_system(to_openapi(sys)) == "DEVICE_BASE"
+    @test isempty(get_ext(sys))
+
+    # Both remaining conventions are reachable on the same ledger-free System, and they are
+    # exactly the document schema's two legal values.
+    for (sym, declared) in
+        ((:device_base, "DEVICE_BASE"), (:natural_units, "NATURAL_UNITS"))
+        @test PSY.PC.get_unit_system(to_openapi(sys; unit_system = sym)) == declared
+    end
+
+    # `:original` is gone rather than quietly reinterpreted: a System records no unit system
+    # of its own, so there is nothing left to reproduce it from.
+    @test_throws ErrorException to_openapi(sys; unit_system = :original)
+
+    # A hand-built System with time series writes a bundle, reads back, and re-exports.
+    with_ts = _file_io_fixture()
+    mktempdir() do dir
+        bundle = joinpath(dir, "handbuilt")
+        to_file(with_ts, bundle)
+
+        sys2 = from_file(System, bundle)
+
+        # Import writes no ledger either, so `ext` is clean on a document-built System too.
+        @test isempty(get_ext(sys2))
+        @test !haskey(get_ext(sys2), "_openapi_ledger")
+
+        gen2 = get_component(ThermalStandard, sys2, "g1")
+        @test get_name(gen2) == "g1"
+        ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
+        @test TimeSeries.values(PSY.get_data(ts)) == [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+
+        # And the imported System re-exports. Under the ledger this was the only System that
+        # could use `:original`; now it takes the same path as any other.
+        again = joinpath(dir, "handbuilt2")
+        to_file(sys2, again)
+        @test isfile(joinpath(again, "system.json"))
+        @test PSY.PC.get_unit_system(PSY.PC.read_document(joinpath(again, "system.json"))) ==
+              "DEVICE_BASE"
+    end
+end
+
+@testset "NonSequentialTimeSeries round trips with no grid columns" begin
+    # `NonSequentialTimeSeriesKey` is a sibling of the other key types, not a subtype, and it
+    # carries neither `initial_timestamp` nor `resolution` — an irregular series has no
+    # `initial + k * resolution` grid. Export used to assume every key had both and died on
+    # `_forecast_columns`, so this is the guard for the whole irregular path.
+    sys = _file_io_fixture(; with_time_series = false)
+    gen = get_component(ThermalStandard, sys, "g1")
+    stamps = [
+        Dates.DateTime(2024, 1, 1),
+        Dates.DateTime(2024, 1, 1, 3),
+        Dates.DateTime(2024, 1, 2),
+    ]
+    values = [1.0, 2.0, 3.0]
+    add_time_series!(
+        sys, gen,
+        IS.NonSequentialTimeSeries("irregular", TimeSeries.TimeArray(stamps, values)),
+    )
+    @test first(IS.get_time_series_keys(gen)) isa IS.NonSequentialTimeSeriesKey
+
+    mktempdir() do dir
+        bundle = joinpath(dir, "irregular")
+        to_file(sys, bundle)
+
+        row = only(PSY.PC.read_document(joinpath(bundle, "system.json")).time_series_associations)
+        @test row.time_series_type == "NonSequentialTimeSeries"
+        # Both grid columns are empty rather than invented. `length` and `name` are what
+        # identify the row, because that is all the key holds.
+        @test isnothing(row.initial_timestamp)
+        @test isnothing(row.resolution)
+        @test row.length == length(values)
+        @test isnothing(row.horizon)
+        @test isnothing(row.interval)
+        @test isnothing(row.window_count)
+
+        # The timestamp vector lives in the store, not the document, so it must come back
+        # from the adopted sidecar exactly.
+        sys2 = from_file(System, bundle)
+        gen2 = get_component(ThermalStandard, sys2, "g1")
+        key2 = only(IS.get_time_series_keys(gen2))
+        @test key2 isa IS.NonSequentialTimeSeriesKey
+        @test IS.get_timestamps(IS.get_time_series(gen2, key2)) == stamps
+        @test IS.get_time_series_values(gen2, key2) == values
+    end
+end

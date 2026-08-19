@@ -424,6 +424,7 @@ export StaticTimeSeries # static_time_series.jl
 export Deterministic # deterministic.jl
 export Probabilistic # Probabilistic.jl
 export SingleTimeSeries # Single_Time_Series.jl
+export NonSequentialTimeSeries # non_sequential_time_series.jl
 export DeterministicSingleTimeSeries # deterministic_single_time_series.jl
 export Scenarios # scenarios.jl
 
@@ -739,6 +740,7 @@ import InfrastructureSystems:
     Deterministic,
     Probabilistic,
     SingleTimeSeries,
+    NonSequentialTimeSeries,
     StaticTimeSeriesKey,
     DeterministicSingleTimeSeries,
     ForecastKey,
