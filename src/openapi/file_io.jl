@@ -48,9 +48,9 @@ $(TYPEDSIGNATURES)
 
 Write `sys` to `dir` as a `system.json` + `time_series.h5` bundle.
 
-`unit_system` is passed through to [`to_openapi`](@ref): `:original` (default) reproduces the
-document `sys` was read from and needs the round-trip ledger, while `:device_base` and
-`:natural_units` force a convention and work for any system.
+`unit_system` is passed through to [`to_openapi`](@ref): `:device_base` (default) writes each
+component's values on its own base, PSY's native convention, and `:natural_units` converts to
+physical units instead.
 
 The sidecar is written only when `sys` actually carries time series; otherwise the document's
 `time_series_storage_file` is null and no HDF5 file is created.
@@ -58,7 +58,7 @@ The sidecar is written only when `sys` actually carries time series; otherwise t
 function to_file(
     sys::System,
     dir::AbstractString;
-    unit_system::Symbol = :original,
+    unit_system::Symbol = :device_base,
     force::Bool = false,
     pretty::Bool = false,
 )

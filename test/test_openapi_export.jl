@@ -854,7 +854,7 @@ end
         device_doc = deepcopy(doc)
         device_doc["unit_system"] = "DEVICE_BASE"
         sys = PSY.from_openapi(System, to_test_document(device_doc))
-        out = PSY.to_openapi(sys; unit_system = :original)
+        out = PSY.to_openapi(sys; unit_system = :device_base)
         @test PSY.PC.get_unit_system(out) == "DEVICE_BASE"
         gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
         @test gen_out.active_power == 50.0
@@ -866,7 +866,7 @@ end
 
     @testset "NATURAL_UNITS -> PSY -> NATURAL_UNITS is approximate only" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
-        out = PSY.to_openapi(sys; unit_system = :original)
+        out = PSY.to_openapi(sys; unit_system = :natural_units)
         @test PSY.PC.get_unit_system(out) == "NATURAL_UNITS"
         gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
         gen_in = only(doc["components"]["ThermalStandard"])
@@ -879,15 +879,15 @@ end
 
     @testset "bustype SLACK round-trips as SLACK" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
-        out = PSY.to_openapi(sys; unit_system = :original)
+        out = PSY.to_openapi(sys; unit_system = :natural_units)
         bus1_out = first(b for b in PSY.PC.get_components(out, "ACBus") if b.number == 1)
         @test bus1_out.bustype == "SLACK"
     end
 
-    @testset "to_openapi with no ledger and unit_system=:original errors" begin
+    @testset "to_openapi with an unmapped unit_system errors" begin
         sys = System(100.0)
         add_component!(sys, ACBus(nothing))
-        @test_throws ErrorException PSY.to_openapi(sys; unit_system = :original)
+        @test_throws ErrorException PSY.to_openapi(sys; unit_system = :bogus_units)
     end
 
     @testset "Line.base_power on export == get_base_power(sys) exactly" begin
@@ -922,7 +922,6 @@ end
     )
     add_component!(sys, load)
 
-    @test !PSY.has_ledger(sys)
     out_device = PSY.to_openapi(sys; unit_system = :device_base)
     @test PSY.PC.get_unit_system(out_device) == "DEVICE_BASE"
     load_out = only(PSY.PC.get_components(out_device, "PowerLoad"))
@@ -1032,7 +1031,7 @@ end
         ts_out_path = joinpath(dir, "export_time_series_storage.h5")
         out = PSY.to_openapi(
             sys;
-            unit_system = :original,
+            unit_system = :natural_units,
             time_series_storage_path = ts_out_path,
         )
 

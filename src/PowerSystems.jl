@@ -1033,8 +1033,6 @@ include("emissions_data.jl")
 # Definitions of PowerSystem
 include("base.jl")
 
-include("openapi/ledger.jl")
-
 include("plant_attribute.jl")
 
 # OpenAPI import must follow the supplemental-attribute constructors it calls (outages.jl,

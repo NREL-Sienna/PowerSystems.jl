@@ -1,6 +1,6 @@
 # Document-level OpenAPI import path. A small synthetic document exercises the
 # dependency-ordered component pass, reserve membership, time series adoption from a real
-# InfraStore sidecar, ledger round-trip, and every loud-error path.
+# InfraStore sidecar and every loud-error path.
 
 # The shared document fixture lives in common.jl (`make_openapi_test_doc`,
 # `openapi_raw`), also used by test_openapi_export.jl.
@@ -92,12 +92,6 @@ end
         @test get_resolution(ts) == sidecar.resolution
         @test TimeSeries.values(get_data(ts)) == sidecar.values
         @test first(TimeSeries.timestamp(get_data(ts))) == sidecar.initial_timestamp
-
-        # Ledger round-trip.
-        @test PSY.has_ledger(sys)
-        ledger = PSY.load_ledger(sys)
-        @test ledger["unit_system"] == "NATURAL_UNITS"
-        @test ledger["id_to_uuid"]["6"] == IS.get_id(gen)
     end
 end
 

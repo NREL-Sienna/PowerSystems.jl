@@ -543,10 +543,6 @@ type, scaling-factor multiplier, or supplemental `attribute_type` (see
 [`load_supplemental_attribute_associations!`](@ref)), and a document that declares time
 series but supplies no `time_series_storage_path`.
 
-Stores the id↔UUID round-trip ledger (`store_ledger!`) so a later
-`to_openapi(sys; unit_system = :original)` can reproduce the document's ids and unit
-convention.
-
 `system_kwargs` pass straight through to the fresh `System(base_power; system_kwargs...)`
 this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series_read_only`,
 `runchecks` — `System`'s own `SYSTEM_KWARGS`); an unsupported key still errors, from
@@ -589,7 +585,6 @@ function from_openapi(
 
     load_supplemental_attribute_associations!(sys, refs, doc)
 
-    store_ledger!(sys, refs)
     return sys
 end
 

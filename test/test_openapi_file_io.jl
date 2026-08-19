@@ -118,9 +118,9 @@ end
     @test get_ext(get_component(ACBus, sys, "bus1")) == extras
     @test isempty(get_ext(get_component(ACBus, sys, "bus2")))
 
-    # And back out again, unchanged. `:original` reproduces the document's own ids, so bus1
-    # is id 3 on the way out as well.
-    exported = to_openapi(sys; unit_system = :original)
+    # And back out again, unchanged. A component's document id is its IS component id, which
+    # import set from the document, so bus1 is id 3 on the way out as well.
+    exported = to_openapi(sys; unit_system = :natural_units)
     @test PSY.PC.get_ext(exported, 3) == extras
     @test isempty(PSY.PC.get_ext(exported, 4))
 end

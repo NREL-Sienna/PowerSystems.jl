@@ -174,21 +174,19 @@ end
 
 # ── unit_system resolution ──────────────────────────────────────────────────────
 
-"""Resolve the `unit_system` kwarg to `(document_unit_system_string, ledger_or_nothing)`.
-`:original` reads the round-trip ledger (`load_ledger` itself raises when absent);
-`:device_base`/`:natural_units` force that convention explicitly and require no ledger."""
-function _resolve_export_unit_system(sys::System, unit_system::Symbol)
-    if unit_system === :original
-        ledger = load_ledger(sys)
-        return String(ledger["unit_system"]), ledger
-    elseif unit_system === :device_base
-        return "DEVICE_BASE", nothing
+"""Resolve the `unit_system` kwarg to the document's `unit_system` string.
+
+The caller states the convention outright: a `System` records no unit system of its own — every
+getter takes one explicitly — so there is nothing to infer from `sys`."""
+function _resolve_export_unit_system(unit_system::Symbol)
+    if unit_system === :device_base
+        return "DEVICE_BASE"
     elseif unit_system === :natural_units
-        return "NATURAL_UNITS", nothing
+        return "NATURAL_UNITS"
     else
         error(
-            "to_openapi(sys; unit_system=$unit_system): unmapped — expected :original, " *
-            ":device_base, or :natural_units",
+            "to_openapi(sys; unit_system=$unit_system): unmapped — expected " *
+            ":device_base or :natural_units",
         )
     end
 end
@@ -202,13 +200,8 @@ end
 # A component's document id IS its IS component id. That keeps the document and the
 # InfraStore sidecar consistent by construction: the sidecar's catalog keys every series by
 # component id, and import resolves a series' owner by looking that id up as a document id.
-# Assigning document ids independently — as the ledger used to, reproducing them from a
-# previous document — made the two disagree for any System not built by `from_openapi`, so a
-# hand-built System carrying time series could not be exported at all.
-#
-# The ledger no longer carries ids for this reason; it survives only for `unit_system`. A
-# `from_openapi`-built System reproduces its original document ids anyway, since import sets
-# each component's id to its document id.
+# A `from_openapi`-built System reproduces its original document ids for free, since import
+# sets each component's id to its document id.
 #
 # `TransformerCircuit` has no id of its own (`_has_own_id` false — it is embedded in its
 # owning transformer), so it draws from a counter that starts above every component id.
@@ -245,6 +238,15 @@ function _plan_components(sys::System, ::Type{TransformerCircuit})
     )
     return Iterators.flatten((two_winding, three_winding))
 end
+
+"""
+Whether `x` carries an id of its own, and so can supply the document id it is exported under.
+
+`TransformerCircuit` is embedded in its owning transformer and has no `internal` field, so no
+id — but it is still registered in [`OpenAPIRefs`](@ref), and must be skipped rather than error.
+"""
+_has_own_id(::Any) = true
+_has_own_id(::TransformerCircuit) = false
 
 """The component's own id, or the next fresh one for a `TransformerCircuit`, which has
 none (`_has_own_id` false)."""
@@ -609,7 +611,7 @@ _document_length(::IS.ForecastKey) = nothing
 """
 One `TimeSeriesAssociation` row for `key` on `entity`.
 
-Identity and shape come off the key; `units`, `quantity_type` and `unit_system` are declared
+Identity and shape come off the key; `units`, `quantity_kind` and `unit_system` are declared
 on the series itself, so the series is read to reach them.
 
 Two optional columns are deliberately omitted. `element_type` is derived from the stored
@@ -638,9 +640,7 @@ function _time_series_row(doc::PC.SystemDocument, entity, entity_id::Int, key)
         owner_category = _owner_category(entity),
         features = _document_features(key),
         units = IS.get_units(ts),
-        # The document spells this `quantity_type`; IS and InfraStore spell the same field
-        # `quantity_kind`. One of the two names should win; until then this is the bridge.
-        quantity_type = IS.get_quantity_kind(ts),
+        quantity_kind = IS.get_quantity_kind(ts),
         unit_system = _document_unit_system(IS.get_unit_system(ts)),
     )
 end
@@ -699,10 +699,9 @@ Returns the typed container, not JSON: writing it to disk belongs to
 — components and supplemental attributes alike — comes from the document's single counter, since
 consumers key a row by id without its type.
 
-`unit_system`: `:original` (default) reproduces the document `sys` was read from — requires an
-OpenAPI round-trip ledger (`from_openapi`-built `System`s carry one; [`load_ledger`](@ref)
-raises when absent). `:device_base`/`:natural_units` force that convention explicitly and need
-no ledger, so a `System` built directly via `add_component!` is exportable too.
+`unit_system`: `:device_base` (default) writes each component's values on its own base, the
+convention PSY stores natively, so no conversion happens; `:natural_units` converts to physical
+units on the way out. Any `System` is exportable either way, however it was built.
 
 Walks components in [`DOCUMENT_PLAN`](@ref) order (symmetry with import, not a resolution
 requirement — every id already exists or is assigned fresh before it is ever read). Emits
@@ -714,11 +713,11 @@ dropping data: a time series with no `time_series_storage_path` given.
 """
 function to_openapi(
     sys::System;
-    unit_system::Symbol = :original,
+    unit_system::Symbol = :device_base,
     time_series_storage_path = nothing,
 )
     warn_unexportable_components(sys)
-    unit_system_string, _ledger = _resolve_export_unit_system(sys, unit_system)
+    unit_system_string = _resolve_export_unit_system(unit_system)
     refs = _build_export_refs(sys, unit_system_string)
     val = _unit_val(unit_system_string)
 
@@ -730,8 +729,8 @@ function to_openapi(
         frequency = sys.frequency,
         time_series_storage_file = _sidecar_basename(time_series_storage_path),
     )
-    # Component ids are already assigned (from the ledger or fresh); tell the document so its
-    # counter continues past them instead of reissuing one to a supplemental attribute.
+    # Component ids are already assigned; tell the document so its counter continues past them
+    # instead of reissuing one to a supplemental attribute.
     _reserve_component_ids!(doc, refs)
 
     _export_components!(doc, refs, sys, val)

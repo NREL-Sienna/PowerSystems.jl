@@ -27,21 +27,3 @@ end
     @test !PSY.has_component_id(refs, other)
     @test_throws ErrorException PSY.component_id(refs, other)
 end
-
-@testset "OpenAPI ledger: round trip through System.ext" begin
-    sys = System(100.0)
-    area = Area(; name = "a1", peak_active_power = 0.0, peak_reactive_power = 0.0)
-    add_component!(sys, area)
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS")
-    refs[1] = area
-
-    @test !PSY.has_ledger(sys)
-    @test_throws ErrorException PSY.load_ledger(sys)
-
-    PSY.store_ledger!(sys, refs)
-    @test PSY.has_ledger(sys)
-
-    ledger = PSY.load_ledger(sys)
-    @test ledger["unit_system"] == "NATURAL_UNITS"
-    @test ledger["id_to_uuid"]["1"] == IS.get_id(area)
-end
