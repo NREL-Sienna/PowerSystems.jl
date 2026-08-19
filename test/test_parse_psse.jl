@@ -872,3 +872,23 @@ end
     @test !isapprox(get_r(lcc), rdc_ohms / (ebasr_kv^2 / sbase))
     @test get_scheduled_dc_voltage(lcc) == vschd_kv
 end
+
+@testset "PSSE v33 switched shunt blocks start out of service" begin
+    # v33 SWITCHED SHUNT records have no per-block status field: BINIT already carries the
+    # total in-service admittance (parsed into `Y`), so every block must start at zero
+    # regardless of MODSW. Counting blocks as in-service would double-count them.
+    sys = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
+    shunts = collect(get_components(SwitchedAdmittance, sys))
+    @test !isempty(shunts)
+    for shunt in shunts
+        @test get_initial_status(shunt) == zeros(Int, length(get_Y_increase(shunt)))
+    end
+
+    # Bus 2127 is the only MODSW=3 record in the raw; it was the case that previously got
+    # an all-ones initial status.
+    shunt_2127 = get_component(SwitchedAdmittance, sys, "2127-25")
+    @test !isnothing(shunt_2127)
+    @test get_ext(shunt_2127)["MODSW"] == 3
+    @test get_number_of_steps(shunt_2127) == [1]
+    @test get_initial_status(shunt_2127) == [0]
+end
