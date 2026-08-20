@@ -560,7 +560,8 @@ function from_openapi(
 
     _check_no_unconverted_component_types(doc.components)
 
-    sys = _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
+    sys, time_series_read_only =
+        _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
     _apply_document_metadata!(sys, doc)
 
     refs = OpenAPIRefs(unit_system, base_power)
@@ -583,23 +584,25 @@ function from_openapi(
 
     _load_market_bid_service_offers!(refs, doc)
 
-    load_supplemental_attribute_associations!(sys, refs, doc)
+    load_supplemental_attribute_associations!(sys, refs, doc, time_series_read_only)
 
     return sys
 end
 
 """
 A `System` whose time series store is the document's InfraStore sidecar, adopted rather than
-replayed. See the time series note above for why there is no ingestion pass.
+replayed, paired with whether that store was opened read-only.
 
-Without a sidecar this is just `System(base_power; system_kwargs...)`. With one, the store is
-opened and the `SystemData` is built around it — the same shape `IS.deserialize(SystemData,
-...)` uses for a natively serialized system.
+Without a sidecar this is just `System(base_power; system_kwargs...)` (never read-only — there
+is no store to protect). With one, the store is opened and the `SystemData` is built around
+it — the same shape `IS.deserialize(SystemData, ...)` uses for a natively serialized system.
 
 `time_series_read_only` and `time_series_directory` are read from `system_kwargs` (and left in
 place for `System` itself) because they govern how the store is opened: a read-only open
 attaches the file directly, while a writable one takes a working copy so adding series cannot
-corrupt the document's sidecar.
+corrupt the document's sidecar. The caller needs `read_only` back because a read-only store
+cannot accept the association-clearing write below, which changes how the supplemental
+attribute replay must run — see [`load_supplemental_attribute_associations!`](@ref).
 """
 function _system_with_sidecar(
     base_power,
@@ -608,7 +611,7 @@ function _system_with_sidecar(
     system_kwargs...,
 )
     isnothing(time_series_storage_path) &&
-        return System(base_power; system_kwargs...)
+        return System(base_power; system_kwargs...), false
     isfile(time_series_storage_path) || error(
         "from_openapi(System, doc): time_series_storage_path " *
         "\"$time_series_storage_path\" does not exist",
@@ -625,17 +628,21 @@ function _system_with_sidecar(
     # `supplemental_attribute_associations` are authoritative and get replayed below, and
     # keeping the store's copy would make every one of them a duplicate. A producer whose
     # sidecar has none (PowerTableDataParser stages only series) is unaffected.
+    #
+    # A read-only store cannot accept this write, so the stale rows stay — the replay in
+    # `load_supplemental_attribute_associations!` is read-only-aware precisely because of
+    # that: it must recover the true id each stale row already carries instead of assuming
+    # one, and must never attempt a second write against the same row.
     read_only || IS.clear_associations!(attribute_manager.associations)
     data = IS.SystemData(
         IS.read_validation_descriptor(POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE),
         IS.TimeSeriesManager(; data_store = store, read_only = read_only),
         1,
-        1,
         Dict{String, Set{Int}}(),
         attribute_manager,
         IS.InfrastructureSystemsInternal(),
     )
-    return System(data, base_power; system_kwargs...)
+    return System(data, base_power; system_kwargs...), read_only
 end
 
 """

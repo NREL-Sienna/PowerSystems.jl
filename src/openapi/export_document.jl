@@ -515,7 +515,7 @@ does after `load_supplemental_attribute_associations!`.
 
 Walks `sorted_refs` rather than the association rows directly so that document order stays
 tied to component order; the attachments themselves come from one bulk read
-([`_attributes_by_component`](@ref)).
+([`_attribute_rows_by_component`](@ref)).
 """
 function _export_supplemental_attributes(
     sorted_refs,
@@ -543,7 +543,7 @@ function _export_supplemental_attributes(
             end
             push!(
                 association_rows,
-                IS.to_openapi(row; attribute_id = attr_id, entity_id = entity_id),
+                IS.to_openapi(row; attribute_id = attr_id, component_id = entity_id),
             )
             _group_association!(
                 plant_association_rows,
@@ -569,33 +569,13 @@ end
 # same tuple `TimeSeriesAssociation` carries — so no `time_series_associations` rows are
 # emitted. PowerTableDataParser writes its documents the same way.
 #
-# The catalog's owner ids are IS component ids, while the document's ids come from
-# `_export_id!`. `_check_time_series_ids_match` below refuses to write a pair whose ids
-# disagree, since the result would be a document whose sidecar no importer could resolve.
-
-"""
-Error when a supplemental attribute owns time series, which export cannot represent.
-
-Component-owned series need no check: a component's document id is its IS component id, so
-the sidecar catalog's owner ids and the document's ids agree by construction. Attribute
-document ids are assigned fresh from the document counter instead, so an attribute's catalog
-rows could never resolve on the way back in. Nothing this package produces hits it today —
-no producer attaches series to an attribute — and supporting it means teaching export to
-reproduce attribute ids too, so it errors rather than writing a pair that reads back short.
-"""
-function _check_time_series_ids_match(sorted_refs)
-    for (_doc_id, entity) in sorted_refs
-        entity isa SupplementalAttribute || continue
-        IS.supports_time_series(entity) || continue
-        has_time_series(entity) || continue
-        error(
-            "to_openapi: $(summary(entity)) carries time series, which is not supported " *
-            "on export — attribute document ids are assigned fresh rather than reproduced, " *
-            "so the sidecar catalog could not be resolved on import",
-        )
-    end
-    return nothing
-end
+# The catalog's owner ids are IS ids, not document ids, so `_export_all_time_series` below
+# resolves each row's `owner_category` before trusting the id: a component's document id IS
+# its IS id, but an attribute's is assigned fresh from the document counter, so an
+# attribute-owned row's catalog id could never resolve on the way back in — that case errors.
+# A component-owned row whose owner has no document id (a dynamics component, say — see
+# `warn_unexportable_components`) is dropped with a warning instead, so the export mirrors the
+# component walk's warn-not-block behavior rather than regressing to a hard error.
 
 """
 Write the System's time series to `time_series_storage_path` and describe them in the
@@ -615,11 +595,21 @@ writing package owns. Walking owners also meant reading every array out of HDF5 
 
 Rows are emitted in catalog order sorted by `(owner_id, name, type)` so a document is
 reproducible; ids come from the document counter as everywhere else.
+
+Every row's `owner_category` is checked before it is emitted:
+- A supplemental-attribute-owned row errors immediately, before the sidecar is written —
+  attribute document ids are assigned fresh rather than reproduced, so such a row's catalog id
+  could never resolve on import and a partial sidecar naming it would be worse than none.
+- A component-owned row whose owner has no document id (`has_ref(refs, owner_id)` false — a
+  dynamics component, the same set `warn_unexportable_components` already flags) is skipped and
+  counted; skipped rows are reported in ONE `@warn` after the loop, naming the count and the
+  distinct owner types, since the series stays in the sidecar but is not described in the
+  document and cannot survive a round trip.
 """
 function _export_all_time_series(
     doc::PD.SystemDocument,
     sys::System,
-    sorted_refs,
+    refs::OpenAPIRefs,
     time_series_storage_path,
 )
     rows = PTS.TimeSeriesAssociation[]
@@ -632,21 +622,49 @@ function _export_all_time_series(
         "to_openapi: $(IS.get_num_time_series(store)) time series are attached but no " *
         "time_series_storage_path was given — cannot write the sidecar",
     )
-    _check_time_series_ids_match(sorted_refs)
     address = _sidecar_basename(time_series_storage_path)
     metadata = sort!(
         IS.list_time_series_metadata(sys.data); by = IS.openapi_row_sort_key,
     )
+    skipped_counts = Dict{String, Int}()
     for meta in metadata
-        push!(
-            rows,
-            IS.to_openapi(
-                meta;
-                id = PD.next_id!(doc),
-                owner_id = Int(meta.owner_id),
-                address = address,
-            ),
-        )
+        owner_id = Int(meta.owner_id)
+        category = meta.owner_category
+        if category === IS.InfraStore.SupplementalAttribute
+            error(
+                "to_openapi: supplemental attribute (owner id $owner_id, type " *
+                "$(meta.owner_type)) owns time series \"$(meta.name)\", which is not " *
+                "supported on export — attribute document ids are assigned fresh rather " *
+                "than reproduced, so the sidecar catalog could not be resolved on import",
+            )
+        elseif category === IS.InfraStore.Component
+            if !has_ref(refs, owner_id)
+                skipped_counts[meta.owner_type] =
+                    get(skipped_counts, meta.owner_type, 0) + 1
+                continue
+            end
+            push!(
+                rows,
+                IS.to_openapi(
+                    meta;
+                    id = PD.next_id!(doc),
+                    owner_id = owner_id,
+                    address = address,
+                ),
+            )
+        else
+            error(
+                "to_openapi: time series \"$(meta.name)\" (owner id $owner_id) has " *
+                "unrecognized owner_category $category",
+            )
+        end
+    end
+    if !isempty(skipped_counts)
+        total = sum(values(skipped_counts))
+        types = join(sort(collect(keys(skipped_counts))), ", ")
+        @warn "to_openapi: omitting $total time series row(s) whose owning component has " *
+              "no OpenAPI converter ($types) — they remain in the sidecar but are not " *
+              "described in the document and will not survive a round trip"
     end
     IS.serialize(store, String(time_series_storage_path))
     return rows
@@ -716,7 +734,7 @@ function to_openapi(
     append!(doc.service_associations, _export_service_associations(refs, sys))
     append!(
         doc.time_series_associations,
-        _export_all_time_series(doc, sys, sorted_refs, time_series_storage_path),
+        _export_all_time_series(doc, sys, refs, time_series_storage_path),
     )
 
     PD.validate_document(doc)
