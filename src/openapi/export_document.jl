@@ -259,14 +259,21 @@ end
 
 function _build_export_refs(sys::System, unit_system_string::AbstractString)
     refs = OpenAPIRefs(unit_system_string, get_base_power(sys))
-    # Above every component id, so the ids minted for embedded circuits cannot collide with
-    # one. Computed before the walk rather than tracked during it, since a circuit can be
-    # reached before the component whose id would have raised the mark.
+    # Above every component id AND every supplemental attribute id — D1 put both in the
+    # same id stream, so a `TransformerCircuit`'s freshly-minted id must clear the higher of
+    # the two or it can collide with an attribute whose id happens to exceed every component
+    # id (an attribute a document producer numbered from its own high end, say). Computed
+    # before the walk rather than tracked during it, since a circuit can be reached before
+    # the component whose id would have raised the mark, and attributes are not registered
+    # into `refs` until `_export_supplemental_attributes`, well after this runs.
     highest = 0
     for (_po_type, psy_type, _key, _addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
             _has_own_id(c) && (highest = max(highest, IS.get_id(c)))
         end
+    end
+    for attr in IS.iterate_supplemental_attributes(sys.data)
+        highest = max(highest, IS.get_id(attr))
     end
     next_id = Ref(highest + 1)
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
@@ -473,52 +480,23 @@ function _group_association!(
 end
 
 """
-The store's attachment ROWS grouped by the id of the component they hang off, plus the
-attribute object each row names.
+Emit the attribute rows and their associations from the store's own OpenAPI export
+([`IS.openapi_supplemental_attribute_association_rows`](@ref)) rather than converting each
+association row by hand: the rows already carry `component_id`/`attribute_id` in the
+document's id space (D1 — an attribute's IS id, which is also its document id, can never
+collide with a component's) and their `attribute_type`/`component_type` labels, so no
+per-row `IS.to_openapi` conversion is needed on the way out.
 
-One catalog query and one pass over the attribute manager, replacing a
-`get_supplemental_attributes(entity)` call per component — which issued a store query for
-every component in the System, including the majority that own no attribute, and rebuilt the
-concrete-subtype-name filter each time.
-
-The rows are carried through rather than reduced to attribute objects because the row is what
-[`IS.to_openapi`](@ref) converts: it already records `attribute_type`, so the document column
-comes from the store instead of being re-derived here.
-
-Grouped by component id, which for anything with an id of its own IS its document id (see the
-id-assignment note above), so the caller looks up by the id it already has.
-"""
-function _attribute_rows_by_component(sys::System)
-    rows = IS.list_supplemental_attribute_association_rows(sys.data)
-    by_id = Dict{Int, SupplementalAttribute}(
-        IS.get_id(attr) => attr for attr in IS.iterate_supplemental_attributes(sys.data)
-    )
-    grouped = Dict{Int, Vector{eltype(rows)}}()
-    for row in rows
-        push!(get!(() -> eltype(rows)[], grouped, Int(row.component_id)), row)
-    end
-    return by_id, grouped
-end
-
-"""
-Emit the attribute rows and their associations, drawing attribute ids from `doc`'s counter.
-
-Ids come from the document's single counter, not a private one: SiennaGridDB's `entities` table
-keys a row by id without its type, so an id must mean exactly one thing across components *and*
-supplemental attributes. Sharing the counter is what makes that true by construction — a
-private counter here previously handed out attribute id 1 alongside component id 1.
-
-Each attribute is registered into `refs` under its id before conversion, so
-`to_openapi(attr, refs)` reads its own id back via `component_id` exactly like the generated
-component exporters — and so `refs` covers attributes the same way the import direction's
-does after `load_supplemental_attribute_associations!`.
-
-Walks `sorted_refs` rather than the association rows directly so that document order stays
-tied to component order; the attachments themselves come from one bulk read
-([`_attribute_rows_by_component`](@ref)).
+Only rows whose component has a document id are kept (`has_ref(refs, component_id)` —
+mirrors [`warn_unexportable_components`](@ref): a dynamics component's attribute is dropped
+along with the component itself, silently, exactly as it was before this rewrite). Each
+distinct attribute is registered into `refs` under its own id, exactly once, before
+`to_openapi(attr, refs)` — which reads that id back via `component_id` — is called on it;
+this is what makes `refs` cover attributes the same way it already covers components. The
+store's rows already arrive sorted by `(component_id, attribute_id)`, so document order
+still tracks component order with no local sort.
 """
 function _export_supplemental_attributes(
-    sorted_refs,
     refs::OpenAPIRefs,
     doc::PD.SystemDocument,
     sys::System,
@@ -527,33 +505,29 @@ function _export_supplemental_attributes(
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
-    attributes_by_id, attached = _attribute_rows_by_component(sys)
-    attr_ids = Dict{Int, Int}()
-    for (entity_id, entity) in sorted_refs
-        _has_own_id(entity) || continue
-        haskey(attached, entity_id) || continue
-        for row in attached[entity_id]
-            attr_uuid = Int(row.attribute_id)
-            attr = attributes_by_id[attr_uuid]
-            attr_id = get!(attr_ids, attr_uuid) do
-                id = PD.next_id!(doc)
-                refs[id] = attr
-                push!(attribute_rows, to_openapi(attr, refs))
-                return id
-            end
-            push!(
-                association_rows,
-                IS.to_openapi(row; attribute_id = attr_id, component_id = entity_id),
-            )
-            _group_association!(
-                plant_association_rows,
-                combined_cycle_association_rows,
-                attr,
-                entity,
-                attr_id,
-                entity_id,
-            )
+    attributes_by_id = Dict{Int, SupplementalAttribute}(
+        IS.get_id(attr) => attr for attr in IS.iterate_supplemental_attributes(sys.data)
+    )
+    registered = Set{Int}()
+    for row in IS.openapi_supplemental_attribute_association_rows(sys.data)
+        entity_id = Int(row.component_id)
+        has_ref(refs, entity_id) || continue
+        attr_id = Int(row.attribute_id)
+        attr = attributes_by_id[attr_id]
+        if attr_id ∉ registered
+            push!(registered, attr_id)
+            refs[attr_id] = attr
+            push!(attribute_rows, to_openapi(attr, refs))
         end
+        push!(association_rows, row)
+        _group_association!(
+            plant_association_rows,
+            combined_cycle_association_rows,
+            attr,
+            refs[entity_id],
+            attr_id,
+            entity_id,
+        )
     end
     return attribute_rows,
     association_rows,
@@ -564,18 +538,19 @@ end
 # ── time series ────────────────────────────────────────────────────────────────
 #
 # The mirror of import's store adoption: the System's InfraStore *is* the sidecar, so export
-# serializes it rather than walking series and emitting a metadata row each. The catalog it
-# writes keys every series by (owner id, name, type, resolution/interval, features) — the
-# same tuple `TimeSeriesAssociation` carries — so no `time_series_associations` rows are
-# emitted. PowerTableDataParser writes its documents the same way.
+# serializes it and describes it via the store's own OpenAPI export
+# (`IS.openapi_time_series_association_rows`) rather than walking series and converting each
+# metadata row by hand. PowerTableDataParser writes its documents the same way.
 #
-# The catalog's owner ids are IS ids, not document ids, so `_export_all_time_series` below
-# resolves each row's `owner_category` before trusting the id: a component's document id IS
-# its IS id, but an attribute's is assigned fresh from the document counter, so an
-# attribute-owned row's catalog id could never resolve on the way back in — that case errors.
-# A component-owned row whose owner has no document id (a dynamics component, say — see
-# `warn_unexportable_components`) is dropped with a warning instead, so the export mirrors the
-# component walk's warn-not-block behavior rather than regressing to a hard error.
+# The catalog's owner ids are IS ids, which — since D1 unified the component/attribute id
+# stream and `_export_supplemental_attributes` now gives every attribute its own IS id as its
+# document id too — equal document ids for BOTH owner kinds. `_export_all_time_series` below
+# still resolves each row's `owner_category` before trusting the id, but only to pick the
+# right failure mode: a component-owned row whose owner has no document id (a dynamics
+# component, say — see `warn_unexportable_components`) is dropped with a warning, the same
+# accepted, reported loss as the component walk's; an attribute-owned row whose owner has no
+# document id is a hard error, since (unlike a whole unconvertible component) there is no
+# sanctioned reason for a registered attribute's own time series to be unresolvable.
 
 """
 Write the System's time series to `time_series_storage_path` and describe them in the
@@ -585,26 +560,23 @@ Both halves matter and neither is redundant: the sidecar holds the values, and t
 lists one row per series so a consumer can see what a bundle contains — and in what units, on
 what basis — without opening the store.
 
-The rows come from ONE catalog query (`IS.list_time_series_metadata`), not from walking
-owners. That is a correctness requirement before it is a speed one: `element_type`,
-`element_shape`, and `address` are required columns and none is reachable from a
-`TimeSeriesKey` — InfraStore derives `element_type` from the stored array on write, and
-re-deriving it here would be a second source of truth for the one field the schema says the
-writing package owns. Walking owners also meant reading every array out of HDF5 to reach
-`units`/`quantity_kind`/`unit_system`, three scalars the catalog stores as columns.
+The rows come from ONE store call (`IS.openapi_time_series_association_rows`), already sorted
+by identity and each stamped with `address` verbatim (D3) — no local re-sort, and no
+`IS.to_openapi` per-row conversion. Row `id`s are the store's own catalog rowids, carried
+through unchanged: they are informational (`PD._highest_id` already reserves above them on
+read), not part of the document's component/attribute id space.
 
-Rows are emitted in catalog order sorted by `(owner_id, name, type)` so a document is
-reproducible; ids come from the document counter as everywhere else.
-
-Every row's `owner_category` is checked before it is emitted:
-- A supplemental-attribute-owned row errors immediately, before the sidecar is written —
-  attribute document ids are assigned fresh rather than reproduced, so such a row's catalog id
-  could never resolve on import and a partial sidecar naming it would be worse than none.
+Every row's `owner_category` is checked before it is kept:
 - A component-owned row whose owner has no document id (`has_ref(refs, owner_id)` false — a
   dynamics component, the same set `warn_unexportable_components` already flags) is skipped and
   counted; skipped rows are reported in ONE `@warn` after the loop, naming the count and the
   distinct owner types, since the series stays in the sidecar but is not described in the
   document and cannot survive a round trip.
+- A supplemental-attribute-owned row whose owner has no document id errors immediately,
+  before the sidecar is written: every attribute the document can describe is registered into
+  `refs` by `_export_supplemental_attributes` before this runs, so an unresolvable
+  attribute-owned row means the sidecar and the attribute manager disagree about what exists —
+  data corruption, not a case to skip.
 """
 function _export_all_time_series(
     doc::PD.SystemDocument,
@@ -623,41 +595,29 @@ function _export_all_time_series(
         "time_series_storage_path was given — cannot write the sidecar",
     )
     address = _sidecar_basename(time_series_storage_path)
-    metadata = sort!(
-        IS.list_time_series_metadata(sys.data); by = IS.openapi_row_sort_key,
-    )
     skipped_counts = Dict{String, Int}()
-    for meta in metadata
-        owner_id = Int(meta.owner_id)
-        category = meta.owner_category
-        if category === IS.InfraStore.SupplementalAttribute
-            error(
-                "to_openapi: supplemental attribute (owner id $owner_id, type " *
-                "$(meta.owner_type)) owns time series \"$(meta.name)\", which is not " *
-                "supported on export — attribute document ids are assigned fresh rather " *
-                "than reproduced, so the sidecar catalog could not be resolved on import",
-            )
-        elseif category === IS.InfraStore.Component
+    for assoc in IS.openapi_time_series_association_rows(sys.data; address = address)
+        row = assoc.value
+        owner_id = Int(row.owner_id)
+        if row.owner_category == "Component"
             if !has_ref(refs, owner_id)
-                skipped_counts[meta.owner_type] =
-                    get(skipped_counts, meta.owner_type, 0) + 1
+                skipped_counts[row.owner_type] = get(skipped_counts, row.owner_type, 0) + 1
                 continue
             end
-            push!(
-                rows,
-                IS.to_openapi(
-                    meta;
-                    id = PD.next_id!(doc),
-                    owner_id = owner_id,
-                    address = address,
-                ),
+        elseif row.owner_category == "SupplementalAttribute"
+            has_ref(refs, owner_id) || error(
+                "to_openapi: supplemental attribute (owner id $owner_id, type " *
+                "$(row.owner_type)) owns time series \"$(row.name)\", but is not " *
+                "registered in the exported document — the sidecar and the attribute " *
+                "manager disagree about what exists",
             )
         else
             error(
-                "to_openapi: time series \"$(meta.name)\" (owner id $owner_id) has " *
-                "unrecognized owner_category $category",
+                "to_openapi: time series \"$(row.name)\" (owner id $owner_id) has " *
+                "unrecognized owner_category $(row.owner_category)",
             )
         end
+        push!(rows, assoc)
     end
     if !isempty(skipped_counts)
         total = sum(values(skipped_counts))
@@ -713,20 +673,13 @@ function to_openapi(
         frequency = sys.frequency,
         time_series_storage_file = _sidecar_basename(time_series_storage_path),
     )
-    # Component ids are already assigned; tell the document so its counter continues past them
-    # instead of reissuing one to a supplemental attribute.
-    _reserve_component_ids!(doc, refs)
-
     _export_components!(doc, refs, sys, val)
     _export_market_bid_service_offers!(doc, refs)
-    # One id-ordered snapshot of the registry, shared by both document-order-sensitive
-    # walks below rather than each re-collecting and re-sorting it.
-    sorted_refs = sort(collect(refs.by_id); by = first)
     supplemental_attributes,
     supplemental_attribute_associations,
     plant_associations,
     combined_cycle_associations =
-        _export_supplemental_attributes(sorted_refs, refs, doc, sys)
+        _export_supplemental_attributes(refs, doc, sys)
     append!(doc.supplemental_attributes, supplemental_attributes)
     append!(doc.supplemental_attribute_associations, supplemental_attribute_associations)
     append!(doc.plant_associations, plant_associations)
@@ -736,6 +689,10 @@ function to_openapi(
         doc.time_series_associations,
         _export_all_time_series(doc, sys, refs, time_series_storage_path),
     )
+    # Every id — component and supplemental attribute alike, since D1 unified the stream —
+    # is already assigned by this point; tell the document so its own counter continues past
+    # all of them instead of reissuing one that collides.
+    _reserve_ids!(doc, refs)
 
     PD.validate_document(doc)
     return doc
@@ -764,7 +721,10 @@ function _export_market_bid_service_offers!(doc::PD.SystemDocument, refs::OpenAP
     return nothing
 end
 
-function _reserve_component_ids!(doc::PD.SystemDocument, refs::OpenAPIRefs)
+"""Reserve `doc`'s own id counter above every id already assigned — component and
+supplemental attribute alike, since D1 unified the stream and `refs` now registers both
+kinds by the time this runs."""
+function _reserve_ids!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     if isempty(refs.by_id)
         return nothing
     end

@@ -290,6 +290,20 @@ end
         set_monitored_components!(outage, gens)
     end
 
+    # `create_system_with_outages` attaches one `SingleTimeSeries` per outage — an
+    # attribute-owned series, which used to make the whole bundle unexportable (the deleted
+    # B2 guard). D1's unified id stream fixes this at the root: an outage's document id is
+    # its own IS id, stable across the round trip below, so its series is findable in the
+    # rebuilt system under that same id.
+    original_series = Dict{Int, Vector{Int}}(
+        IS.get_id(outage) =>
+            TimeSeries.values(
+                PSY.get_data(
+                    IS.get_time_series(outage, only(IS.get_time_series_keys(outage))),
+                ),
+            ) for outage in get_supplemental_attributes(Outage, sys)
+    )
+
     sys2 = roundtrip_system(sys)
 
     # Every outage must come back with the same monitored UUIDs (set semantics —
@@ -311,12 +325,78 @@ end
         end
     end
 
+    # The attribute-owned series survive value-for-value, keyed by the id that D1
+    # guarantees is stable across the round trip.
+    for outage in outages2
+        key = only(IS.get_time_series_keys(outage))
+        values = TimeSeries.values(PSY.get_data(IS.get_time_series(outage, key)))
+        @test values == original_series[IS.get_id(outage)]
+    end
+
     # Default (empty) monitored_components also round-trips without error.
     sys_empty = create_system_with_outages()
     sys_empty2 = roundtrip_system(sys_empty)
     for outage in get_supplemental_attributes(Outage, sys_empty2)
         @test isempty(get_monitored_components(outage))
     end
+end
+
+@testset "Test attribute added by hand to a document survives import with no sidecar row" begin
+    # Attribute payloads stay document-authoritative: a document may name a supplemental
+    # attribute association the adopted sidecar's catalog does not (yet) carry — exactly the
+    # shape a hand-augmentation flow needs (see test_openapi_ptdp_end_to_end.jl's ATTRIBUTES
+    # phase) — and import writes it fresh rather than rejecting the document over it.
+    sys = create_system_with_outages()
+    dir = mktempdir()
+    to_file(sys, dir; force = true)
+    doc = PSY.PD.read_document(joinpath(dir, "system.json"))
+
+    geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [0.0, 0.0])
+    geo = PSY.PC.GeographicInfo(; id = PSY.PD.next_id!(doc), geo_json = geo_json)
+    # A load carries none of the outage/GeographicInfo attributes the fixture attaches only
+    # to the two generators and their buses, so it is unambiguously bare beforehand.
+    load_id = Int(first(PSY.PD.get_components(doc, "PowerLoad")).id)
+    PSY.PD.add_supplemental_attribute!(doc, geo, load_id)
+    PSY.PD.validate_document(doc)
+
+    sys2 = PSY.from_openapi(
+        System, doc; time_series_storage_path = joinpath(dir, "time_series.h5"),
+    )
+    component2 = IS.get_component(sys2, load_id)
+    geos2 = get_supplemental_attributes(GeographicInfo, component2)
+    @test length(geos2) == 1
+    @test IS.get_geo_json(only(geos2)) == geo_json
+end
+
+@testset "Test loud error: attribute_type mismatch caught on the full import path" begin
+    # `_check_resolved_type_matches` (sqlite_load.jl) fires through `from_openapi` itself,
+    # not only through the standalone loader unit tests in test_openapi_sqlite_load.jl.
+    sys = create_system_with_outages()
+    dir = mktempdir()
+    to_file(sys, dir; force = true)
+    doc = PSY.PD.read_document(joinpath(dir, "system.json"))
+    assoc = first(doc.supplemental_attribute_associations)
+    assoc.attribute_type = "EmissionsData"
+
+    @test_throws Exception PSY.from_openapi(
+        System, doc; time_series_storage_path = joinpath(dir, "time_series.h5"),
+    )
+end
+
+@testset "Test loud error: document/sidecar time series row drift caught by reconcile" begin
+    # D4: the document's own `time_series_associations` rows are informational, but a
+    # strict reconcile against the adopted sidecar's catalog still catches drift between
+    # the two rather than silently trusting whichever the caller kept.
+    sys = create_system_with_outages()
+    dir = mktempdir()
+    to_file(sys, dir; force = true)
+    doc = PSY.PD.read_document(joinpath(dir, "system.json"))
+    row = first(doc.time_series_associations).value
+    row.name = "not_the_real_series_name"
+
+    @test_throws Exception PSY.from_openapi(
+        System, doc; time_series_storage_path = joinpath(dir, "time_series.h5"),
+    )
 end
 
 @testset "Test remove_supplemental_attributes! by type" begin

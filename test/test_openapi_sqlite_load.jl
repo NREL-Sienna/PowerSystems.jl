@@ -78,17 +78,17 @@ end
         supplemental_attributes = [openapi_raw(geo_po)],
         associations = [
             Dict{String, Any}(
-                "attribute_id" => 100, "entity_id" => 3,
-                "attribute_type" => "GeographicInfo",
+                "attribute_id" => 100, "component_id" => 3,
+                "component_type" => "ACBus", "attribute_type" => "GeographicInfo",
             ),
             Dict{String, Any}(
-                "attribute_id" => 100, "entity_id" => 4,
-                "attribute_type" => "GeographicInfo",
+                "attribute_id" => 100, "component_id" => 4,
+                "component_type" => "ACBus", "attribute_type" => "GeographicInfo",
             ),
         ],
     )
 
-    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc, false)
+    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc)
 
     attrs1 = collect(get_supplemental_attributes(GeographicInfo, f.bus1))
     attrs2 = collect(get_supplemental_attributes(GeographicInfo, f.bus2))
@@ -118,7 +118,7 @@ end
         ],
     )
 
-    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc, false)
+    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc)
 
     @test has_service(f.gen, f.reserve)
     # No supplemental-attribute association resulted: a Service is a Component.
@@ -140,13 +140,13 @@ end
         supplemental_attributes = [openapi_raw(geo_po)],
         associations = [
             Dict{String, Any}(
-                "attribute_id" => 100, "entity_id" => 7,
-                "attribute_type" => "GeographicInfo",
+                "attribute_id" => 100, "component_id" => 7,
+                "component_type" => "PowerLoad", "attribute_type" => "GeographicInfo",
             ),
         ],
     )
     @test_throws ErrorException PSY.load_supplemental_attribute_associations!(
-        f.sys, f.refs, doc, false,
+        f.sys, f.refs, doc,
     )
 
     # An unresolved attribute_id (naming a component, or nothing at all) is no longer
@@ -162,13 +162,13 @@ end
         supplemental_attributes = [openapi_raw(geo_po)],
         associations = [
             Dict{String, Any}(
-                "attribute_id" => 100, "entity_id" => 3,
-                "attribute_type" => "EmissionsData",
+                "attribute_id" => 100, "component_id" => 3,
+                "component_type" => "ACBus", "attribute_type" => "EmissionsData",
             ),
         ],
     )
     @test_throws MethodError PSY.load_supplemental_attribute_associations!(
-        f.sys, f.refs, doc, false,
+        f.sys, f.refs, doc,
     )
 
     # Missing attribute_type: `document_from_json` itself requires the field on every
@@ -180,13 +180,13 @@ end
         supplemental_attributes = [openapi_raw(geo_po)],
         associations = [
             Dict{String, Any}(
-                "attribute_id" => 100, "entity_id" => 3,
-                "attribute_type" => "GeographicInfo",
+                "attribute_id" => 100, "component_id" => 3,
+                "component_type" => "ACBus", "attribute_type" => "GeographicInfo",
             ),
         ],
     )
     doc.supplemental_attribute_associations[1].attribute_type = nothing
     @test_throws ErrorException PSY.load_supplemental_attribute_associations!(
-        f.sys, f.refs, doc, false,
+        f.sys, f.refs, doc,
     )
 end

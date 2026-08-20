@@ -532,6 +532,65 @@ function get_components_in_pcc(
     return filter(c -> IS.get_id(c) in uuids, all_components)
 end
 
+# ── group-index push ─────────────────────────────────────────────────────────────
+# The single mechanism for recording a component's group number on a plant-family
+# attribute's forward map. Shared by the write-path `add_supplemental_attribute!`
+# overloads below (which also mint the association) and the document import path
+# (`_attach_attribute!` in import_document.jl, which never writes one — see the
+# mode-independent note there) — the map update itself is identical either way, so it is
+# the only half that is shared rather than duplicated per caller.
+
+"""No group index: the plain attribute path (`EmissionsData`, `GeographicInfo`, the
+`Outage` types, ...) needs no map update."""
+_push_group_index!(::Any, ::SupplementalAttribute, ::Nothing) = nothing
+
+_push_group_index!(component, attribute::ThermalPowerPlant, group_index::Integer) =
+    _push_to_group_map!(attribute.shaft_map, IS.get_id(component), group_index)
+_push_group_index!(component, attribute::HydroPowerPlant, group_index::Integer) =
+    _push_to_group_map!(attribute.penstock_map, IS.get_id(component), group_index)
+_push_group_index!(component, attribute::RenewablePowerPlant, group_index::Integer) =
+    _push_to_group_map!(attribute.pcc_map, IS.get_id(component), group_index)
+_push_group_index!(component, attribute::CombinedCycleFractional, group_index::Integer) =
+    _push_to_group_map!(
+        attribute.operation_exclusion_map,
+        IS.get_id(component),
+        group_index,
+    )
+
+"""A CT/CA's HRSG map is chosen by its own prime mover type, not by the caller — the
+write path used to pick the map itself before delegating; now this is the only place that
+does."""
+function _push_group_index!(
+    component::ThermalGen,
+    attribute::CombinedCycleBlock,
+    group_index::Integer,
+)
+    uuid = IS.get_id(component)
+    prime_mover = get_prime_mover_type(component)
+    if prime_mover == PrimeMovers.CT
+        _push_to_group_map!(attribute.hrsg_ct_map, uuid, group_index)
+    elseif prime_mover == PrimeMovers.CA
+        _push_to_group_map!(attribute.hrsg_ca_map, uuid, group_index)
+    else
+        throw(
+            IS.ArgumentError(
+                "Invalid prime mover type $prime_mover for generator $(get_name(component)). Only CT and CA generators can be added to a CombinedCycleBlock.",
+            ),
+        )
+    end
+    return nothing
+end
+
+"""Loud fallback: a `group_index` on an attribute type with no group-index dispatch is a
+caller bug, not something to attach without recording it."""
+function _push_group_index!(::Any, attribute::SupplementalAttribute, group_index::Integer)
+    error(
+        "$(nameof(typeof(attribute))) carries group_index=$group_index but has no " *
+        "group-index dispatch — only ThermalPowerPlant, HydroPowerPlant, " *
+        "RenewablePowerPlant, CombinedCycleBlock, and CombinedCycleFractional accept one",
+    )
+end
+
 """
     add_supplemental_attribute!(sys::System, component::ThermalGen, attribute::ThermalPowerPlant; shaft_number::Int)
 
@@ -560,7 +619,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.shaft_map, uuid, shaft_number)
+    _push_group_index!(component, attribute, shaft_number)
     return
 end
 
@@ -592,7 +651,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.penstock_map, uuid, penstock_number)
+    _push_group_index!(component, attribute, penstock_number)
     return
 end
 
@@ -643,7 +702,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.pcc_map, uuid, pcc_number)
+    _push_group_index!(component, attribute, pcc_number)
     return
 end
 
@@ -769,38 +828,18 @@ function add_supplemental_attribute!(
         )
     end
     prime_mover = get_prime_mover_type(component)
-    if prime_mover == PrimeMovers.CT
-        _add_to_hrsg_map!(sys, component, attribute, attribute.hrsg_ct_map, hrsg_number)
-    elseif prime_mover == PrimeMovers.CA
-        _add_to_hrsg_map!(sys, component, attribute, attribute.hrsg_ca_map, hrsg_number)
-    else
-        throw(
-            IS.ArgumentError(
-                "Invalid prime mover type $prime_mover for generator $(get_name(component)). Only CT and CA generators can be added to a CombinedCycleBlock.",
-            ),
-        )
-    end
-    return
-end
-
-"""Record `component` against `hrsg_number` in one of the block's forward HRSG maps. IS
-holds a single association per (component, attribute) pair, so a CT or CA feeding a second
-HRSG must not be attached again."""
-function _add_to_hrsg_map!(
-    sys::System,
-    component::ThermalGen,
-    attribute::CombinedCycleBlock,
-    hrsg_map::AbstractDict,
-    hrsg_number::Int,
-)
-    uuid = IS.get_id(component)
+    prime_mover in (PrimeMovers.CT, PrimeMovers.CA) || throw(
+        IS.ArgumentError(
+            "Invalid prime mover type $prime_mover for generator $(get_name(component)). Only CT and CA generators can be added to a CombinedCycleBlock.",
+        ),
+    )
+    # IS holds a single association per (component, attribute) pair, so a CT or CA
+    # already feeding one HRSG must not be attached again when it feeds a second.
     attached =
         _in_group_map(attribute.hrsg_ct_map, uuid) ||
         _in_group_map(attribute.hrsg_ca_map, uuid)
-    if !attached
-        IS.add_supplemental_attribute!(sys.data, component, attribute)
-    end
-    _push_to_group_map!(hrsg_map, uuid, hrsg_number)
+    attached || IS.add_supplemental_attribute!(sys.data, component, attribute)
+    _push_group_index!(component, attribute, hrsg_number)
     return
 end
 
@@ -874,7 +913,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.operation_exclusion_map, uuid, exclusion_group)
+    _push_group_index!(component, attribute, exclusion_group)
     return
 end
 

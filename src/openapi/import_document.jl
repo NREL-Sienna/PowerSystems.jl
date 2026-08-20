@@ -439,67 +439,47 @@ function from_openapi(po, ::OpenAPIRefs)
     )
 end
 
-# ── group_index dispatch (plant-family attributes) ──────────────────────────────
-# The shaft/penstock/PCC/HRSG/exclusion-group number for the five `PowerPlant` subtypes comes
-# from the matching `PlantAssociation`/`CombinedCycleAssociation` row (`sqlite_load.jl`'s
-# `_group_index_by_pair`), and is `nothing` for everything else. Each plant type's
-# `add_supplemental_attribute!` takes that number under its own keyword or position, so
-# dispatch on the attribute type picks the right call — never an `attribute_type` string
-# comparison.
+# ── attribute attach (mode-independent) ─────────────────────────────────────────
+# One entry point for every supplemental attribute a document names, plain or
+# plant-family alike. It never takes a caller-supplied "is this a fresh document or an
+# adopted sidecar" flag: instead it asks the store directly, per row, whether the
+# association already exists.
+#
+# A sidecar produced by `to_openapi`/`to_file` already carries every one of these rows
+# (target architecture: the store is the single source of truth for both association
+# tables, mirroring time series), so the common import path never writes — it attaches via
+# `IS.attach_supplemental_attribute!`, the read-only-safe public API from Phase 3.2. A row
+# the store does not yet have is written fresh with `IS.add_supplemental_attribute!` — the
+# attribute's id was already fixed to its document id above, so `assign_id!` keeps it rather
+# than minting a fresh one, exactly like a component. This covers both a hand-built document
+# with no adopted sidecar at all AND a document augmented by hand with one more attribute a
+# real sidecar does not carry — attribute payloads stay document-authoritative (see the
+# target architecture note in export_document.jl): a document may always name an attribute
+# the sidecar has not seen, and import writes it rather than rejecting the document. Either
+# way, the group-index side effect is identical, so it is the one thing shared with the
+# write-path `add_supplemental_attribute!` overloads in `plant_attribute.jl`:
+# [`_push_group_index!`](@ref).
 
-"""No group index: the plain attribute path (`EmissionsData`, `GeographicInfo`, the `Outage`
-types, ...)."""
-_attach_attribute!(sys::System, component, attribute, ::Nothing) =
-    add_supplemental_attribute!(sys, component, attribute)
+"""
+Attach `attribute` to `component`, recording `group_index` on whichever forward map the
+attribute's type carries (a no-op for the plain attribute types, whose `group_index` is
+`nothing`).
 
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::ThermalPowerPlant,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute; shaft_number = Int(group_index))
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::HydroPowerPlant,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute, Int(group_index))
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::RenewablePowerPlant,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute, Int(group_index))
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::CombinedCycleBlock,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute; hrsg_number = Int(group_index))
-function _attach_attribute!(
-    sys::System,
-    component,
-    attribute::CombinedCycleFractional,
-    group_index::Integer,
-)
-    return add_supplemental_attribute!(
-        sys, component, attribute; exclusion_group = Int(group_index),
-    )
-end
-
-"""Loud fallback: a `group_index` on an attribute type with no group-index dispatch is a
-malformed document, not something to attach without it."""
-function _attach_attribute!(::System, ::Any, attribute, group_index::Integer)
-    error(
-        "from_openapi(System, doc): $(nameof(typeof(attribute))) carries " *
-        "group_index=$group_index but has no group-index dispatch — only " *
-        "ThermalPowerPlant, HydroPowerPlant, RenewablePowerPlant, CombinedCycleBlock, " *
-        "and CombinedCycleFractional accept one",
-    )
+Mode-independent: writes a fresh association only when the store does not already have this
+exact `(component, attribute)` pair. See the section header above for why both cases are
+correct without a caller-supplied flag.
+"""
+function _attach_attribute!(sys::System, component, attribute, group_index)
+    associations = sys.data.supplemental_attribute_manager.associations
+    if IS.has_association(associations, component, attribute)
+        IS.attach_supplemental_attribute!(
+            sys.data, component, attribute; allow_existing_time_series = true,
+        )
+    else
+        IS.add_supplemental_attribute!(sys.data, component, attribute)
+    end
+    _push_group_index!(component, attribute, group_index)
+    return nothing
 end
 
 # ── Document-level entry point ──────────────────────────────────────────────────
@@ -534,14 +514,18 @@ Converts every component in dependency order ([`DOCUMENT_PLAN`](@ref), verified 
 dependency order), attaches supplemental attributes from `supplemental_attribute_associations`
 (plus `plant_associations`/`combined_cycle_associations` for the plant-family ones) and
 reserve membership from `service_associations`, and — when `time_series_storage_path` is
-given — ingests `time_series_associations` from the document plus its HDF5 sidecar.
+given — adopts the HDF5 sidecar wholesale as the System's own time series store. There is no
+per-row ingestion of `doc.time_series_associations`: those rows are informational (the
+sidecar's catalog is authoritative), so instead of being replayed they are cross-checked
+against it with a strict [D4 reconcile](@ref IS.reconcile_time_series_association_rows!) —
+a validation pass that writes nothing under `:strict` and throws if the two disagree.
 
 Errors loudly (naming the offending type, id, or field) rather than silently skipping:
 a component type with no registered converter, an unresolved attribute/plant/service
 association or entity reference, or time-series owner reference, an unmapped time-series
 type, scaling-factor multiplier, or supplemental `attribute_type` (see
-[`load_supplemental_attribute_associations!`](@ref)), and a document that declares time
-series but supplies no `time_series_storage_path`.
+[`load_supplemental_attribute_associations!`](@ref)), a document that declares time series
+but supplies no `time_series_storage_path`, and any drift the D4 reconcile catches.
 
 `system_kwargs` pass straight through to the fresh `System(base_power; system_kwargs...)`
 this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series_read_only`,
@@ -560,8 +544,7 @@ function from_openapi(
 
     _check_no_unconverted_component_types(doc.components)
 
-    sys, time_series_read_only =
-        _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
+    sys = _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
     _apply_document_metadata!(sys, doc)
 
     refs = OpenAPIRefs(unit_system, base_power)
@@ -584,25 +567,32 @@ function from_openapi(
 
     _load_market_bid_service_offers!(refs, doc)
 
-    load_supplemental_attribute_associations!(sys, refs, doc, time_series_read_only)
+    load_supplemental_attribute_associations!(sys, refs, doc)
+
+    _reconcile_time_series_associations!(sys, doc, time_series_storage_path)
 
     return sys
 end
 
 """
 A `System` whose time series store is the document's InfraStore sidecar, adopted rather than
-replayed, paired with whether that store was opened read-only.
+replayed.
 
-Without a sidecar this is just `System(base_power; system_kwargs...)` (never read-only — there
-is no store to protect). With one, the store is opened and the `SystemData` is built around
-it — the same shape `IS.deserialize(SystemData, ...)` uses for a natively serialized system.
+Without a sidecar this is just `System(base_power; system_kwargs...)`. With one, the store is
+opened and the `SystemData` is built around it — the same shape `IS.deserialize(SystemData,
+...)` uses for a natively serialized system.
 
 `time_series_read_only` and `time_series_directory` are read from `system_kwargs` (and left in
 place for `System` itself) because they govern how the store is opened: a read-only open
 attaches the file directly, while a writable one takes a working copy so adding series cannot
-corrupt the document's sidecar. The caller needs `read_only` back because a read-only store
-cannot accept the association-clearing write below, which changes how the supplemental
-attribute replay must run — see [`load_supplemental_attribute_associations!`](@ref).
+corrupt the document's sidecar.
+
+The adopted store's `supplemental_attribute_associations` rows are left exactly as they are:
+under the target architecture the sidecar is the single source of truth for that table too
+(the same contract time series already followed), so a sidecar written by `to_openapi`
+already carries every row `load_supplemental_attribute_associations!` is about to attach —
+nothing here clears or replays them, and a read-only store never needs to accept a write for
+rows it already holds.
 """
 function _system_with_sidecar(
     base_power,
@@ -610,8 +600,7 @@ function _system_with_sidecar(
     time_series_storage_path;
     system_kwargs...,
 )
-    isnothing(time_series_storage_path) &&
-        return System(base_power; system_kwargs...), false
+    isnothing(time_series_storage_path) && return System(base_power; system_kwargs...)
     isfile(time_series_storage_path) || error(
         "from_openapi(System, doc): time_series_storage_path " *
         "\"$time_series_storage_path\" does not exist",
@@ -622,18 +611,6 @@ function _system_with_sidecar(
         String(time_series_storage_path), directory, read_only,
     )
     attribute_manager = IS.SupplementalAttributeManager(store)
-    # One InfraStore store holds both the time series and the supplemental attribute
-    # associations, so a sidecar written by `to_openapi` carries the exporting System's
-    # associations too. Only the time series are wanted here: the document's
-    # `supplemental_attribute_associations` are authoritative and get replayed below, and
-    # keeping the store's copy would make every one of them a duplicate. A producer whose
-    # sidecar has none (PowerTableDataParser stages only series) is unaffected.
-    #
-    # A read-only store cannot accept this write, so the stale rows stay — the replay in
-    # `load_supplemental_attribute_associations!` is read-only-aware precisely because of
-    # that: it must recover the true id each stale row already carries instead of assuming
-    # one, and must never attempt a second write against the same row.
-    read_only || IS.clear_associations!(attribute_manager.associations)
     data = IS.SystemData(
         IS.read_validation_descriptor(POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE),
         IS.TimeSeriesManager(; data_store = store, read_only = read_only),
@@ -642,7 +619,33 @@ function _system_with_sidecar(
         attribute_manager,
         IS.InfrastructureSystemsInternal(),
     )
-    return System(data, base_power; system_kwargs...), read_only
+    return System(data, base_power; system_kwargs...)
+end
+
+"""
+Cross-check the document's own `time_series_associations` rows against the adopted sidecar's
+catalog (D4), closing the gap where those rows used to be parsed and then never looked at
+again. A no-op when there is no sidecar or the document names no rows — nothing to reconcile
+either way (a producer that stages only series and no document metadata, say).
+
+`policy = :strict`: the sidecar is authoritative, so any drift between it and the document is
+a corrupt bundle, not something to paper over by preferring one side; the call writes nothing
+in this mode, so it is read-only-safe. Logs the resulting `ReconcileReport` at `@debug`.
+"""
+function _reconcile_time_series_associations!(
+    sys::System,
+    doc::PD.SystemDocument,
+    time_series_storage_path,
+)
+    (isnothing(time_series_storage_path) || isempty(doc.time_series_associations)) &&
+        return nothing
+    json = JSON.json(doc.time_series_associations)
+    report = IS.reconcile_time_series_association_rows!(
+        sys.data, json;
+        policy = :strict, expected_address = PD.get_time_series_storage_file(doc),
+    )
+    @debug "from_openapi(System, doc): time series reconcile" report.matched report.updated report.missing_in_store report.unmatched_in_store report.conflicts
+    return nothing
 end
 
 """

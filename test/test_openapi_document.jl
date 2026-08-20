@@ -131,7 +131,8 @@ end
             [Dict{String, Any}("id" => 1, "name" => "whatever")]
         doc["supplemental_attribute_associations"] = [
             Dict{String, Any}(
-                "attribute_id" => 1, "entity_id" => 3, "attribute_type" => "BogusType",
+                "attribute_id" => 1, "component_id" => 3, "component_type" => "ACBus",
+                "attribute_type" => "BogusType",
             ),
         ]
         @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
@@ -140,7 +141,7 @@ end
         doc = make_openapi_test_doc()
         doc["supplemental_attribute_associations"] = [
             Dict{String, Any}(
-                "attribute_id" => 999, "entity_id" => 3,
+                "attribute_id" => 999, "component_id" => 3, "component_type" => "ACBus",
                 "attribute_type" => "GeographicInfo",
             ),
         ]
@@ -152,7 +153,7 @@ end
             [openapi_raw(PSY.PC.GeographicInfo(; id = 1, geo_json = Dict{String, Any}()))]
         doc["supplemental_attribute_associations"] = [
             Dict{String, Any}(
-                "attribute_id" => 1, "entity_id" => 999,
+                "attribute_id" => 1, "component_id" => 999, "component_type" => "ACBus",
                 "attribute_type" => "GeographicInfo",
             ),
         ]
@@ -186,12 +187,14 @@ end
     doc["supplemental_attribute_associations"] = [
         Dict{String, Any}(
             "attribute_id" => 100,
-            "entity_id" => 3,
+            "component_id" => 3,
+            "component_type" => "ACBus",
             "attribute_type" => "GeographicInfo",
         ),
         Dict{String, Any}(
             "attribute_id" => 101,
-            "entity_id" => 6,
+            "component_id" => 6,
+            "component_type" => "ThermalStandard",
             "attribute_type" => "EmissionsData",
         ),
     ]
