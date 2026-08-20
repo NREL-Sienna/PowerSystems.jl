@@ -33,6 +33,33 @@
     end
 end
 
+@testset "from_file: time_series_read_only bundle with a supplemental attribute" begin
+    # Regression guard for the read-only replay fix: before it, this exact call crashed —
+    # `_system_with_sidecar` cannot clear the adopted store's stale association rows when it
+    # is opened read-only, so the replay's `add_supplemental_attribute!` saw them still there
+    # and threw `ArgumentError` on the very first association.
+    sys = _file_io_fixture()
+    mktempdir() do dir
+        bundle = joinpath(dir, "case")
+        to_file(sys, bundle; unit_system = :device_base)
+
+        sys2 = from_file(System, bundle; time_series_read_only = true)
+
+        gen2 = get_component(ThermalStandard, sys2, "g1")
+        @test get_name(gen2) == "g1"
+
+        attrs = PSY.get_supplemental_attributes(gen2)
+        @test length(attrs) == 1
+        attr = first(attrs)
+        @test attr isa EmissionsData
+        @test get_name(attr) == "g1_CO2"
+
+        ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
+        @test length(ts) == 6
+        @test TimeSeries.values(PSY.get_data(ts)) == [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+    end
+end
+
 @testset "to_file: a system with no time series gets no sidecar" begin
     sys = _file_io_fixture(; with_time_series = false)
     mktempdir() do dir

@@ -88,7 +88,7 @@ end
         ],
     )
 
-    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc)
+    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc, false)
 
     attrs1 = collect(get_supplemental_attributes(GeographicInfo, f.bus1))
     attrs2 = collect(get_supplemental_attributes(GeographicInfo, f.bus2))
@@ -118,7 +118,7 @@ end
         ],
     )
 
-    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc)
+    PSY.load_supplemental_attribute_associations!(f.sys, f.refs, doc, false)
 
     @test has_service(f.gen, f.reserve)
     # No supplemental-attribute association resulted: a Service is a Component.
@@ -146,7 +146,7 @@ end
         ],
     )
     @test_throws ErrorException PSY.load_supplemental_attribute_associations!(
-        f.sys, f.refs, doc,
+        f.sys, f.refs, doc, false,
     )
 
     # An unresolved attribute_id (naming a component, or nothing at all) is no longer
@@ -168,7 +168,7 @@ end
         ],
     )
     @test_throws MethodError PSY.load_supplemental_attribute_associations!(
-        f.sys, f.refs, doc,
+        f.sys, f.refs, doc, false,
     )
 
     # Missing attribute_type: `document_from_json` itself requires the field on every
@@ -187,6 +187,6 @@ end
     )
     doc.supplemental_attribute_associations[1].attribute_type = nothing
     @test_throws ErrorException PSY.load_supplemental_attribute_associations!(
-        f.sys, f.refs, doc,
+        f.sys, f.refs, doc, false,
     )
 end

@@ -1226,3 +1226,86 @@ end
     refs[5] = no_base
     @test_throws ErrorException PSY.to_openapi(no_base, refs, NU)
 end
+
+_export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
+    name = name, available = true, status = true, bus = bus,
+    active_power = 0.4, reactive_power = 0.01, rating = 0.5,
+    prime_mover_type = PrimeMovers.ST, fuel = ThermalFuels.COAL,
+    active_power_limits = (min = 0.0, max = 0.4),
+    reactive_power_limits = (min = -0.3, max = 0.3),
+    time_limits = nothing, ramp_limits = nothing,
+    operation_cost = ThermalGenerationCost(CostCurve(LinearCurve(1400.0)), 0.0, 4.0, 2.0),
+    base_power = 100.0,
+)
+
+@testset "OpenAPI export: time series owned by a supplemental attribute errors, no partial sidecar" begin
+    mktempdir() do dir
+        bus = _export_bus(; number = 1)
+        gen = _export_thermal_gen(bus)
+        sys = System(100.0)
+        add_component!(sys, bus)
+        add_component!(sys, gen)
+
+        outage = GeometricDistributionForcedOutage(;
+            mean_time_to_recovery = 1.0, outage_transition_probability = 0.5,
+        )
+        add_supplemental_attribute!(sys, gen, outage)
+
+        ta = TimeSeries.TimeArray(
+            [Dates.DateTime(2024, 1, 1, h) for h in 0:2], [0.1, 0.2, 0.3],
+        )
+        add_time_series!(sys, outage, SingleTimeSeries(; name = "outage_series", data = ta))
+
+        ts_out_path = joinpath(dir, "attr_owned_series.h5")
+        @test_throws ErrorException PSY.to_openapi(
+            sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+        )
+        # The old guard's error-before-serialize property: a failed export must leave no
+        # partial sidecar, since a half-written one is worse than none.
+        @test !isfile(ts_out_path)
+    end
+end
+
+@testset "OpenAPI export: time series on an unexportable (dynamics) owner warns and is dropped" begin
+    mktempdir() do dir
+        bus = _export_bus(; number = 1)
+        static_gen = _export_thermal_gen(bus)
+        dyn_gen = DynamicGenerator(;
+            name = get_name(static_gen),
+            ω_ref = 1.0,
+            machine = BaseMachine(; R = 0.0, Xd_p = 0.2995, eq_p = 1.05),
+            shaft = SingleMass(; H = 5.148, D = 2.0),
+            avr = AVRFixed(; Vf = 1.05, V_ref = 1.0),
+            prime_mover = TGFixed(; efficiency = 1.0),
+            pss = PSSFixed(; V_pss = 0.0),
+        )
+
+        sys = System(100.0)
+        add_component!(sys, bus)
+        add_component!(sys, static_gen)
+        add_component!(sys, dyn_gen, static_gen)
+
+        ta = TimeSeries.TimeArray(
+            [Dates.DateTime(2024, 1, 1, h) for h in 0:2], [0.1, 0.2, 0.3],
+        )
+        add_time_series!(sys, dyn_gen, SingleTimeSeries(; name = "dyn_series", data = ta))
+        add_time_series!(
+            sys, static_gen, SingleTimeSeries(; name = "static_series", data = ta),
+        )
+
+        ts_out_path = joinpath(dir, "dynamics_owner.h5")
+        out = @test_logs(
+            (:warn, r"omitting component type"),
+            (:warn, r"omitting 1 time series row"),
+            match_mode = :any,
+            PSY.to_openapi(
+                sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+            ),
+        )
+        # The sidecar still holds both series — only the document's description of the
+        # dynamics-owned one is dropped, so the write itself is not blocked.
+        @test isfile(ts_out_path)
+        @test length(out.time_series_associations) == 1
+        @test only(out.time_series_associations).value.name == "static_series"
+    end
+end
