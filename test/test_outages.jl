@@ -342,3 +342,393 @@ end
     remove_supplemental_attributes!(GeographicInfo, sys)
     @test length(get_supplemental_attributes(GeographicInfo, sys)) == 0
 end
+
+@testset "Test time series on supplemental attributes" begin
+    sys = create_system_with_outages()
+    gens = collect(get_components(ThermalStandard, sys))
+    gen1, gen2 = gens[1], gens[2]
+    fo1 = only(get_supplemental_attributes(GeometricDistributionForcedOutage, gen1))
+    fo2 = only(get_supplemental_attributes(GeometricDistributionForcedOutage, gen2))
+    po1 = only(get_supplemental_attributes(PlannedOutage, gen1))
+    po2 = only(get_supplemental_attributes(PlannedOutage, gen2))
+    geo1 = only(get_supplemental_attributes(GeographicInfo, gen1))
+
+    # The fixture attaches one SingleTimeSeries to each outage: name "ts_i", data i:i+23,
+    # hourly from 2020-01-01T00:00:00.
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    dates = collect(initial_time:resolution:(initial_time + Dates.Hour(23)))
+    for (i, outage) in enumerate((fo1, fo2, po1, po2))
+        name = "ts_$(i)"
+        @test supports_time_series(outage)
+        @test has_time_series(outage)
+        @test has_time_series(outage, SingleTimeSeries)
+        @test has_time_series(outage, SingleTimeSeries, name)
+        @test !has_time_series(outage, Deterministic)
+        ts = get_time_series(SingleTimeSeries, outage, name)
+        @test ts isa SingleTimeSeries
+        @test get_name(ts) == name
+        @test get_time_series_values(SingleTimeSeries, outage, name) == collect(i:(i + 23))
+        timestamps = get_time_series_timestamps(SingleTimeSeries, outage, name)
+        @test timestamps == dates
+        ta = get_time_series_array(SingleTimeSeries, outage, name)
+        @test TimeSeries.values(ta) == collect(i:(i + 23))
+        @test TimeSeries.timestamp(ta) == dates
+        # Windowed read.
+        @test get_time_series_values(
+            SingleTimeSeries,
+            outage,
+            name;
+            start_time = initial_time + Dates.Hour(2),
+            len = 3,
+        ) == collect((i + 2):(i + 4))
+        # Read through the key.
+        key = only(get_time_series_keys(outage))
+        @test key.name == name
+        @test key.time_series_type === SingleTimeSeries
+        ts_by_key = get_time_series(outage, key)
+        @test get_name(ts_by_key) == name
+        @test TimeSeries.values(get_data(ts_by_key)) == collect(i:(i + 23))
+    end
+
+    # Ownership is per attribute: a generator does not see its attributes' series and vice
+    # versa.
+    @test !has_time_series(gen1, SingleTimeSeries, "ts_1")
+    @test !has_time_series(fo1, SingleTimeSeries, "ts_2")
+
+    # GeographicInfo opts out of time series (the SupplementalAttribute default), even though
+    # it is attached to the system.
+    @test !supports_time_series(geo1)
+    @test !has_time_series(geo1)
+    @test_throws ArgumentError add_time_series!(
+        sys,
+        geo1,
+        SingleTimeSeries(; name = "nope", data = TimeSeries.TimeArray(dates, ones(24))),
+    )
+
+    counts = get_time_series_counts(sys)
+    @test counts.supplemental_attributes_with_time_series == 4
+    static_table = get_static_time_series_summary_table(sys)
+    attr_rows =
+        static_table[string.(static_table.owner_category) .== "SupplementalAttribute", :]
+    @test size(attr_rows, 1) == 4
+    @test Set(attr_rows.owner_type) ==
+          Set(["GeometricDistributionForcedOutage", "PlannedOutage"])
+    @test Set(attr_rows.name) == Set(["ts_1", "ts_2", "ts_3", "ts_4"])
+
+    # Add a SingleTimeSeries directly (outside a transaction), with feature tags.
+    ta_low = TimeSeries.TimeArray(dates, collect(100.0:123.0))
+    key_low = add_time_series!(
+        sys,
+        fo1,
+        SingleTimeSeries(; name = "extra", data = ta_low);
+        scenario = "low",
+    )
+    @test key_low isa IS.TimeSeriesKey
+    ta_high = TimeSeries.TimeArray(dates, collect(200.0:223.0))
+    add_time_series!(
+        sys,
+        fo1,
+        SingleTimeSeries(; name = "extra", data = ta_high);
+        scenario = "high",
+    )
+    @test has_time_series(fo1, SingleTimeSeries, "extra"; scenario = "low")
+    @test has_time_series(fo1, SingleTimeSeries, "extra"; scenario = "high")
+    @test get_time_series_values(SingleTimeSeries, fo1, "extra"; scenario = "low") ==
+          collect(100.0:123.0)
+    @test get_time_series_values(SingleTimeSeries, fo1, "extra"; scenario = "high") ==
+          collect(200.0:223.0)
+    @test get_time_series(fo1, key_low) isa SingleTimeSeries
+    # Without a feature the name is ambiguous.
+    @test_throws ArgumentError get_time_series_values(SingleTimeSeries, fo1, "extra")
+    @test length(get_time_series_keys(fo1)) == 3
+    @test get_time_series_counts(sys).static_time_series_count ==
+          counts.static_time_series_count + 2
+
+    # Add a Deterministic forecast that matches the system's existing forecast parameters.
+    forecast_initial = get_forecast_initial_timestamp(sys)
+    forecast_interval = get_forecast_interval(sys)
+    horizon_count =
+        Int(Dates.Millisecond(get_forecast_horizon(sys)) / Dates.Millisecond(resolution))
+    window1 = collect(1.0:horizon_count)
+    window2 = collect((1.0 + horizon_count):(2 * horizon_count))
+    forecast = Deterministic(;
+        name = "outage_forecast",
+        data = SortedDict(
+            forecast_initial => window1,
+            forecast_initial + forecast_interval => window2,
+        ),
+        resolution = resolution,
+    )
+    add_time_series!(sys, fo2, forecast)
+    @test has_time_series(fo2, Deterministic)
+    @test has_time_series(fo2, Deterministic, "outage_forecast")
+    @test get_time_series_values(Deterministic, fo2, "outage_forecast") == window1
+    @test get_time_series_values(
+        Deterministic,
+        fo2,
+        "outage_forecast";
+        start_time = forecast_initial + forecast_interval,
+    ) == window2
+    @test get_time_series_counts(sys).forecast_count == counts.forecast_count + 1
+    forecast_table = get_forecast_summary_table(sys)
+    attr_forecast_rows =
+        forecast_table[
+            string.(forecast_table.owner_category) .== "SupplementalAttribute",
+            :,
+        ]
+    @test size(attr_forecast_rows, 1) == 1
+    @test only(attr_forecast_rows.owner_type) == "GeometricDistributionForcedOutage"
+    @test only(attr_forecast_rows.name) == "outage_forecast"
+
+    # The same time series added to several attributes at once.
+    ta_shared = TimeSeries.TimeArray(dates, collect(1.0:24.0))
+    add_time_series!(
+        sys,
+        (fo1, fo2, po1),
+        SingleTimeSeries(; name = "shared", data = ta_shared),
+    )
+    for attr in (fo1, fo2, po1)
+        @test get_time_series_values(SingleTimeSeries, attr, "shared") == collect(1.0:24.0)
+    end
+    @test !has_time_series(po2, SingleTimeSeries, "shared")
+
+    # Copy every series from one attribute to another.
+    @test length(get_time_series_keys(po2)) == 1
+    copy_time_series!(po2, po1)
+    @test has_time_series(po2, SingleTimeSeries, "ts_3")
+    @test has_time_series(po2, SingleTimeSeries, "shared")
+    @test get_time_series_values(SingleTimeSeries, po2, "ts_3") ==
+          get_time_series_values(SingleTimeSeries, po1, "ts_3")
+    @test length(get_time_series_keys(po2)) == 3
+
+    # An attribute that is not attached to a system cannot own time series.
+    detached = PlannedOutage(; outage_schedule = "detached")
+    @test !has_time_series(detached)
+    @test_throws ArgumentError add_time_series!(
+        sys,
+        detached,
+        SingleTimeSeries(; name = "nope", data = ta_low),
+    )
+
+    # Removal by name (with feature disambiguation) and by type.
+    remove_time_series!(sys, SingleTimeSeries, fo1, "extra"; scenario = "high")
+    @test !has_time_series(fo1, SingleTimeSeries, "extra"; scenario = "high")
+    @test has_time_series(fo1, SingleTimeSeries, "extra"; scenario = "low")
+    # Bulk removal by type is scoped to component owners in IS; attribute-owned series are
+    # deliberately left untouched and must be removed per attribute.
+    remove_time_series!(sys, Deterministic)
+    @test has_time_series(fo2, Deterministic, "outage_forecast")
+    @test get_time_series_counts(sys).forecast_count == 1
+    remove_time_series!(sys, Deterministic, fo2, "outage_forecast")
+    @test !has_time_series(fo2, Deterministic)
+    @test has_time_series(fo2, SingleTimeSeries)
+    @test get_time_series_counts(sys).forecast_count == 0
+end
+
+@testset "Test removing a supplemental attribute removes its time series" begin
+    sys = create_system_with_outages()
+    gens = collect(get_components(ThermalStandard, sys))
+    gen1 = gens[1]
+    po = only(get_supplemental_attributes(PlannedOutage, gen1))
+    @test has_time_series(po)
+    before = get_time_series_counts(sys)
+    remove_supplemental_attribute!(sys, gen1, po)
+    @test isempty(get_supplemental_attributes(PlannedOutage, gen1))
+    @test !has_time_series(po)
+    after = get_time_series_counts(sys)
+    @test after.supplemental_attributes_with_time_series ==
+          before.supplemental_attributes_with_time_series - 1
+    @test after.static_time_series_count == before.static_time_series_count - 1
+end
+
+@testset "Test serialization of time series on supplemental attributes" begin
+    sys = create_system_with_outages()
+
+    # Identify an outage by its distinguishing field, since ids are reassigned on load.
+    outage_tag(o::PlannedOutage) = (PlannedOutage, get_outage_schedule(o))
+    outage_tag(o::GeometricDistributionForcedOutage) =
+        (GeometricDistributionForcedOutage, get_mean_time_to_recovery(o))
+    function outage_series(s)
+        return Dict(
+            outage_tag(o) => Dict(
+                k.name => get_time_series_values(k.time_series_type, o, k.name) for
+                k in get_time_series_keys(o)
+            ) for o in get_supplemental_attributes(Outage, s)
+        )
+    end
+
+    expected = outage_series(sys)
+    @test length(expected) == 4
+    sys2 = roundtrip_system(sys)
+    @test length(get_supplemental_attributes(Outage, sys2)) == 4
+    @test get_time_series_counts(sys2).supplemental_attributes_with_time_series ==
+          get_time_series_counts(sys).supplemental_attributes_with_time_series
+    actual = outage_series(sys2)
+    @test Set(keys(actual)) == Set(keys(expected))
+    # The sidecar store is serialized wholesale with series keyed by the exporter's IS
+    # attribute ids, while the importer mints fresh attribute ids in association order, so
+    # the series land on whichever attribute receives the same number. The export-side
+    # guard meant to reject this (_check_time_series_ids_match) never sees an attribute
+    # because `sorted_refs` is snapshotted before the attributes are registered.
+    @test_broken actual == expected
+end
+
+@testset "Test time series on components and attributes with colliding ids" begin
+    # Components and supplemental attributes draw ids from independent streams, so the same
+    # number identifies one of each. Build a system where every outage's id equals the id of
+    # a generator that supports time series, and attach each outage to a *different*
+    # generator than the one sharing its id, so any owner confusion in the store would be
+    # visible.
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    n = 4
+    gens = ThermalStandard[]
+    for i in 1:n
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen$(i)"
+        add_component!(sys, gen)
+        push!(gens, gen)
+    end
+    # The bus took component id 1; burn attribute id 1 on a PlannedOutage so the forced
+    # outages below take ids 2..(n+1), which are the generators' ids.
+    add_supplemental_attribute!(sys, gens[1], PlannedOutage(; outage_schedule = "filler"))
+    outages = GeometricDistributionForcedOutage[]
+    for i in 1:n
+        outage = GeometricDistributionForcedOutage(;
+            mean_time_to_recovery = Float64(i),
+            outage_transition_probability = 0.5,
+        )
+        # Attach to the next generator, cyclically, not the one sharing its id.
+        add_supplemental_attribute!(sys, gens[mod1(i + 1, n)], outage)
+        push!(outages, outage)
+    end
+    gen_ids = IS.get_id.(gens)
+    outage_ids = IS.get_id.(outages)
+    @test gen_ids == outage_ids
+    @test length(Set(gen_ids)) == n
+    for (gen, outage) in zip(gens, outages)
+        @test IS.get_component(sys, IS.get_id(gen)) === gen
+        @test get_supplemental_attribute(sys, IS.get_id(outage)) === outage
+        @test outage ∉ get_supplemental_attributes(GeometricDistributionForcedOutage, gen)
+    end
+
+    # Same name, same shape, different values on every owner; components and attributes
+    # sharing an id get values that differ from each other.
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    dates = collect(initial_time:resolution:(initial_time + Dates.Hour(23)))
+    gen_values(id) = collect(100.0 * id .+ (0:23))
+    outage_values(id) = collect(-100.0 * id .- (0:23))
+    name = "data"
+    for gen in gens
+        ta = TimeSeries.TimeArray(dates, gen_values(IS.get_id(gen)))
+        add_time_series!(sys, gen, SingleTimeSeries(; name = name, data = ta))
+    end
+    for outage in outages
+        ta = TimeSeries.TimeArray(dates, outage_values(IS.get_id(outage)))
+        add_time_series!(sys, outage, SingleTimeSeries(; name = name, data = ta))
+    end
+    # Forecasts too, same name on both owner kinds.
+    fname = "forecast"
+    horizon = 3
+    gen_forecast(id) = SortedDict(
+        initial_time => collect(1000.0 * id .+ (1:horizon)),
+        initial_time + Dates.Hour(1) => collect(1000.0 * id .+ (11:(10 + horizon))),
+    )
+    outage_forecast(id) = SortedDict(
+        initial_time => collect(-1000.0 * id .- (1:horizon)),
+        initial_time + Dates.Hour(1) => collect(-1000.0 * id .- (11:(10 + horizon))),
+    )
+    for gen in gens
+        data = gen_forecast(IS.get_id(gen))
+        add_time_series!(
+            sys,
+            gen,
+            Deterministic(; name = fname, data = data, resolution = resolution),
+        )
+    end
+    for outage in outages
+        data = outage_forecast(IS.get_id(outage))
+        add_time_series!(
+            sys,
+            outage,
+            Deterministic(; name = fname, data = data, resolution = resolution),
+        )
+    end
+
+    counts = get_time_series_counts(sys)
+    @test counts.components_with_time_series == n
+    @test counts.supplemental_attributes_with_time_series == n
+    @test counts.static_time_series_count == 2n
+    @test counts.forecast_count == 2n
+
+    # Every owner reads back exactly its own data.
+    for gen in gens
+        id = IS.get_id(gen)
+        @test length(get_time_series_keys(gen)) == 2
+        @test get_time_series_values(SingleTimeSeries, gen, name) == gen_values(id)
+        @test TimeSeries.values(get_data(get_time_series(SingleTimeSeries, gen, name))) ==
+              gen_values(id)
+        @test get_time_series_values(Deterministic, gen, fname) ==
+              gen_forecast(id)[initial_time]
+        @test get_time_series_values(
+            Deterministic,
+            gen,
+            fname;
+            start_time = initial_time + Dates.Hour(1),
+        ) == gen_forecast(id)[initial_time + Dates.Hour(1)]
+    end
+    for outage in outages
+        id = IS.get_id(outage)
+        @test length(get_time_series_keys(outage)) == 2
+        @test get_time_series_values(SingleTimeSeries, outage, name) == outage_values(id)
+        @test TimeSeries.values(
+            get_data(get_time_series(SingleTimeSeries, outage, name)),
+        ) ==
+              outage_values(id)
+        @test get_time_series_values(Deterministic, outage, fname) ==
+              outage_forecast(id)[initial_time]
+        @test get_time_series_values(
+            Deterministic,
+            outage,
+            fname;
+            start_time = initial_time + Dates.Hour(1),
+        ) == outage_forecast(id)[initial_time + Dates.Hour(1)]
+        # And never the data of the component sharing its id.
+        @test get_time_series_values(SingleTimeSeries, outage, name) != gen_values(id)
+        @test get_time_series_values(Deterministic, outage, fname) !=
+              gen_forecast(id)[initial_time]
+    end
+
+    # Removing one owner's series leaves the id-sharing owner's series intact, both ways.
+    remove_time_series!(sys, SingleTimeSeries, gens[1], name)
+    @test !has_time_series(gens[1], SingleTimeSeries, name)
+    @test has_time_series(outages[1], SingleTimeSeries, name)
+    @test get_time_series_values(SingleTimeSeries, outages[1], name) ==
+          outage_values(IS.get_id(outages[1]))
+    remove_time_series!(sys, Deterministic, outages[2], fname)
+    @test !has_time_series(outages[2], Deterministic, fname)
+    @test has_time_series(gens[2], Deterministic, fname)
+    @test get_time_series_values(Deterministic, gens[2], fname) ==
+          gen_forecast(IS.get_id(gens[2]))[initial_time]
+    counts = get_time_series_counts(sys)
+    @test counts.static_time_series_count == 2n - 1
+    @test counts.forecast_count == 2n - 1
+
+    # Removing an attribute drops only its series; the generator sharing its id keeps its own.
+    remove_supplemental_attribute!(sys, gens[mod1(4, n)], outages[3])
+    @test !has_time_series(outages[3])
+    @test has_time_series(gens[3], SingleTimeSeries, name)
+    @test get_time_series_values(SingleTimeSeries, gens[3], name) ==
+          gen_values(IS.get_id(gens[3]))
+    @test has_time_series(gens[3], Deterministic, fname)
+    counts = get_time_series_counts(sys)
+    @test counts.supplemental_attributes_with_time_series == n - 1
+    @test counts.components_with_time_series == n
+end
