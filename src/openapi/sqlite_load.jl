@@ -33,7 +33,7 @@ Every group index a (plant_id, entity_id) pair carries, from `doc.plant_associat
 never name the same pair — a plant is either a `PlantAssociation`-shaped plant or a
 `CombinedCycleBlock`, never both — so one merged map is unambiguous.
 """
-function _group_index_by_pair(doc::PC.SystemDocument)
+function _group_index_by_pair(doc::PD.SystemDocument)
     indices = Dict{Tuple{Int, Int}, Int}(
         (Int(a.plant_id), Int(a.entity_id)) => Int(a.group_index) for
         a in doc.plant_associations
@@ -76,32 +76,38 @@ actually resolved to. No silent skip.
 function load_supplemental_attribute_associations!(
     sys::System,
     refs::OpenAPIRefs,
-    doc::PC.SystemDocument,
+    doc::PD.SystemDocument,
 )
     attribute_rows = Dict{Int, Any}(
         Int(getproperty(attr, :id)) => attr for attr in doc.supplemental_attributes
     )
     converted = Dict{Int, SupplementalAttribute}()
     group_index_by_pair = _group_index_by_pair(doc)
-    for assoc in doc.supplemental_attribute_associations
-        attribute_id = Int(assoc.attribute_id)
-        entity_id = Int(assoc.entity_id)
-        has_ref(refs, entity_id) || error(
-            "load_supplemental_attribute_associations!: association references " *
-            "unresolved entity_id=$entity_id (attribute_id=$attribute_id)",
-        )
-        haskey(attribute_rows, attribute_id) || error(
-            "load_supplemental_attribute_associations!: association references " *
-            "unresolved attribute_id=$attribute_id (entity_id=$entity_id)",
-        )
-        attribute = get!(converted, attribute_id) do
-            built = from_openapi(attribute_rows[attribute_id], refs)
-            _check_resolved_type_matches(built, assoc.attribute_type, attribute_id)
-            refs[attribute_id] = built
-            return built
+    # One store write for the whole table instead of two round trips per row (a
+    # `has_association` probe plus the insert). The probe still answers correctly inside the
+    # batch, so a document naming the same pair twice is still rejected by name here rather
+    # than by the store at flush; the per-attribute dispatch below is untouched.
+    IS.begin_association_batch(sys.data) do
+        for assoc in doc.supplemental_attribute_associations
+            attribute_id = Int(assoc.attribute_id)
+            entity_id = Int(assoc.entity_id)
+            has_ref(refs, entity_id) || error(
+                "load_supplemental_attribute_associations!: association references " *
+                "unresolved entity_id=$entity_id (attribute_id=$attribute_id)",
+            )
+            haskey(attribute_rows, attribute_id) || error(
+                "load_supplemental_attribute_associations!: association references " *
+                "unresolved attribute_id=$attribute_id (entity_id=$entity_id)",
+            )
+            attribute = get!(converted, attribute_id) do
+                built = from_openapi(attribute_rows[attribute_id], refs)
+                _check_resolved_type_matches(built, assoc.attribute_type, attribute_id)
+                refs[attribute_id] = built
+                return built
+            end
+            group_index = get(group_index_by_pair, (attribute_id, entity_id), nothing)
+            _attach_attribute!(sys, refs[entity_id], attribute, group_index)
         end
-        group_index = get(group_index_by_pair, (attribute_id, entity_id), nothing)
-        _attach_attribute!(sys, refs[entity_id], attribute, group_index)
     end
     for assoc in doc.service_associations
         service_id = Int(assoc.service_id)

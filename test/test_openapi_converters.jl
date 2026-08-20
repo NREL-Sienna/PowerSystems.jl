@@ -269,7 +269,7 @@ end
 
     circuit_po = PSY.PO.TransformerCircuit(;
         id = 20, available = true, arc = 10, tap = 1.0, alpha = 0.05,
-        parameter_units = "DEVICE_BASE", r = 0.01, x = 0.1,
+        parameter_units = "COMPONENT_BASE", r = 0.01, x = 0.1,
         control_objective = "UNDEFINED", regulated_bus_number = 0,
         control_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
         controlled_quantity_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
@@ -311,7 +311,7 @@ end
 
     refs[20] = circuit_natural
     xfmr_po = PSY.PO.TwoWindingTransformer(;
-        id = 30, name = "xfmr1", circuit = 20, admittance_units = "DEVICE_BASE",
+        id = 30, name = "xfmr1", circuit = 20, admittance_units = "COMPONENT_BASE",
         magnetizing_shunt = PSY.PC.ComplexNumber(; real = 0.01, imag = 0.02),
         shunt_location = "PRIMARY",
     )
@@ -323,7 +323,7 @@ end
     end
 
     bad_xfmr_po = PSY.PO.TwoWindingTransformer(;
-        id = 31, name = "xfmr2", circuit = 20, admittance_units = "DEVICE_MVAR",
+        id = 31, name = "xfmr2", circuit = 20, admittance_units = "COMPONENT_MVAR",
         magnetizing_shunt = PSY.PC.ComplexNumber(; real = 0.0, imag = 0.0),
         shunt_location = "PRIMARY",
     )
@@ -345,7 +345,7 @@ end
 
     _circuit_po(id, arc) = PSY.PO.TransformerCircuit(;
         id = id, available = true, arc = arc, tap = 1.0, alpha = 0.0,
-        parameter_units = "DEVICE_BASE", r = 0.001, x = 0.01,
+        parameter_units = "COMPONENT_BASE", r = 0.001, x = 0.01,
         control_objective = "UNDEFINED", regulated_bus_number = 0,
         control_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
         controlled_quantity_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
@@ -363,10 +363,10 @@ end
 
     t3w_po = PSY.PO.ThreeWindingTransformer(;
         id = 30, name = "t3w1", primary_circuit = 20, secondary_circuit = 21,
-        tertiary_circuit = 22, star_bus = 5, parameter_units = "DEVICE_BASE",
+        tertiary_circuit = 22, star_bus = 5, parameter_units = "COMPONENT_BASE",
         r_12 = 0.01, x_12 = 0.1, r_23 = 0.015, x_23 = 0.15, r_31 = 0.02, x_31 = 0.2,
         base_power_12 = 100.0, base_power_23 = 100.0, base_power_31 = 100.0,
-        admittance_units = "DEVICE_BASE",
+        admittance_units = "COMPONENT_BASE",
         magnetizing_shunt = PSY.PC.ComplexNumber(; real = 0.03, imag = 0.0),
         shunt_location = "STAR",
     )
@@ -388,7 +388,7 @@ end
     bad_t3w_po = PSY.PO.ThreeWindingTransformer(;
         id = 31, name = "t3w2", primary_circuit = 20, secondary_circuit = 21,
         tertiary_circuit = 22, star_bus = 5, parameter_units = "NATURAL_UNITS",
-        admittance_units = "DEVICE_BASE",
+        admittance_units = "COMPONENT_BASE",
         magnetizing_shunt = PSY.PC.ComplexNumber(; real = 0.0, imag = 0.0),
         shunt_location = "STAR",
     )
@@ -522,10 +522,10 @@ end
 @testset "OpenAPI converters: FixedAdmittance" begin
     refs = _refs_with_area_bus(; base_power = 100.0)
 
-    # DEVICE_MVAR divides by the document's system base: G = 0.0, B = -100.0 MVAr.
+    # COMPONENT_MVAR divides by the document's system base: G = 0.0, B = -100.0 MVAr.
     mvar_po = PSY.PO.FixedAdmittance(;
         id = 20, name = "shunt1", available = true, bus = 4,
-        admittance_units = "DEVICE_MVAR",
+        admittance_units = "COMPONENT_MVAR",
         Y = PSY.PC.ComplexNumber(; real = 0.0, imag = -100.0),
     )
     for val in (DU, NU)
@@ -535,12 +535,12 @@ end
         @test get_available(shunt)
     end
 
-    # Round-trip on the DEVICE_MVAR wire contract: import(export(x)) == x.
+    # Round-trip on the COMPONENT_MVAR wire contract: import(export(x)) == x.
     registered = PSY.from_openapi(mvar_po, refs, DU)
     refs[20] = registered
     for val in (DU, NU)
         exported = PSY.to_openapi(registered, refs, val)
-        @test exported.admittance_units == "DEVICE_MVAR"
+        @test exported.admittance_units == "COMPONENT_MVAR"
         @test exported.Y.imag == -100.0
         round_tripped = PSY.from_openapi(exported, refs, val)
         @test get_Y(round_tripped) == get_Y(registered)
@@ -1134,14 +1134,14 @@ end
 
     # Only NATURAL_UNITS is implemented for either unit-basis selector.
     bad_admittance = _vsc_po_minimal()
-    bad_admittance.admittance_units = "DEVICE_BASE"
+    bad_admittance.admittance_units = "COMPONENT_BASE"
     @test_throws ErrorException PSY.from_openapi(bad_admittance,
         refs,
         NU,
     )
 
     bad_voltage = _vsc_po_minimal()
-    bad_voltage.voltage_units = "DEVICE_BASE"
+    bad_voltage.voltage_units = "COMPONENT_BASE"
     @test_throws ErrorException PSY.from_openapi(bad_voltage, refs, NU)
 
     # A non-zero g with no DC voltage base is unconvertible; a zero one is not.

@@ -134,12 +134,12 @@ end
 # `Arc`/`TransformerCircuit`/`TransmissionInterface` carry no `ext` field at all — nothing to
 # write, so those overloads are no-ops rather than an error about a missing getter.
 
-_export_ext!(::PC.SystemDocument, ::Int, ::Arc) = nothing
-_export_ext!(::PC.SystemDocument, ::Int, ::TransformerCircuit) = nothing
-_export_ext!(::PC.SystemDocument, ::Int, ::TransmissionInterface) = nothing
+_export_ext!(::PD.SystemDocument, ::Int, ::Arc) = nothing
+_export_ext!(::PD.SystemDocument, ::Int, ::TransformerCircuit) = nothing
+_export_ext!(::PD.SystemDocument, ::Int, ::TransmissionInterface) = nothing
 
-function _export_ext!(doc::PC.SystemDocument, id::Int, component)
-    PC.set_ext!(doc, id, get_ext(component))
+function _export_ext!(doc::PD.SystemDocument, id::Int, component)
+    PD.set_ext!(doc, id, get_ext(component))
     return nothing
 end
 
@@ -180,7 +180,7 @@ The caller states the convention outright: a `System` records no unit system of 
 getter takes one explicitly — so there is nothing to infer from `sys`."""
 function _resolve_export_unit_system(unit_system::Symbol)
     if unit_system === :device_base
-        return "DEVICE_BASE"
+        return "COMPONENT_BASE"
     elseif unit_system === :natural_units
         return "NATURAL_UNITS"
     else
@@ -286,14 +286,14 @@ Convert every component in [`DOCUMENT_PLAN`](@ref) order and add it to `doc`.
 the document's `components` map needs no key bookkeeping here.
 """
 function _export_components!(
-    doc::PC.SystemDocument,
+    doc::PD.SystemDocument,
     refs::OpenAPIRefs,
     sys::System,
     val::IS.AbstractUnitSystem,
 )
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
-            PC.add_component!(doc, to_openapi(c, refs, val))
+            PD.add_component!(doc, to_openapi(c, refs, val))
             _export_ext!(doc, component_id(refs, c), c)
         end
     end
@@ -473,6 +473,34 @@ function _group_association!(
 end
 
 """
+The store's attachment ROWS grouped by the id of the component they hang off, plus the
+attribute object each row names.
+
+One catalog query and one pass over the attribute manager, replacing a
+`get_supplemental_attributes(entity)` call per component — which issued a store query for
+every component in the System, including the majority that own no attribute, and rebuilt the
+concrete-subtype-name filter each time.
+
+The rows are carried through rather than reduced to attribute objects because the row is what
+[`IS.to_openapi`](@ref) converts: it already records `attribute_type`, so the document column
+comes from the store instead of being re-derived here.
+
+Grouped by component id, which for anything with an id of its own IS its document id (see the
+id-assignment note above), so the caller looks up by the id it already has.
+"""
+function _attribute_rows_by_component(sys::System)
+    rows = IS.list_supplemental_attribute_association_rows(sys.data)
+    by_id = Dict{Int, SupplementalAttribute}(
+        IS.get_id(attr) => attr for attr in IS.iterate_supplemental_attributes(sys.data)
+    )
+    grouped = Dict{Int, Vector{eltype(rows)}}()
+    for row in rows
+        push!(get!(() -> eltype(rows)[], grouped, Int(row.component_id)), row)
+    end
+    return by_id, grouped
+end
+
+"""
 Emit the attribute rows and their associations, drawing attribute ids from `doc`'s counter.
 
 Ids come from the document's single counter, not a private one: SiennaGridDB's `entities` table
@@ -484,34 +512,38 @@ Each attribute is registered into `refs` under its id before conversion, so
 `to_openapi(attr, refs)` reads its own id back via `component_id` exactly like the generated
 component exporters — and so `refs` covers attributes the same way the import direction's
 does after `load_supplemental_attribute_associations!`.
+
+Walks `sorted_refs` rather than the association rows directly so that document order stays
+tied to component order; the attachments themselves come from one bulk read
+([`_attributes_by_component`](@ref)).
 """
 function _export_supplemental_attributes(
     sorted_refs,
     refs::OpenAPIRefs,
-    doc::PC.SystemDocument,
+    doc::PD.SystemDocument,
+    sys::System,
 )
     attribute_rows = Any[]
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
+    attributes_by_id, attached = _attribute_rows_by_component(sys)
     attr_ids = Dict{Int, Int}()
     for (entity_id, entity) in sorted_refs
         _has_own_id(entity) || continue
-        for attr in get_supplemental_attributes(entity)
-            attr_uuid = IS.get_id(attr)
+        haskey(attached, entity_id) || continue
+        for row in attached[entity_id]
+            attr_uuid = Int(row.attribute_id)
+            attr = attributes_by_id[attr_uuid]
             attr_id = get!(attr_ids, attr_uuid) do
-                id = PC.next_id!(doc)
+                id = PD.next_id!(doc)
                 refs[id] = attr
                 push!(attribute_rows, to_openapi(attr, refs))
                 return id
             end
             push!(
                 association_rows,
-                PC.SupplementalAttributeAssociation(;
-                    attribute_id = attr_id,
-                    entity_id = entity_id,
-                    attribute_type = string(nameof(typeof(attr))),
-                ),
+                IS.to_openapi(row; attribute_id = attr_id, entity_id = entity_id),
             )
             _group_association!(
                 plant_association_rows,
@@ -565,120 +597,32 @@ function _check_time_series_ids_match(sorted_refs)
     return nothing
 end
 
-"""ISO 8601 duration, the reverse of `_parse_iso8601_seconds` (src/openapi/import_document.jl)."""
-_iso8601_duration(period::Dates.Period) =
-    string("PT", Dates.value(Dates.Second(period)), "S")
-
-"""ISO 8601 duration for an optional period; `nothing` passes through."""
-_iso8601_or_nothing(::Nothing) = nothing
-_iso8601_or_nothing(p::Dates.Period) = _iso8601_duration(p)
-
-"""The document's `unit_system` spelling for a series' declared basis.
-
-`nothing` stays `nothing` — unspecified is not `NATURAL_UNITS`, and asserting a basis nobody
-declared would be worse than omitting the field. `SU` has no document spelling: the schemas
-carry no system-base option, since per-unit data historically on the system base records that
-base in the component's own `base_power` and rides as `DEVICE_BASE`."""
-_document_unit_system(::Nothing) = nothing
-_document_unit_system(::NaturalUnit) = "NATURAL_UNITS"
-_document_unit_system(::DeviceBaseUnit) = "DEVICE_BASE"
-_document_unit_system(::SystemBaseUnit) = error(
-    "to_openapi: a time series declares the system-base unit system, which the document " *
-    "cannot express — the schemas offer NATURAL_UNITS and DEVICE_BASE only",
-)
-
-"""`features` as the document's array-of-single-entry-objects, from the key's own dict."""
-function _document_features(key)
-    return [
-        Dict(String(k) => PC.FeatureValue(v)) for (k, v) in IS.get_features(key)
-    ]
-end
-
-"""Forecast shape columns — `(horizon, interval, window_count)` — or all three `nothing` for a
-static series, which has no forecast axis."""
-_forecast_columns(::IS.StaticTimeSeriesKey) = (nothing, nothing, nothing)
-_forecast_columns(::IS.NonSequentialTimeSeriesKey) = (nothing, nothing, nothing)
-_forecast_columns(key::IS.ForecastKey) = (
-    _iso8601_or_nothing(IS.get_horizon(key)),
-    _iso8601_or_nothing(IS.get_interval(key)),
-    IS.get_count(key),
-)
-
-"""
-Grid columns — `(initial_timestamp, resolution)`.
-
-`NonSequentialTimeSeriesKey` is a sibling of the other key types, not a subtype: it carries
-neither field, because an irregular series has no `initial + k * resolution` grid to describe.
-Its explicit timestamp vector lives in the store, so the row identifies it by `name` and
-`length` and leaves both columns empty.
-"""
-_grid_columns(::IS.NonSequentialTimeSeriesKey) = (nothing, nothing)
-_grid_columns(key::IS.TimeSeriesKey) = (
-    TimeZones.ZonedDateTime(IS.get_initial_timestamp(key), TimeZones.TimeZone("UTC")),
-    _iso8601_duration(IS.get_resolution(key)),
-)
-
-"""`length` column: a static series' own length. A forecast's shape is described by
-horizon/interval/window_count instead, so it carries none."""
-_document_length(key::IS.StaticTimeSeriesKey) = IS.get_length(key)
-_document_length(key::IS.NonSequentialTimeSeriesKey) = IS.get_length(key)
-_document_length(::IS.ForecastKey) = nothing
-
-"""
-One `TimeSeriesAssociation` row for `key` on `entity`.
-
-Identity and shape come off the key; `units`, `quantity_kind` and `unit_system` are declared
-on the series itself, so the series is read to reach them.
-
-Two optional columns are deliberately omitted. `element_type` is derived from the stored
-array's layout and InfraStore owns that derivation — duplicating it here would be a second
-source of truth for exactly the thing the schema says the writing package derives, and
-IS exposes no accessor for it. `application_data` is a package-owned payload PowerSystems
-does not set.
-"""
-function _time_series_row(doc::PC.SystemDocument, entity, entity_id::Int, key)
-    ts = get_time_series(entity, key)
-    horizon, interval, window_count = _forecast_columns(key)
-    initial_timestamp, resolution = _grid_columns(key)
-    return PC.TimeSeriesAssociation(;
-        id = PC.next_id!(doc),
-        time_series_type = string(nameof(IS.get_time_series_type(key))),
-        initial_timestamp = initial_timestamp,
-        resolution = resolution,
-        horizon = horizon,
-        interval = interval,
-        window_count = window_count,
-        length = _document_length(key),
-        name = IS.get_name(key),
-        owner_id = entity_id,
-        owner_type = string(nameof(typeof(entity))),
-        owner_category = _owner_category(entity),
-        features = _document_features(key),
-        units = IS.get_units(ts),
-        quantity_kind = IS.get_quantity_kind(ts),
-        unit_system = _document_unit_system(IS.get_unit_system(ts)),
-    )
-end
-
-_owner_category(::SupplementalAttribute) = "SupplementalAttribute"
-_owner_category(::Any) = "Component"
-
 """
 Write the System's time series to `time_series_storage_path` and describe them in the
 document.
 
 Both halves matter and neither is redundant: the sidecar holds the values, and the document
 lists one row per series so a consumer can see what a bundle contains — and in what units, on
-what basis — without opening the store. The row is an index into the sidecar, keyed the way
-the sidecar keys its own catalog: `(owner id, name, type, resolution/interval, features)`.
+what basis — without opening the store.
+
+The rows come from ONE catalog query (`IS.list_time_series_metadata`), not from walking
+owners. That is a correctness requirement before it is a speed one: `element_type`,
+`element_shape`, and `address` are required columns and none is reachable from a
+`TimeSeriesKey` — InfraStore derives `element_type` from the stored array on write, and
+re-deriving it here would be a second source of truth for the one field the schema says the
+writing package owns. Walking owners also meant reading every array out of HDF5 to reach
+`units`/`quantity_kind`/`unit_system`, three scalars the catalog stores as columns.
+
+Rows are emitted in catalog order sorted by `(owner_id, name, type)` so a document is
+reproducible; ids come from the document counter as everywhere else.
 """
 function _export_all_time_series(
-    doc::PC.SystemDocument,
+    doc::PD.SystemDocument,
     sys::System,
     sorted_refs,
     time_series_storage_path,
 )
-    rows = PC.TimeSeriesAssociation[]
+    rows = PTS.TimeSeriesAssociation[]
     store = sys.data.time_series_manager.data_store
     # Counted, not `isempty(store)`: one store holds the supplemental attribute associations
     # as well, so a System with attributes and no series has a non-empty store and would
@@ -689,13 +633,20 @@ function _export_all_time_series(
         "time_series_storage_path was given — cannot write the sidecar",
     )
     _check_time_series_ids_match(sorted_refs)
-    for (entity_id, entity) in sorted_refs
-        _has_own_id(entity) || continue
-        IS.supports_time_series(entity) || continue
-        has_time_series(entity) || continue
-        for key in get_time_series_keys(entity)
-            push!(rows, _time_series_row(doc, entity, entity_id, key))
-        end
+    address = _sidecar_basename(time_series_storage_path)
+    metadata = sort!(
+        IS.list_time_series_metadata(sys.data); by = IS.openapi_row_sort_key,
+    )
+    for meta in metadata
+        push!(
+            rows,
+            IS.to_openapi(
+                meta;
+                id = PD.next_id!(doc),
+                owner_id = Int(meta.owner_id),
+                address = address,
+            ),
+        )
     end
     IS.serialize(store, String(time_series_storage_path))
     return rows
@@ -736,7 +687,7 @@ function to_openapi(
     refs = _build_export_refs(sys, unit_system_string)
     val = _unit_val(unit_system_string)
 
-    doc = PC.SystemDocument(
+    doc = PD.SystemDocument(
         get_base_power(sys);
         unit_system = unit_system_string,
         name = get_name(sys),
@@ -756,7 +707,8 @@ function to_openapi(
     supplemental_attributes,
     supplemental_attribute_associations,
     plant_associations,
-    combined_cycle_associations = _export_supplemental_attributes(sorted_refs, refs, doc)
+    combined_cycle_associations =
+        _export_supplemental_attributes(sorted_refs, refs, doc, sys)
     append!(doc.supplemental_attributes, supplemental_attributes)
     append!(doc.supplemental_attribute_associations, supplemental_attribute_associations)
     append!(doc.plant_associations, plant_associations)
@@ -767,7 +719,7 @@ function to_openapi(
         _export_all_time_series(doc, sys, sorted_refs, time_series_storage_path),
     )
 
-    PC.validate_document(doc)
+    PD.validate_document(doc)
     return doc
 end
 
@@ -780,7 +732,7 @@ services. Runs after `_export_components!` so every service already has an id;
 `convert_cost_to_openapi(::MarketBidCost)` exports the list empty because the per-cost
 converter has no id registry.
 """
-function _export_market_bid_service_offers!(doc::PC.SystemDocument, refs::OpenAPIRefs)
+function _export_market_bid_service_offers!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     for po_components in values(doc.components), po in po_components
         hasproperty(po, :operation_cost) || continue
         po_cost = po.operation_cost
@@ -794,10 +746,10 @@ function _export_market_bid_service_offers!(doc::PC.SystemDocument, refs::OpenAP
     return nothing
 end
 
-function _reserve_component_ids!(doc::PC.SystemDocument, refs::OpenAPIRefs)
+function _reserve_component_ids!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     if isempty(refs.by_id)
         return nothing
     end
-    PC.reserve_ids!(doc, maximum(keys(refs.by_id)))
+    PD.reserve_ids!(doc, maximum(keys(refs.by_id)))
     return nothing
 end

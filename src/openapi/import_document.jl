@@ -233,10 +233,10 @@ end
 
 function _unit_val(unit_system::AbstractString)
     unit_system == "NATURAL_UNITS" && return NU
-    unit_system == "DEVICE_BASE" && return DU
+    unit_system == "COMPONENT_BASE" && return DU
     error(
         "from_openapi(System, doc): unmapped unit_system \"$unit_system\" — expected " *
-        "NATURAL_UNITS or DEVICE_BASE",
+        "NATURAL_UNITS or COMPONENT_BASE",
     )
 end
 
@@ -516,9 +516,9 @@ Carry the document's system-level metadata onto `sys`.
 only `name` and `description` are applied here. `frequency` is deliberately not applied:
 `System`'s own default stands, and a document that omits it must not silently reset it.
 """
-function _apply_document_metadata!(sys::System, doc::PC.SystemDocument)
-    _apply_metadata_field!(set_name!, sys, PC.get_name(doc))
-    _apply_metadata_field!(set_description!, sys, PC.get_description(doc))
+function _apply_document_metadata!(sys::System, doc::PD.SystemDocument)
+    _apply_metadata_field!(set_name!, sys, PD.get_name(doc))
+    _apply_metadata_field!(set_description!, sys, PD.get_description(doc))
     return nothing
 end
 
@@ -550,12 +550,12 @@ this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series
 """
 function from_openapi(
     ::Type{System},
-    doc::PC.SystemDocument;
+    doc::PD.SystemDocument;
     time_series_storage_path = nothing,
     system_kwargs...,
 )
-    base_power = PC.get_base_power(doc)
-    unit_system = PC.get_unit_system(doc)
+    base_power = PD.get_base_power(doc)
+    unit_system = PD.get_unit_system(doc)
     unit_val = _unit_val(unit_system)
 
     _check_no_unconverted_component_types(doc.components)
@@ -566,7 +566,7 @@ function from_openapi(
     refs = OpenAPIRefs(unit_system, base_power)
 
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
-        for po in PC.get_components(doc, key)
+        for po in PD.get_components(doc, key)
             component = from_openapi(po, refs, unit_val)
             extras = get(doc.ext, Int(po.id), nothing)
             isnothing(extras) || _merge_doc_ext!(component, extras)
@@ -603,7 +603,7 @@ corrupt the document's sidecar.
 """
 function _system_with_sidecar(
     base_power,
-    doc::PC.SystemDocument,
+    doc::PD.SystemDocument,
     time_series_storage_path;
     system_kwargs...,
 )
@@ -644,7 +644,7 @@ Resolve each imported `MarketBidCost`'s `ancillary_service_offers` ids to the no
 services may not exist yet when the carrying device converts; this runs after the full
 component pass. Errors on an unresolved id rather than dropping the offer.
 """
-function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PC.SystemDocument)
+function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PD.SystemDocument)
     for po_components in values(doc.components), po in po_components
         hasproperty(po, :operation_cost) || continue
         po_cost = po.operation_cost

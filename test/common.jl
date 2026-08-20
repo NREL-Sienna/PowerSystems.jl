@@ -265,7 +265,7 @@ The fixtures build plain `Dict`s because that is the shape a document has on dis
 easy to mutate for negative tests; this is the same step `from_file` performs via
 `read_document`.
 """
-to_test_document(doc::AbstractDict) = PSY.PC.document_from_json(doc)
+to_test_document(doc::AbstractDict) = PSY.PD.document_from_json(doc)
 
 """
 Errors a malformed document can raise.
@@ -360,7 +360,7 @@ function make_openapi_test_doc(;
     if include_fixed_admittance
         shunt_po = PSY.PO.FixedAdmittance(;
             id = 9, name = "shunt1", available = true, bus = 4,
-            admittance_units = "DEVICE_MVAR",
+            admittance_units = "COMPONENT_MVAR",
             Y = PSY.PC.ComplexNumber(; real = 0.0, imag = -50.0),
         )
         components["FixedAdmittance"] = [openapi_raw(shunt_po)]

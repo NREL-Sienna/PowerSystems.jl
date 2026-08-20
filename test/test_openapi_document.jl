@@ -75,7 +75,7 @@ end
         @test get_name(get_area(bus2)) == "area1"
         @test get_name(get_load_zone(bus2)) == "lz1"
 
-        # DEVICE_MVAR divides by the document's system base
+        # COMPONENT_MVAR divides by the document's system base
         # (100 MVA) to land on PSY's SYSTEM_BASE pu storage: -50 MVAr / 100 MVA.
         shunt = get_component(FixedAdmittance, sys, "shunt1")
         @test get_bus(shunt) === bus2

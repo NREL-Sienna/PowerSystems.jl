@@ -284,11 +284,11 @@ end
 # `r`/`x` pass through for the same reason as `Line`'s: the descriptor tags them `:ohm` for
 # the general getter/setter machinery, but the type carries no `base_voltage` to build Zbase
 # from. Unlike `Line`, this type states the basis it was written in rather than leaving it
-# implicit, so the discriminator is checked instead of assumed — "DEVICE_BASE" is the only
+# implicit, so the discriminator is checked instead of assumed — "COMPONENT_BASE" is the only
 # basis with arithmetic here, and any other value errors rather than being silently treated
 # as pu.
 
-const GENERIC_ARC_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const GENERIC_ARC_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_generic_arc_param_units(po) = _check_unit_basis(
     po.parameter_units,
@@ -384,12 +384,12 @@ function from_openapi(
 end
 
 # ── TransformerCircuit ──────────────────────────────────────────────────────────
-# `r`/`x` are pu on `base_power` when `parameter_units == "DEVICE_BASE"` — the only basis
+# `r`/`x` are pu on `base_power` when `parameter_units == "COMPONENT_BASE"` — the only basis
 # implemented; `NATURAL_UNITS` errors loudly rather than silently guessing at ohms-to-pu
 # arithmetic. `rating`/`rating_b`/`rating_c`/`active_power_flow`/`reactive_power_flow` divide
 # by the circuit's own `base_power` only under `NaturalUnit`, as for every other device-based
 # type.
-const CIRCUIT_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const CIRCUIT_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 """One guard for every per-field unit-basis discriminator with no implemented arithmetic:
 error loudly naming the field, value, and the implemented set, rather than silently guessing
@@ -472,10 +472,10 @@ end
 
 # ── TwoWindingTransformer ───────────────────────────────────────────────────────
 # `magnetizing_shunt` is pu on the circuit's `base_power` when
-# `admittance_units == "DEVICE_BASE"` — the only basis implemented, independent of the
+# `admittance_units == "COMPONENT_BASE"` — the only basis implemented, independent of the
 # document's overall unit system (mirrors the reference and `TransformerCircuit`'s
 # `parameter_units` guard above).
-const SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_shunt_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
@@ -508,17 +508,17 @@ end
 
 # ── ThreeWindingTransformer ──────────────────────────────────────────────────────
 # `magnetizing_shunt` follows TwoWindingTransformer's pattern exactly (pu on the primary
-# circuit's `base_power`, `admittance_units` discriminator restricted to "DEVICE_BASE",
+# circuit's `base_power`, `admittance_units` discriminator restricted to "COMPONENT_BASE",
 # identity in both document unit systems). The pairwise impedances r_12/x_12/r_23/x_23/
 # r_31/x_31 have their own `parameter_units` discriminator (mirrors TransformerCircuit's) —
-# also restricted to "DEVICE_BASE", under which PSY stores them exactly as pu, so they pass
+# also restricted to "COMPONENT_BASE", under which PSY stores them exactly as pu, so they pass
 # through unconverted; `base_power_12`/`_23`/`_31` are base values themselves, not
 # unit-converted quantities, and also pass through directly. All are nullable together
-# (`check_pairwise_impedance_block`), but DEVICE_BASE performs no arithmetic on them so no
+# (`check_pairwise_impedance_block`), but COMPONENT_BASE performs no arithmetic on them so no
 # nothing-guard is needed. `primary_circuit`/`secondary_circuit`/`tertiary_circuit`/`star_bus`
 # resolve through `refs`, matching `TwoWindingTransformer.circuit`.
 
-const THREEWINDING_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const THREEWINDING_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 _check_three_winding_param_units(po) = _check_unit_basis(
     po.parameter_units,
     THREEWINDING_PARAM_UNITS_IMPLEMENTED,
@@ -526,7 +526,7 @@ _check_three_winding_param_units(po) = _check_unit_basis(
     " for $(po.name)",
 )
 
-const THREEWINDING_SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const THREEWINDING_SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 _check_three_winding_shunt_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
     THREEWINDING_SHUNT_ADMITTANCE_UNITS_IMPLEMENTED,
@@ -573,12 +573,12 @@ end
 # `Y`'s basis is the per-field `admittance_units` discriminator, independent of the
 # document's own unit_system — same pattern as TwoWindingTransformer.magnetizing_shunt
 # above. A shunt has no device MVA rating of its own, so `ShuntAdmittanceUnitBasis` is
-# `NATURAL_UNITS`/`DEVICE_MVAR` only. `DEVICE_MVAR` is MVAr at unity voltage and divides by
+# `NATURAL_UNITS`/`COMPONENT_MVAR` only. `COMPONENT_MVAR` is MVAr at unity voltage and divides by
 # the document-level `refs.base_power`, the same fallback Area/LoadZone peaks and reserve
 # requirements use, to land on PSY's system-base pu storage. `NATURAL_UNITS` (physical
 # siemens, needing the bus's own `Z_base`) is not implemented, same posture as
 # `SHUNT_ADMITTANCE_UNITS_IMPLEMENTED` above.
-const FIXED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_MVAR"])
+const FIXED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_MVAR"])
 
 _check_fixed_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
@@ -609,14 +609,14 @@ function from_openapi(
 end
 
 # ── SwitchedAdmittance ────────────────────────────────────────────────────────────
-# `Y`/`Y_increase` are the same fixed-natural DEVICE_MVAR-on-system-base quantity as
+# `Y`/`Y_increase` are the same fixed-natural COMPONENT_MVAR-on-system-base quantity as
 # `FixedAdmittance.Y` (device_base.jl's `_DEVICEBASE_INSTANCE_DISPATCHED` lists both
 # `:skip`, identical treatment) — divided by the document's system base regardless of
 # `unit_system`, so the `NaturalUnit` method delegates to `DeviceBaseUnit` exactly like
 # `FixedAdmittance`. `admittance_limits` is a dimensionless multiplier bound on `Y`
 # (default `(min=1, max=1)`), not a raw admittance, and `initial_status`/`number_of_steps`
 # are per-block integer counts — none of the three need a unit conversion.
-const SWITCHED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_MVAR"])
+const SWITCHED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_MVAR"])
 
 _check_switched_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
@@ -660,12 +660,12 @@ end
 # once a document declares one, this reads `po.base_power` directly, same as `PowerLoad`.
 # `max_shunt_current`/`max_reactive_power` (both MVA, declared `SU` on the PSY side) divide by
 # whatever base is resolved. `voltage_setpoint` is pu on system base per PSY's own docstring;
-# only `voltage_setpoint_units == "DEVICE_BASE"` is implemented — `NATURAL_UNITS` (kV) would
+# only `voltage_setpoint_units == "COMPONENT_BASE"` is implemented — `NATURAL_UNITS` (kV) would
 # need a bus base-voltage conversion no current producer exercises, so it errors loudly rather
 # than guessing. `reactive_power_required` (a dimensionless 0-1 fraction per the PO schema) and
 # `control_mode`/`shunt_control_type` (enums) pass through / map without scaling.
 
-const FACTS_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const FACTS_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_facts_voltage_setpoint_units(po) = _check_unit_basis(
     po.voltage_setpoint_units,
@@ -886,8 +886,8 @@ end
 # ── TwoTerminalLCCLine ────────────────────────────────────────────────────────────
 # `parameter_units`/`dc_voltage_units` are always "NATURAL_UNITS" for every current producer
 # (fixed ohm/kV regardless of the document's overall unit_system, the mirror image of
-# TwoWindingTransformer's always-"DEVICE_BASE" fields) — only
-# that basis is implemented; "DEVICE_BASE" errors loudly rather than guessing. Because that
+# TwoWindingTransformer's always-"COMPONENT_BASE" fields) — only
+# that basis is implemented; "COMPONENT_BASE" errors loudly rather than guessing. Because that
 # representation is fixed, `r`/`rectifier_rc`/`rectifier_xc`/`rectifier_capacitor_reactance`/
 # `inverter_rc`/`inverter_xc`/`inverter_capacitor_reactance`/`compounding_resistance` need the
 # SAME ohm-to-pu conversion in BOTH `DeviceBaseUnit`/`NaturalUnit` methods (the Area/LoadZone
@@ -1281,7 +1281,7 @@ end
 # own base already — but the document states which basis it wrote them in, so the
 # discriminator is checked rather than assumed. `base_voltage` is a plain kV passthrough.
 
-const SOURCE_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const SOURCE_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_source_param_units(po) = _check_unit_basis(
     po.parameter_units,
@@ -1333,14 +1333,14 @@ end
 
 # ── TModelHVDCLine ──────────────────────────────────────────────────────────────
 # The cable exception. This type carries no `base_power` at all — its anchor is
-# `base_current` (A), which per-unitizes `l`/`c` and, under "DEVICE_BASE", `r`. It therefore
+# `base_current` (A), which per-unitizes `l`/`c` and, under "COMPONENT_BASE", `r`. It therefore
 # falls through `base_power_kind`'s `DeviceBasePower()` default to `_get_base_power(c::
 # Component) = _get_system_base_power(c)`, so the MW fields per-unitize on the *system* base
 # exactly like `Line`'s do — `base_current` never enters that arithmetic. Getting this
 # backwards (dividing MW by `base_current`) would be dimensionally meaningless, which is why
 # it is spelled out here.
 
-const TMODEL_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const TMODEL_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_tmodel_param_units(po) = _check_unit_basis(
     po.parameter_units,
@@ -1391,7 +1391,7 @@ end
 # and quadratic shapes, so a piecewise document curve is named here rather than surfacing as
 # a constructor `MethodError`.
 
-const IC_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const IC_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_ic_voltage_setpoint_units(po) = _check_unit_basis(
     po.voltage_setpoint_units,

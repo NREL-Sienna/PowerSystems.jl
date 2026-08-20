@@ -705,10 +705,19 @@ import PrettyTables
 import Unitful
 import PowerCoreOpenAPIModels
 import PowerOperationsOpenAPIModels
+import PowerTimeSeriesOpenAPIModels
+import PowerOpenAPIModels
 import OpenAPI
 import TimeZones
+# One alias per generated package rather than the umbrella alone: the umbrella re-exports
+# all five, so a single alias would resolve every name but hide which layer each came from
+# — and the layering is the point (Core has no dependencies; TimeSeries depends on Core;
+# the document container needs every domain at once, which is why it sits in the umbrella
+# and not in Core).
 const PC = PowerCoreOpenAPIModels
 const PO = PowerOperationsOpenAPIModels
+const PTS = PowerTimeSeriesOpenAPIModels
+const PD = PowerOpenAPIModels
 using Unitful: @u_str, @unit, Quantity, Units, uconvert, ustrip
 
 # Relative-unit primitives live in IS; PSY re-exports them for downstream

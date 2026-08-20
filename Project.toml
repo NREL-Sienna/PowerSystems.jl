@@ -13,7 +13,9 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 OpenAPI = "d5e62ea6-ddf3-4d43-8e4c-ad5e6c8bfd7d"
 PowerCoreOpenAPIModels = "b7b40286-e793-417d-a9a0-b1583e4da1cb"
+PowerOpenAPIModels = "bed98974-b02a-5e2f-9ee0-a103f5c450dd"
 PowerOperationsOpenAPIModels = "a372b6d7-45a2-44c2-8199-6a724b72e8ff"
+PowerTimeSeriesOpenAPIModels = "8c2f6a0d-6b0e-4d0a-9d8f-2b5e6a4f9c31"
 PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
 PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
@@ -26,7 +28,9 @@ InfrastructureSystems = {rev = "feat/infrastore-integration", url = "https://git
 # Sibling-checkout paths, not a git rev: the x-unit accessors these packages
 # expose are generated and not yet released. Switch to a tagged rev before merge.
 PowerCoreOpenAPIModels = {path = "../PowerOpenAPIModels/PowerCoreOpenAPIModels.jl"}
+PowerOpenAPIModels = {path = "../PowerOpenAPIModels/PowerOpenAPIModels.jl"}
 PowerOperationsOpenAPIModels = {path = "../PowerOpenAPIModels/PowerOperationsOpenAPIModels.jl"}
+PowerTimeSeriesOpenAPIModels = {path = "../PowerOpenAPIModels/PowerTimeSeriesOpenAPIModels.jl"}
 
 [compat]
 DataStructures = "^0.19"
@@ -38,7 +42,9 @@ LinearAlgebra = "1"
 Logging = "1"
 OpenAPI = "0.2"
 PowerCoreOpenAPIModels = "0.1"
+PowerOpenAPIModels = "0.1"
 PowerOperationsOpenAPIModels = "0.1"
+PowerTimeSeriesOpenAPIModels = "0.1"
 PrecompileTools = "1"
 PrettyTables = "3.1"
 TimeSeries = "0.25"

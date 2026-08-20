@@ -217,7 +217,7 @@ function to_openapi(src::Source, refs::OpenAPIRefs, ::DeviceBaseUnit)
         reactive_power = get_reactive_power(src, DU),
         active_power_limits = _minmax_po(get_active_power_limits(src, DU)),
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(src, DU)),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         R_th = get_R_th(src),
         X_th = get_X_th(src),
         internal_voltage = get_internal_voltage(src),
@@ -241,7 +241,7 @@ function to_openapi(src::Source, refs::OpenAPIRefs, ::NaturalUnit)
         reactive_power_limits = _minmax_po_scaled_optional(
             get_reactive_power_limits(src, DU), dbp,
         ),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         R_th = get_R_th(src),
         X_th = get_X_th(src),
         internal_voltage = get_internal_voltage(src),
@@ -264,7 +264,7 @@ function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
         available = get_available(line),
         active_power_flow = get_active_power_flow(line, SU),
         arc = component_id(refs, get_arc(line)),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         base_current = get_base_current(line),
         r = get_r(line),
         l = get_l(line),
@@ -282,7 +282,7 @@ function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
         available = get_available(line),
         active_power_flow = get_active_power_flow(line, SU) * sbp,
         arc = component_id(refs, get_arc(line)),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         base_current = get_base_current(line),
         r = get_r(line),
         l = get_l(line),
@@ -317,7 +317,7 @@ function to_openapi(conv::InterconnectingConverter, refs::OpenAPIRefs, ::DeviceB
         loss_function = convert_cost_to_openapi(get_loss_function(conv)),
         dc_control = string(get_dc_control(conv)),
         ac_control = string(get_ac_control(conv)),
-        voltage_setpoint_units = "DEVICE_BASE",
+        voltage_setpoint_units = "COMPONENT_BASE",
         dc_setpoint = get_dc_setpoint(conv),
         ac_setpoint = get_ac_setpoint(conv),
         dc_voltage_droop = get_dc_voltage_droop(conv),
@@ -348,7 +348,7 @@ function to_openapi(conv::InterconnectingConverter, refs::OpenAPIRefs, ::Natural
         loss_function = convert_cost_to_openapi(get_loss_function(conv)),
         dc_control = string(get_dc_control(conv)),
         ac_control = string(get_ac_control(conv)),
-        voltage_setpoint_units = "DEVICE_BASE",
+        voltage_setpoint_units = "COMPONENT_BASE",
         dc_setpoint = get_dc_setpoint(conv),
         ac_setpoint = get_ac_setpoint(conv),
         dc_voltage_droop = get_dc_voltage_droop(conv),
@@ -407,7 +407,7 @@ end
 
 # ── GenericArcImpedance ─────────────────────────────────────────────────────────
 # `parameter_units` is stated rather than derived: the import side only accepts
-# "DEVICE_BASE", so that is what export writes.
+# "COMPONENT_BASE", so that is what export writes.
 
 function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.GenericArcImpedance(;
@@ -419,7 +419,7 @@ function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::DeviceBase
         max_flow = get_max_flow(branch, SU),
         arc = component_id(refs, get_arc(branch)),
         base_power = get_base_power(refs),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         r = get_r(branch, SU),
         x = get_x(branch, SU),
     )
@@ -436,7 +436,7 @@ function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::NaturalUni
         max_flow = get_max_flow(branch, SU) * sbp,
         arc = component_id(refs, get_arc(branch)),
         base_power = sbp,
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         r = get_r(branch, SU),
         x = get_x(branch, SU),
     )
@@ -495,7 +495,7 @@ end
 
 # ── TransformerCircuit ──────────────────────────────────────────────────────────
 # `r`/`x` are pu on the circuit's own `base_power` and identity in BOTH document unit systems
-# (mirrors import — parameter_units is always emitted as "DEVICE_BASE", the only basis this
+# (mirrors import — parameter_units is always emitted as "COMPONENT_BASE", the only basis this
 # pass implements on either side). `rating`/`rating_b`/`rating_c`/`active_power_flow`/
 # `reactive_power_flow` scale by the circuit's own `base_power` under NATURAL_UNITS only.
 # Reached only via its owning `TwoWindingTransformer`'s `to_openapi` — never a standalone
@@ -509,7 +509,7 @@ function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::DeviceBase
         arc = component_id(refs, get_arc(circuit)),
         tap = get_tap(circuit),
         alpha = get_α(circuit),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         r = get_r(circuit, DU),
         x = get_x(circuit, DU),
         control_objective = string(get_control_objective(
@@ -538,7 +538,7 @@ function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::NaturalUni
         arc = component_id(refs, get_arc(circuit)),
         tap = get_tap(circuit),
         alpha = get_α(circuit),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         r = get_r(circuit, DU),
         x = get_x(circuit, DU),
         control_objective = string(get_control_objective(
@@ -570,7 +570,7 @@ function to_openapi(xfmr::TwoWindingTransformer, refs::OpenAPIRefs, ::DeviceBase
         id = component_id(refs, xfmr),
         name = get_name(xfmr),
         circuit = component_id(refs, circuit),
-        admittance_units = "DEVICE_BASE",
+        admittance_units = "COMPONENT_BASE",
         magnetizing_shunt = _complex_number_po(shunt),
         shunt_location = string(get_shunt_location(
             xfmr,
@@ -585,7 +585,7 @@ end
 # ── ThreeWindingTransformer ──────────────────────────────────────────────────────
 # Mirrors TwoWindingTransformer's `magnetizing_shunt` handling exactly. The pairwise
 # impedances and their base powers are identity in DU (mirrors import); `parameter_units`/
-# `admittance_units` are always emitted as "DEVICE_BASE", the only basis implemented on either
+# `admittance_units` are always emitted as "COMPONENT_BASE", the only basis implemented on either
 # side. `primary_circuit`/`secondary_circuit`/`tertiary_circuit`/`star_bus` resolve via
 # `component_id` because the circuits are registered as standalone document rows by
 # `_plan_components` (export_document.jl), matching how import consumes them.
@@ -599,7 +599,7 @@ function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::DeviceBa
         secondary_circuit = component_id(refs, get_secondary_circuit(xfmr)),
         tertiary_circuit = component_id(refs, get_tertiary_circuit(xfmr)),
         star_bus = component_id(refs, get_star_bus(xfmr)),
-        parameter_units = "DEVICE_BASE",
+        parameter_units = "COMPONENT_BASE",
         r_12 = get_r_12(xfmr, DU),
         x_12 = get_x_12(xfmr, DU),
         r_23 = get_r_23(xfmr, DU),
@@ -609,7 +609,7 @@ function to_openapi(xfmr::ThreeWindingTransformer, refs::OpenAPIRefs, ::DeviceBa
         base_power_12 = get_base_power_12(xfmr),
         base_power_23 = get_base_power_23(xfmr),
         base_power_31 = get_base_power_31(xfmr),
-        admittance_units = "DEVICE_BASE",
+        admittance_units = "COMPONENT_BASE",
         magnetizing_shunt = _complex_number_po(shunt),
         shunt_location = string(get_shunt_location(
             xfmr,
@@ -623,11 +623,11 @@ end
 
 # ── FixedAdmittance ─────────────────────────────────────────────────────────────
 # `Y` is stored in PSY as pu on the system base, but the wire enum has no system-base
-# member: `ShuntAdmittanceUnitBasis` is `NATURAL_UNITS`/`DEVICE_MVAR` only, because a shunt
-# has no device MVA rating of its own. Export therefore states `DEVICE_MVAR` (MVAr at unity
+# member: `ShuntAdmittanceUnitBasis` is `NATURAL_UNITS`/`COMPONENT_MVAR` only, because a shunt
+# has no device MVA rating of its own. Export therefore states `COMPONENT_MVAR` (MVAr at unity
 # voltage) and multiplies by the document-level system base, exactly inverting the
-# `DEVICE_MVAR` division in `_fixed_admittance_pu`. Independent of what basis the document was
-# originally imported from, mirroring TwoWindingTransformer's always-"DEVICE_BASE" export.
+# `COMPONENT_MVAR` division in `_fixed_admittance_pu`. Independent of what basis the document was
+# originally imported from, mirroring TwoWindingTransformer's always-"COMPONENT_BASE" export.
 
 function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     y = get_Y(shunt) * get_base_power(refs)
@@ -636,7 +636,7 @@ function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
         name = get_name(shunt),
         available = get_available(shunt),
         bus = component_id(refs, get_bus(shunt)),
-        admittance_units = "DEVICE_MVAR",
+        admittance_units = "COMPONENT_MVAR",
         Y = _complex_number_po(y),
     )
 end
@@ -646,7 +646,7 @@ function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
 end
 
 # ── SwitchedAdmittance ────────────────────────────────────────────────────────────
-# Mirrors `FixedAdmittance`: `Y`/`Y_increase` are fixed-natural DEVICE_MVAR-on-system-base,
+# Mirrors `FixedAdmittance`: `Y`/`Y_increase` are fixed-natural COMPONENT_MVAR-on-system-base,
 # independent of the document's unit system, so `NaturalUnit` delegates to `DeviceBaseUnit`.
 
 function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
@@ -659,7 +659,7 @@ function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUn
         name = get_name(shunt),
         available = get_available(shunt),
         bus = component_id(refs, get_bus(shunt)),
-        admittance_units = "DEVICE_MVAR",
+        admittance_units = "COMPONENT_MVAR",
         Y = _complex_number_po(get_Y(shunt) * base_power),
         initial_status = get_initial_status(shunt),
         number_of_steps = get_number_of_steps(shunt),
@@ -677,8 +677,8 @@ end
 # ── FACTSControlDevice ────────────────────────────────────────────────────────────
 # Mirrors import: `max_shunt_current`/`max_reactive_power` are `SU`-identity, divided/
 # multiplied by the document system base; `voltage_setpoint` is always exported as
-# "DEVICE_BASE" (the only basis import implements), matching TwoWindingTransformer's
-# always-"DEVICE_BASE" export posture for a similarly fixed-representation field.
+# "COMPONENT_BASE" (the only basis import implements), matching TwoWindingTransformer's
+# always-"COMPONENT_BASE" export posture for a similarly fixed-representation field.
 
 function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseUnit)
     base_power = get_base_power(refs)
@@ -693,7 +693,7 @@ function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseU
         else
             string(control_mode)
         end,
-        voltage_setpoint_units = "DEVICE_BASE",
+        voltage_setpoint_units = "COMPONENT_BASE",
         voltage_setpoint = get_voltage_setpoint(device),
         max_shunt_current = get_max_shunt_current(device, SU) * base_power,
         reactive_power_required = get_reactive_power_required(device),

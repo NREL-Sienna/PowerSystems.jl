@@ -41,8 +41,8 @@ end
 
         @test readdir(bundle) == ["system.json"]
         # The document must say so rather than name a file that is not there.
-        doc = PSY.PC.read_document(joinpath(bundle, "system.json"))
-        @test isnothing(PSY.PC.get_time_series_storage_file(doc))
+        doc = PSY.PD.read_document(joinpath(bundle, "system.json"))
+        @test isnothing(PSY.PD.get_time_series_storage_file(doc))
 
         sys2 = from_file(System, bundle)
         @test isempty(collect(get_components(ThermalStandard, sys2))) == false
@@ -84,8 +84,8 @@ end
     doc = to_openapi(sys; unit_system = :device_base)
 
     component_ids = Int[]
-    for type_name in PSY.PC.component_type_names(doc)
-        for row in PSY.PC.get_components(doc, type_name)
+    for type_name in PSY.PD.component_type_names(doc)
+        for row in PSY.PD.get_components(doc, type_name)
             push!(component_ids, Int(row.id))
         end
     end
@@ -121,8 +121,8 @@ end
     # And back out again, unchanged. A component's document id is its IS component id, which
     # import set from the document, so bus1 is id 3 on the way out as well.
     exported = to_openapi(sys; unit_system = :natural_units)
-    @test PSY.PC.get_ext(exported, 3) == extras
-    @test isempty(PSY.PC.get_ext(exported, 4))
+    @test PSY.PD.get_ext(exported, 3) == extras
+    @test isempty(PSY.PD.get_ext(exported, 4))
 end
 
 @testset "export needs no ledger: a hand-built System serializes" begin
@@ -140,14 +140,14 @@ end
     @test !haskey(get_ext(sys), "_openapi_ledger")
 
     # The default path works with no ledger present. This is the regression guard.
-    @test PSY.PC.get_unit_system(to_openapi(sys)) == "DEVICE_BASE"
+    @test PSY.PD.get_unit_system(to_openapi(sys)) == "COMPONENT_BASE"
     @test isempty(get_ext(sys))
 
     # Both remaining conventions are reachable on the same ledger-free System, and they are
     # exactly the document schema's two legal values.
     for (sym, declared) in
-        ((:device_base, "DEVICE_BASE"), (:natural_units, "NATURAL_UNITS"))
-        @test PSY.PC.get_unit_system(to_openapi(sys; unit_system = sym)) == declared
+        ((:device_base, "COMPONENT_BASE"), (:natural_units, "NATURAL_UNITS"))
+        @test PSY.PD.get_unit_system(to_openapi(sys; unit_system = sym)) == declared
     end
 
     # `:original` is gone rather than quietly reinterpreted: a System records no unit system
@@ -176,16 +176,18 @@ end
         again = joinpath(dir, "handbuilt2")
         to_file(sys2, again)
         @test isfile(joinpath(again, "system.json"))
-        @test PSY.PC.get_unit_system(PSY.PC.read_document(joinpath(again, "system.json"))) ==
-              "DEVICE_BASE"
+        @test PSY.PD.get_unit_system(
+            PSY.PD.read_document(joinpath(again, "system.json")),
+        ) ==
+              "COMPONENT_BASE"
     end
 end
 
 @testset "NonSequentialTimeSeries round trips with no grid columns" begin
-    # `NonSequentialTimeSeriesKey` is a sibling of the other key types, not a subtype, and it
-    # carries neither `initial_timestamp` nor `resolution` — an irregular series has no
-    # `initial + k * resolution` grid. Export used to assume every key had both and died on
-    # `_forecast_columns`, so this is the guard for the whole irregular path.
+    # An irregular series has no `initial + k * resolution` grid, and the schema says so by
+    # giving `NonSequentialTimeSeries` its own document type that simply has no
+    # `initial_timestamp` / `resolution` / forecast fields — rather than one row type
+    # carrying them all as nullable. This guards the whole irregular path.
     sys = _file_io_fixture(; with_time_series = false)
     gen = get_component(ThermalStandard, sys, "g1")
     stamps = [
@@ -204,16 +206,30 @@ end
         bundle = joinpath(dir, "irregular")
         to_file(sys, bundle)
 
-        row = only(PSY.PC.read_document(joinpath(bundle, "system.json")).time_series_associations)
+        assoc = only(
+            PSY.PD.read_document(joinpath(bundle, "system.json")).time_series_associations,
+        )
+        # `TimeSeriesAssociation` is the oneOf wrapper; the discriminator picks the concrete
+        # row type on read, so getting the right type back is itself the assertion that the
+        # discriminator round-tripped.
+        row = assoc.value
+        @test row isa PSY.PTS.NonSequentialTimeSeries
         @test row.time_series_type == "NonSequentialTimeSeries"
-        # Both grid columns are empty rather than invented. `length` and `name` are what
-        # identify the row, because that is all the key holds.
-        @test isnothing(row.initial_timestamp)
-        @test isnothing(row.resolution)
+
+        # The grid columns are ABSENT, not null: the type does not declare them. `length` and
+        # `name` are what identify the row, because that is all an irregular series holds.
+        for absent in (:initial_timestamp, :resolution, :horizon, :interval, :count)
+            @test !hasfield(typeof(row), absent)
+        end
         @test row.length == length(values)
-        @test isnothing(row.horizon)
-        @test isnothing(row.interval)
-        @test isnothing(row.window_count)
+        @test row.name == "irregular"
+        @test row.owner_id == IS.get_id(gen)
+
+        # Element typing comes off the catalog, which is the only thing that knows how the
+        # array was laid out; a scalar-valued series has an empty per-step shape.
+        @test row.element_type == "f64"
+        @test isempty(row.element_shape)
+        @test row.address == basename(joinpath(bundle, "time_series.h5"))
 
         # The timestamp vector lives in the store, not the document, so it must come back
         # from the adopted sidecar exactly.

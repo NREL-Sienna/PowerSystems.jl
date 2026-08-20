@@ -175,7 +175,7 @@ end
     @test isnothing(circuit_natural.rating_b)
     @test circuit_natural.active_power_flow == 5.0
     @test circuit_natural.control_objective == "UNDEFINED"
-    @test circuit_natural.parameter_units == "DEVICE_BASE"
+    @test circuit_natural.parameter_units == "COMPONENT_BASE"
 
     circuit_device = PSY.to_openapi(circuit, refs, DU)
     @test circuit_device.rating == 2.0
@@ -284,11 +284,11 @@ end
         @test t3w_po.secondary_circuit == 9
         @test t3w_po.tertiary_circuit == 10
         @test t3w_po.star_bus == 4
-        @test t3w_po.parameter_units == "DEVICE_BASE"
+        @test t3w_po.parameter_units == "COMPONENT_BASE"
         @test t3w_po.r_12 == 0.01
         @test t3w_po.r_31 == 0.02
         @test t3w_po.base_power_23 == 100.0
-        @test t3w_po.admittance_units == "DEVICE_BASE"
+        @test t3w_po.admittance_units == "COMPONENT_BASE"
         @test t3w_po.magnetizing_shunt.real == 0.03
         @test t3w_po.shunt_location == "STAR"
     end
@@ -308,13 +308,13 @@ end
     refs[2] = shunt
 
     # The wire enum has no system-base member, so PSY's system-base pu Y rides as
-    # DEVICE_MVAR (MVAr at unity voltage) scaled by the document's system base —
+    # COMPONENT_MVAR (MVAr at unity voltage) scaled by the document's system base —
     # the same value regardless of the document's unit_system.
     for val in (DU, NU)
         shunt_po = PSY.to_openapi(shunt, refs, val)
         @test shunt_po.id == 2
         @test shunt_po.bus == 1
-        @test shunt_po.admittance_units == "DEVICE_MVAR"
+        @test shunt_po.admittance_units == "COMPONENT_MVAR"
         @test shunt_po.Y.real == 0.0
         @test shunt_po.Y.imag == -100.0
 
@@ -850,13 +850,13 @@ end
 @testset "OpenAPI export: round-trip" begin
     doc = make_openapi_test_doc(; bus1_bustype = "SLACK", include_fixed_admittance = false)
 
-    @testset "DEVICE_BASE -> PSY -> DEVICE_BASE is exact" begin
+    @testset "COMPONENT_BASE -> PSY -> COMPONENT_BASE is exact" begin
         device_doc = deepcopy(doc)
-        device_doc["unit_system"] = "DEVICE_BASE"
+        device_doc["unit_system"] = "COMPONENT_BASE"
         sys = PSY.from_openapi(System, to_test_document(device_doc))
         out = PSY.to_openapi(sys; unit_system = :device_base)
-        @test PSY.PC.get_unit_system(out) == "DEVICE_BASE"
-        gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
+        @test PSY.PD.get_unit_system(out) == "COMPONENT_BASE"
+        gen_out = only(PSY.PD.get_components(out, "ThermalStandard"))
         @test gen_out.active_power == 50.0
         @test gen_out.rating == 100.0
         gen_in = only(device_doc["components"]["ThermalStandard"])
@@ -867,12 +867,12 @@ end
     @testset "NATURAL_UNITS -> PSY -> NATURAL_UNITS is approximate only" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
         out = PSY.to_openapi(sys; unit_system = :natural_units)
-        @test PSY.PC.get_unit_system(out) == "NATURAL_UNITS"
-        gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
+        @test PSY.PD.get_unit_system(out) == "NATURAL_UNITS"
+        gen_out = only(PSY.PD.get_components(out, "ThermalStandard"))
         gen_in = only(doc["components"]["ThermalStandard"])
         @test gen_out.active_power ≈ gen_in["active_power"] rtol = 1e-15
         @test gen_out.rating ≈ gen_in["rating"] rtol = 1e-15
-        load_out = only(PSY.PC.get_components(out, "PowerLoad"))
+        load_out = only(PSY.PD.get_components(out, "PowerLoad"))
         load_in = only(doc["components"]["PowerLoad"])
         @test load_out.active_power ≈ load_in["active_power"] rtol = 1e-15
     end
@@ -880,7 +880,7 @@ end
     @testset "bustype SLACK round-trips as SLACK" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
         out = PSY.to_openapi(sys; unit_system = :natural_units)
-        bus1_out = first(b for b in PSY.PC.get_components(out, "ACBus") if b.number == 1)
+        bus1_out = first(b for b in PSY.PD.get_components(out, "ACBus") if b.number == 1)
         @test bus1_out.bustype == "SLACK"
     end
 
@@ -906,7 +906,7 @@ end
         )
         add_component!(sys, line)
         out = PSY.to_openapi(sys; unit_system = :natural_units)
-        line_out = only(PSY.PC.get_components(out, "Line"))
+        line_out = only(PSY.PD.get_components(out, "Line"))
         @test line_out.base_power == PSY.get_base_power(sys)
     end
 end
@@ -923,12 +923,12 @@ end
     add_component!(sys, load)
 
     out_device = PSY.to_openapi(sys; unit_system = :device_base)
-    @test PSY.PC.get_unit_system(out_device) == "DEVICE_BASE"
-    load_out = only(PSY.PC.get_components(out_device, "PowerLoad"))
+    @test PSY.PD.get_unit_system(out_device) == "COMPONENT_BASE"
+    load_out = only(PSY.PD.get_components(out_device, "PowerLoad"))
     @test load_out.active_power == 0.3
 
     out_natural = PSY.to_openapi(sys; unit_system = :natural_units)
-    load_out_nat = only(PSY.PC.get_components(out_natural, "PowerLoad"))
+    load_out_nat = only(PSY.PD.get_components(out_natural, "PowerLoad"))
     @test load_out_nat.active_power == 30.0
 end
 
@@ -1035,10 +1035,10 @@ end
             time_series_storage_path = ts_out_path,
         )
 
-        @test PSY.PC.get_unit_system(out) == "NATURAL_UNITS"
-        @test length(PSY.PC.get_components(out, "ACBus")) == 2
-        @test length(only(PSY.PC.get_components(out, "Line")) |> x -> [x]) == 1
-        @test length(PSY.PC.get_components(out, "OnlineReserve")) == 1
+        @test PSY.PD.get_unit_system(out) == "NATURAL_UNITS"
+        @test length(PSY.PD.get_components(out, "ACBus")) == 2
+        @test length(only(PSY.PD.get_components(out, "Line")) |> x -> [x]) == 1
+        @test length(PSY.PD.get_components(out, "OnlineReserve")) == 1
         @test length(out.supplemental_attributes) == 1
         @test length(out.supplemental_attribute_associations) == 1
         assoc = only(out.supplemental_attribute_associations)
@@ -1051,7 +1051,10 @@ end
         # The sidecar holds the values; the document lists one row per series so a consumer
         # can see what the bundle contains without opening the store.
         @test isfile(ts_out_path)
-        ts_row = only(out.time_series_associations)
+        # `.value` unwraps the oneOf: the discriminator selects one of the six concrete row
+        # types, and the type itself carries the columns.
+        ts_row = only(out.time_series_associations).value
+        @test ts_row isa PSY.PTS.SingleTimeSeries
         @test ts_row.name == "max_active_power"
         @test ts_row.time_series_type == "SingleTimeSeries"
         @test ts_row.owner_category == "Component"
@@ -1059,6 +1062,8 @@ end
         @test ts_row.owner_id == IS.get_id(load)
         @test ts_row.resolution == "PT3600S"
         @test ts_row.length == 3
+        @test ts_row.element_type == "f64"
+        @test ts_row.address == basename(ts_out_path)
     end
 end
 
@@ -1107,24 +1112,20 @@ end
         # transform produced, and the real Deterministic. The forecast shape columns are
         # carried on the rows, not just in the sidecar's catalog.
         @test length(doc.time_series_associations) == 3
-        det_row = only(
-            filter(
-                a -> a.time_series_type == "Deterministic",
-                doc.time_series_associations,
-            ),
-        )
+        rows = [a.value for a in doc.time_series_associations]
+        det_row = only(filter(r -> r isa PSY.PTS.Deterministic, rows))
         @test det_row.horizon == "PT7200S"
         @test det_row.interval == "PT3600S"
-        @test det_row.window_count == 3
-        @test isnothing(det_row.length)
-        dsts_row = only(
-            filter(
-                a -> a.time_series_type == "DeterministicSingleTimeSeries",
-                doc.time_series_associations,
-            ),
-        )
+        @test det_row.count == 3
+        # A forecast's shape is horizon/interval/count; `length` is not a column its type
+        # declares, so it is absent rather than null.
+        @test !hasfield(typeof(det_row), :length)
+        dsts_row = only(filter(r -> r isa PSY.PTS.DeterministicSingleTimeSeries, rows))
         @test dsts_row.horizon == "PT7200S"
-        @test dsts_row.window_count == 3
+        @test dsts_row.count == 3
+        # The transform's derived forecast is its own stored type, so it does not collide
+        # with the real Deterministic under the discriminator.
+        @test dsts_row.time_series_type == "DeterministicSingleTimeSeries"
 
         sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
         load2 = get_component(PowerLoad, sys2, "load1")

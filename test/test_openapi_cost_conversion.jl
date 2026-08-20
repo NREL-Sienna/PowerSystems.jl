@@ -67,24 +67,31 @@ end
 end
 
 @testset "convert_cost: power_units marker mapping" begin
-    # The wire enum is DEVICE_BASE/NATURAL_UNITS only — there is no system-base member.
+    # The wire enum is COMPONENT_BASE/NATURAL_UNITS only — there is no system-base member.
     for (str, marker) in (
         ("NATURAL_UNITS", NaturalUnit()),
-        ("DEVICE_BASE", DeviceBaseUnit()),
+        ("COMPONENT_BASE", DeviceBaseUnit()),
     )
         curve = PSY.convert_cost(_po_cost_curve(; power_units = str))
         @test get_power_units(curve) == marker
         @test PSY._power_units_to_string(marker, curve) == str
     end
-    # Tested directly against the marker helper: PC.CostCurve's own OpenAPI-generated
-    # enum validator would reject "BOGUS"/"SYSTEM_BASE" at construction time, before
+    # Tested directly against the barrier: PC.CostCurve's own OpenAPI-generated enum
+    # validator would reject "BOGUS"/"SYSTEM_BASE" at construction time, before
     # convert_cost ever runs.
-    @test_throws ErrorException PSY._power_units_marker("BOGUS")
-    @test_throws ErrorException PSY._power_units_marker("SYSTEM_BASE")
-    @test_throws ErrorException PSY._power_units_marker(nothing)
+    @test_throws ErrorException PSY._with_power_units(identity, "BOGUS")
+    @test_throws ErrorException PSY._with_power_units(identity, "SYSTEM_BASE")
+    @test_throws ErrorException PSY._with_power_units(identity, nothing)
+
+    # The barrier hands `f` a CONCRETE marker, never a Union — that is the whole point of
+    # its being higher-order, since the marker is a type parameter of the curve it builds.
+    for (str, marker) in
+        (("NATURAL_UNITS", NaturalUnit()), ("COMPONENT_BASE", DeviceBaseUnit()))
+        @test PSY._with_power_units(typeof, str) === typeof(marker)
+    end
 
     # A SystemBaseUnit curve has no valid wire value and no reachable base_power to
-    # rescale against, so export errors rather than silently relabelling it DEVICE_BASE.
+    # rescale against, so export errors rather than silently relabelling it COMPONENT_BASE.
     sb_curve = CostCurve(LinearCurve(10.0, 5.0), SystemBaseUnit())
     @test_throws ErrorException PSY.convert_cost_to_openapi(sb_curve)
 end
