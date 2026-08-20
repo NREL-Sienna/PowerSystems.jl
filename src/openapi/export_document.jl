@@ -535,30 +535,52 @@ end
 # same tuple `TimeSeriesAssociation` carries — so no `time_series_associations` rows are
 # emitted. PowerTableDataParser writes its documents the same way.
 #
-# The catalog's owner ids are IS component ids, while the document's ids come from
-# `_export_id!`. `_check_time_series_ids_match` below refuses to write a pair whose ids
-# disagree, since the result would be a document whose sidecar no importer could resolve.
+# The catalog's owner ids are IS ids. A component's document id is its IS id, so its rows
+# resolve on import by construction. A supplemental attribute's document id is minted fresh
+# from the document counter (its IS id comes from a stream independent of the components'
+# and would collide in the document), so after the sidecar is written
+# `_remap_sidecar_attribute_owners!` re-keys the attribute-owned rows in that copy to the
+# document ids; import presets each attribute's IS id to its document id, and the rows
+# resolve the same way a component's do.
 
 """
-Error when a supplemental attribute owns time series, which export cannot represent.
+Re-key every attribute-owned series in the sidecar just written at `path` from the
+attribute's IS id to the document id it was exported under, so the rows resolve on import
+the way component rows do.
 
-Component-owned series need no check: a component's document id is its IS component id, so
-the sidecar catalog's owner ids and the document's ids agree by construction. Attribute
-document ids are assigned fresh from the document counter instead, so an attribute's catalog
-rows could never resolve on the way back in. Nothing this package produces hits it today —
-no producer attaches series to an attribute — and supporting it means teaching export to
-reproduce attribute ids too, so it errors rather than writing a pair that reads back short.
+Works on the written copy, never on `sys`'s live store: the System keeps its ids. Moves go
+through a range above every id involved, in two passes, so a move can never land on an id
+that another attribute has not vacated yet (attribute A's document id may well be attribute
+B's IS id). `InfraStore.replace_owner!` updates association rows only — the arrays are
+content-addressed and shared — so this is cheap.
 """
-function _check_time_series_ids_match(sorted_refs)
-    for (_doc_id, entity) in sorted_refs
+function _remap_sidecar_attribute_owners!(path::AbstractString, sys::System, sorted_refs)
+    moves = Tuple{Int, Int}[]
+    for (doc_id, entity) in sorted_refs
         entity isa SupplementalAttribute || continue
         IS.supports_time_series(entity) || continue
         has_time_series(entity) || continue
-        error(
-            "to_openapi: $(summary(entity)) carries time series, which is not supported " *
-            "on export — attribute document ids are assigned fresh rather than reproduced, " *
-            "so the sidecar catalog could not be resolved on import",
-        )
+        is_id = IS.get_id(entity)
+        is_id == doc_id || push!(moves, (is_id, doc_id))
+    end
+    isempty(moves) && return nothing
+    # Above every attribute id in the System — not only the ones moving — so the staging
+    # range is clear of any attribute rows the written store may hold.
+    offset = max(
+        maximum(doc_id for (_, doc_id) in moves),
+        maximum(IS.get_id, get_supplemental_attributes(SupplementalAttribute, sys)),
+    )
+    category = IS.InfraStore.SupplementalAttribute
+    store = IS.open_infrastore_store(path; read_only = false)
+    try
+        for (is_id, doc_id) in moves
+            IS.InfraStore.replace_owner!(store.inner, is_id, offset + doc_id, category)
+        end
+        for (_, doc_id) in moves
+            IS.InfraStore.replace_owner!(store.inner, offset + doc_id, doc_id, category)
+        end
+    finally
+        IS.close!(store)
     end
     return nothing
 end
@@ -656,6 +678,9 @@ Both halves matter and neither is redundant: the sidecar holds the values, and t
 lists one row per series so a consumer can see what a bundle contains — and in what units, on
 what basis — without opening the store. The row is an index into the sidecar, keyed the way
 the sidecar keys its own catalog: `(owner id, name, type, resolution/interval, features)`.
+
+`sorted_refs` must include the supplemental attributes, registered after the components, so
+their series get rows and their sidecar owner ids get re-keyed to the document ids.
 """
 function _export_all_time_series(
     doc::PC.SystemDocument,
@@ -673,7 +698,6 @@ function _export_all_time_series(
         "to_openapi: $(IS.get_num_time_series(store)) time series are attached but no " *
         "time_series_storage_path was given — cannot write the sidecar",
     )
-    _check_time_series_ids_match(sorted_refs)
     for (entity_id, entity) in sorted_refs
         _has_own_id(entity) || continue
         IS.supports_time_series(entity) || continue
@@ -683,6 +707,7 @@ function _export_all_time_series(
         end
     end
     IS.serialize(store, String(time_series_storage_path))
+    _remap_sidecar_attribute_owners!(String(time_series_storage_path), sys, sorted_refs)
     return rows
 end
 
@@ -736,8 +761,7 @@ function to_openapi(
 
     _export_components!(doc, refs, sys, val)
     _export_market_bid_service_offers!(doc, refs)
-    # One id-ordered snapshot of the registry, shared by both document-order-sensitive
-    # walks below rather than each re-collecting and re-sorting it.
+    # One id-ordered snapshot of the component registry for the attribute walk below.
     sorted_refs = sort(collect(refs.by_id); by = first)
     supplemental_attributes,
     supplemental_attribute_associations,
@@ -748,9 +772,14 @@ function to_openapi(
     append!(doc.plant_associations, plant_associations)
     append!(doc.combined_cycle_associations, combined_cycle_associations)
     append!(doc.service_associations, _export_service_associations(refs, sys))
+    # Re-snapshot: `_export_supplemental_attributes` registered the attributes into `refs`
+    # after the snapshot above, and the time series walk must see them too.
+    sorted_refs_with_attributes = sort(collect(refs.by_id); by = first)
     append!(
         doc.time_series_associations,
-        _export_all_time_series(doc, sys, sorted_refs, time_series_storage_path),
+        _export_all_time_series(
+            doc, sys, sorted_refs_with_attributes, time_series_storage_path,
+        ),
     )
 
     PC.validate_document(doc)

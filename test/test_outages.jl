@@ -566,12 +566,14 @@ end
           get_time_series_counts(sys).supplemental_attributes_with_time_series
     actual = outage_series(sys2)
     @test Set(keys(actual)) == Set(keys(expected))
-    # The sidecar store is serialized wholesale with series keyed by the exporter's IS
-    # attribute ids, while the importer mints fresh attribute ids in association order, so
-    # the series land on whichever attribute receives the same number. The export-side
-    # guard meant to reject this (_check_time_series_ids_match) never sees an attribute
-    # because `sorted_refs` is snapshotted before the attributes are registered.
-    @test_broken actual == expected
+    # Export re-keys attribute-owned series in the sidecar to the document ids and import
+    # presets each attribute's id to its document id, so every series comes back on the
+    # attribute that owned it.
+    @test actual == expected
+    # A second round trip must hold too: the imported attributes now carry document ids,
+    # which export re-keys again.
+    sys3 = roundtrip_system(sys2)
+    @test outage_series(sys3) == expected
 end
 
 @testset "Test time series on components and attributes with colliding ids" begin
@@ -704,6 +706,57 @@ end
         @test get_time_series_values(SingleTimeSeries, outage, name) != gen_values(id)
         @test get_time_series_values(Deterministic, outage, fname) !=
               gen_forecast(id)[initial_time]
+    end
+
+    # The same holds after a to_file/from_file round trip, where components keep their ids
+    # and attributes take the document's ids: every owner still reads back only its own
+    # data, and attributes that share an id with a generator still do not see its series.
+    sys2 = roundtrip_system(sys)
+    gens2 = [get_component(ThermalStandard, sys2, get_name(g)) for g in gens]
+    outages2 = [
+        only(
+            get_supplemental_attributes(
+                x -> get_mean_time_to_recovery(x) == get_mean_time_to_recovery(o),
+                GeometricDistributionForcedOutage,
+                sys2,
+            ),
+        ) for o in outages
+    ]
+    @test IS.get_id.(gens2) == gen_ids
+    counts2 = get_time_series_counts(sys2)
+    @test counts2.components_with_time_series == n
+    @test counts2.supplemental_attributes_with_time_series == n
+    @test counts2.static_time_series_count == 2n
+    @test counts2.forecast_count == 2n
+    for (gen, gen2) in zip(gens, gens2)
+        id = IS.get_id(gen)
+        @test length(get_time_series_keys(gen2)) == 2
+        @test get_time_series_values(SingleTimeSeries, gen2, name) == gen_values(id)
+        @test get_time_series_values(Deterministic, gen2, fname) ==
+              gen_forecast(id)[initial_time]
+        @test get_time_series_values(
+            Deterministic,
+            gen2,
+            fname;
+            start_time = initial_time + Dates.Hour(1),
+        ) == gen_forecast(id)[initial_time + Dates.Hour(1)]
+    end
+    for (outage, outage2) in zip(outages, outages2)
+        id = IS.get_id(outage)
+        @test length(get_time_series_keys(outage2)) == 2
+        @test get_time_series_values(SingleTimeSeries, outage2, name) == outage_values(id)
+        @test get_time_series_values(Deterministic, outage2, fname) ==
+              outage_forecast(id)[initial_time]
+        @test get_time_series_values(
+            Deterministic,
+            outage2,
+            fname;
+            start_time = initial_time + Dates.Hour(1),
+        ) == outage_forecast(id)[initial_time + Dates.Hour(1)]
+        # The imported attribute is attached to the same generator as before.
+        @test length(get_associated_components(sys2, outage2)) == 1
+        @test get_name(only(get_associated_components(sys2, outage2))) ==
+              get_name(only(get_associated_components(sys, outage)))
     end
 
     # Removing one owner's series leaves the id-sharing owner's series intact, both ways.

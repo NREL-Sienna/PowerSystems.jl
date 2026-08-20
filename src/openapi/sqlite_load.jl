@@ -97,6 +97,10 @@ function load_supplemental_attribute_associations!(
         attribute = get!(converted, attribute_id) do
             built = from_openapi(attribute_rows[attribute_id], refs)
             _check_resolved_type_matches(built, assoc.attribute_type, attribute_id)
+            # Before attaching, as for components: `IS.assign_id!` keeps a preset id and
+            # advances the attribute counter past it. Export re-keyed the attribute's rows
+            # in the sidecar to this document id, so the adopted store resolves them.
+            IS.set_id!(built, attribute_id)
             refs[attribute_id] = built
             return built
         end
