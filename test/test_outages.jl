@@ -290,11 +290,9 @@ end
         set_monitored_components!(outage, gens)
     end
 
-    # `create_system_with_outages` attaches one `SingleTimeSeries` per outage — an
-    # attribute-owned series, which used to make the whole bundle unexportable (the deleted
-    # B2 guard). D1's unified id stream fixes this at the root: an outage's document id is
-    # its own IS id, stable across the round trip below, so its series is findable in the
-    # rebuilt system under that same id.
+    # `create_system_with_outages` attaches one `SingleTimeSeries` per outage. An outage's
+    # document id is its own IS id, stable across the round trip below, so its series is
+    # findable in the rebuilt system under that same id.
     original_series = Dict{Int, Vector{Int}}(
         IS.get_id(outage) =>
             TimeSeries.values(
@@ -325,8 +323,8 @@ end
         end
     end
 
-    # The attribute-owned series survive value-for-value, keyed by the id that D1
-    # guarantees is stable across the round trip.
+    # The attribute-owned series survive value-for-value, keyed by the id that stays stable
+    # across the round trip.
     for outage in outages2
         key = only(IS.get_time_series_keys(outage))
         values = TimeSeries.values(PSY.get_data(IS.get_time_series(outage, key)))
@@ -383,10 +381,10 @@ end
     )
 end
 
-@testset "Test loud error: document/sidecar time series row drift caught by reconcile" begin
-    # D4: the document's own `time_series_associations` rows are informational, but a
-    # strict reconcile against the adopted sidecar's catalog still catches drift between
-    # the two rather than silently trusting whichever the caller kept.
+@testset "Test loud error: document/sidecar time series row drift caught by validation" begin
+    # The document's own `time_series_associations` rows are informational, but a strict
+    # validation against the adopted sidecar's catalog still catches drift between the two
+    # rather than silently trusting whichever the caller kept.
     sys = create_system_with_outages()
     dir = mktempdir()
     to_file(sys, dir; force = true)
@@ -394,7 +392,7 @@ end
     row = first(doc.time_series_associations).value
     row.name = "not_the_real_series_name"
 
-    @test_throws Exception PSY.from_openapi(
+    @test_throws IS.DataFormatError PSY.from_openapi(
         System, doc; time_series_storage_path = joinpath(dir, "time_series.h5"),
     )
 end

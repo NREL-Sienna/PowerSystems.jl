@@ -308,20 +308,6 @@ function _attach_service_membership!(entity, service, ::System)
     )
 end
 
-# ── Time series ────────────────────────────────────────────────────────────────
-#
-# There is no ingestion pass. Time series values live in the InfraStore sidecar, whose
-# catalog *is* the association table: it keys every series by (owner id, name, type,
-# resolution/interval, features) — the same tuple `TimeSeriesAssociation` carries. So the
-# importer adopts that store as the System's own (`_time_series_manager` below) instead of
-# replaying rows through `add_time_series!`, and the series are attached the moment the
-# store is adopted.
-#
-# This works only because component ids survive import: `from_openapi` sets each component's
-# id to its document id before adding it, and `IS.assign_id!` keeps an id that is already
-# set. The store's owner ids are those same document ids, so the two line up with no
-# remapping.
-
 # ── Supplemental attributes ─────────────────────────────────────────────────────
 # Per-type converters below exist for every attribute PSY hand-writes a constructor for
 # AND that has a PO analogue: EmissionsData, GeometricDistributionForcedOutage,
@@ -439,44 +425,35 @@ function from_openapi(po, ::OpenAPIRefs)
     )
 end
 
-# ── attribute attach (mode-independent) ─────────────────────────────────────────
-# One entry point for every supplemental attribute a document names, plain or
-# plant-family alike. It never takes a caller-supplied "is this a fresh document or an
-# adopted sidecar" flag: instead it asks the store directly, per row, whether the
-# association already exists.
-#
-# A sidecar produced by `to_openapi`/`to_file` already carries every one of these rows
-# (target architecture: the store is the single source of truth for both association
-# tables, mirroring time series), so the common import path never writes — it attaches via
-# `IS.attach_supplemental_attribute!`, the read-only-safe public API from Phase 3.2. A row
-# the store does not yet have is written fresh with `IS.add_supplemental_attribute!` — the
-# attribute's id was already fixed to its document id above, so `assign_id!` keeps it rather
-# than minting a fresh one, exactly like a component. This covers both a hand-built document
-# with no adopted sidecar at all AND a document augmented by hand with one more attribute a
-# real sidecar does not carry — attribute payloads stay document-authoritative (see the
-# target architecture note in export_document.jl): a document may always name an attribute
-# the sidecar has not seen, and import writes it rather than rejecting the document. Either
-# way, the group-index side effect is identical, so it is the one thing shared with the
-# write-path `add_supplemental_attribute!` overloads in `plant_attribute.jl`:
-# [`_push_group_index!`](@ref).
+# ── attribute attach ────────────────────────────────────────────────────────────
+# An adopted sidecar already carries every association row the document names, so those pairs
+# only need attaching; a hand-built document (or one augmented with an attribute the sidecar
+# never saw) carries none, so those pairs need writing. Which case a row falls in is read
+# from `stored_pairs` rather than from a caller-supplied mode flag.
 
 """
 Attach `attribute` to `component`, recording `group_index` on whichever forward map the
 attribute's type carries (a no-op for the plain attribute types, whose `group_index` is
 `nothing`).
 
-Mode-independent: writes a fresh association only when the store does not already have this
-exact `(component, attribute)` pair. See the section header above for why both cases are
-correct without a caller-supplied flag.
+`stored_pairs` holds the `(component_id, attribute_id)` pairs the store already has; a pair
+written here is added to it.
 """
-function _attach_attribute!(sys::System, component, attribute, group_index)
-    associations = sys.data.supplemental_attribute_manager.associations
-    if IS.has_association(associations, component, attribute)
+function _attach_attribute!(
+    sys::System,
+    stored_pairs::Set{Tuple{Int, Int}},
+    component,
+    attribute,
+    group_index,
+)
+    pair = (IS.get_id(component), IS.get_id(attribute))
+    if pair in stored_pairs
         IS.attach_supplemental_attribute!(
             sys.data, component, attribute; allow_existing_time_series = true,
         )
     else
         IS.add_supplemental_attribute!(sys.data, component, attribute)
+        push!(stored_pairs, pair)
     end
     _push_group_index!(component, attribute, group_index)
     return nothing
@@ -517,15 +494,15 @@ reserve membership from `service_associations`, and — when `time_series_storag
 given — adopts the HDF5 sidecar wholesale as the System's own time series store. There is no
 per-row ingestion of `doc.time_series_associations`: those rows are informational (the
 sidecar's catalog is authoritative), so instead of being replayed they are cross-checked
-against it with a strict [D4 reconcile](@ref IS.reconcile_time_series_association_rows!) —
-a validation pass that writes nothing under `:strict` and throws if the two disagree.
+against it by [`_validate_time_series_associations!`](@ref) — a validation pass that writes
+nothing and throws if the two disagree.
 
 Errors loudly (naming the offending type, id, or field) rather than silently skipping:
 a component type with no registered converter, an unresolved attribute/plant/service
 association or entity reference, or time-series owner reference, an unmapped time-series
 type, scaling-factor multiplier, or supplemental `attribute_type` (see
 [`load_supplemental_attribute_associations!`](@ref)), a document that declares time series
-but supplies no `time_series_storage_path`, and any drift the D4 reconcile catches.
+but supplies no `time_series_storage_path`, and any drift this validation catches.
 
 `system_kwargs` pass straight through to the fresh `System(base_power; system_kwargs...)`
 this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series_read_only`,
@@ -569,30 +546,20 @@ function from_openapi(
 
     load_supplemental_attribute_associations!(sys, refs, doc)
 
-    _reconcile_time_series_associations!(sys, doc, time_series_storage_path)
+    _validate_time_series_associations!(sys, doc, time_series_storage_path)
 
     return sys
 end
 
 """
 A `System` whose time series store is the document's InfraStore sidecar, adopted rather than
-replayed.
-
-Without a sidecar this is just `System(base_power; system_kwargs...)`. With one, the store is
-opened and the `SystemData` is built around it — the same shape `IS.deserialize(SystemData,
-...)` uses for a natively serialized system.
+replayed. Without a sidecar this is just `System(base_power; system_kwargs...)`.
 
 `time_series_read_only` and `time_series_directory` are read from `system_kwargs` (and left in
 place for `System` itself) because they govern how the store is opened: a read-only open
 attaches the file directly, while a writable one takes a working copy so adding series cannot
-corrupt the document's sidecar.
-
-The adopted store's `supplemental_attribute_associations` rows are left exactly as they are:
-under the target architecture the sidecar is the single source of truth for that table too
-(the same contract time series already followed), so a sidecar written by `to_openapi`
-already carries every row `load_supplemental_attribute_associations!` is about to attach —
-nothing here clears or replays them, and a read-only store never needs to accept a write for
-rows it already holds.
+corrupt the document's sidecar. The adopted store's `supplemental_attribute_associations` rows
+are left as they are — `load_supplemental_attribute_associations!` reads them.
 """
 function _system_with_sidecar(
     base_power,
@@ -611,6 +578,9 @@ function _system_with_sidecar(
         String(time_series_storage_path), directory, read_only,
     )
     attribute_manager = IS.SupplementalAttributeManager(store)
+    # Positional: IS's keyword `SystemData` constructor opens its own store and cannot adopt
+    # one. `1` is `next_id`; every id in the document is set explicitly, and `assign_id!`
+    # advances the counter past each one as components and attributes are adopted.
     data = IS.SystemData(
         IS.read_validation_descriptor(POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE),
         IS.TimeSeriesManager(; data_store = store, read_only = read_only),
@@ -624,26 +594,95 @@ end
 
 """
 Cross-check the document's own `time_series_associations` rows against the adopted sidecar's
-catalog (D4), closing the gap where those rows used to be parsed and then never looked at
-again. A no-op when there is no sidecar or the document names no rows — nothing to reconcile
-either way (a producer that stages only series and no document metadata, say).
+catalog. A no-op when there is no sidecar or the document names no rows.
 
-`policy = :strict`: the sidecar is authoritative, so any drift between it and the document is
-a corrupt bundle, not something to paper over by preferring one side; the call writes nothing
-in this mode, so it is read-only-safe. Logs the resulting `ReconcileReport` at `@debug`.
+The sidecar is authoritative, so this never writes: every document row must match a sidecar
+row, identified by `(owner_id, owner_category, time_series_type, name, resolution, interval,
+features)` — the same identity tuple the store's own uniqueness index keys on (`owner_type`
+is a denormalized label excluded from identity); a type that carries no `resolution`/
+`interval` field at all (e.g. `NonSequentialTimeSeries`) treats it as `nothing`. A matched row
+must then agree with its counterpart field-for-field — compared as canonical OpenAPI JSON,
+excluding `uri`/`data_hash` (informational: a document assembled from a different store may
+legitimately carry different values for either, so neither participates in identity or
+drift). A document row with no sidecar counterpart, or one that drifts from its match, means
+the bundle is corrupt and throws `IS.DataFormatError` naming the row and, for drift, the
+differing fields. Sidecar rows the document does not mention are tolerated (`@debug`-logged)
+— a document only ever names the owners it carries.
 """
-function _reconcile_time_series_associations!(
+function _validate_time_series_associations!(
     sys::System,
     doc::PD.SystemDocument,
     time_series_storage_path,
 )
     (isnothing(time_series_storage_path) || isempty(doc.time_series_associations)) &&
         return nothing
-    json = JSON.json(doc.time_series_associations)
-    report = IS.reconcile_time_series_association_rows!(sys.data, json; policy = :strict)
-    @debug "from_openapi(System, doc): time series reconcile" report.matched report.updated report.missing_in_store report.unmatched_in_store report.conflicts
+
+    store_rows = [
+        _unwrap_oneof(row) for row in IS.openapi_time_series_association_rows(sys.data)
+    ]
+    store_by_identity = Dict(_ts_row_identity(row) => row for row in store_rows)
+    referenced = Set{keytype(store_by_identity)}()
+
+    for assoc in doc.time_series_associations
+        row = _unwrap_oneof(assoc)
+        identity = _ts_row_identity(row)
+        store_row = get(store_by_identity, identity, nothing)
+        if isnothing(store_row)
+            throw(
+                IS.DataFormatError(
+                    "from_openapi(System, doc): time series association " *
+                    "$(_ts_row_label(identity)) has no matching row in the adopted " *
+                    "sidecar's catalog",
+                ),
+            )
+        end
+        push!(referenced, identity)
+        drift = _ts_row_drift(row, store_row)
+        isempty(drift) || throw(
+            IS.DataFormatError(
+                "from_openapi(System, doc): time series association " *
+                "$(_ts_row_label(identity)) drifted from the sidecar's catalog on: " *
+                "$(join(drift, ", "))",
+            ),
+        )
+    end
+
+    unmatched = setdiff(keys(store_by_identity), referenced)
+    isempty(unmatched) ||
+        @debug "from_openapi(System, doc): sidecar catalog rows the document does not mention" unmatched
+
     return nothing
 end
+
+"""The wire field value of `field` on `row`, or `nothing` when `row`'s type does not carry
+that field at all (e.g. `NonSequentialTimeSeries` has no `resolution`/`interval`) — as
+opposed to carrying it unset, which is also `nothing`. Either way, absent and unset compare
+equal for identity purposes."""
+_ts_field(row, field::Symbol) = hasproperty(row, field) ? getproperty(row, field) : nothing
+
+"""The `(owner_id, owner_category, time_series_type, name, resolution, interval, features)`
+tuple a time series association row is matched by — the same identity the store's own
+uniqueness index keys on. See [`_validate_time_series_associations!`](@ref)."""
+_ts_row_identity(row) = (
+    row.owner_id, row.owner_category, row.time_series_type, row.name,
+    _ts_field(row, :resolution), _ts_field(row, :interval), row.features,
+)
+
+"""Human-readable label for a time series association identity tuple, for error messages."""
+_ts_row_label(identity) = "$(identity[3]) owner $(identity[1]) \"$(identity[4])\""
+
+"""Wire field names on which `doc_row` and `store_row` differ, comparing canonical OpenAPI
+JSON and excluding `uri`/`data_hash`."""
+function _ts_row_drift(doc_row, store_row)
+    doc_json = _ts_row_wire_dict(doc_row)
+    store_json = _ts_row_wire_dict(store_row)
+    fields = union(keys(doc_json), keys(store_json))
+    return sort!(
+        [f for f in fields if get(doc_json, f, nothing) != get(store_json, f, nothing)],
+    )
+end
+
+_ts_row_wire_dict(row) = delete!(delete!(JSON.parse(JSON.json(row)), "uri"), "data_hash")
 
 """
 Resolve each imported `MarketBidCost`'s `ancillary_service_offers` ids to the now-imported
