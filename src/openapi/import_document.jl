@@ -640,10 +640,7 @@ function _reconcile_time_series_associations!(
     (isnothing(time_series_storage_path) || isempty(doc.time_series_associations)) &&
         return nothing
     json = JSON.json(doc.time_series_associations)
-    report = IS.reconcile_time_series_association_rows!(
-        sys.data, json;
-        policy = :strict, expected_address = PD.get_time_series_storage_file(doc),
-    )
+    report = IS.reconcile_time_series_association_rows!(sys.data, json; policy = :strict)
     @debug "from_openapi(System, doc): time series reconcile" report.matched report.updated report.missing_in_store report.unmatched_in_store report.conflicts
     return nothing
 end

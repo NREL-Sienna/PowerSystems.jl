@@ -1064,7 +1064,10 @@ end
         @test ts_row.resolution == "PT1H"
         @test ts_row.length == 3
         @test ts_row.element_type == "f64"
-        @test ts_row.address == basename(ts_out_path)
+        # `uri`/`data_hash` are the store's own content hash, never a caller-supplied
+        # locator.
+        @test occursin(r"^[0-9a-f]{64}$", ts_row.uri)
+        @test ts_row.data_hash == ts_row.uri
     end
 end
 

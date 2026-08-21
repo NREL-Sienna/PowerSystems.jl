@@ -341,7 +341,7 @@ end
         attr_mgr = IS.TimeSeriesManager(; data_store = attr_store)
         IS.add_time_series!(attr_mgr, attr_owner, attr_ts)
         for row in IS.openapi_time_series_association_rows(
-            attr_store; address = basename(sidecar), owner_id = ts_attr_id,
+            attr_store; owner_id = ts_attr_id,
         )
             PSY.PD.add_time_series_association!(doc, row)
         end

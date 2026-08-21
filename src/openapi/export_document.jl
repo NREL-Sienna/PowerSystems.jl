@@ -561,8 +561,8 @@ lists one row per series so a consumer can see what a bundle contains — and in
 what basis — without opening the store.
 
 The rows come from ONE store call (`IS.openapi_time_series_association_rows`), already sorted
-by identity and each stamped with `address` verbatim (D3) — no local re-sort, and no
-`IS.to_openapi` per-row conversion. Row `id`s are the store's own catalog rowids, carried
+by identity and each stamped with the store's own `uri`/`data_hash` (D3) — no local re-sort,
+and no `IS.to_openapi` per-row conversion. Row `id`s are the store's own catalog rowids, carried
 through unchanged: they are informational (`PD._highest_id` already reserves above them on
 read), not part of the document's component/attribute id space.
 
@@ -594,9 +594,8 @@ function _export_all_time_series(
         "to_openapi: $(IS.get_num_time_series(store)) time series are attached but no " *
         "time_series_storage_path was given — cannot write the sidecar",
     )
-    address = _sidecar_basename(time_series_storage_path)
     skipped_counts = Dict{String, Int}()
-    for assoc in IS.openapi_time_series_association_rows(sys.data; address = address)
+    for assoc in IS.openapi_time_series_association_rows(sys.data)
         row = assoc.value
         owner_id = Int(row.owner_id)
         if row.owner_category == "Component"

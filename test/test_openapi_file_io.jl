@@ -256,7 +256,10 @@ end
         # array was laid out; a scalar-valued series has an empty per-step shape.
         @test row.element_type == "f64"
         @test isempty(row.element_shape)
-        @test row.address == basename(joinpath(bundle, "time_series.h5"))
+        # `uri`/`data_hash` are the store's own content hash, never a caller-supplied
+        # locator.
+        @test occursin(r"^[0-9a-f]{64}$", row.uri)
+        @test row.data_hash == row.uri
 
         # The timestamp vector lives in the store, not the document, so it must come back
         # from the adopted sidecar exactly.
