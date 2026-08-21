@@ -827,9 +827,8 @@ end
 # on the PSY side (its docstring gives the constant term in physical MW directly) and passes
 # through unconverted in both methods.
 
-# A `oneOf` field holds its member wrapped only after deserialization; a document built in
-# memory assigns the member directly. Unwrap by dispatch, the way `convert_cost` does
-# (`cost_conversion.jl`), so both shapes read the same.
+# A `oneOf` field is wrapped only after deserialization; a document built in memory assigns
+# the member directly.
 _unwrap_oneof(x::OpenAPI.OneOfAPIModel) = _unwrap_oneof(x.value)
 _unwrap_oneof(x) = x
 

@@ -96,11 +96,11 @@ end
     @test length(attrs2) == 1
     @test only(attrs1) === only(attrs2)
 
-    # 1: the newly-built attribute is now resolvable by document id, exactly like a
-    # component from the dependency-ordered component pass.
-    @test PSY.resolve_uuid(f.refs, 100) == IS.get_id(only(attrs1))
+    # The newly-built attribute is resolvable by document id, exactly like a component from
+    # the dependency-ordered component pass.
+    @test f.refs[100] === only(attrs1)
 
-    # 2 at the SQLite level: two rows (one per component), one distinct attribute_uuid.
+    # At the SQLite level: two rows (one per component), one distinct attribute.
     mgr = f.sys.data.supplemental_attribute_manager
     @test IS.get_num_attributes(mgr.associations) == 1
     summary = IS.get_attribute_summary_table(mgr.associations)

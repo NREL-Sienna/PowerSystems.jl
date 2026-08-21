@@ -16,25 +16,16 @@
 # sqlite_load.jl. None of these embed unit-converted fields, so unlike the per-component
 # exporters they take no unit-system argument.
 
-"""Resolve monitored-component ids (an `Outage`'s own storage) to document ids.
-Empty means no association and reverses to `nothing`, the inverse of
-`_monitored_component_uuids`'s own `nothing` -> empty-vector default.
-
-An `Outage` stores the monitored components' IS ids, and `_export_id!` gives every component
-that has an id of its own that same id in the document, so this is the identity on ids. It
-still resolves each one through `refs` rather than passing it straight through: an id naming
-something the document does not carry would otherwise be written as a dangling reference,
-and only the reader would find out."""
+"""Resolve monitored-component ids to document ids; empty reverses to `nothing`."""
 function _monitored_component_ids(refs::OpenAPIRefs, ids)
     if isempty(ids)
         return nothing
     end
-    document_ids = Int[]
     for id in ids
-        refs[Int(id)]  # errors when the document carries no such component
-        push!(document_ids, Int(id))
+        has_ref(refs, Int(id)) ||
+            error("to_openapi: an outage monitors id $id, absent from the document")
     end
-    return document_ids
+    return Int[Int(id) for id in ids]
 end
 
 function to_openapi(attr::EmissionsData, refs::OpenAPIRefs)
@@ -206,29 +197,15 @@ end
 # `TransformerCircuit` has no id of its own (`_has_own_id` false — it is embedded in its
 # owning transformer), so it draws from a counter that starts above every component id.
 
-"""
-The subcomponents a `HybridSystem` owns.
-
-`add_component!(sys, hybrid)` moves them out of the System's own enumeration, so a
-`get_components` walk never sees them — but the hybrid exports each one by id, so they have
-to be registered and converted as components in their own right or the reference dangles.
-All four subcomponent types are planned before `HybridSystem`, so they are registered by the
-time the hybrid is converted.
-"""
-_hybrid_subcomponents(sys::System) = (
-    sub for hybrid in get_components(HybridSystem, sys) for
-    sub in get_subcomponents(hybrid)
-)
-
 """Enumerate the live instances of a `DOCUMENT_PLAN` type. `TransformerCircuit` is a
 `DeviceParameter` embedded in its owning transformer, never a standalone System component,
 so it enumerates through the owners — both `TwoWindingTransformer` (one circuit) and
-`ThreeWindingTransformer` (three, via `get_circuits`). `HybridSystem` subcomponents are
-owned rather than embedded, but are equally invisible to `get_components`, so they are
-folded back in per type."""
+`ThreeWindingTransformer` (three, via `get_circuits`). A `HybridSystem`'s subcomponents are
+masked out of the System's own enumeration but are still exported by id, so the masked
+container is walked alongside the live one."""
 _plan_components(sys::System, ::Type{T}) where {T} = Iterators.flatten((
     get_components(T, sys),
-    (sub for sub in _hybrid_subcomponents(sys) if sub isa T),
+    IS.get_masked_components(T, sys.data),
 ))
 function _plan_components(sys::System, ::Type{TransformerCircuit})
     two_winding = (get_circuit(twt) for twt in get_components(TwoWindingTransformer, sys))
@@ -248,38 +225,30 @@ id — but it is still registered in [`OpenAPIRefs`](@ref), and must be skipped 
 _has_own_id(::Any) = true
 _has_own_id(::TransformerCircuit) = false
 
-"""The component's own id, or the next fresh one for a `TransformerCircuit`, which has
-none (`_has_own_id` false)."""
-function _export_id!(next_id::Base.RefValue{Int}, component)
-    _has_own_id(component) && return IS.get_id(component)
-    fresh = next_id[]
-    next_id[] += 1
-    return fresh
-end
-
 function _build_export_refs(sys::System, unit_system_string::AbstractString)
     refs = OpenAPIRefs(unit_system_string, get_base_power(sys))
-    # Above every component id AND every supplemental attribute id — D1 put both in the
-    # same id stream, so a `TransformerCircuit`'s freshly-minted id must clear the higher of
-    # the two or it can collide with an attribute whose id happens to exceed every component
-    # id (an attribute a document producer numbered from its own high end, say). Computed
-    # before the walk rather than tracked during it, since a circuit can be reached before
-    # the component whose id would have raised the mark, and attributes are not registered
-    # into `refs` until `_export_supplemental_attributes`, well after this runs.
+    # Components and supplemental attributes share one id stream, so a fresh
+    # `TransformerCircuit` id must clear the highest of both kinds.
     highest = 0
+    circuits = TransformerCircuit[]
     for (_po_type, psy_type, _key, _addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
-            _has_own_id(c) && (highest = max(highest, IS.get_id(c)))
+            if _has_own_id(c)
+                id = IS.get_id(c)
+                highest = max(highest, id)
+                refs[id] = c
+            else
+                push!(circuits, c)
+            end
         end
     end
     for attr in IS.iterate_supplemental_attributes(sys.data)
         highest = max(highest, IS.get_id(attr))
     end
-    next_id = Ref(highest + 1)
-    for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
-        for c in _plan_components(sys, psy_type)
-            refs[_export_id!(next_id, c)] = c
-        end
+    next_id = highest + 1
+    for circuit in circuits
+        refs[next_id] = circuit
+        next_id += 1
     end
     return refs
 end
@@ -440,8 +409,7 @@ function _push_plant_association!(
 end
 
 """A CT/CA can feed more than one HRSG, but IS attaches a `CombinedCycleBlock` to a component
-once regardless — so only the lowest HRSG number is representable per association row. Known
-limitation: no index survived a document at all before the plant-attribute feature was added."""
+once regardless — so only the lowest HRSG number is representable per association row."""
 function _group_association!(
     ::Vector,
     cc_rows::Vector{PO.CombinedCycleAssociation},
@@ -450,8 +418,8 @@ function _group_association!(
     attr_id::Int,
     entity_id::Int,
 )
-    uuid = IS.get_id(entity)
-    ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), uuid)
+    id = IS.get_id(entity)
+    ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), id)
     if !isempty(ct_hrsgs)
         push!(
             cc_rows,
@@ -464,7 +432,7 @@ function _group_association!(
         )
         return nothing
     end
-    ca_hrsgs = _group_indices(get_hrsg_ca_map(attr), uuid)
+    ca_hrsgs = _group_indices(get_hrsg_ca_map(attr), id)
     if !isempty(ca_hrsgs)
         push!(
             cc_rows,
@@ -483,24 +451,15 @@ end
 Emit the attribute rows and their associations from the store's own OpenAPI export
 ([`IS.openapi_supplemental_attribute_association_rows`](@ref)) rather than converting each
 association row by hand: the rows already carry `component_id`/`attribute_id` in the
-document's id space (D1 — an attribute's IS id, which is also its document id, can never
-collide with a component's) and their `attribute_type`/`component_type` labels, so no
-per-row `IS.to_openapi` conversion is needed on the way out.
+document's id space and their `attribute_type`/`component_type` labels.
 
-Only rows whose component has a document id are kept (`has_ref(refs, component_id)` —
-mirrors [`warn_unexportable_components`](@ref): a dynamics component's attribute is dropped
-along with the component itself, silently, exactly as it was before this rewrite). Each
-distinct attribute is registered into `refs` under its own id, exactly once, before
-`to_openapi(attr, refs)` — which reads that id back via `component_id` — is called on it;
-this is what makes `refs` cover attributes the same way it already covers components. The
-store's rows already arrive sorted by `(component_id, attribute_id)`, so document order
-still tracks component order with no local sort.
+Only rows whose component has a document id are kept, mirroring
+[`warn_unexportable_components`](@ref): a dynamics component's attribute is dropped along
+with the component itself. Each distinct attribute is registered into `refs` under its own id
+before `to_openapi(attr, refs)` reads that id back. The store's rows already arrive sorted by
+`(component_id, attribute_id)`, so document order tracks component order with no local sort.
 """
-function _export_supplemental_attributes(
-    refs::OpenAPIRefs,
-    doc::PD.SystemDocument,
-    sys::System,
-)
+function _export_supplemental_attributes(refs::OpenAPIRefs, sys::System)
     attribute_rows = Any[]
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
@@ -508,14 +467,12 @@ function _export_supplemental_attributes(
     attributes_by_id = Dict{Int, SupplementalAttribute}(
         IS.get_id(attr) => attr for attr in IS.iterate_supplemental_attributes(sys.data)
     )
-    registered = Set{Int}()
     for row in IS.openapi_supplemental_attribute_association_rows(sys.data)
         entity_id = Int(row.component_id)
         has_ref(refs, entity_id) || continue
         attr_id = Int(row.attribute_id)
         attr = attributes_by_id[attr_id]
-        if attr_id ∉ registered
-            push!(registered, attr_id)
+        if !has_ref(refs, attr_id)
             refs[attr_id] = attr
             push!(attribute_rows, to_openapi(attr, refs))
         end
@@ -540,17 +497,24 @@ end
 # The mirror of import's store adoption: the System's InfraStore *is* the sidecar, so export
 # serializes it and describes it via the store's own OpenAPI export
 # (`IS.openapi_time_series_association_rows`) rather than walking series and converting each
-# metadata row by hand. PowerTableDataParser writes its documents the same way.
-#
-# The catalog's owner ids are IS ids, which — since D1 unified the component/attribute id
-# stream and `_export_supplemental_attributes` now gives every attribute its own IS id as its
-# document id too — equal document ids for BOTH owner kinds. `_export_all_time_series` below
-# still resolves each row's `owner_category` before trusting the id, but only to pick the
-# right failure mode: a component-owned row whose owner has no document id (a dynamics
-# component, say — see `warn_unexportable_components`) is dropped with a warning, the same
-# accepted, reported loss as the component walk's; an attribute-owned row whose owner has no
-# document id is a hard error, since (unlike a whole unconvertible component) there is no
-# sanctioned reason for a registered attribute's own time series to be unresolvable.
+# metadata row by hand. The catalog's owner ids are already document ids for both owner
+# kinds, so a row's `owner_category` is read only to pick the right failure mode.
+
+"""Whether a time series owner absent from the document is a tolerated loss or a hard error.
+
+A component owner may be absent because it has no converter — the same reported loss
+[`warn_unexportable_components`](@ref) already flags. An absent supplemental-attribute owner
+means the sidecar and the attribute manager disagree about what exists: every attribute the
+document can describe was registered into `refs` by `_export_supplemental_attributes` before
+this runs."""
+function _absent_owner_is_tolerated(row)
+    row.owner_category == "Component" && return true
+    row.owner_category == "SupplementalAttribute" && return false
+    error(
+        "to_openapi: time series \"$(row.name)\" (owner id $(row.owner_id)) has " *
+        "unrecognized owner_category $(row.owner_category)",
+    )
+end
 
 """
 Write the System's time series to `time_series_storage_path` and describe them in the
@@ -560,61 +524,39 @@ Both halves matter and neither is redundant: the sidecar holds the values, and t
 lists one row per series so a consumer can see what a bundle contains — and in what units, on
 what basis — without opening the store.
 
-The rows come from ONE store call (`IS.openapi_time_series_association_rows`), already sorted
-by identity and each stamped with the store's own `uri`/`data_hash` (D3) — no local re-sort,
-and no `IS.to_openapi` per-row conversion. Row `id`s are the store's own catalog rowids, carried
-through unchanged: they are informational (`PD._highest_id` already reserves above them on
-read), not part of the document's component/attribute id space.
+The rows come from ONE store call, already sorted by identity and each stamped with the
+store's own `uri`/`data_hash`. Row `id`s are the store's own catalog rowids, carried through
+unchanged: they are informational, not part of the document's component/attribute id space.
 
-Every row's `owner_category` is checked before it is kept:
-- A component-owned row whose owner has no document id (`has_ref(refs, owner_id)` false — a
-  dynamics component, the same set `warn_unexportable_components` already flags) is skipped and
-  counted; skipped rows are reported in ONE `@warn` after the loop, naming the count and the
-  distinct owner types, since the series stays in the sidecar but is not described in the
-  document and cannot survive a round trip.
-- A supplemental-attribute-owned row whose owner has no document id errors immediately,
-  before the sidecar is written: every attribute the document can describe is registered into
-  `refs` by `_export_supplemental_attributes` before this runs, so an unresolvable
-  attribute-owned row means the sidecar and the attribute manager disagree about what exists —
-  data corruption, not a case to skip.
+Rows whose owner has no document id are skipped and counted when that is tolerated (see
+[`_absent_owner_is_tolerated`](@ref)); the skips are reported in ONE `@warn` after the loop,
+since those series stay in the sidecar but cannot survive a round trip.
 """
-function _export_all_time_series(
-    doc::PD.SystemDocument,
-    sys::System,
-    refs::OpenAPIRefs,
-    time_series_storage_path,
-)
+function _export_all_time_series(sys::System, refs::OpenAPIRefs, time_series_storage_path)
     rows = PTS.TimeSeriesAssociation[]
-    store = sys.data.time_series_manager.data_store
     # Counted, not `isempty(store)`: one store holds the supplemental attribute associations
     # as well, so a System with attributes and no series has a non-empty store and would
     # otherwise demand a sidecar it has nothing to put in.
-    IS.get_num_time_series(store) == 0 && return rows
+    num_time_series = IS.get_num_time_series(sys.data)
+    iszero(num_time_series) && return rows
     isnothing(time_series_storage_path) && error(
-        "to_openapi: $(IS.get_num_time_series(store)) time series are attached but no " *
+        "to_openapi: $num_time_series time series are attached but no " *
         "time_series_storage_path was given — cannot write the sidecar",
     )
     skipped_counts = Dict{String, Int}()
     for assoc in IS.openapi_time_series_association_rows(sys.data)
         row = assoc.value
         owner_id = Int(row.owner_id)
-        if row.owner_category == "Component"
-            if !has_ref(refs, owner_id)
-                skipped_counts[row.owner_type] = get(skipped_counts, row.owner_type, 0) + 1
-                continue
-            end
-        elseif row.owner_category == "SupplementalAttribute"
-            has_ref(refs, owner_id) || error(
+        tolerated = _absent_owner_is_tolerated(row)
+        if !has_ref(refs, owner_id)
+            tolerated || error(
                 "to_openapi: supplemental attribute (owner id $owner_id, type " *
                 "$(row.owner_type)) owns time series \"$(row.name)\", but is not " *
                 "registered in the exported document — the sidecar and the attribute " *
                 "manager disagree about what exists",
             )
-        else
-            error(
-                "to_openapi: time series \"$(row.name)\" (owner id $owner_id) has " *
-                "unrecognized owner_category $(row.owner_category)",
-            )
+            skipped_counts[row.owner_type] = get(skipped_counts, row.owner_type, 0) + 1
+            continue
         end
         push!(rows, assoc)
     end
@@ -625,7 +567,9 @@ function _export_all_time_series(
               "no OpenAPI converter ($types) — they remain in the sidecar but are not " *
               "described in the document and will not survive a round trip"
     end
-    IS.serialize(store, String(time_series_storage_path))
+    IS.serialize(
+        sys.data.time_series_manager.data_store, String(time_series_storage_path),
+    )
     return rows
 end
 
@@ -678,7 +622,7 @@ function to_openapi(
     supplemental_attribute_associations,
     plant_associations,
     combined_cycle_associations =
-        _export_supplemental_attributes(refs, doc, sys)
+        _export_supplemental_attributes(refs, sys)
     append!(doc.supplemental_attributes, supplemental_attributes)
     append!(doc.supplemental_attribute_associations, supplemental_attribute_associations)
     append!(doc.plant_associations, plant_associations)
@@ -686,11 +630,8 @@ function to_openapi(
     append!(doc.service_associations, _export_service_associations(refs, sys))
     append!(
         doc.time_series_associations,
-        _export_all_time_series(doc, sys, refs, time_series_storage_path),
+        _export_all_time_series(sys, refs, time_series_storage_path),
     )
-    # Every id — component and supplemental attribute alike, since D1 unified the stream —
-    # is already assigned by this point; tell the document so its own counter continues past
-    # all of them instead of reissuing one that collides.
     _reserve_ids!(doc, refs)
 
     PD.validate_document(doc)
@@ -720,9 +661,9 @@ function _export_market_bid_service_offers!(doc::PD.SystemDocument, refs::OpenAP
     return nothing
 end
 
-"""Reserve `doc`'s own id counter above every id already assigned — component and
-supplemental attribute alike, since D1 unified the stream and `refs` now registers both
-kinds by the time this runs."""
+"""Reserve `doc`'s own id counter above every id already assigned, so it cannot reissue one
+that collides. Components and supplemental attributes share one id stream, and `refs`
+registers both kinds by the time this runs."""
 function _reserve_ids!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     if isempty(refs.by_id)
         return nothing

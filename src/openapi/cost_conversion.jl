@@ -16,15 +16,10 @@ _require(x, ::AbstractString) = x
 """
 Call `f` with the unit marker the document string `s` names.
 
-Higher-order rather than a marker-returning function, and deliberately so. The marker is a
-TYPE PARAMETER of `CostCurve`/`FuelCurve` (`CostCurve{T <: ValueCurve, U <: AbstractUnitSystem}`),
-so a function returning `NaturalUnit()` or `DeviceBaseUnit()` from a runtime string hands its
-caller a `Union{NaturalUnit, DeviceBaseUnit}` and makes the construction that consumes it a
-dynamic dispatch. Calling `f` INSIDE each branch instead specializes the whole construction on
-one concrete marker per branch.
-
-The union is real — the document decides the type — but this confines it to a single barrier at
-the JSON boundary where it originates, rather than letting it propagate into the constructor.
+Higher-order rather than marker-returning: the marker is a type parameter of
+`CostCurve`/`FuelCurve`, so returning it from a runtime string would hand the caller a
+`Union{NaturalUnit, DeviceBaseUnit}` and make the construction dynamic. Calling `f` inside each
+branch specializes the whole construction on one concrete marker.
 """
 _with_power_units(::Any, ::Nothing) =
     error("convert_cost: power_units is required and missing")

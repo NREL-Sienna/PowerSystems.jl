@@ -49,15 +49,8 @@ const _PTDP_E2E_TS_TYPES = Dict(
     "Scenarios" => IS.Scenarios,
 )
 
-"""
-Period for a document row's ISO-8601 `resolution`, the inverse of the writer's encoder.
-
-D3: the store's own encoder (`Period::to_iso8601`) emits the unit-style spelling
-(`PT1H`, `P1D`, `PT0.5S`) rather than IS's now-deleted `_openapi_duration`, which only ever
-emitted seconds (`PT3600S`). Handles a `PnDTnHnMnS`-shaped duration generally — every unit
-that appears is summed — rather than special-casing the handful this fixture's two
-resolutions (1 hour, 1 day) actually produce.
-"""
+"""Period for a document row's ISO-8601 `resolution`, the inverse of the store encoder's
+unit-style spelling (`PT1H`, `P1D`, `PT0.5S`)."""
 function _ptdp_e2e_period(iso::AbstractString)
     m = match(
         r"^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$", iso,
@@ -98,7 +91,7 @@ end
 """
 Resolve a document time-series row's owner in `sys`.
 
-D1 unified the component/supplemental-attribute id space, so `owner_id` alone no longer says
+Components and supplemental attributes share one id space, so `owner_id` alone does not say
 which kind of owner it names — `owner_category` picks the accessor, the same way PSY's own
 export/import code branches on it (`_export_all_time_series` in `export_document.jl`)."""
 function _ptdp_e2e_resolve_owner(sys::System, row)
@@ -142,12 +135,16 @@ owners, exactly as PSY's own exporter enumerates it (`_plan_components` in
 `src/openapi/export_document.jl`).
 """
 function _ptdp_e2e_system_component_counts(sys::System)
+    # Keyed by `nameof`, which strips type parameters: a document names a parametric service
+    # by its bare type name, so `OnlineReserve{ReserveUp, NaturalUnit}` must count as
+    # "OnlineReserve". This is why the IS `*_counts_by_type` helpers cannot stand in here —
+    # they key by `strip_module_name`, which keeps the parameters.
     counts = Dict{String, Int}()
     for component in get_components(Component, sys)
         name = string(nameof(typeof(component)))
         counts[name] = get(counts, name, 0) + 1
     end
-    circuits = length(collect(get_components(TwoWindingTransformer, sys)))
+    circuits = length(get_components(TwoWindingTransformer, sys))
     for transformer in get_components(ThreeWindingTransformer, sys)
         circuits += length(get_circuits(transformer))
     end
@@ -313,12 +310,11 @@ end
         # `false` — only `Outage` and its subtypes opt in, `src/outages.jl`), to exercise an
         # attribute-owned series. The attribute is a bare document row here, never
         # round-tripped through a System of its own, so its series is staged straight into
-        # the sidecar rather than through `add_time_series!` on a component. This is exactly
-        # the producer obligation the target architecture states: a document naming a
-        # supplemental-attribute association must also back it with a sidecar row (mirrored
-        # below by adding the matching `TimeSeriesAssociation` to `doc` itself, read back off
-        # the store rather than hand-built, so it is byte-for-byte what the store would
-        # produce on its own export).
+        # the sidecar rather than through `add_time_series!` on a component. This is the
+        # producer obligation: a document naming a supplemental-attribute association must
+        # also back it with a sidecar row (mirrored below by adding the matching
+        # `TimeSeriesAssociation` to `doc` itself, read back off the store rather than
+        # hand-built, so it is byte-for-byte what the store would produce on export).
         ts_attr_id = PSY.PD.next_id!(doc)
         PSY.PD.add_supplemental_attribute!(
             doc,
@@ -376,8 +372,8 @@ end
             @test length(doc1.time_series_associations) == length(staged_with_attr)
             _ptdp_e2e_verify_time_series(doc1, sys2, staged_with_attr, "cycle 1")
 
-            # (e) the two hand-added attributes, on the component the document named. D1
-            # guarantees each one's id is its own IS id, so both must come back unchanged.
+            # (e) the two hand-added attributes, on the component the document named. Each
+            # one's id is its own IS id, so both must come back unchanged.
             load2 = IS.get_component(sys2, target_id)
             @test get_name(load2) == target_name
             attributes = collect(PSY.get_supplemental_attributes(load2))
@@ -420,9 +416,8 @@ end
                   length(doc1.time_series_associations)
             @test triples2 == triples1
 
-            # Both attributes survive PSY's export side too. D1 makes their ids stable
-            # rather than freshly issued, so this is now a direct equality, not just a
-            # content/owner match.
+            # Both attributes survive PSY's export side too, under their own stable ids —
+            # a direct equality, not just a content/owner match.
             load3 = IS.get_component(sys3, target_id)
             @test get_name(load3) == target_name
             attributes3 = collect(PSY.get_supplemental_attributes(load3))

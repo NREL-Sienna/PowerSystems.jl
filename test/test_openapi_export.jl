@@ -1118,8 +1118,8 @@ end
         @test length(doc.time_series_associations) == 3
         rows = [a.value for a in doc.time_series_associations]
         det_row = only(filter(r -> r isa PSY.PTS.Deterministic, rows))
-        # D3: durations are the store's own unit-style ISO-8601 spelling (`PT2H`), not the
-        # seconds-only style (`PT7200S`) IS's now-deleted `_openapi_duration` used to emit.
+        # Durations carry the store's unit-style ISO-8601 spelling (`PT2H`), not the
+        # seconds-only style (`PT7200S`).
         @test det_row.horizon == "PT2H"
         @test det_row.interval == "PT1H"
         @test det_row.count == 3
@@ -1245,11 +1245,8 @@ _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
 )
 
 @testset "OpenAPI export: time series owned by a supplemental attribute round-trips" begin
-    # Attribute-owned series used to be refused on export (the old B2 guard, deleted): an
-    # attribute's document id was assigned fresh from a private counter, so the sidecar
-    # catalog's owner id could never resolve back on import. D1's unified id stream fixes
-    # that at the root — an attribute's document id is its own IS id, exactly like a
-    # component's — so this is now a real round trip.
+    # An attribute's document id is its own IS id, exactly like a component's, so the
+    # sidecar catalog's owner id resolves back on import.
     mktempdir() do dir
         bus = _export_bus(; number = 1)
         gen = _export_thermal_gen(bus)
@@ -1280,7 +1277,7 @@ _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
         sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
         gen2 = get_component(ThermalStandard, sys2, "gen1")
         outage2 = only(get_supplemental_attributes(GeometricDistributionForcedOutage, gen2))
-        # D1: the attribute's id is stable across the round trip, exactly like a component's.
+        # The attribute's id is stable across the round trip, exactly like a component's.
         @test IS.get_id(outage2) == IS.get_id(outage)
         ts2 = get_time_series(SingleTimeSeries, outage2, "outage_series")
         @test TimeSeries.values(PSY.get_data(ts2)) == [0.1, 0.2, 0.3]

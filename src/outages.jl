@@ -37,7 +37,7 @@ _as_id(id::Integer) = Int(id)
 _as_id(device::Device) = IS.get_id(device)
 
 """
-Get the set of [`Device`](@ref) UUIDs whose post-contingency state should be modeled
+Get the set of [`Device`](@ref) ids whose post-contingency state should be modeled
 when this outage occurs. PowerSystems does not assign meaning to an empty set;
 downstream consumers (e.g., PowerSimulations) decide whether empty means "monitor
 nothing" or "monitor everything".
@@ -46,9 +46,9 @@ get_monitored_components(value::Outage) = value.monitored_components
 
 """
 Replace the monitored-components set for an [`Outage`](@ref) with the contents
-of `items`. Accepts any iterable whose elements are `Base.UUID` or
+of `items`. Accepts any iterable whose elements are `Int` ids or
 [`Device`](@ref) (e.g., a `Vector`, a generator, or the iterator returned by
-[`get_components`](@ref)). Devices are converted to their UUIDs internally.
+[`get_components`](@ref)). Devices are converted to their ids internally.
 Pass an empty iterable (or call [`clear_monitored_components!`](@ref)) to
 clear the set.
 """
@@ -70,8 +70,8 @@ function clear_monitored_components!(value::Outage)
 end
 
 """
-Add a `Base.UUID` or [`Device`](@ref) to the monitored-components set of
-an [`Outage`](@ref). Adding an existing UUID is a no-op.
+Add an `Int` id or [`Device`](@ref) to the monitored-components set of
+an [`Outage`](@ref). Adding an existing id is a no-op.
 """
 function add_monitored_component!(value::Outage, x::Union{Int, Device})
     push!(value.monitored_components, _as_id(x))
@@ -79,9 +79,9 @@ function add_monitored_component!(value::Outage, x::Union{Int, Device})
 end
 
 """
-Add every element of `items` (each a `Base.UUID` or [`Device`](@ref)) to
+Add every element of `items` (each an `Int` id or [`Device`](@ref)) to
 the monitored-components set of an [`Outage`](@ref). Accepts any iterable, including
-the iterator returned by [`get_components`](@ref). Adding an existing UUID is a no-op.
+the iterator returned by [`get_components`](@ref). Adding an existing id is a no-op.
 """
 function add_monitored_components!(value::Outage, items)
     for x in items
@@ -91,7 +91,7 @@ function add_monitored_components!(value::Outage, items)
 end
 
 """
-Remove a `Base.UUID` or [`Device`](@ref) from the monitored-components set
+Remove an `Int` id or [`Device`](@ref) from the monitored-components set
 of an [`Outage`](@ref). No-op when the entry is not present.
 """
 function remove_monitored_component!(value::Outage, x::Union{Int, Device})
@@ -100,7 +100,7 @@ function remove_monitored_component!(value::Outage, x::Union{Int, Device})
 end
 
 """
-Remove every element of `items` (each a `Base.UUID` or [`Device`](@ref)) from
+Remove every element of `items` (each an `Int` id or [`Device`](@ref)) from
 the monitored-components set of an [`Outage`](@ref). Accepts any iterable.
 """
 function remove_monitored_components!(value::Outage, items)
@@ -136,7 +136,7 @@ Construct a [`GeometricDistributionForcedOutage`](@ref).
 # Arguments
 - `mean_time_to_recovery::Float64`: (default: `0.0`) Time elapsed to recovery after a failure, in minutes.
 - `outage_transition_probability::Float64`: (default: `0.0`) Characterizes the probability of failure (1 - p) in the geometric distribution.
-- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref). Devices are converted to their UUIDs internally; duplicates are collapsed.
+- `monitored_components`: (default: `Int[]`) Any iterable of `Int` ids or [`Device`](@ref). Devices are converted to their ids internally; duplicates are collapsed.
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function GeometricDistributionForcedOutage(;
@@ -181,7 +181,7 @@ Construct a [`PlannedOutage`](@ref).
 
 # Arguments
 - `outage_schedule::String`: String name of the time series used for the scheduled outages
-- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref). Devices are converted to their UUIDs internally; duplicates are collapsed.
+- `monitored_components`: (default: `Int[]`) Any iterable of `Int` ids or [`Device`](@ref). Devices are converted to their ids internally; duplicates are collapsed.
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function PlannedOutage(;
@@ -221,7 +221,7 @@ Construct a [`FixedForcedOutage`](@ref).
 
 # Arguments
 - `outage_status::Float64`: The forced outage status in the model. 1 represents outaged and 0 represents available.
-- `monitored_components`: (default: `Base.UUID[]`) Any iterable of `Base.UUID` or [`Device`](@ref). Devices are converted to their UUIDs internally; duplicates are collapsed.
+- `monitored_components`: (default: `Int[]`) Any iterable of `Int` ids or [`Device`](@ref). Devices are converted to their ids internally; duplicates are collapsed.
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function FixedForcedOutage(;

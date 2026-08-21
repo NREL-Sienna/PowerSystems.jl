@@ -2,14 +2,7 @@ import CSV
 import DataFrames
 import Dates
 import TimeSeries
-
-# NOTE: this file used to cover InfrastructureSystems' CSV / file-metadata ingestion
-# (`read_time_series_file_metadata`, `TimeSeriesFileMetadata`,
-# `add_time_series!(sys, metadata_file)`, and the `SingleTimeSeries(name, file, component,
-# resolution)` constructor). That machinery was removed along with the time series parsers;
-# reading CSVs into a system is now the job of the parser packages. What remains here is
-# the coverage that still applies: constructing a `SingleTimeSeries` from a `TimeArray` or
-# `DataFrame`, including `normalization_factor`.
+import PowerTableDataParser
 
 const HYDRO_CSV = joinpath(
     RTS_GMLC_DIR,
@@ -39,8 +32,8 @@ function verify_time_series(sys::System, num_initial_times, num_time_series, len
 end
 
 """
-Read one component's column out of an RTS forecast CSV into a `TimeArray`. The index is
-given as `Year, Month, Day, Period` columns.
+Read one component's column out of an RTS forecast CSV into a `TimeArray`, through the same
+pointer-CSV reader the parser package uses on these files.
 """
 function read_component_time_array(
     filename::AbstractString,
@@ -48,10 +41,8 @@ function read_component_time_array(
     resolution::Dates.Period,
 )
     df = CSV.read(filename, DataFrames.DataFrame)
-    values = Float64.(df[!, Symbol(component_name)])
-    initial_timestamp =
-        Dates.DateTime(df[1, :Year], df[1, :Month], df[1, :Day]) +
-        (df[1, :Period] - 1) * resolution
+    values, initial_timestamp =
+        PowerTableDataParser.read_pointer_csv_values(df, component_name, resolution)
     timestamps = range(initial_timestamp; step = resolution, length = length(values))
     return TimeSeries.TimeArray(collect(timestamps), values)
 end

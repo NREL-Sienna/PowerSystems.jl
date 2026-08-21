@@ -1021,7 +1021,7 @@ const PSY = PowerSystems
             @test has_supplemental_attributes(gen1_loaded)
 
             attrs_loaded = get_supplemental_attributes(ThermalPowerPlant, gen1_loaded)
-            plant_loaded = collect(attrs_loaded)[1]
+            plant_loaded = only(attrs_loaded)
             @test get_name(plant_loaded) == "Test Coal Plant"
 
             # Verify shaft mappings are preserved
@@ -1053,7 +1053,7 @@ const PSY = PowerSystems
                 @test has_supplemental_attributes(ren1_loaded)
 
                 ren_attrs = get_supplemental_attributes(RenewablePowerPlant, ren1_loaded)
-                ren_plant_loaded = collect(ren_attrs)[1]
+                ren_plant_loaded = only(ren_attrs)
                 @test get_name(ren_plant_loaded) == "Test Wind Farm"
 
                 pcc_map = get_pcc_map(ren_plant_loaded)
@@ -1078,7 +1078,7 @@ const PSY = PowerSystems
             )
             @test has_supplemental_attributes(gen1_rt)
             attrs_rt = get_supplemental_attributes(ThermalPowerPlant, gen1_rt)
-            @test get_name(collect(attrs_rt)[1]) == "Test Coal Plant"
+            @test get_name(only(attrs_rt)) == "Test Coal Plant"
 
         finally
             # Clean up temporary files

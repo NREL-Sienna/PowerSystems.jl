@@ -90,7 +90,7 @@ is_phase_shifting(t::Union{TwoWindingTransformer, ThreeWindingTransformer}) =
     any(is_phase_shifting, get_circuits(t))
 
 # Without these overrides the generic `InfrastructureSystemsType` path would serialize
-# `arc::Arc` inline instead of as a UUID reference, and read-back would error: `Arc`'s
+# `arc::Arc` inline instead of as an id reference, and read-back would error: `Arc`'s
 # `Bus`-typed fields are abstract, so `fieldnames` on them fails. `TransformerCircuit` is in
 # `_CONTAINS_SHOULD_ENCODE` (`serialization.jl`) for the same reason. `base_value` is runtime
 # state repopulated by `add_component!`, so it must never be serialized.
@@ -98,7 +98,7 @@ function IS.serialize(w::TransformerCircuit)
     data = Dict{String, Any}()
     for name in fieldnames(TransformerCircuit)
         name === :base_value && continue
-        data[string(name)] = serialize_uuid_handling(getfield(w, name))
+        data[string(name)] = serialize_id_handling(getfield(w, name))
     end
     IS.add_serialization_metadata!(data, TransformerCircuit)
     return data
@@ -113,7 +113,7 @@ function IS.deserialize(
     for (fname, ftype) in
         zip(fieldnames(TransformerCircuit), fieldtypes(TransformerCircuit))
         fname === :base_value && continue
-        vals[fname] = deserialize_uuid_handling(ftype, data[string(fname)], component_cache)
+        vals[fname] = deserialize_id_handling(ftype, data[string(fname)], component_cache)
     end
     return TransformerCircuit(; vals..., base_value = nothing)
 end
