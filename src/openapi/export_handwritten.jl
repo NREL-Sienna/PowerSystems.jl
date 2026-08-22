@@ -950,20 +950,19 @@ function _vsc_pu_to_siemens(vsc::TwoTerminalVSCLine, base_power)
     return g / (base_voltage^2 / base_power)
 end
 
-"""Inverse of import's `_vsc_dc_base_voltage`: a `0.0` rating is only usable while nothing
-actually needs the base."""
+"""Inverse of import's `_vsc_dc_base_voltage`, but unlike it, never errors: a `0.0` rating
+falls back to `one(rated)` regardless of `value`, so export always succeeds."""
 function _vsc_export_dc_base_voltage(vsc::TwoTerminalVSCLine, value, field::AbstractString)
     rated = get_rated_dc_voltage(vsc)
     if !iszero(rated)
         return rated
     end
-    if iszero(value)
-        return one(rated)
-    end
-    return error(
-        "TwoTerminalVSCLine \"$(get_name(vsc))\": $field is $value but rated_dc_voltage is " *
-        "0.0, so there is no DC voltage base to express it against — set rated_dc_voltage",
-    )
+    # FIXME: rated_dc_voltage == 0.0 here is indistinguishable from "unspecified" because (a)
+    # the parsers may not be populating it and (b) it is a plain Float64, not nullable, so
+    # there is no explicit-null way to say "no base" in the schema. Until one of those is
+    # fixed, fall back to one(rated) — same as import's fallback — so g round-trips exactly;
+    # the emitted siemens value itself is not physically meaningful while the base is unset.
+    return one(rated)
 end
 
 _vsc_dc_setpoint_to_openapi(

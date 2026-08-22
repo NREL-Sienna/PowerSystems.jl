@@ -1298,11 +1298,37 @@ end
     refs[4] = ac_voltage
     @test_throws ErrorException PSY.to_openapi(ac_voltage, refs, NU)
 
-    # A non-zero conductance with no DC voltage base has nothing to be expressed against.
-    no_base =
+end
+
+@testset "OpenAPI export: TwoTerminalVSCLine tolerates a missing DC voltage base" begin
+    # A non-zero `g` with `rated_dc_voltage == 0.0` has no DC voltage base to express it
+    # against. Unlike the AC voltage case above, export does not error here: it falls back
+    # to a base of 1 (mirroring import's own `_vsc_dc_base_voltage` fallback), so a document
+    # round trip still recovers `g` exactly even though the exported siemens value itself is
+    # not physically meaningful.
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    vsc =
         _export_vsc(arc; rated_dc_voltage = 0.0, dc_control_to = VSCDCControlModes.DC_POWER)
-    refs[5] = no_base
-    @test_throws ErrorException PSY.to_openapi(no_base, refs, NU)
+    sys = System(100.0)
+    for component in (bus1, bus2, arc, vsc)
+        add_component!(sys, component)
+    end
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = arc
+    refs[4] = vsc
+    @test PSY.to_openapi(vsc, refs, NU).g isa Float64
+
+    for unit_system in (:natural_units, :device_base)
+        dir = mktempdir()
+        PSY.to_file(sys, dir; unit_system = unit_system, force = true)
+        restored = get_component(TwoTerminalVSCLine, PSY.from_file(System, dir), "vsc1")
+        @test get_g(restored) == get_g(vsc)
+    end
 end
 
 _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
