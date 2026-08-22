@@ -592,8 +592,10 @@ function _process_set_cost(::Type{T}, _, _, _, cost::T) where {T}
     return cost
 end
 
-# `TimeSeriesData{T}` carries its value element type, so the payload check is dispatch
-# rather than a `<:` branch; the fallback below reports the mismatch.
+function _reject_ts_eltype(fname::Symbol, expected::Type, ts::IS.TimeSeriesData)
+    throw(TypeError(fname, "time series values", expected, eltype(ts)))
+end
+
 function _process_set_cost(
     ::Type{_},
     ::Type{T},
@@ -612,7 +614,7 @@ function _process_set_cost(
     ::Component,
     cost::IS.TimeSeriesData,
 ) where {_, T}
-    throw(TypeError(:_process_set_cost, "time series values", T, eltype(cost)))
+    return _reject_ts_eltype(:_process_set_cost, T, cost)
 end
 
 # ── FuelCurve Setter (unchanged) ───────────────────────────────────────────
@@ -688,12 +690,5 @@ function set_service_bid!(
     time_series_data::IS.TimeSeriesData,
     ::IS.AbstractUnitSystem,
 )
-    throw(
-        TypeError(
-            :set_service_bid!,
-            "time series values",
-            PiecewiseStepData,
-            eltype(time_series_data),
-        ),
-    )
+    return _reject_ts_eltype(:set_service_bid!, PiecewiseStepData, time_series_data)
 end

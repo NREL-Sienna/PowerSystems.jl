@@ -23,9 +23,9 @@
         gen2 = get_component(ThermalStandard, sys2, "g1")
         @test get_name(gen2) == "g1"
 
-        attrs = PSY.get_supplemental_attributes(gen2)
-        @test length(attrs) == 1
-        @test first(attrs) isa EmissionsData
+        @test length(PSY.get_supplemental_attributes(gen2)) == 1
+        emissions = only(get_supplemental_attributes(EmissionsData, gen2))
+        @test get_name(emissions) == "g1_CO2"
 
         ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
         @test length(ts) == 6
@@ -34,10 +34,8 @@
 end
 
 @testset "from_file: time_series_read_only bundle with a supplemental attribute" begin
-    # Regression guard for the read-only replay fix: before it, this exact call crashed —
-    # `_system_with_sidecar` cannot clear the adopted store's stale association rows when it
-    # is opened read-only, so the replay's `add_supplemental_attribute!` saw them still there
-    # and threw `ArgumentError` on the very first association.
+    # `_system_with_sidecar` cannot clear the adopted store's association rows when it is
+    # opened read-only, so the import replay has to tolerate rows that are already there.
     sys = _file_io_fixture()
     mktempdir() do dir
         bundle = joinpath(dir, "case")
@@ -153,11 +151,6 @@ end
 end
 
 @testset "export needs no ledger: a hand-built System serializes" begin
-    # The point of this testset. Before the ledger was deleted, `unit_system` defaulted to
-    # `:original`, which read an id/unit-system map out of `System.ext` that only
-    # `from_openapi` ever wrote. A System assembled with `add_component!` therefore had no
-    # ledger and could not be exported at its own default — the very case a user hits first.
-    #
     # The unit-system assertions use the time-series-free fixture so that `to_openapi` needs
     # no sidecar path; the bundle round trip below covers the time-series case.
     sys = _file_io_fixture(; with_time_series = false)
@@ -256,7 +249,10 @@ end
         # array was laid out; a scalar-valued series has an empty per-step shape.
         @test row.element_type == "f64"
         @test isempty(row.element_shape)
-        @test row.address == basename(joinpath(bundle, "time_series.h5"))
+        # `uri`/`data_hash` are the store's own content hash, never a caller-supplied
+        # locator.
+        @test occursin(r"^[0-9a-f]{64}$", row.uri)
+        @test row.data_hash == row.uri
 
         # The timestamp vector lives in the store, not the document, so it must come back
         # from the adopted sidecar exactly.

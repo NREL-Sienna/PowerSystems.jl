@@ -49,16 +49,20 @@ const _PTDP_E2E_TS_TYPES = Dict(
     "Scenarios" => IS.Scenarios,
 )
 
-"""Period for a document row's ISO-8601 `resolution`, the inverse of the writer's encoder."""
+"""Period for a document row's ISO-8601 `resolution`, the inverse of the store encoder's
+unit-style spelling (`PT1H`, `P1D`, `PT0.5S`)."""
 function _ptdp_e2e_period(iso::AbstractString)
-    m = match(r"^PT(\d+)(?:\.(\d+))?S$", iso)
-    if isnothing(m)
+    m = match(
+        r"^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$", iso,
+    )
+    (isnothing(m) || iso == "P") &&
         error("unhandled ISO-8601 duration in a document row: $iso")
-    end
-    milliseconds = 1000 * parse(Int, m.captures[1])
-    if !isnothing(m.captures[2])
-        milliseconds += parse(Int, rpad(m.captures[2], 3, '0'))
-    end
+    days, hours, minutes, seconds = m.captures
+    milliseconds = 0
+    isnothing(days) || (milliseconds += 86_400_000 * parse(Int, days))
+    isnothing(hours) || (milliseconds += 3_600_000 * parse(Int, hours))
+    isnothing(minutes) || (milliseconds += 60_000 * parse(Int, minutes))
+    isnothing(seconds) || (milliseconds += round(Int, 1000 * parse(Float64, seconds)))
     return Dates.Millisecond(milliseconds)
 end
 
@@ -82,6 +86,22 @@ function _ptdp_e2e_staged_index(rows)
         index[key] = row.series
     end
     return index
+end
+
+"""
+Resolve a document time-series row's owner in `sys`.
+
+Components and supplemental attributes share one id space, so `owner_id` alone does not say
+which kind of owner it names — `owner_category` picks the accessor, the same way PSY's own
+export/import code branches on it (`_export_all_time_series` in `export_document.jl`)."""
+function _ptdp_e2e_resolve_owner(sys::System, row)
+    owner_id = Int(row.owner_id)
+    row.owner_category == "Component" && return IS.get_component(sys, owner_id)
+    row.owner_category == "SupplementalAttribute" &&
+        return PSY.get_supplemental_attribute(sys, owner_id)
+    return error(
+        "unmapped owner_category on a document time series row: $(row.owner_category)",
+    )
 end
 
 """A document's time series rows under the same key, unwrapped from the `oneOf`."""
@@ -115,12 +135,16 @@ owners, exactly as PSY's own exporter enumerates it (`_plan_components` in
 `src/openapi/export_document.jl`).
 """
 function _ptdp_e2e_system_component_counts(sys::System)
+    # Keyed by `nameof`, which strips type parameters: a document names a parametric service
+    # by its bare type name, so `OnlineReserve{ReserveUp, NaturalUnit}` must count as
+    # "OnlineReserve". This is why the IS `*_counts_by_type` helpers cannot stand in here —
+    # they key by `strip_module_name`, which keeps the parameters.
     counts = Dict{String, Int}()
     for component in get_components(Component, sys)
         name = string(nameof(typeof(component)))
         counts[name] = get(counts, name, 0) + 1
     end
-    circuits = length(collect(get_components(TwoWindingTransformer, sys)))
+    circuits = length(get_components(TwoWindingTransformer, sys))
     for transformer in get_components(ThreeWindingTransformer, sys)
         circuits += length(get_circuits(transformer))
     end
@@ -168,11 +192,11 @@ function _ptdp_e2e_verify_time_series(doc, sys::System, staged, label::AbstractS
         series = staged[key]
         push!(triples, (owner_id, name, row.time_series_type))
 
-        component = IS.get_component(sys, owner_id)
-        @test string(nameof(typeof(component))) == row.owner_type
+        owner = _ptdp_e2e_resolve_owner(sys, row)
+        @test string(nameof(typeof(owner))) == row.owner_type
         loaded = IS.get_time_series(
             _PTDP_E2E_TS_TYPES[row.time_series_type],
-            component,
+            owner,
             name;
             resolution = resolution,
         )
@@ -274,16 +298,64 @@ end
             "type" => "Point",
             "coordinates" => [-97.5, 35.25],
         )
+        attr_id = PSY.PD.next_id!(doc)
         PSY.PD.add_supplemental_attribute!(
             doc,
-            PSY.PC.GeographicInfo(; id = PSY.PD.next_id!(doc), geo_json = geo_json),
+            PSY.PC.GeographicInfo(; id = attr_id, geo_json = geo_json),
             target_id,
         )
+
+        # A second hand-added attribute, of a type that actually supports time series
+        # (`supports_time_series(::GeographicInfo)` is the `SupplementalAttribute` default,
+        # `false` — only `Outage` and its subtypes opt in, `src/outages.jl`), to exercise an
+        # attribute-owned series. The attribute is a bare document row here, never
+        # round-tripped through a System of its own, so its series is staged straight into
+        # the sidecar rather than through `add_time_series!` on a component. This is the
+        # producer obligation: a document naming a supplemental-attribute association must
+        # also back it with a sidecar row (mirrored below by adding the matching
+        # `TimeSeriesAssociation` to `doc` itself, read back off the store rather than
+        # hand-built, so it is byte-for-byte what the store would produce on export).
+        ts_attr_id = PSY.PD.next_id!(doc)
+        PSY.PD.add_supplemental_attribute!(
+            doc,
+            PSY.PO.FixedForcedOutage(;
+                id = ts_attr_id, outage_status = 1.0, monitored_components = Int64[],
+            ),
+            target_id,
+        )
+        attr_series_name = "attr_owned_series"
+        attr_series_values = [10.0, 20.0, 30.0]
+        attr_ts = IS.SingleTimeSeries(;
+            name = attr_series_name,
+            data = TimeSeries.TimeArray(
+                [Dates.DateTime(2020, 1, 1, h) for h in 0:2], attr_series_values,
+            ),
+        )
+        attr_owner = FixedForcedOutage(; outage_status = 1.0)
+        IS.set_id!(attr_owner, ts_attr_id)
+        attr_store = IS.open_deserialized_infrastore_store(sidecar, nothing, false)
+        attr_mgr = IS.TimeSeriesManager(; data_store = attr_store)
+        IS.add_time_series!(attr_mgr, attr_owner, attr_ts)
+        for row in IS.openapi_time_series_association_rows(
+            attr_store; owner_id = ts_attr_id,
+        )
+            PSY.PD.add_time_series_association!(doc, row)
+        end
+        IS.serialize(attr_store, sidecar)
+        staged_with_attr = merge(
+            staged,
+            Dict(
+                (ts_attr_id, attr_series_name, Dates.Millisecond(Dates.Hour(1))) =>
+                    attr_ts,
+            ),
+        )
+
         PSY.PD.validate_document(doc)
         PSY.PD.write_document(doc, document_path; force = true)
 
         doc1 = PSY.PD.read_document(document_path)
-        @test length(doc1.supplemental_attribute_associations) == attribute_rows + 1
+        # Two hand-added rows now: the GeographicInfo and the time-series-owning outage.
+        @test length(doc1.supplemental_attribute_associations) == attribute_rows + 2
 
         # (4) LOAD, on the default path: no time_series_read_only.
         sys2 = from_file(System, dir)
@@ -297,16 +369,24 @@ end
                   _ptdp_e2e_doc_attribute_counts(doc1)
 
             # (b), (c), (d).
-            @test length(doc1.time_series_associations) == length(staged)
-            _ptdp_e2e_verify_time_series(doc1, sys2, staged, "cycle 1")
+            @test length(doc1.time_series_associations) == length(staged_with_attr)
+            _ptdp_e2e_verify_time_series(doc1, sys2, staged_with_attr, "cycle 1")
 
-            # (e) the hand-added attribute, on the component the document named.
+            # (e) the two hand-added attributes, on the component the document named. Each
+            # one's id is its own IS id, so both must come back unchanged.
             load2 = IS.get_component(sys2, target_id)
             @test get_name(load2) == target_name
             attributes = collect(PSY.get_supplemental_attributes(load2))
-            @test length(attributes) == 1
-            @test only(attributes) isa IS.GeographicInfo
-            @test IS.get_geo_json(only(attributes)) == geo_json
+            @test length(attributes) == 2
+            geo2 = only(get_supplemental_attributes(GeographicInfo, load2))
+            @test IS.get_geo_json(geo2) == geo_json
+            @test IS.get_id(geo2) == attr_id
+            outage2 = only(get_supplemental_attributes(FixedForcedOutage, load2))
+            @test IS.get_id(outage2) == ts_attr_id
+
+            # (f) the series owned by that same attribute, value-for-value.
+            attr_ts2 = IS.get_time_series(SingleTimeSeries, outage2, attr_series_name)
+            @test TimeSeries.values(IS.get_time_array(attr_ts2)) == attr_series_values
         end
 
         @testset "cycle 2: write back and reload with PSY's own writer" begin
@@ -331,19 +411,25 @@ end
                 (Int(a.value.owner_id), a.value.name, a.value.time_series_type)
                 for a in doc1.time_series_associations
             )
-            triples2 = _ptdp_e2e_verify_time_series(doc2, sys3, staged, "cycle 2")
+            triples2 = _ptdp_e2e_verify_time_series(doc2, sys3, staged_with_attr, "cycle 2")
             @test length(doc2.time_series_associations) ==
                   length(doc1.time_series_associations)
             @test triples2 == triples1
 
-            # The attribute survives PSY's export side too. Its id is freshly issued by the
-            # exporting document's counter, so survival is asserted by content and owner.
+            # Both attributes survive PSY's export side too, under their own stable ids —
+            # a direct equality, not just a content/owner match.
             load3 = IS.get_component(sys3, target_id)
             @test get_name(load3) == target_name
             attributes3 = collect(PSY.get_supplemental_attributes(load3))
-            @test length(attributes3) == 1
-            @test only(attributes3) isa IS.GeographicInfo
-            @test IS.get_geo_json(only(attributes3)) == geo_json
+            @test length(attributes3) == 2
+            geo3 = only(get_supplemental_attributes(GeographicInfo, load3))
+            @test IS.get_geo_json(geo3) == geo_json
+            @test IS.get_id(geo3) == attr_id
+            outage3 = only(get_supplemental_attributes(FixedForcedOutage, load3))
+            @test IS.get_id(outage3) == ts_attr_id
+
+            attr_ts3 = IS.get_time_series(SingleTimeSeries, outage3, attr_series_name)
+            @test TimeSeries.values(IS.get_time_array(attr_ts3)) == attr_series_values
         end
     end
 end

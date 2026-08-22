@@ -194,49 +194,35 @@ end
 function validate_serialization(
     sys::System;
     time_series_read_only = false,
-    runchecks = nothing,
+    runchecks = PSY.get_runchecks(sys),
     assign_new_ids = false,
 )
-    if runchecks === nothing
-        runchecks = PSY.get_runchecks(sys)
+    # Every path below is absolute, so nothing here depends on the working directory.
+    path = joinpath(mktempdir(), "test_system_serialization.json")
+    @info "Serializing to $path"
+    get_ext(sys)["data"] = 5
+    bus = first(get_components(PSY.ACBus, sys))
+    ext_test_bus_name = PSY.get_name(bus)
+    PSY.get_ext(bus)["test_field"] = 1
+    to_json(sys, path; force = true)
+
+    data = open(path, "r") do io
+        JSON.parse(io; dicttype = Dict{String, Any})
     end
-    test_dir = mktempdir()
-    orig_dir = pwd()
-    cd(test_dir)
+    @test data["data_format_version"] == PSY.DATA_FORMAT_VERSION
 
-    try
-        path = joinpath(test_dir, "test_system_serialization.json")
-        @info "Serializing to $path"
-        sys_ext = get_ext(sys)
-        sys_ext["data"] = 5
-        ext_test_bus_name = ""
-        bus = collect(get_components(PSY.ACBus, sys))[1]
-        ext_test_bus_name = PSY.get_name(bus)
-        ext = PSY.get_ext(bus)
-        ext["test_field"] = 1
-        to_json(sys, path; force = true)
-
-        data = open(path, "r") do io
-            JSON.parse(io; dicttype = Dict{String, Any})
-        end
-        @test data["data_format_version"] == PSY.DATA_FORMAT_VERSION
-
-        sys2 = System(
-            path;
-            time_series_read_only = time_series_read_only,
-            runchecks = runchecks,
-            assign_new_ids = assign_new_ids,
-        )
-        isempty(get_bus_numbers(sys2)) && return false
-        sys_ext2 = get_ext(sys2)
-        sys_ext2["data"] != 5 && return false
-        bus = PSY.get_component(PSY.ACBus, sys2, ext_test_bus_name)
-        ext = PSY.get_ext(bus)
-        ext["test_field"] != 1 && return false
-        return sys2, PSY.compare_values(sys, sys2; compare_uuids = !assign_new_ids)
-    finally
-        cd(orig_dir)
-    end
+    sys2 = System(
+        path;
+        time_series_read_only = time_series_read_only,
+        runchecks = runchecks,
+        assign_new_ids = assign_new_ids,
+    )
+    @test !isempty(get_bus_numbers(sys2))
+    @test get_ext(sys2)["data"] == 5
+    bus2 = PSY.get_component(PSY.ACBus, sys2, ext_test_bus_name)
+    isnothing(bus2) && error("the deserialized system lost bus $ext_test_bus_name")
+    @test PSY.get_ext(bus2)["test_field"] == 1
+    return sys2, PSY.compare_values(sys, sys2; compare_ids = !assign_new_ids)
 end
 
 """

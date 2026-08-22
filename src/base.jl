@@ -21,33 +21,28 @@ const DATA_FORMAT_VERSION = "5.0.0"
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
     description::Union{Nothing, String}
-    # The System retains a UUID for identity (components/attributes are identified by
-    # integer id instead). Serialized with the system and reassigned when a system is
-    # deserialized with `assign_new_ids = true`.
     uuid::Base.UUID
 end
 
 SystemMetadata(name, description) = SystemMetadata(name, description, IS.make_uuid())
 
-# Treat the System UUID like an identity: only compare it when compare_uuids is requested,
-# so that a system deserialized with assign_new_ids (which reassigns the UUID) still
-# compares equal to the original.
+# The System UUID is an identity, so a system deserialized with assign_new_ids still
+# compares equal to the original unless compare_ids is requested.
 function IS.compare_values(
     match_fn::Union{Function, Nothing},
     x::SystemMetadata,
     y::SystemMetadata;
-    compare_uuids = false,
+    compare_ids = false,
     exclude = Set{Symbol}(),
 )
     match = true
     for name in fieldnames(SystemMetadata)
         name in exclude && continue
-        name == :uuid && !compare_uuids && continue
-        if getfield(x, name) != getfield(y, name)
-            @error "SystemMetadata field=$name does not match" getfield(x, name) getfield(
-                y,
-                name,
-            )
+        name == :uuid && !compare_ids && continue
+        val1 = getfield(x, name)
+        val2 = getfield(y, name)
+        if !_fetch_match_fn(match_fn)(val1, val2)
+            @error "SystemMetadata field=$name does not match" val1 val2
             match = false
         end
     end
@@ -320,7 +315,7 @@ end
 function _post_deserialize_handling(sys::System; runchecks = true, assign_new_ids = false)
     runchecks && check(sys)
     if assign_new_ids
-        sys.metadata.uuid = IS.make_uuid()
+        assign_new_uuid!(sys)
         for component in get_components(Component, sys)
             IS.assign_new_id!(sys, component)
         end
@@ -348,11 +343,8 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
         error("subsystem = $subsystem is not stored")
     end
 
-    # It would be faster to create an empty system and then populate it with
-    # deep copies of each component in the subsystem. It would also result in a "clean" HDF5
-    # file: the result here is a copy of the original artifact with the filtered-out entries
-    # removed, so it keeps their space, and serializing/deserializing does not repack it
-    # (the artifact is copied byte-for-byte). That is not implemented because
+    # It would be faster to create an empty system and then populate it with deep copies of
+    # each component in the subsystem. That is not implemented because
     # 1. The performance loss should not be too large.
     # 2. We haven't yet implemented deepcopy(Component).
     # 3. There is extra code complexity in adding copied components in the correct order
@@ -360,10 +352,8 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
     new_sys = deepcopy(sys)
     filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
 
-    # The System's own identity is its metadata UUID; components are identified by
-    # integer ids. Both must be regenerated so the derived system does not alias the
-    # one it was filtered from.
-    new_sys.metadata.uuid = IS.make_uuid()
+    # Regenerate both identities so the derived system does not alias the filtered one.
+    assign_new_uuid!(new_sys)
     for component in get_components(Component, new_sys)
         IS.assign_new_id!(new_sys, component)
     end
@@ -550,6 +540,14 @@ Get the UUID of the system. Unlike components and supplemental attributes (which
 identified by an integer id), the `System` retains a UUID for identity.
 """
 get_system_uuid(sys::System) = sys.metadata.uuid
+
+"""
+Assign a new UUID to the system's identity.
+"""
+function assign_new_uuid!(sys::System)
+    sys.metadata.uuid = IS.make_uuid()
+    return
+end
 
 """
 Set the description of the system.
@@ -1266,12 +1264,12 @@ const AGCContributingReservesMapping =
 Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, service::T) where {T <: Service}
-    uuid = IS.get_id(service)
+    id = IS.get_id(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Device, sys)
         if supports_services(device)
             for _service in get_services(device)
-                if IS.get_id(_service) == uuid
+                if IS.get_id(_service) == id
                     push!(devices.contributing_devices, device)
                     break
                 end
@@ -1285,12 +1283,12 @@ end
 Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, service::TransmissionInterface)
-    uuid = IS.get_id(service)
+    id = IS.get_id(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Branch, sys)
         if supports_services(device)
             for _service in get_services(device)
-                if IS.get_id(_service) == uuid
+                if IS.get_id(_service) == id
                     push!(devices.contributing_devices, device)
                     break
                 end
@@ -1362,13 +1360,13 @@ const TurbineConnectedDevicesMapping =
 Returns a TurbineConnectedDevices object.
 """
 function _get_connected_head_devices(sys::System, turbine::T) where {T <: HydroUnit}
-    uuid = IS.get_id(turbine)
+    id = IS.get_id(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
         # Only add reservoirs that have the turbine in their downstream_turbines field
         # That is, those reservoirs are a head reservoir to that turbine
         for _turbine in get_downstream_turbines(device)
-            if IS.get_id(_turbine) == uuid
+            if IS.get_id(_turbine) == id
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1381,13 +1379,13 @@ end
 Returns a TurbineConnectedDevices object.
 """
 function _get_connected_tail_devices(sys::System, turbine::T) where {T <: HydroUnit}
-    uuid = IS.get_id(turbine)
+    id = IS.get_id(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
         # Only add reservoirs that have the turbine in their upstream_turbines field
         # That is, those reservoirs are a tail reservoir to that turbine
         for _turbine in get_upstream_turbines(device)
-            if IS.get_id(_turbine) == uuid
+            if IS.get_id(_turbine) == id
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1772,16 +1770,7 @@ Reclaim the space that removed time series left behind, returning an
 `InfraStore.CompactionReport` (`slots_reclaimed`, `feature_sets_reclaimed`,
 `timestamp_sets_reclaimed`, `bytes_reclaimed`).
 
-HDF5 cannot hand freed space back in place, so removing time series — including
-[`clear_time_series!`](@ref) — leaves the `.h5` file the same size. For a system whose
-time series are on disk, this rewrites that file from what the catalog still references
-and replaces it, which is what actually shrinks it; `bytes_reclaimed` reports by how
-much. A system holding its time series in memory has no file to rewrite, and reports `0`
-bytes.
-
-The rewrite assumes this process is the file's only user: another process with the same
-file open keeps reading the pre-compaction file on Unix, and blocks the replacement on
-Windows.
+Removing time series does not shrink on-disk storage; this is what reclaims it.
 """
 function compact_time_series!(sys::System)
     return IS.compact_time_series!(sys.data)
@@ -1819,16 +1808,8 @@ Remove all the time series data for a time series type.
 
 See also: [`clear_time_series!`](@ref)
 
-If you are storing time series data on disk, `remove_time_series!` does not free up file
-space (HDF5 behavior): the arrays are dropped, but the `.h5` file does not shrink. Small
-arrays share packed datasets and their slots are reused by later additions; the space held
-by a large standalone array is not returned. `clear_time_series!` behaves the same way —
-it removes everything but leaves the file the same size — and serializing and
-deserializing the system does not repack it either, since the artifact is copied
-byte-for-byte.
-
-To actually reclaim the space, call [`compact_time_series!`](@ref), which rewrites the
-file from what is still referenced.
+Removal drops the arrays but does not shrink on-disk storage; call
+[`compact_time_series!`](@ref) to reclaim that space.
 """
 function remove_time_series!(
     sys::System,
@@ -2353,9 +2334,15 @@ function from_dict(
     metadata = get(raw, "metadata", Dict())
     name = get(metadata, "name", nothing)
     description = get(metadata, "description", nothing)
-    uuid_data = get(metadata, "uuid", nothing)
-    # Older systems serialized before the System carried a UUID get a fresh one.
-    uuid = isnothing(uuid_data) ? IS.make_uuid() : IS.deserialize(Base.UUID, uuid_data)
+    if !haskey(metadata, "uuid")
+        throw(
+            DataFormatError(
+                "The serialized System metadata has no \"uuid\" field. Regenerate the " *
+                "serialized system with this version of PowerSystems.",
+            ),
+        )
+    end
+    uuid = IS.deserialize(Base.UUID, metadata["uuid"])
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
     sys = System(
         data,
@@ -2406,8 +2393,8 @@ function deserialize_components!(sys::System, raw)
         push!(components, component)
     end
 
-    # Maintain a lookup of UUID to component because some component types encode
-    # composed types as UUIDs instead of actual types.
+    # Maintain a lookup of id to component because some component types encode composed
+    # types as ids instead of actual types.
     component_cache = Dict{Int, Component}()
 
     # Add each type to this as we parse.
@@ -2497,31 +2484,23 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     components::Vector{Dict},
     ::Type{HydroReservoir},
 )
-
-    # Build a mapping from UUID to component for quick lookup
-    uuid_to_component = Dict{String, Dict}()
-    for component in components
-        uuid_str = string(component["internal"]["id"])
-        uuid_to_component[uuid_str] = component
-    end
-
     # Build parent mapping for union-find (each reservoir points to its upstream reservoir)
-    parent = Dict{String, String}()
+    parent = Dict{Int, Int}()
     for component in components
-        uuid_str = string(component["internal"]["id"])
-        upstream_uuids = component["upstream_reservoirs"]
+        id = Int(component["internal"]["id"])
+        upstream_ids = component["upstream_reservoirs"]
 
-        if isempty(upstream_uuids)
-            parent[uuid_str] = uuid_str  # Root of its own chain
+        if isempty(upstream_ids)
+            parent[id] = id  # Root of its own chain
         else
             # Assume single upstream reservoir for simplicity
-            parent[uuid_str] = string(upstream_uuids[1])
+            parent[id] = Int(upstream_ids[1])
         end
     end
 
     # Find root of each chain iteratively
-    function find_root(uuid_str)
-        current = uuid_str
+    function find_root(id::Int)
+        current = id
         while parent[current] != current
             current = parent[current]
         end
@@ -2529,38 +2508,29 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     end
 
     # Group components by their chain root
-    chains = Dict{String, Vector{Dict}}()
+    chains = Dict{Int, Vector{Dict}}()
     for component in components
-        uuid_str = string(component["internal"]["id"])
-        root = find_root(uuid_str)
-
-        if !haskey(chains, root)
-            chains[root] = Vector{Dict}()
-        end
-        push!(chains[root], component)
+        root = find_root(Int(component["internal"]["id"]))
+        push!(get!(chains, root, Vector{Dict}()), component)
     end
 
     # Order each chain from upstream (root) to downstream
     ordered_components = Vector{Dict}()
-    for (root_uuid, chain) in chains
+    for chain in values(chains)
         # Sort chain by dependency order - upstream reservoirs first
         chain_ordered = Vector{Dict}()
+        chain_ids = Set{Int}()
         remaining = Set(chain)
 
         while !isempty(remaining)
             # Find next component whose upstream is already processed or is a root
             for component in remaining
-                upstream_uuids = component["upstream_reservoirs"]
-                can_add =
-                    isempty(upstream_uuids) ||
-                    all(
-                        string(uuid) in
-                        [string(c["internal"]["id"]) for c in chain_ordered] for
-                        uuid in upstream_uuids
-                    )
+                upstream_ids = component["upstream_reservoirs"]
+                can_add = all(Int(id) in chain_ids for id in upstream_ids)
 
                 if can_add
                     push!(chain_ordered, component)
+                    push!(chain_ids, Int(component["internal"]["id"]))
                     delete!(remaining, component)
                     break
                 end
@@ -2973,7 +2943,7 @@ function IS.compare_values(
     match_fn::Union{Function, Nothing},
     x::T,
     y::T;
-    compare_uuids = false,
+    compare_ids = false,
     exclude = Set{Symbol}(),
 ) where {T <: Union{StaticInjection, DynamicInjection}}
     # Must implement this method because a device of one of these subtypes might have a
@@ -2985,7 +2955,7 @@ function IS.compare_values(
         val1 = getfield(x, name)
         val2 = getfield(y, name)
         if val1 isa StaticInjection || val2 isa DynamicInjection
-            if !compare_uuids
+            if !compare_ids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
                 if !_fetch_match_fn(match_fn)(name1, name2)
@@ -2993,10 +2963,10 @@ function IS.compare_values(
                     match = false
                 end
             else
-                uuid1 = IS.get_id(val1)
-                uuid2 = IS.get_id(val2)
-                if uuid1 != uuid2
-                    @error "values do not match" T name uuid1 uuid2
+                id1 = IS.get_id(val1)
+                id2 = IS.get_id(val2)
+                if id1 != id2
+                    @error "values do not match" T name id1 id2
                     match = false
                 end
             end
@@ -3005,7 +2975,7 @@ function IS.compare_values(
                 match_fn,
                 val1,
                 val2;
-                compare_uuids = compare_uuids,
+                compare_ids = compare_ids,
                 exclude = exclude,
             )
                 @error "values do not match" T name val1 val2
@@ -3016,7 +2986,7 @@ function IS.compare_values(
                 match_fn,
                 val1,
                 val2;
-                compare_uuids = compare_uuids,
+                compare_ids = compare_ids,
                 exclude = exclude,
             )
                 match = false

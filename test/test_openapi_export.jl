@@ -1004,7 +1004,8 @@ end
             "supplemental_attributes" => [openapi_raw(emissions_po)],
             "supplemental_attribute_associations" => [
                 Dict{String, Any}(
-                    "attribute_id" => 9, "entity_id" => 7,
+                    "attribute_id" => 9, "component_id" => 7,
+                    "component_type" => "PowerLoad",
                     "attribute_type" => "EmissionsData",
                 ),
             ],
@@ -1060,10 +1061,13 @@ end
         @test ts_row.owner_category == "Component"
         @test ts_row.owner_type == "PowerLoad"
         @test ts_row.owner_id == IS.get_id(load)
-        @test ts_row.resolution == "PT3600S"
+        @test ts_row.resolution == "PT1H"
         @test ts_row.length == 3
         @test ts_row.element_type == "f64"
-        @test ts_row.address == basename(ts_out_path)
+        # `uri`/`data_hash` are the store's own content hash, never a caller-supplied
+        # locator.
+        @test occursin(r"^[0-9a-f]{64}$", ts_row.uri)
+        @test ts_row.data_hash == ts_row.uri
     end
 end
 
@@ -1114,14 +1118,16 @@ end
         @test length(doc.time_series_associations) == 3
         rows = [a.value for a in doc.time_series_associations]
         det_row = only(filter(r -> r isa PSY.PTS.Deterministic, rows))
-        @test det_row.horizon == "PT7200S"
-        @test det_row.interval == "PT3600S"
+        # Durations carry the store's unit-style ISO-8601 spelling (`PT2H`), not the
+        # seconds-only style (`PT7200S`).
+        @test det_row.horizon == "PT2H"
+        @test det_row.interval == "PT1H"
         @test det_row.count == 3
         # A forecast's shape is horizon/interval/count; `length` is not a column its type
         # declares, so it is absent rather than null.
         @test !hasfield(typeof(det_row), :length)
         dsts_row = only(filter(r -> r isa PSY.PTS.DeterministicSingleTimeSeries, rows))
-        @test dsts_row.horizon == "PT7200S"
+        @test dsts_row.horizon == "PT2H"
         @test dsts_row.count == 3
         # The transform's derived forecast is its own stored type, so it does not collide
         # with the real Deterministic under the discriminator.
@@ -1238,7 +1244,9 @@ _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
     base_power = 100.0,
 )
 
-@testset "OpenAPI export: time series owned by a supplemental attribute errors, no partial sidecar" begin
+@testset "OpenAPI export: time series owned by a supplemental attribute round-trips" begin
+    # An attribute's document id is its own IS id, exactly like a component's, so the
+    # sidecar catalog's owner id resolves back on import.
     mktempdir() do dir
         bus = _export_bus(; number = 1)
         gen = _export_thermal_gen(bus)
@@ -1257,12 +1265,22 @@ _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
         add_time_series!(sys, outage, SingleTimeSeries(; name = "outage_series", data = ta))
 
         ts_out_path = joinpath(dir, "attr_owned_series.h5")
-        @test_throws ErrorException PSY.to_openapi(
+        doc = PSY.to_openapi(
             sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
         )
-        # The old guard's error-before-serialize property: a failed export must leave no
-        # partial sidecar, since a half-written one is worse than none.
-        @test !isfile(ts_out_path)
+        @test isfile(ts_out_path)
+        ts_row = only(doc.time_series_associations).value
+        @test ts_row.owner_category == "SupplementalAttribute"
+        @test ts_row.owner_id == IS.get_id(outage)
+        @test ts_row.name == "outage_series"
+
+        sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
+        gen2 = get_component(ThermalStandard, sys2, "gen1")
+        outage2 = only(get_supplemental_attributes(GeometricDistributionForcedOutage, gen2))
+        # The attribute's id is stable across the round trip, exactly like a component's.
+        @test IS.get_id(outage2) == IS.get_id(outage)
+        ts2 = get_time_series(SingleTimeSeries, outage2, "outage_series")
+        @test TimeSeries.values(PSY.get_data(ts2)) == [0.1, 0.2, 0.3]
     end
 end
 

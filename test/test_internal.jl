@@ -1,20 +1,17 @@
 import UUIDs
 
-"""Recursively validates that the object and fields have integer ids."""
-function validate_ids(obj::T) where {T}
-    if !(obj isa Component)
-        return true
-    end
+"""Recursively validates that a component and the components it holds have assigned ids."""
+validate_ids(::Any) = true
 
+function validate_ids(obj::Component)
     result = true
-    if !(IS.get_id(obj) isa Int)
+    if IS.get_id(obj) == IS.UNASSIGNED_ID
         result = false
-        @error "object does not have an integer id" obj
+        @error "component has an unassigned id" obj
     end
 
-    for fieldname in fieldnames(T)
-        val = getfield(obj, fieldname)
-        if !validate_ids(val)
+    for fieldname in fieldnames(typeof(obj))
+        if !validate_ids(getfield(obj, fieldname))
             result = false
         end
     end
@@ -22,7 +19,7 @@ function validate_ids(obj::T) where {T}
     return result
 end
 
-function validate_ids(obj::T) where {T <: AbstractArray}
+function validate_ids(obj::AbstractArray)
     result = true
     for elem in obj
         if !validate_ids(elem)
@@ -33,7 +30,7 @@ function validate_ids(obj::T) where {T <: AbstractArray}
     return result
 end
 
-function validate_ids(obj::T) where {T <: AbstractDict}
+function validate_ids(obj::AbstractDict)
     result = true
     for elem in values(obj)
         if !validate_ids(elem)
@@ -45,7 +42,9 @@ end
 
 @testset "Test internal values" begin
     sys_rts = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    @test validate_ids(sys_rts)
+    components = collect(get_components(Component, sys_rts))
+    @test !isempty(components)
+    @test all(validate_ids, components)
 end
 
 # Regression: the `Base.convert(::Type{E}, ::AbstractString)` methods are generated from

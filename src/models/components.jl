@@ -175,11 +175,7 @@ IS.display_units_arg(::typeof(set_base_power!), ::Type{<:Component}) = NU
 # Make `_strip_units` work for Unitful quantities; IS doesn't depend on Unitful.
 IS._strip_units(q::Unitful.Quantity) = Unitful.ustrip(q)
 
-# DEAD CODE — no callers, since time series store actual per-device quantities and
-# `get_time_series_values` takes no `units` argument. Kept deliberately: `IS.default_units`
-# is still the sanctioned hook for a domain package to declare its default unit system, and
-# system base remains the right answer for PSY if a consumer needs it again. Delete this if
-# the hook itself goes away.
+# IS's hook for a domain package to declare its default unit system.
 IS.default_units(::Component) = SU
 
 #######################################################

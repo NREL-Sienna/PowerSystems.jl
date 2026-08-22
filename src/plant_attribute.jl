@@ -10,46 +10,46 @@ abstract type PowerPlant <: SupplementalAttribute end
 """Get `internal`."""
 get_internal(x::PowerPlant) = x.internal
 
-# Every `PowerPlant` stores membership as one forward map, group number -> member UUIDs.
+# Every `PowerPlant` stores membership as one forward map, group number -> member ids.
 # The reverse direction is derived on demand by the helpers below rather than stored: a
 # second stored map is state a caller can contradict, and nothing validated the two against
 # each other. The document and SiennaGridDB carry the same relation as association rows
 # (`group_index`, plus `role` for a CombinedCycleBlock), never as either map.
 
-"""Group numbers `uuid` belongs to in `group_map`, ascending. Empty means it is not a
+"""Group numbers `id` belongs to in `group_map`, ascending. Empty means it is not a
 member — a concrete value, so callers never dispatch on `nothing`."""
-function _group_indices(group_map::AbstractDict, uuid::Int)
-    return sort!([index for (index, uuids) in group_map if uuid in uuids])
+function _group_indices(group_map::AbstractDict, id::Int)
+    return sort!([index for (index, ids) in group_map if id in ids])
 end
 
-"""Whether `uuid` appears anywhere in `group_map`."""
-function _in_group_map(group_map::AbstractDict, uuid::Int)
-    return any(uuids -> uuid in uuids, values(group_map))
+"""Whether `id` appears anywhere in `group_map`."""
+function _in_group_map(group_map::AbstractDict, id::Int)
+    return any(ids -> id in ids, values(group_map))
 end
 
-"""Derive UUID -> group number from a forward map in which each member holds exactly one
+"""Derive id -> group number from a forward map in which each member holds exactly one
 group (shaft, penstock, PCC, exclusion group)."""
 function _reverse_group_map(group_map::AbstractDict)
     return Dict{Int, Int}(
-        uuid => index for (index, uuids) in group_map for uuid in uuids
+        id => index for (index, ids) in group_map for id in ids
     )
 end
 
-"""Derive UUID -> group numbers from a forward map in which a member may hold several
+"""Derive id -> group numbers from a forward map in which a member may hold several
 groups (a CT or CA can feed more than one HRSG)."""
 function _reverse_multi_group_map(group_map::AbstractDict)
     reverse_map = Dict{Int, Vector{Int}}()
-    for (index, uuids) in group_map, uuid in uuids
-        push!(get!(reverse_map, uuid, Int[]), index)
+    for (index, ids) in group_map, id in ids
+        push!(get!(reverse_map, id, Int[]), index)
     end
     foreach(sort!, values(reverse_map))
     return reverse_map
 end
 
-"""Drop `uuid` from each listed group of `group_map`, deleting groups left empty."""
-function _drop_from_group_map!(group_map::AbstractDict, uuid::Int, indices)
+"""Drop `id` from each listed group of `group_map`, deleting groups left empty."""
+function _drop_from_group_map!(group_map::AbstractDict, id::Int, indices)
     for index in indices
-        filter!(x -> x != uuid, group_map[index])
+        filter!(x -> x != id, group_map[index])
         if isempty(group_map[index])
             delete!(group_map, index)
         end
@@ -57,9 +57,9 @@ function _drop_from_group_map!(group_map::AbstractDict, uuid::Int, indices)
     return
 end
 
-"""Append `uuid` to `group_map[index]`, creating the group if it is new."""
-function _push_to_group_map!(group_map::AbstractDict, uuid::Int, index::Int)
-    push!(get!(group_map, index, Int[]), uuid)
+"""Append `id` to `group_map[index]`, creating the group if it is new."""
+function _push_to_group_map!(group_map::AbstractDict, id::Int, index::Int)
+    push!(get!(group_map, index, Int[]), id)
     return
 end
 
@@ -71,7 +71,7 @@ The shaft map field is used to represent shared shafts between units.
 
 # Arguments
 - `name::String`: Name of the power plant
-- `shaft_map::Dict{Int, Vector{Int}}`: Mapping of shaft numbers to unit UUIDs (multiple units can share a shaft)
+- `shaft_map::Dict{Int, Vector{Int}}`: Mapping of shaft numbers to unit ids (multiple units can share a shaft)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct ThermalPowerPlant <: PowerPlant
@@ -102,7 +102,7 @@ Construct a [`ThermalPowerPlant`](@ref).
 
 # Arguments
 - `name::String`: Name of the power plant
-- `shaft_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of shaft numbers to unit UUIDs
+- `shaft_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of shaft numbers to unit ids
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function ThermalPowerPlant(;
@@ -117,7 +117,7 @@ end
 get_name(value::ThermalPowerPlant) = value.name
 """Get [`ThermalPowerPlant`](@ref) `shaft_map`."""
 get_shaft_map(value::ThermalPowerPlant) = value.shaft_map
-"""Unit UUID -> shaft number, derived from `shaft_map`."""
+"""Unit id -> shaft number, derived from `shaft_map`."""
 get_reverse_shaft_map(value::ThermalPowerPlant) = _reverse_group_map(value.shaft_map)
 
 """
@@ -128,8 +128,8 @@ For aggregate representations consider using [`CombinedCycleFractional`](@ref).
 - `name::String`: Name of the combined cycle block
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `heat_recovery_to_steam_factor::Float64`: Factor for heat recovery to steam conversion
-- `hrsg_ct_map::Dict{Int, Vector{Int}}`: Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
-- `hrsg_ca_map::Dict{Int, Vector{Int}}`: Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
+- `hrsg_ct_map::Dict{Int, Vector{Int}}`: Mapping of HRSG numbers to CT unit ids (CTs as HRSG inputs)
+- `hrsg_ca_map::Dict{Int, Vector{Int}}`: Mapping of HRSG numbers to CA unit ids (CAs as HRSG outputs)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleBlock <: PowerPlant
@@ -192,8 +192,8 @@ Construct a [`CombinedCycleBlock`](@ref).
 - `name::String`: Name of the combined cycle block
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `heat_recovery_to_steam_factor::Float64`: (default: `0.0`) Factor for heat recovery to steam conversion
-- `hrsg_ct_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
-- `hrsg_ca_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
+- `hrsg_ct_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CT unit ids (CTs as HRSG inputs)
+- `hrsg_ca_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CA unit ids (CAs as HRSG outputs)
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleBlock(;
@@ -225,9 +225,9 @@ get_heat_recovery_to_steam_factor(value::CombinedCycleBlock) =
 get_hrsg_ct_map(value::CombinedCycleBlock) = value.hrsg_ct_map
 """Get [`CombinedCycleBlock`](@ref) `hrsg_ca_map`."""
 get_hrsg_ca_map(value::CombinedCycleBlock) = value.hrsg_ca_map
-"""CT unit UUID -> HRSG numbers, derived from `hrsg_ct_map`. A CT can feed several HRSGs."""
+"""CT unit id -> HRSG numbers, derived from `hrsg_ct_map`. A CT can feed several HRSGs."""
 get_ct_hrsg_map(value::CombinedCycleBlock) = _reverse_multi_group_map(value.hrsg_ct_map)
-"""CA unit UUID -> HRSG numbers, derived from `hrsg_ca_map`. A CA can receive from several
+"""CA unit id -> HRSG numbers, derived from `hrsg_ca_map`. A CA can receive from several
 HRSGs."""
 get_ca_hrsg_map(value::CombinedCycleBlock) = _reverse_multi_group_map(value.hrsg_ca_map)
 
@@ -238,7 +238,7 @@ For block-level representations consider using [`CombinedCycleBlock`](@ref).
 # Arguments
 - `name::String`: Name of the combined cycle fractional plant
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
-- `operation_exclusion_map::Dict{Int, Vector{Int}}`: Mapping of operation exclusion group numbers to unit UUIDs (only units in the same group can operate simultaneously)
+- `operation_exclusion_map::Dict{Int, Vector{Int}}`: Mapping of operation exclusion group numbers to unit ids (only units in the same group can operate simultaneously)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleFractional <: PowerPlant
@@ -288,7 +288,7 @@ Construct a [`CombinedCycleFractional`](@ref).
 # Arguments
 - `name::String`: Name of the combined cycle fractional plant
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
-- `operation_exclusion_map::AbstractDict`: (default: empty dict) Mapping of operation exclusion group numbers to unit UUIDs
+- `operation_exclusion_map::AbstractDict`: (default: empty dict) Mapping of operation exclusion group numbers to unit ids
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleFractional(;
@@ -312,7 +312,7 @@ get_configuration(value::CombinedCycleFractional) = value.configuration
 """Get [`CombinedCycleFractional`](@ref) `operation_exclusion_map`."""
 get_operation_exclusion_map(value::CombinedCycleFractional) =
     value.operation_exclusion_map
-"""Unit UUID -> exclusion group number, derived from `operation_exclusion_map`."""
+"""Unit id -> exclusion group number, derived from `operation_exclusion_map`."""
 get_inverse_operation_exclusion_map(value::CombinedCycleFractional) =
     _reverse_group_map(value.operation_exclusion_map)
 
@@ -321,7 +321,7 @@ Attribute to represent hydro power plants with shared penstocks.
 
 # Arguments
 - `name::String`: Name of the hydro power plant
-- `penstock_map::Dict{Int, Vector{Int}}`: Mapping of penstock numbers to unit UUIDs (multiple units can share a penstock)
+- `penstock_map::Dict{Int, Vector{Int}}`: Mapping of penstock numbers to unit ids (multiple units can share a penstock)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct HydroPowerPlant <: PowerPlant
@@ -352,7 +352,7 @@ Construct a [`HydroPowerPlant`](@ref).
 
 # Arguments
 - `name::String`: Name of the hydro power plant
-- `penstock_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of penstock numbers to unit UUIDs
+- `penstock_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of penstock numbers to unit ids
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function HydroPowerPlant(;
@@ -367,7 +367,7 @@ end
 get_name(value::HydroPowerPlant) = value.name
 """Get [`HydroPowerPlant`](@ref) `penstock_map`."""
 get_penstock_map(value::HydroPowerPlant) = value.penstock_map
-"""Unit UUID -> penstock number, derived from `penstock_map`."""
+"""Unit id -> penstock number, derived from `penstock_map`."""
 get_reverse_penstock_map(value::HydroPowerPlant) = _reverse_group_map(value.penstock_map)
 
 """
@@ -375,7 +375,7 @@ Attribute to represent renewable power plants.
 
 # Arguments
 - `name::String`: Name of the renewable power plant
-- `pcc_map::Dict{Int, Vector{Int}}`: Mapping of PCC numbers to unit UUIDs (multiple units can share a PCC)
+- `pcc_map::Dict{Int, Vector{Int}}`: Mapping of PCC numbers to unit ids (multiple units can share a PCC)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct RenewablePowerPlant <: PowerPlant
@@ -406,7 +406,7 @@ Construct a [`RenewablePowerPlant`](@ref). This supports multiple point of commo
 
 # Arguments
 - `name::String`: Name of the renewable power plant
-- `pcc_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of PCC numbers to unit UUIDs
+- `pcc_map::Dict{Int, Vector{Int}}`: (default: empty dict) Mapping of PCC numbers to unit ids
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function RenewablePowerPlant(;
@@ -421,7 +421,7 @@ end
 get_name(value::RenewablePowerPlant) = value.name
 """Get [`RenewablePowerPlant`](@ref) `pcc_map`."""
 get_pcc_map(value::RenewablePowerPlant) = value.pcc_map
-"""Unit UUID -> PCC number, derived from `pcc_map`."""
+"""Unit id -> PCC number, derived from `pcc_map`."""
 get_reverse_pcc_map(value::RenewablePowerPlant) = _reverse_group_map(value.pcc_map)
 
 """
@@ -454,10 +454,10 @@ function get_components_in_shaft(
         )
     end
 
-    uuids = shaft_map[shaft_number]
+    ids = shaft_map[shaft_number]
     all_components = get_associated_components(sys, plant; component_type = ThermalGen)
     # Filter to only include components on this shaft
-    return filter(c -> IS.get_id(c) in uuids, all_components)
+    return filter(c -> IS.get_id(c) in ids, all_components)
 end
 
 """
@@ -490,10 +490,10 @@ function get_components_in_penstock(
         )
     end
 
-    uuids = penstock_map[penstock_number]
+    ids = penstock_map[penstock_number]
     all_components = get_associated_components(sys, plant; component_type = HydroGen)
     # Filter to only include components on this penstock
-    return filter(c -> IS.get_id(c) in uuids, all_components)
+    return filter(c -> IS.get_id(c) in ids, all_components)
 end
 
 """
@@ -526,10 +526,59 @@ function get_components_in_pcc(
         )
     end
 
-    uuids = pcc_map[pcc_number]
+    ids = pcc_map[pcc_number]
     all_components = get_associated_components(sys, plant)
     # Filter to only include components on this PCC
-    return filter(c -> IS.get_id(c) in uuids, all_components)
+    return filter(c -> IS.get_id(c) in ids, all_components)
+end
+
+"""No group index: the plain attribute path (`EmissionsData`, `GeographicInfo`, the
+`Outage` types, ...) needs no map update."""
+_push_group_index!(::Any, ::SupplementalAttribute, ::Nothing) = nothing
+
+_push_group_index!(component, attribute::ThermalPowerPlant, group_index::Integer) =
+    _push_to_group_map!(attribute.shaft_map, IS.get_id(component), group_index)
+_push_group_index!(component, attribute::HydroPowerPlant, group_index::Integer) =
+    _push_to_group_map!(attribute.penstock_map, IS.get_id(component), group_index)
+_push_group_index!(component, attribute::RenewablePowerPlant, group_index::Integer) =
+    _push_to_group_map!(attribute.pcc_map, IS.get_id(component), group_index)
+_push_group_index!(component, attribute::CombinedCycleFractional, group_index::Integer) =
+    _push_to_group_map!(
+        attribute.operation_exclusion_map,
+        IS.get_id(component),
+        group_index,
+    )
+
+"""A CT/CA's HRSG map is chosen by the component's prime mover type."""
+function _push_group_index!(
+    component::ThermalGen,
+    attribute::CombinedCycleBlock,
+    group_index::Integer,
+)
+    id = IS.get_id(component)
+    prime_mover = get_prime_mover_type(component)
+    if prime_mover == PrimeMovers.CT
+        _push_to_group_map!(attribute.hrsg_ct_map, id, group_index)
+    elseif prime_mover == PrimeMovers.CA
+        _push_to_group_map!(attribute.hrsg_ca_map, id, group_index)
+    else
+        throw(
+            IS.ArgumentError(
+                "Invalid prime mover type $prime_mover for generator $(get_name(component)). Only CT and CA generators can be added to a CombinedCycleBlock.",
+            ),
+        )
+    end
+    return nothing
+end
+
+"""Loud fallback: a `group_index` on an attribute type with no group-index dispatch is a
+caller bug, not something to attach without recording it."""
+function _push_group_index!(::Any, attribute::SupplementalAttribute, group_index::Integer)
+    error(
+        "$(nameof(typeof(attribute))) carries group_index=$group_index but has no " *
+        "group-index dispatch — only ThermalPowerPlant, HydroPowerPlant, " *
+        "RenewablePowerPlant, CombinedCycleBlock, and CombinedCycleFractional accept one",
+    )
 end
 
 """
@@ -537,7 +586,7 @@ end
 
 Add a thermal generator to a [`ThermalPowerPlant`](@ref) by associating it with a shaft number.
 This attaches the plant as a supplemental attribute to the generator and records the
-generator's UUID in the plant's shaft map.
+generator's id in the plant's shaft map.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -551,8 +600,8 @@ function add_supplemental_attribute!(
     attribute::ThermalPowerPlant;
     shaft_number::Int,
 )
-    uuid = IS.get_id(component)
-    if _in_group_map(attribute.shaft_map, uuid)
+    id = IS.get_id(component)
+    if _in_group_map(attribute.shaft_map, id)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
@@ -560,7 +609,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.shaft_map, uuid, shaft_number)
+    _push_group_index!(component, attribute, shaft_number)
     return
 end
 
@@ -569,7 +618,7 @@ end
 
 Add a hydro generator to a [`HydroPowerPlant`](@ref) by associating it with a penstock number.
 This attaches the plant as a supplemental attribute to the generator and records the
-generator's UUID in the plant's penstock map.
+generator's id in the plant's penstock map.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -583,8 +632,8 @@ function add_supplemental_attribute!(
     attribute::HydroPowerPlant,
     penstock_number::Int,
 )
-    uuid = IS.get_id(component)
-    if _in_group_map(attribute.penstock_map, uuid)
+    id = IS.get_id(component)
+    if _in_group_map(attribute.penstock_map, id)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
@@ -592,7 +641,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.penstock_map, uuid, penstock_number)
+    _push_group_index!(component, attribute, penstock_number)
     return
 end
 
@@ -620,7 +669,7 @@ end
 
 Add a renewable generator or storage to a [`RenewablePowerPlant`](@ref) by associating it with a PCC number.
 This attaches the plant as a supplemental attribute to the generator and records the
-generator's UUID in the plant's PCC map.
+generator's id in the plant's PCC map.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -634,8 +683,8 @@ function add_supplemental_attribute!(
     attribute::RenewablePowerPlant,
     pcc_number::Int,
 )
-    uuid = IS.get_id(component)
-    if _in_group_map(attribute.pcc_map, uuid)
+    id = IS.get_id(component)
+    if _in_group_map(attribute.pcc_map, id)
         throw(
             IS.ArgumentError(
                 "Component $(get_name(component)) is already part of plant $(get_name(attribute))",
@@ -643,7 +692,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.pcc_map, uuid, pcc_number)
+    _push_group_index!(component, attribute, pcc_number)
     return
 end
 
@@ -652,7 +701,7 @@ end
 
 Remove a thermal generator from a [`ThermalPowerPlant`](@ref).
 This removes the plant as a supplemental attribute from the generator and removes the
-generator's UUID from the plant's shaft map.
+generator's id from the plant's shaft map.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -664,8 +713,8 @@ function remove_supplemental_attribute!(
     component::ThermalGen,
     attribute::ThermalPowerPlant,
 )
-    uuid = IS.get_id(component)
-    shafts = _group_indices(attribute.shaft_map, uuid)
+    id = IS.get_id(component)
+    shafts = _group_indices(attribute.shaft_map, id)
     if isempty(shafts)
         throw(
             IS.ArgumentError(
@@ -673,7 +722,7 @@ function remove_supplemental_attribute!(
             ),
         )
     end
-    _drop_from_group_map!(attribute.shaft_map, uuid, shafts)
+    _drop_from_group_map!(attribute.shaft_map, id, shafts)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -683,7 +732,7 @@ end
 
 Remove a hydro generator from a [`HydroPowerPlant`](@ref).
 This removes the plant as a supplemental attribute from the generator and removes the
-generator's UUID from the plant's penstock map.
+generator's id from the plant's penstock map.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -695,8 +744,8 @@ function remove_supplemental_attribute!(
     component::Union{HydroPumpTurbine, HydroTurbine},
     attribute::HydroPowerPlant,
 )
-    uuid = IS.get_id(component)
-    penstocks = _group_indices(attribute.penstock_map, uuid)
+    id = IS.get_id(component)
+    penstocks = _group_indices(attribute.penstock_map, id)
     if isempty(penstocks)
         throw(
             IS.ArgumentError(
@@ -704,7 +753,7 @@ function remove_supplemental_attribute!(
             ),
         )
     end
-    _drop_from_group_map!(attribute.penstock_map, uuid, penstocks)
+    _drop_from_group_map!(attribute.penstock_map, id, penstocks)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -714,7 +763,7 @@ end
 
 Remove a renewable generator or storage from a [`RenewablePowerPlant`](@ref).
 This removes the plant as a supplemental attribute from the generator and removes the
-generator's UUID from the plant's PCC map.
+generator's id from the plant's PCC map.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -726,8 +775,8 @@ function remove_supplemental_attribute!(
     component::Union{RenewableGen, EnergyReservoirStorage},
     attribute::RenewablePowerPlant,
 )
-    uuid = IS.get_id(component)
-    pccs = _group_indices(attribute.pcc_map, uuid)
+    id = IS.get_id(component)
+    pccs = _group_indices(attribute.pcc_map, id)
     if isempty(pccs)
         throw(
             IS.ArgumentError(
@@ -735,7 +784,7 @@ function remove_supplemental_attribute!(
             ),
         )
     end
-    _drop_from_group_map!(attribute.pcc_map, uuid, pccs)
+    _drop_from_group_map!(attribute.pcc_map, id, pccs)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -759,48 +808,24 @@ function add_supplemental_attribute!(
     attribute::CombinedCycleBlock;
     hrsg_number::Int,
 )
-    uuid = IS.get_id(component)
-    if hrsg_number in _group_indices(attribute.hrsg_ct_map, uuid) ||
-       hrsg_number in _group_indices(attribute.hrsg_ca_map, uuid)
+    id = IS.get_id(component)
+    ct_hrsgs = _group_indices(attribute.hrsg_ct_map, id)
+    ca_hrsgs = _group_indices(attribute.hrsg_ca_map, id)
+    if hrsg_number in ct_hrsgs || hrsg_number in ca_hrsgs
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is already part of block $(get_name(attribute)) with $(hrsg_number)",
             ),
         )
     end
-    prime_mover = get_prime_mover_type(component)
-    if prime_mover == PrimeMovers.CT
-        _add_to_hrsg_map!(sys, component, attribute, attribute.hrsg_ct_map, hrsg_number)
-    elseif prime_mover == PrimeMovers.CA
-        _add_to_hrsg_map!(sys, component, attribute, attribute.hrsg_ca_map, hrsg_number)
-    else
-        throw(
-            IS.ArgumentError(
-                "Invalid prime mover type $prime_mover for generator $(get_name(component)). Only CT and CA generators can be added to a CombinedCycleBlock.",
-            ),
-        )
-    end
-    return
-end
-
-"""Record `component` against `hrsg_number` in one of the block's forward HRSG maps. IS
-holds a single association per (component, attribute) pair, so a CT or CA feeding a second
-HRSG must not be attached again."""
-function _add_to_hrsg_map!(
-    sys::System,
-    component::ThermalGen,
-    attribute::CombinedCycleBlock,
-    hrsg_map::AbstractDict,
-    hrsg_number::Int,
-)
-    uuid = IS.get_id(component)
-    attached =
-        _in_group_map(attribute.hrsg_ct_map, uuid) ||
-        _in_group_map(attribute.hrsg_ca_map, uuid)
-    if !attached
+    # _push_group_index! owns the CT/CA prime-mover validation, so it runs first: a
+    # rejected generator must not leave an association behind.
+    _push_group_index!(component, attribute, hrsg_number)
+    # IS holds a single association per (component, attribute) pair, so a CT or CA
+    # already feeding one HRSG must not be attached again when it feeds a second.
+    if isempty(ct_hrsgs) && isempty(ca_hrsgs)
         IS.add_supplemental_attribute!(sys.data, component, attribute)
     end
-    _push_to_group_map!(hrsg_map, uuid, hrsg_number)
     return
 end
 
@@ -809,7 +834,7 @@ end
 
 Remove a thermal generator from a [`CombinedCycleBlock`](@ref).
 This removes the block as a supplemental attribute from the generator and removes the
-generator's UUID from the block's HRSG maps.
+generator's id from the block's HRSG maps.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -821,9 +846,9 @@ function remove_supplemental_attribute!(
     component::ThermalGen,
     attribute::CombinedCycleBlock,
 )
-    uuid = IS.get_id(component)
-    ct_hrsgs = _group_indices(attribute.hrsg_ct_map, uuid)
-    ca_hrsgs = _group_indices(attribute.hrsg_ca_map, uuid)
+    id = IS.get_id(component)
+    ct_hrsgs = _group_indices(attribute.hrsg_ct_map, id)
+    ca_hrsgs = _group_indices(attribute.hrsg_ca_map, id)
     if isempty(ct_hrsgs) && isempty(ca_hrsgs)
         throw(
             IS.ArgumentError(
@@ -831,8 +856,8 @@ function remove_supplemental_attribute!(
             ),
         )
     end
-    _drop_from_group_map!(attribute.hrsg_ct_map, uuid, ct_hrsgs)
-    _drop_from_group_map!(attribute.hrsg_ca_map, uuid, ca_hrsgs)
+    _drop_from_group_map!(attribute.hrsg_ct_map, id, ct_hrsgs)
+    _drop_from_group_map!(attribute.hrsg_ca_map, id, ca_hrsgs)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -855,8 +880,8 @@ function add_supplemental_attribute!(
     attribute::CombinedCycleFractional;
     exclusion_group::Int,
 )
-    uuid = IS.get_id(component)
-    existing_groups = _group_indices(attribute.operation_exclusion_map, uuid)
+    id = IS.get_id(component)
+    existing_groups = _group_indices(attribute.operation_exclusion_map, id)
     if !isempty(existing_groups)
         throw(
             IS.ArgumentError(
@@ -874,7 +899,7 @@ function add_supplemental_attribute!(
         )
     end
     IS.add_supplemental_attribute!(sys.data, component, attribute)
-    _push_to_group_map!(attribute.operation_exclusion_map, uuid, exclusion_group)
+    _push_group_index!(component, attribute, exclusion_group)
     return
 end
 
@@ -883,7 +908,7 @@ end
 
 Remove a thermal generator from a [`CombinedCycleFractional`](@ref).
 This removes the plant as a supplemental attribute from the generator and removes the
-generator's UUID from the plant's exclusion maps.
+generator's id from the plant's exclusion maps.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -895,8 +920,8 @@ function remove_supplemental_attribute!(
     component::ThermalGen,
     attribute::CombinedCycleFractional,
 )
-    uuid = IS.get_id(component)
-    groups = _group_indices(attribute.operation_exclusion_map, uuid)
+    id = IS.get_id(component)
+    groups = _group_indices(attribute.operation_exclusion_map, id)
     if isempty(groups)
         throw(
             IS.ArgumentError(
@@ -904,7 +929,7 @@ function remove_supplemental_attribute!(
             ),
         )
     end
-    _drop_from_group_map!(attribute.operation_exclusion_map, uuid, groups)
+    _drop_from_group_map!(attribute.operation_exclusion_map, id, groups)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
@@ -939,8 +964,8 @@ function get_components_in_exclusion_group(
         )
     end
 
-    uuids = exclusion_map[exclusion_group]
+    ids = exclusion_map[exclusion_group]
     all_components = get_associated_components(sys, plant; component_type = ThermalGen)
     # Filter to only include components in this exclusion group
-    return filter(c -> IS.get_id(c) in uuids, all_components)
+    return filter(c -> IS.get_id(c) in ids, all_components)
 end

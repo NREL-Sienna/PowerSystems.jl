@@ -84,14 +84,6 @@ resolve_ref(refs::OpenAPIRefs, id::Integer, ::Type{T}) where {T} = refs[id]::T
 """Whether `id` has a component registered."""
 has_ref(refs::OpenAPIRefs, id::Integer) = haskey(refs.by_id, Int(id))
 
-"""
-Resolve the UUID of the component or supplemental attribute registered under document `id`.
-
-This is the id⇄UUID bridge the association loaders resolve through, kept isolated here so it
-collapses to nothing once IS goes id-native and the `*_uuid` columns become `*_id`.
-"""
-resolve_uuid(refs::OpenAPIRefs, id::Integer) = IS.get_id(refs[id])
-
 """Resolve the document id a previously-registered `component` was stored under."""
 function component_id(refs::OpenAPIRefs, component)
     haskey(refs.id_by_component, component) || error(

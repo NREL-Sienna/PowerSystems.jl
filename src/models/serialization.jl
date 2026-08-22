@@ -1,4 +1,4 @@
-const _ENCODE_AS_UUID = (
+const _ENCODE_AS_ID = (
     Arc,
     Area,
     Bus,
@@ -12,10 +12,10 @@ const _ENCODE_AS_UUID = (
     Vector{Device},
 )
 
-should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID)
+should_encode_as_id(val) = any(x -> val isa x, _ENCODE_AS_ID)
 # The field's declared type may be nullable, so match against `Union{Nothing, x}`.
-should_encode_as_uuid(::Type{T}) where {T} =
-    any(x -> T <: Union{Nothing, x}, _ENCODE_AS_UUID)
+should_encode_as_id(::Type{T}) where {T} =
+    any(x -> T <: Union{Nothing, x}, _ENCODE_AS_ID)
 
 const _CONTAINS_SHOULD_ENCODE = Union{
     Component,
@@ -24,13 +24,13 @@ const _CONTAINS_SHOULD_ENCODE = Union{
     ImportExportCost,
     ImportExportTimeSeriesCost,
     TransformerCircuit,
-}  # PSY types with fields that we should_encode_as_uuid
+}  # PSY types with fields that we should_encode_as_id
 
 function IS.serialize(component::T) where {T <: _CONTAINS_SHOULD_ENCODE}
     @debug "serialize" _group = IS.LOG_GROUP_SERIALIZATION component T
     data = Dict{String, Any}()
     for name in fieldnames(T)
-        val = serialize_uuid_handling(getfield(component, name))
+        val = serialize_id_handling(getfield(component, name))
         if name == :ext
             if !IS.is_ext_valid_for_serialization(val)
                 error(
@@ -59,8 +59,8 @@ end
 """
 Serialize the value, encoding referenced components by their integer id where necessary.
 """
-function serialize_uuid_handling(val)
-    if should_encode_as_uuid(val)
+function serialize_id_handling(val)
+    if should_encode_as_id(val)
         if val isa Array
             value = IS.get_id.(val)
         elseif val === nothing
@@ -90,13 +90,13 @@ function IS.deserialize(
             continue
         end
         if val isa Dict && haskey(val, IS.METADATA_KEY)
-            vals[name] = deserialize_uuid_handling(
+            vals[name] = deserialize_id_handling(
                 IS.get_type_from_serialization_metadata(IS.get_serialization_metadata(val)),
                 val,
                 component_cache,
             )
         else
-            vals[name] = deserialize_uuid_handling(type, val, component_cache)
+            vals[name] = deserialize_id_handling(type, val, component_cache)
         end
     end
 
@@ -109,8 +109,8 @@ function IS.deserialize(::Type{Device}, data::Dict)
     return
 end
 
-function _check_id_in_component_cache(id::Int, component_cache)
-    if !haskey(component_cache, id)
+function _component_from_cache(id::Int, component_cache)
+    return get(component_cache, id) do
         error(
             "id $id not found in component cache while deserializing system. \
              This may indicate that a component was removed improperly leaving an id \
@@ -120,31 +120,25 @@ function _check_id_in_component_cache(id::Int, component_cache)
              ",
         )
     end
-    return
 end
 
 """
 Deserialize the value, converting referenced integer ids back to components where necessary.
 """
-function deserialize_uuid_handling(field_type, val, component_cache)
-    @debug "deserialize_uuid_handling" _group = IS.LOG_GROUP_SERIALIZATION field_type val
+function deserialize_id_handling(field_type, val, component_cache)
+    @debug "deserialize_id_handling" _group = IS.LOG_GROUP_SERIALIZATION field_type val
     if val === nothing
         value = val
-    elseif should_encode_as_uuid(field_type)
+    elseif should_encode_as_id(field_type)
         if field_type <: Vector
             _vals = field_type()
+            sizehint!(_vals, length(val))
             for _val in val
-                id = Int(_val)
-                _check_id_in_component_cache(id, component_cache)
-                component = component_cache[id]
-                push!(_vals, component)
+                push!(_vals, _component_from_cache(Int(_val), component_cache))
             end
             value = _vals
         else
-            id = Int(val)
-            _check_id_in_component_cache(id, component_cache)
-            component = component_cache[id]
-            value = component
+            value = _component_from_cache(Int(val), component_cache)
         end
     elseif field_type <: _CONTAINS_SHOULD_ENCODE
         value = IS.deserialize(field_type, val, component_cache)

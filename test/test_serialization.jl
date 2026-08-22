@@ -124,8 +124,7 @@ end
     @test result
 end
 
-# The standalone `ReserveDemandCurve` was retired; an ORDC is now the reserve's own
-# `variable`, so this covers a reserve carrying one.
+# An ORDC rides on the reserve's own `variable`, so this covers a reserve carrying one.
 @testset "Test JSON serialization of a reserve with a demand curve" begin
     sys = System(100.0)
     devices = []
