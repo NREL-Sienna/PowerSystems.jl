@@ -23,6 +23,16 @@ export SupplementalAttribute
 export GeographicInfo
 export DataSource
 export get_geo_json
+export get_organization
+export get_retrieved_at
+export get_published_at
+export get_dataset
+export get_url
+export get_version
+export get_confidence
+export get_recorded_by
+export get_fields
+export get_extra
 export PowerPlant
 export ThermalPowerPlant
 export CombinedCycleBlock
@@ -772,6 +782,16 @@ import InfrastructureSystems:
     from_openapi,
     to_openapi,
     get_geo_json,
+    get_organization,
+    get_retrieved_at,
+    get_published_at,
+    get_dataset,
+    get_url,
+    get_version,
+    get_confidence,
+    get_recorded_by,
+    get_fields,
+    get_extra,
     copy_time_series!,
     get_available,
     set_available!,

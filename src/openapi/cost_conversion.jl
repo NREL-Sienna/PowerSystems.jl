@@ -44,7 +44,9 @@ function convert_cost(fd::PC.PiecewiseLinearData)
     return PiecewiseLinearData([(x = p.x, y = p.y) for p in points])
 end
 convert_cost(fd::PC.PiecewiseStepData) = PiecewiseStepData(fd.x_coords, fd.y_coords)
-convert_cost(fd) = error("convert_cost: unmapped FunctionData variant $(typeof(fd))")
+# Catch-all for every PO type, not just FunctionData: a PO cost type with no converter
+# lands here, so the message must not claim to know what kind of variant it got.
+convert_cost(fd) = error("convert_cost: unmapped variant $(typeof(fd))")
 
 # ── ValueCurve ──────────────────────────────────────────────────────────────────
 
@@ -99,6 +101,23 @@ end
 
 _optional_cost_curve(::Nothing) = zero(CostCurve)
 _optional_cost_curve(c::PC.CostCurve) = convert_cost(c)
+
+# ── Offer curves: import/export bids and reserve demand curves ─────────────────
+# PSY types these fields as `CostCurve{PiecewiseIncrementalCurve}`, so a document carrying
+# any other curve shape is malformed. Saying which field is wrong beats the conversion
+# error the constructor would raise.
+
+_as_piecewise_incremental(cost::CostCurve{PiecewiseIncrementalCurve}, ::AbstractString) =
+    cost
+_as_piecewise_incremental(cost::CostCurve, context::AbstractString) = error(
+    "convert_cost: $context must be a PiecewiseIncrementalCurve CostCurve, " *
+    "got CostCurve{$(typeof(get_value_curve(cost)))}",
+)
+
+"""An unoffered side is written as an absent curve; `ZERO_OFFER_CURVE` is how PSY spells it."""
+_offer_curve(::Nothing, ::AbstractString) = ZERO_OFFER_CURVE
+_offer_curve(c::PC.CostCurve, context::AbstractString) =
+    _as_piecewise_incremental(convert_cost(c), context)
 
 # ── start_up: a bare number, or a multi-stage / charge-discharge breakdown ────
 
@@ -160,6 +179,33 @@ function convert_cost(po::PC.MarketBidCost)
     )
 end
 
+"""
+Import/export bids from a neighbouring area. `ancillary_service_offers` has no counterpart in
+the `PC.ImportExportCost` schema, so the export drops it (see `convert_cost_to_openapi`) and
+this returns a cost with none. An absent offer curve means that side is not offered and comes
+back as `ZERO_OFFER_CURVE`.
+"""
+function convert_cost(po::PC.ImportExportCost)
+    return ImportExportCost(;
+        import_offer_curves = _offer_curve(
+            po.import_offer_curves,
+            "ImportExportCost.import_offer_curves",
+        ),
+        export_offer_curves = _offer_curve(
+            po.export_offer_curves,
+            "ImportExportCost.export_offer_curves",
+        ),
+        energy_import_weekly_limit = _require(
+            po.energy_import_weekly_limit,
+            "ImportExportCost.energy_import_weekly_limit",
+        ),
+        energy_export_weekly_limit = _require(
+            po.energy_export_weekly_limit,
+            "ImportExportCost.energy_export_weekly_limit",
+        ),
+    )
+end
+
 function convert_cost(po::PC.HydroReservoirCost)
     return HydroReservoirCost(;
         level_shortage_cost = po.level_shortage_cost,
@@ -183,12 +229,6 @@ end
 # ── Operating Reserve Demand Curve ─────────────────────────────────────────────
 # A reserve's `variable` is never a FuelCurve; PSY stores `CostCurve{PiecewiseIncrementalCurve}`.
 
-_as_piecewise_incremental(cost::CostCurve{PiecewiseIncrementalCurve}) = cost
-_as_piecewise_incremental(cost::CostCurve) = error(
-    "convert_cost: a reserve demand curve must be a PiecewiseIncrementalCurve CostCurve, " *
-    "got CostCurve{$(typeof(get_value_curve(cost)))}",
-)
-
 """Convert a reserve's `variable` field; `nothing` means no demand curve is defined."""
-convert_reserve_variable(::Nothing) = ZERO_OFFER_CURVE
-convert_reserve_variable(po::PC.CostCurve) = _as_piecewise_incremental(convert_cost(po))
+convert_reserve_variable(po::Union{Nothing, PC.CostCurve}) =
+    _offer_curve(po, "a reserve demand curve")

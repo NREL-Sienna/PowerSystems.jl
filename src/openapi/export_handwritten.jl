@@ -638,6 +638,11 @@ function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
         bus = component_id(refs, get_bus(shunt)),
         admittance_units = "COMPONENT_MVAR",
         Y = _complex_number_po(y),
+        # FixedAdmittance's base_power_kind is SystemBasePower (components.jl): the field
+        # is kept in sync by add_component!, not authoritative on its own, so read the
+        # document-level anchor (per openapi_export_base_source in generate_structs.jl),
+        # same as `y` above.
+        base_power = get_base_power(refs),
     )
 end
 
@@ -927,16 +932,16 @@ end
 
 # ── TwoTerminalVSCLine ──────────────────────────────────────────────────────────
 # Mirrors import: always exports "NATURAL_UNITS" for `admittance_units`/`voltage_units` (the
-# only basis implemented), so `g` converts pu → siemens in BOTH methods, and the DC-voltage
-# `dc_setpoint_*` branches convert pu → kV in both. Only the document-unit-system-governed power
+# only basis implemented), so `g` converts pu → siemens in BOTH methods. Only the
+# document-unit-system-governed power
 # fields and `dc_setpoint_*`'s `DC_POWER` branch multiply by the system base under `NaturalUnit`.
 # `voltage_limits_*`, `dc_voltage_droop_*`, the current fields, `rmpct_*`, the weighting
-# fractions, and `rated_dc_voltage`/`rated_ac_voltage_from`/`rated_ac_voltage_to` pass
-# through — see import_handwritten.jl's header for why each one is left alone. `ac_setpoint_*`
-# under `AC_VOLTAGE` converts pu → kV via `rated_ac_voltage_from`/`rated_ac_voltage_to`,
-# mirroring `dc_setpoint_*`'s DC-voltage branches and `rated_dc_voltage`; both are also
-# written onto the wire row directly (below), same as `rated_dc_voltage`, so PSY→document→PSY
-# preserves the bases.
+# fractions, and `rated_dc_voltage`/`rated_ac_voltage_from`/`rated_ac_voltage_to` pass through —
+# see import_handwritten.jl's header for why each one is left alone. The voltage-regulating
+# `dc_setpoint_*`/`ac_setpoint_*` branches also pass through unconverted (PSY stores them
+# per-unit), tagged `setpoint_voltage_units = "COMPONENT_BASE"` — a lossless export that needs no AC
+# voltage base; import resolves the `AC_VOLTAGE` kV basis from `rated_ac_voltage_from`/
+# `rated_ac_voltage_to` on the row itself.
 
 """pu → siemens via `Ybase = base_power / rated_dc_voltage^2` (kV, MVA)."""
 function _vsc_pu_to_siemens(vsc::TwoTerminalVSCLine, base_power)
@@ -967,44 +972,16 @@ _vsc_dc_setpoint_to_openapi(
 _vsc_dc_setpoint_to_openapi(
     _vsc, setpoint, ::Val{VSCDCControlModes.DC_POWER}, _base_power, ::DeviceBaseUnit,
 ) = setpoint
-function _vsc_dc_setpoint_to_openapi(
-    vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit,
-)
-    return setpoint * _vsc_export_dc_base_voltage(vsc, setpoint, "dc_setpoint")
-end
-function _vsc_dc_setpoint_to_openapi(
-    vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
-)
-    return setpoint * _vsc_export_dc_base_voltage(vsc, setpoint, "dc_setpoint")
-end
-
-"""Errors when an `ac_setpoint_*` value needs an AC voltage base under `AC_VOLTAGE` control
-but the matching `rated_ac_voltage_from`/`rated_ac_voltage_to` is `0.0` (unspecified)."""
-function _vsc_ac_base_voltage(vsc::TwoTerminalVSCLine, rated, value, field::AbstractString)
-    if !iszero(rated)
-        return rated
-    end
-    if iszero(value)
-        return one(rated)
-    end
-    return error(
-        "TwoTerminalVSCLine \"$(get_name(vsc))\": $field is $value but its rated AC " *
-        "voltage base is 0.0, so there is no AC voltage base to express it against — set " *
-        "rated_ac_voltage_from/rated_ac_voltage_to",
-    )
-end
-
-_vsc_ac_setpoint_to_openapi(
-    _vsc, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}, _rated,
+_vsc_dc_setpoint_to_openapi(
+    _vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit,
 ) = setpoint
-function _vsc_ac_setpoint_to_openapi(
-    vsc,
-    setpoint,
-    ::Val{VSCACControlModes.AC_VOLTAGE},
-    rated,
-)
-    return setpoint * _vsc_ac_base_voltage(vsc, rated, setpoint, "ac_setpoint")
-end
+_vsc_dc_setpoint_to_openapi(
+    _vsc, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
+) = setpoint
+
+_vsc_ac_setpoint_to_openapi(_vsc, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) =
+    setpoint
+_vsc_ac_setpoint_to_openapi(_vsc, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = setpoint
 
 """The shared body of both unit-system methods; only `unit` decides the power scaling."""
 function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAPIRefs, unit)
@@ -1041,7 +1018,6 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         ),
         ac_setpoint_from = _vsc_ac_setpoint_to_openapi(
             vsc, get_ac_setpoint_from(vsc), Val(ac_control_from),
-            get_rated_ac_voltage_from(vsc),
         ),
         rated_ac_voltage_from = get_rated_ac_voltage_from(vsc),
         converter_loss_from = convert_cost_to_openapi(get_converter_loss_from(vsc)),
@@ -1053,6 +1029,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         power_factor_weighting_fraction_from =
         get_power_factor_weighting_fraction_from(vsc),
         voltage_units = "NATURAL_UNITS",
+        setpoint_voltage_units = "COMPONENT_BASE",
         voltage_limits_from = _minmax_po(get_voltage_limits_from(vsc)),
         dc_voltage_droop_from = get_dc_voltage_droop_from(vsc),
         reactive_power_to = _vsc_power_to_openapi(
@@ -1064,7 +1041,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
             vsc, get_dc_setpoint_to(vsc), Val(dc_control_to), base_power, unit,
         ),
         ac_setpoint_to = _vsc_ac_setpoint_to_openapi(
-            vsc, get_ac_setpoint_to(vsc), Val(ac_control_to), get_rated_ac_voltage_to(vsc),
+            vsc, get_ac_setpoint_to(vsc), Val(ac_control_to),
         ),
         rated_ac_voltage_to = get_rated_ac_voltage_to(vsc),
         converter_loss_to = convert_cost_to_openapi(get_converter_loss_to(vsc)),

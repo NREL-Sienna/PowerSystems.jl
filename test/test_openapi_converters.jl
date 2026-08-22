@@ -671,6 +671,54 @@ end
         @test get_downstream_turbines(reservoir_head) == [turbine]
     end
 
+    # A zero-capacity placeholder reservoir (the tail of an unmodeled pumped-storage pair).
+    # The absolute -> fraction conversion divides by `storage_level_limits.max`, so this must
+    # not come back as 0/0 = NaN: a NaN field silently poisons the system and only surfaces
+    # later as a JSON write failure.
+    reservoir_tail_po = PSY.PO.HydroReservoir(;
+        id = 24, name = "reservoir_tail", available = true,
+        storage_level_limits = PSY.PC.MinMax(; min = 0.0, max = 0.0),
+        initial_level = 0.0,
+        spillage_limits = nothing,
+        inflow = 0.0, outflow = 0.0, level_targets = nothing,
+        intake_elevation = 0.0,
+        head_to_volume_factor = PSY.PC.FunctionData(
+            PSY.PC.LinearFunctionData(; proportional_term = 0.0, constant_term = 0.0),
+        ),
+        upstream_turbines = [20], downstream_turbines = Int[],
+        upstream_reservoirs = Int[],
+        operation_cost = PSY.PC.HydroReservoirCost(;
+            level_shortage_cost = 0.0, level_surplus_cost = 0.0, spillage_cost = 0.0,
+        ),
+        evaporative_loss = 0.0, level_data_type = "ENERGY",
+    )
+    for val in (DU, NU)
+        reservoir_tail = PSY.from_openapi(reservoir_tail_po, refs, val)
+        @test !isnan(get_initial_level(reservoir_tail))
+        @test iszero(get_initial_level(reservoir_tail))
+    end
+
+    # Zero capacity but a nonzero level is contradictory, not a placeholder: the fraction is
+    # undefined, so it must fail loudly rather than import a NaN.
+    bad_reservoir_po = PSY.PO.HydroReservoir(;
+        id = 25, name = "reservoir_bad", available = true,
+        storage_level_limits = PSY.PC.MinMax(; min = 0.0, max = 0.0),
+        initial_level = 500.0,
+        spillage_limits = nothing,
+        inflow = 0.0, outflow = 0.0, level_targets = nothing,
+        intake_elevation = 0.0,
+        head_to_volume_factor = PSY.PC.FunctionData(
+            PSY.PC.LinearFunctionData(; proportional_term = 0.0, constant_term = 0.0),
+        ),
+        upstream_turbines = [20], downstream_turbines = Int[],
+        upstream_reservoirs = Int[],
+        operation_cost = PSY.PC.HydroReservoirCost(;
+            level_shortage_cost = 0.0, level_surplus_cost = 0.0, spillage_cost = 0.0,
+        ),
+        evaporative_loss = 0.0, level_data_type = "ENERGY",
+    )
+    @test_throws ErrorException PSY.from_openapi(bad_reservoir_po, refs, DU)
+
     ror_po = PSY.PO.HydroDispatch(;
         id = 22, name = "ror1", available = true, bus = 3,
         active_power = 15.0, reactive_power = 3.0, rating = 40.0,
@@ -1187,6 +1235,42 @@ end
     @test get_converter_loss_to(vsc) == QuadraticCurve(0.01, 1.1, 0.4)
 end
 
+@testset "OpenAPI converters: TwoTerminalVSCLine setpoint_voltage_units selects the basis" begin
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    refs[10] =
+        PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
+
+    # NATURAL_UNITS: kV in the document, divided by the base each side is expressed against —
+    # `rated_dc_voltage` (200.0) on the DC side, `rated_ac_voltage_from` (138.0) on the AC side.
+    natural = _vsc_po_minimal()
+    natural.setpoint_voltage_units = "NATURAL_UNITS"
+    natural.dc_control_to = "DC_VOLTAGE"
+    natural.dc_setpoint_to = 204.0
+    natural.ac_control_from = "AC_VOLTAGE"
+    natural.ac_setpoint_from = 141.45
+    natural.rated_ac_voltage_from = 138.0
+    vsc_natural = PSY.from_openapi(natural, refs, NU)
+    @test get_dc_setpoint_to(vsc_natural) == 204.0 / 200.0
+    @test get_ac_setpoint_from(vsc_natural) == 141.45 / 138.0
+
+    # COMPONENT_BASE: already the per-unit PSY stores, so both pass through untouched.
+    device = _vsc_po_minimal()
+    device.setpoint_voltage_units = "COMPONENT_BASE"
+    device.dc_control_to = "DC_VOLTAGE"
+    device.dc_setpoint_to = 1.02
+    device.ac_control_from = "AC_VOLTAGE"
+    device.ac_setpoint_from = 1.025
+    vsc_device = PSY.from_openapi(device, refs, NU)
+    @test get_dc_setpoint_to(vsc_device) == 1.02
+    @test get_ac_setpoint_from(vsc_device) == 1.025
+
+    # A basis outside the schema's two never reaches PSY: the generated PO struct validates the
+    # enum on assignment, which is why `_check_vsc_setpoint_voltage_units` only ever sees a
+    # legal value.
+    bad_basis = _vsc_po_minimal()
+    @test_throws PSY.PO.OpenAPI.ValidationException bad_basis.setpoint_voltage_units = "SYSTEM_BASE"
+end
+
 @testset "OpenAPI converters: TwoTerminalVSCLine unconvertible inputs error" begin
     refs = _refs_with_area_bus(; base_power = 100.0)
     refs[10] =
@@ -1195,7 +1279,8 @@ end
     # An AC_VOLTAGE setpoint under NATURAL_UNITS (the schema default) is kV, converted
     # through `rated_ac_voltage_from` — but `_vsc_po_minimal` leaves it at `0.0`
     # (unspecified), so there is still no base to convert this particular value against. See
-    # the "under NATURAL_UNITS" testset below for the case where a base IS given.
+    # the "setpoint_voltage_units selects the basis" testset above for the case where a base
+    # IS given.
     ac_voltage = _vsc_po_minimal()
     ac_voltage.ac_control_from = "AC_VOLTAGE"
     @test_throws ErrorException PSY.from_openapi(ac_voltage, refs, NU)

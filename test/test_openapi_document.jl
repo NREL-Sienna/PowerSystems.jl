@@ -413,8 +413,12 @@ end
     bus.bustype = ACBusTypes.REF
     add_component!(sys, bus)
 
-    # `HydroPumpTurbine` converts after `HydroReservoir` in `DOCUMENT_PLAN`, so a reservoir
-    # pointing at one is a genuine forward reference.
+    # `DOCUMENT_PLAN` now converts both `HydroUnit` subtypes before `HydroReservoir`, so the
+    # turbine reference below is no longer a genuine forward reference — the reservoir-to-
+    # reservoir reference two components down still is (the cascading case no `DOCUMENT_PLAN`
+    # reordering can fix, since a reservoir can reference another reservoir). Both are read
+    # through the same [`PSY.defer_ref!`](@ref)/[`PSY.resolve_deferred_refs!`](@ref) queue,
+    # which does not care whether the id it resolves was already registered when queued.
     pump = HydroPumpTurbine(nothing)
     pump.bus = bus
     pump.name = "pump1"
@@ -462,6 +466,16 @@ end
         @test get_upstream_reservoirs(tail2) == [head2]
         @test isempty(get_upstream_reservoirs(head2))
     end
+end
+
+@testset "DOCUMENT_PLAN: turbines convert before the reservoirs referencing them" begin
+    # No longer load-bearing — the `defer_ref!`/`resolve_deferred_refs!` queue (see the
+    # round-trip testset above) resolves a turbine or same-type reservoir reference
+    # regardless of plan order. Kept as a harmless extra guard on the plan's declared intent.
+    order = [p.key for p in PSY.DOCUMENT_PLAN]
+    plan_position(key) = findfirst(==(key), order)
+    @test plan_position("HydroTurbine") < plan_position("HydroReservoir")
+    @test plan_position("HydroPumpTurbine") < plan_position("HydroReservoir")
 end
 
 @testset "DOCUMENT_PLAN: converters match the declared pair" begin

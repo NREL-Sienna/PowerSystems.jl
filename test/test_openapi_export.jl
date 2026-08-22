@@ -1181,9 +1181,11 @@ end
     @test natural_po.rating == 200.0
     @test natural_po.active_power_limits_from.min == -200.0
     @test natural_po.reactive_power_limits_to.max == 100.0
-    # DC_POWER setpoint scales with the other power fields; the DC_VOLTAGE one is pu → kV.
+    # DC_POWER setpoint scales with the other power fields; the voltage-regulating ones are
+    # written per-unit as stored, tagged by `setpoint_voltage_units`.
     @test natural_po.dc_setpoint_from == 40.0
-    @test natural_po.dc_setpoint_to == 204.0
+    @test natural_po.dc_setpoint_to == 1.02
+    @test natural_po.setpoint_voltage_units == "COMPONENT_BASE"
     # pu → siemens against Ybase = 100 / 200^2.
     @test natural_po.g == 0.5
     @test natural_po.admittance_units == "NATURAL_UNITS"
@@ -1196,7 +1198,8 @@ end
     @test device_po.active_power_flow == 0.5
     @test device_po.active_power_limits_from.min == -2.0
     @test device_po.dc_setpoint_from == 0.4
-    @test device_po.dc_setpoint_to == 204.0
+    @test device_po.dc_setpoint_to == 1.02
+    @test device_po.setpoint_voltage_units == "COMPONENT_BASE"
     @test device_po.g == 0.5
 end
 
@@ -1219,13 +1222,17 @@ end
     refs[3] = arc
     refs[4] = vsc
 
-    # `rated_ac_voltage_from` is the AC-side base `ac_setpoint_from` converts pu -> kV
-    # against, exactly like `rated_dc_voltage` for `dc_setpoint_*` — unaffected by unit
-    # system, since it is a voltage, not a power field.
+    # The setpoint is written per unit and the basis declared, so no base is needed to
+    # export it; `rated_ac_voltage_from` rides along as the base an importer reading a
+    # natural-units document divides by. Neither depends on the unit system, since both
+    # are voltages, not power fields.
     natural_po = PSY.to_openapi(vsc, refs, NU)
-    @test natural_po.ac_setpoint_from == 0.95 * 230.0
-    device_po = PSY.to_openapi(vsc, refs, DU)
-    @test device_po.ac_setpoint_from == 0.95 * 230.0
+    @test natural_po.ac_setpoint_from == 0.95
+    @test natural_po.setpoint_voltage_units == "COMPONENT_BASE"
+    @test natural_po.rated_ac_voltage_from == 230.0
+    component_po = PSY.to_openapi(vsc, refs, DU)
+    @test component_po.ac_setpoint_from == 0.95
+    @test component_po.rated_ac_voltage_from == 230.0
 end
 
 @testset "OpenAPI export: TwoTerminalVSCLine survives a document round trip" begin

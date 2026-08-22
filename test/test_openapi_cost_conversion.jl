@@ -232,6 +232,78 @@ end
     @test get_energy_surplus_cost(cost) == 4.0
 end
 
+_po_offer_curve(x_coords, y_coords; power_units = "NATURAL_UNITS") = PSY.PC.CostCurve(;
+    power_units = power_units,
+    value_curve = PSY.PC.ValueCurve(
+        PSY.PC.IncrementalCurve(;
+            function_data = PSY.PC.IncrementalCurveFunctionData(
+                PSY.PC.PiecewiseStepData(; x_coords = x_coords, y_coords = y_coords),
+            ),
+            initial_input = 0.0,
+        ),
+    ),
+)
+
+@testset "convert_cost: ImportExportCost" begin
+    po = PSY.PC.ImportExportCost(;
+        import_offer_curves = _po_offer_curve([0.0, 100.0, 200.0], [10.0, 20.0]),
+        export_offer_curves = _po_offer_curve([0.0, 50.0], [8.0]),
+        energy_import_weekly_limit = 1000.0,
+        energy_export_weekly_limit = 2000.0,
+    )
+    cost = PSY.convert_cost(po)
+    @test cost isa ImportExportCost
+    import_curve = get_import_offer_curves(cost)
+    @test import_curve isa CostCurve{PiecewiseIncrementalCurve}
+    @test get_function_data(get_value_curve(import_curve)) ==
+          PiecewiseStepData([0.0, 100.0, 200.0], [10.0, 20.0])
+    @test get_function_data(get_value_curve(get_export_offer_curves(cost))) ==
+          PiecewiseStepData([0.0, 50.0], [8.0])
+    @test get_energy_import_weekly_limit(cost) == 1000.0
+    @test get_energy_export_weekly_limit(cost) == 2000.0
+    # The schema has no `ancillary_service_offers`, so the export drops it and the import
+    # cannot invent one.
+    @test isempty(get_ancillary_service_offers(cost))
+end
+
+@testset "convert_cost: ImportExportCost with an unoffered side" begin
+    po = PSY.PC.ImportExportCost(;
+        import_offer_curves = _po_offer_curve([0.0, 100.0], [10.0]),
+        export_offer_curves = nothing,
+        energy_import_weekly_limit = 1000.0,
+        energy_export_weekly_limit = 2000.0,
+    )
+    cost = PSY.convert_cost(po)
+    @test get_export_offer_curves(cost) === PSY.ZERO_OFFER_CURVE
+end
+
+@testset "convert_cost: ImportExportCost offer curves must be piecewise incremental" begin
+    po = PSY.PC.ImportExportCost(;
+        import_offer_curves = _po_cost_curve(),
+        export_offer_curves = nothing,
+        energy_import_weekly_limit = 1000.0,
+        energy_export_weekly_limit = 2000.0,
+    )
+    @test_throws ErrorException PSY.convert_cost(po)
+end
+
+@testset "convert_cost: ImportExportCost round trip" begin
+    cost = ImportExportCost(;
+        import_offer_curves = make_import_curve([0.0, 100.0, 200.0], [10.0, 20.0]),
+        export_offer_curves = make_export_curve([0.0, 50.0], [8.0]),
+        energy_import_weekly_limit = 1000.0,
+        energy_export_weekly_limit = 2000.0,
+    )
+    # `ImportExportCost` has no `==`, so compare the fields the conversion carries.
+    round_tripped = PSY.convert_cost(PSY.convert_cost_to_openapi(cost))
+    @test get_import_offer_curves(round_tripped) == get_import_offer_curves(cost)
+    @test get_export_offer_curves(round_tripped) == get_export_offer_curves(cost)
+    @test get_energy_import_weekly_limit(round_tripped) ==
+          get_energy_import_weekly_limit(cost)
+    @test get_energy_export_weekly_limit(round_tripped) ==
+          get_energy_export_weekly_limit(cost)
+end
+
 @testset "convert_reserve_variable: reserve Operating Reserve Demand Curve" begin
     @test PSY.convert_reserve_variable(nothing) === PSY.ZERO_OFFER_CURVE
 

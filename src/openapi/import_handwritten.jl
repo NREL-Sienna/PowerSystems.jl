@@ -55,8 +55,22 @@ _resolve_base_power(::OpenAPIRefs, base_power) = Float64(base_power)
 """Reservoir level fields arrive absolute (per `level_data_type`'s units); PSY wants them
 as a fraction of `storage_level_limits.max`. Semantic, not a unit conversion — same in
 both `DeviceBaseUnit`/`NaturalUnit` methods."""
-_level_fraction(::Nothing, max_level) = nothing
-_level_fraction(v, max_level) = v / max_level
+_level_fraction(::Nothing, max_level, name, field) = nothing
+
+function _level_fraction(v, max_level, name, field)
+    if iszero(max_level)
+        iszero(v) || error(
+            "HydroReservoir $name: $field is $v but storage_level_limits.max is 0, so the " *
+            "fraction PSY stores it as is undefined. A reservoir with no capacity cannot " *
+            "hold a level — emit a nonzero max, or a zero $field.",
+        )
+        # Zero capacity and zero level: no fraction is meaningful, and 0 is the value that
+        # survives the inverse (export multiplies the fraction by this same zero max).
+        # Placeholder reservoirs are built this way, so this must not error.
+        return 0.0
+    end
+    return v / max_level
+end
 
 _complex_number(c) = Complex(c.real, c.imag)
 
@@ -728,11 +742,21 @@ function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit
         name = po.name,
         available = po.available,
         storage_level_limits = _minmax(po.storage_level_limits),
-        initial_level = _level_fraction(po.initial_level, max_level),
+        initial_level = _level_fraction(
+            po.initial_level,
+            max_level,
+            po.name,
+            "initial_level",
+        ),
         spillage_limits = _opt_minmax(po.spillage_limits),
         inflow = po.inflow,
         outflow = po.outflow,
-        level_targets = _level_fraction(po.level_targets, max_level),
+        level_targets = _level_fraction(
+            po.level_targets,
+            max_level,
+            po.name,
+            "level_targets",
+        ),
         intake_elevation = po.intake_elevation,
         head_to_volume_factor = convert_cost(po.head_to_volume_factor),
         evaporative_loss = po.evaporative_loss,
@@ -851,8 +875,9 @@ end
 # on the PSY side (its docstring gives the constant term in physical MW directly) and passes
 # through unconverted in both methods.
 
-# A `oneOf` field is wrapped only after deserialization; a document built in memory assigns
-# the member directly.
+# A `oneOf` field holds its member wrapped only after deserialization; a document built in
+# memory assigns the member directly. Unwrap by dispatch, the way `convert_cost` does
+# (`cost_conversion.jl`), so both shapes read the same.
 _unwrap_oneof(x::OpenAPI.OneOfAPIModel) = _unwrap_oneof(x.value)
 _unwrap_oneof(x) = x
 
@@ -1123,9 +1148,9 @@ end
 # `rated_dc_voltage` — real wire-row fields now (PowerFlowFileParser's `make_vscline!` writes
 # each from the terminal's own RAW bus base voltage), read straight through as kV, same as
 # `rated_dc_voltage`. `ac_setpoint_*`'s `AC_VOLTAGE` branch reads `setpoint_voltage_units` to
-# decide whether it can convert: `COMPONENT_BASE` is already per-unit of the converter's own
-# AC base voltage — PSY's own convention — so it passes through unscaled; `NATURAL_UNITS` is
-# kV and now converts through `rated_ac_voltage_from`/`rated_ac_voltage_to`, exactly like
+# decide whether it can convert: `COMPONENT_BASE` is already per-unit of the converter's own AC
+# base voltage — PSY's own convention — so it passes through unscaled; `NATURAL_UNITS` is kV
+# and converts through `rated_ac_voltage_from`/`rated_ac_voltage_to`, exactly like
 # `dc_setpoint_*`'s DC-voltage branches convert through `rated_dc_voltage` — see
 # `_vsc_import_ac_base_voltage`, the same `0.0`-is-unspecified guard as `_vsc_dc_base_voltage`.
 
@@ -1143,6 +1168,19 @@ _check_vsc_voltage_units(po) = _check_unit_basis(
     po.voltage_units,
     TWO_TERMINAL_VSC_VOLTAGE_UNITS_IMPLEMENTED,
     "TwoTerminalVSCLine.voltage_units",
+    " for $(po.name)",
+)
+
+# Both bases are implemented: PSY stores these setpoints per-unit, and each kV one has a base to
+# divide by — `rated_dc_voltage` on the DC side, `rated_ac_voltage_from`/`rated_ac_voltage_to`
+# on the AC side. Unlike `voltage_units`, which tags `voltage_limits_*` only.
+const TWO_TERMINAL_VSC_SETPOINT_VOLTAGE_UNITS_IMPLEMENTED =
+    Set(["NATURAL_UNITS", "COMPONENT_BASE"])
+
+_check_vsc_setpoint_voltage_units(po) = _check_unit_basis(
+    po.setpoint_voltage_units,
+    TWO_TERMINAL_VSC_SETPOINT_VOLTAGE_UNITS_IMPLEMENTED,
+    "TwoTerminalVSCLine.setpoint_voltage_units",
     " for $(po.name)",
 )
 
@@ -1184,8 +1222,8 @@ _vsc_converter_loss(curve) = error(
 
 """
 `dc_setpoint_*` follows `dc_control_*`: MW under `DC_POWER` (a power field, so it divides
-with its siblings only under `NaturalUnit`), and kV under either DC-voltage-regulating mode,
-which PSY stores as per-unit of `rated_dc_voltage` in both methods.
+with its siblings only under `NaturalUnit`), and per-unit under either DC-voltage-regulating
+mode — `setpoint_voltage_units` is checked to be `COMPONENT_BASE`, so no base is applied.
 """
 _vsc_dc_setpoint(
     po,
@@ -1199,18 +1237,18 @@ _vsc_dc_setpoint(
     _po, setpoint, ::Val{VSCDCControlModes.DC_POWER}, _base_power, ::DeviceBaseUnit,
 ) = setpoint
 function _vsc_dc_setpoint(po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE}, _bp, _unit)
-    return setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
+    return _vsc_dc_voltage_setpoint(po, setpoint, _vsc_setpoint_basis(po))
 end
 function _vsc_dc_setpoint(
     po, setpoint, ::Val{VSCDCControlModes.DC_VOLTAGE_DROOP}, _bp, _unit,
 )
-    return setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
+    return _vsc_dc_voltage_setpoint(po, setpoint, _vsc_setpoint_basis(po))
 end
 
 """Errors when an `ac_setpoint_*` value needs an AC voltage base under `AC_VOLTAGE`/
 `NATURAL_UNITS` but the matching `rated_ac_voltage_from`/`rated_ac_voltage_to` is `0.0`
-(unspecified). Mirrors export's `_vsc_ac_base_voltage`; `0.0` is only usable while nothing
-actually needs the base, same posture as `_vsc_dc_base_voltage`."""
+(unspecified). `0.0` is only usable while nothing actually needs the base, same posture as
+`_vsc_dc_base_voltage`."""
 function _vsc_import_ac_base_voltage(po, rated, value, field::AbstractString)
     if !iszero(rated)
         return rated
@@ -1226,40 +1264,47 @@ function _vsc_import_ac_base_voltage(po, rated, value, field::AbstractString)
 end
 
 """
+The basis `setpoint_voltage_units` declares for the voltage-regulating setpoints. PSY stores
+them per-unit, so `COMPONENT_BASE` passes through and only `NATURAL_UNITS` divides by a base.
+"""
+_vsc_setpoint_basis(po) = Val(Symbol(po.setpoint_voltage_units))
+
+_vsc_dc_voltage_setpoint(_po, setpoint, ::Val{:COMPONENT_BASE}) = setpoint
+_vsc_dc_voltage_setpoint(po, setpoint, ::Val{:NATURAL_UNITS}) =
+    setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
+
+"""
 `ac_setpoint_*` follows `ac_control_*`: a dimensionless power factor under
 `AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE`, whose basis
-`setpoint_voltage_units` names. `COMPONENT_BASE` is already per-unit of the converter's own
-AC base voltage — PSY's own `ac_setpoint_*` convention — so it passes through unscaled (this
-is what PowerFlowFileParser's PSS/E reader writes; see `make_vscline!`'s docstring there).
+`setpoint_voltage_units` names. `COMPONENT_BASE` is already per-unit of the converter's own AC
+base voltage — PSY's own `ac_setpoint_*` convention — so it passes through unscaled.
 `NATURAL_UNITS` is kV, converted through `rated` — the caller's matching
 `rated_ac_voltage_from`/`rated_ac_voltage_to` — via `_vsc_import_ac_base_voltage`.
 """
 _vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}, _rated) =
     setpoint
 function _vsc_ac_setpoint(po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}, rated)
-    po.setpoint_voltage_units == "COMPONENT_BASE" && return setpoint
-    if po.setpoint_voltage_units == "NATURAL_UNITS"
-        return setpoint / _vsc_import_ac_base_voltage(po, rated, setpoint, "ac_setpoint")
-    end
-    return error(
-        "TwoTerminalVSCLine \"$(po.name)\": ac_control is AC_VOLTAGE and " *
-        "setpoint_voltage_units is $(po.setpoint_voltage_units) — expected COMPONENT_BASE " *
-        "or NATURAL_UNITS",
-    )
+    return _vsc_ac_voltage_setpoint(po, setpoint, rated, _vsc_setpoint_basis(po))
 end
+
+_vsc_ac_voltage_setpoint(_po, setpoint, _rated, ::Val{:COMPONENT_BASE}) = setpoint
+_vsc_ac_voltage_setpoint(po, setpoint, rated, ::Val{:NATURAL_UNITS}) =
+    setpoint / _vsc_import_ac_base_voltage(po, rated, setpoint, "ac_setpoint")
 
 """The shared body of both unit-system methods; only `unit` and `base_power` differ."""
 function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
     _check_vsc_admittance_units(po)
     _check_vsc_voltage_units(po)
+    _check_vsc_setpoint_voltage_units(po)
     dc_control_from = VSCDCControlModes(po.dc_control_from)
     dc_control_to = VSCDCControlModes(po.dc_control_to)
     ac_control_from = VSCACControlModes(po.ac_control_from)
     ac_control_to = VSCACControlModes(po.ac_control_to)
+    arc = refs[po.arc]
     return TwoTerminalVSCLine(;
         name = po.name,
         available = po.available,
-        arc = refs[po.arc],
+        arc = arc,
         active_power_flow = _vsc_power(po.active_power_flow, base_power, unit),
         rating = _vsc_power(po.rating, base_power, unit),
         active_power_limits_from = _vsc_minmax(
