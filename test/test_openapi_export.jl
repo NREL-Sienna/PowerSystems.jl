@@ -19,9 +19,11 @@ side to cover the second arm of the `Union{LinearCurve, QuadraticCurve}` field.
 _export_vsc(
     arc;
     ac_control_from = VSCACControlModes.AC_REACTIVE_POWER,
+    ac_control_to = VSCACControlModes.AC_REACTIVE_POWER,
     dc_control_to = VSCDCControlModes.DC_VOLTAGE,
     rated_dc_voltage = 200.0,
     rated_ac_voltage_from = 0.0,
+    rated_ac_voltage_to = 0.0,
 ) = TwoTerminalVSCLine(;
     name = "vsc1", available = true, arc = arc,
     active_power_flow = 0.5, rating = 2.0,
@@ -39,9 +41,9 @@ _export_vsc(
     voltage_limits_from = (min = 0.9, max = 1.1),
     dc_voltage_droop_from = 0.0, reactive_power_to = 0.2,
     dc_control_to = dc_control_to,
-    ac_control_to = VSCACControlModes.AC_REACTIVE_POWER,
+    ac_control_to = ac_control_to,
     dc_setpoint_to = 1.02, ac_setpoint_to = 0.98,
-    rated_ac_voltage_to = 0.0,
+    rated_ac_voltage_to = rated_ac_voltage_to,
     converter_loss_to = QuadraticCurve(0.01, 1.1, 0.4),
     max_dc_current_to = 1000.0, rating_to = 2.0,
     reactive_power_limits_to = (min = -1.0, max = 1.0),
@@ -1232,6 +1234,36 @@ end
         bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
         arc = Arc(; from = bus1, to = bus2)
         vsc = _export_vsc(arc)
+        sys = System(100.0)
+        for component in (bus1, bus2, arc, vsc)
+            add_component!(sys, component)
+        end
+
+        dir = mktempdir()
+        PSY.to_file(sys, dir; unit_system = unit_system, force = true)
+        restored = get_component(TwoTerminalVSCLine, PSY.from_file(System, dir), "vsc1")
+        for field in fieldnames(TwoTerminalVSCLine)
+            field in (:internal, :arc, :services) && continue
+            @test getfield(restored, field) == getfield(vsc, field)
+        end
+    end
+end
+
+@testset "OpenAPI export: TwoTerminalVSCLine AC voltage bases survive a document round trip" begin
+    # `ac_control_*` on `AC_VOLTAGE` with a non-zero `rated_ac_voltage_from`/`_to`: the wire
+    # row must carry both bases (not just convert the setpoints through them) for a
+    # PSY→doc→PSY round trip to reproduce the same PSY values back.
+    for unit_system in (:natural_units, :device_base)
+        bus1 = _export_bus(; number = 1)
+        bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+        arc = Arc(; from = bus1, to = bus2)
+        vsc = _export_vsc(
+            arc;
+            ac_control_from = VSCACControlModes.AC_VOLTAGE,
+            ac_control_to = VSCACControlModes.AC_VOLTAGE,
+            rated_ac_voltage_from = 230.0,
+            rated_ac_voltage_to = 225.0,
+        )
         sys = System(100.0)
         for component in (bus1, bus2, arc, vsc)
             add_component!(sys, component)

@@ -1148,6 +1148,29 @@ end
     @test get_ac_setpoint_from(device) == 1.03
 end
 
+@testset "OpenAPI converters: TwoTerminalVSCLine AC_VOLTAGE setpoint under NATURAL_UNITS" begin
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    refs[10] =
+        PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
+
+    # `setpoint_voltage_units = NATURAL_UNITS` (the schema default) means `ac_setpoint_from`
+    # is kV, converted through `rated_ac_voltage_from` — the AC-side counterpart of
+    # `rated_dc_voltage`, now a real wire-row field PowerFlowFileParser's `make_vscline!`
+    # writes from the terminal's own RAW bus base voltage — exactly like `dc_setpoint_*`'s
+    # DC-voltage branches convert through `rated_dc_voltage`.
+    vsc_po = _vsc_po_minimal()
+    vsc_po.ac_control_from = "AC_VOLTAGE"
+    vsc_po.ac_setpoint_from = 234.6
+    vsc_po.rated_ac_voltage_from = 230.0
+    vsc_po.setpoint_voltage_units = "NATURAL_UNITS"
+
+    for val in (NU, DU)
+        vsc = PSY.from_openapi(vsc_po, refs, val)
+        @test get_rated_ac_voltage_from(vsc) == 230.0
+        @test get_ac_setpoint_from(vsc) == 234.6 / 230.0
+    end
+end
+
 @testset "OpenAPI converters: TwoTerminalVSCLine quadratic converter loss" begin
     refs = _refs_with_area_bus(; base_power = 100.0)
     refs[10] =
@@ -1169,9 +1192,10 @@ end
     refs[10] =
         PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
 
-    # An AC_VOLTAGE setpoint is kV here and per-unit of rated_ac_voltage_from/to in PSY; the
-    # document has no field carrying that base back in, so this branch still has no faithful
-    # conversion on import (export already converts once rated_ac_voltage_from/to is set).
+    # An AC_VOLTAGE setpoint under NATURAL_UNITS (the schema default) is kV, converted
+    # through `rated_ac_voltage_from` — but `_vsc_po_minimal` leaves it at `0.0`
+    # (unspecified), so there is still no base to convert this particular value against. See
+    # the "under NATURAL_UNITS" testset below for the case where a base IS given.
     ac_voltage = _vsc_po_minimal()
     ac_voltage.ac_control_from = "AC_VOLTAGE"
     @test_throws ErrorException PSY.from_openapi(ac_voltage, refs, NU)

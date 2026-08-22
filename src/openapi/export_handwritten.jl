@@ -931,12 +931,12 @@ end
 # `dc_setpoint_*` branches convert pu → kV in both. Only the document-unit-system-governed power
 # fields and `dc_setpoint_*`'s `DC_POWER` branch multiply by the system base under `NaturalUnit`.
 # `voltage_limits_*`, `dc_voltage_droop_*`, the current fields, `rmpct_*`, the weighting
-# fractions, and `rated_dc_voltage` pass through — see import_handwritten.jl's header for why
-# each one is left alone. `ac_setpoint_*` under `AC_VOLTAGE` converts pu → kV via
-# `rated_ac_voltage_from`/`rated_ac_voltage_to`, mirroring `dc_setpoint_*`'s DC-voltage
-# branches and `rated_dc_voltage`; unlike `rated_dc_voltage`, the two `rated_ac_voltage_*`
-# fields are PSY-only (the document has no field to carry them back on import — see
-# import_handwritten.jl's header).
+# fractions, and `rated_dc_voltage`/`rated_ac_voltage_from`/`rated_ac_voltage_to` pass
+# through — see import_handwritten.jl's header for why each one is left alone. `ac_setpoint_*`
+# under `AC_VOLTAGE` converts pu → kV via `rated_ac_voltage_from`/`rated_ac_voltage_to`,
+# mirroring `dc_setpoint_*`'s DC-voltage branches and `rated_dc_voltage`; both are also
+# written onto the wire row directly (below), same as `rated_dc_voltage`, so PSY→document→PSY
+# preserves the bases.
 
 """pu → siemens via `Ybase = base_power / rated_dc_voltage^2` (kV, MVA)."""
 function _vsc_pu_to_siemens(vsc::TwoTerminalVSCLine, base_power)
@@ -1043,6 +1043,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
             vsc, get_ac_setpoint_from(vsc), Val(ac_control_from),
             get_rated_ac_voltage_from(vsc),
         ),
+        rated_ac_voltage_from = get_rated_ac_voltage_from(vsc),
         converter_loss_from = convert_cost_to_openapi(get_converter_loss_from(vsc)),
         max_dc_current_from = get_max_dc_current_from(vsc),
         rating_from = _vsc_power_to_openapi(get_rating_from(vsc, SU), base_power, unit),
@@ -1065,6 +1066,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         ac_setpoint_to = _vsc_ac_setpoint_to_openapi(
             vsc, get_ac_setpoint_to(vsc), Val(ac_control_to), get_rated_ac_voltage_to(vsc),
         ),
+        rated_ac_voltage_to = get_rated_ac_voltage_to(vsc),
         converter_loss_to = convert_cost_to_openapi(get_converter_loss_to(vsc)),
         max_dc_current_to = get_max_dc_current_to(vsc),
         rating_to = _vsc_power_to_openapi(get_rating_to(vsc, SU), base_power, unit),

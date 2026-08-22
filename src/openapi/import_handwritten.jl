@@ -1116,19 +1116,18 @@ end
 #   max_dc_current_*
 #   rmpct_*,              dimensionless on both sides.
 #   power_factor_weighting_fraction_*
-#   rated_dc_voltage      kV on both sides.
+#   rated_dc_voltage,     kV on both sides.
+#   rated_ac_voltage_*
 #
-# `ac_setpoint_*`'s `AC_VOLTAGE` branch reads `setpoint_voltage_units` to decide whether it can
-# convert: `COMPONENT_BASE` is already per-unit of the converter's own AC base voltage — PSY's
-# own convention — so it passes through unscaled (this is what every current producer writes,
-# including PowerFlowFileParser's PSS/E reader). `NATURAL_UNITS` is kV, needing
-# `rated_ac_voltage_from`/`rated_ac_voltage_to` — real PSY fields now (mirroring
-# `rated_dc_voltage`) — but the OpenAPI schema has no matching field to carry that base back
-# in, so it still errors rather than guessing. Export (see export_handwritten.jl) already
-# converts pu → kV once `rated_ac_voltage_from`/`rated_ac_voltage_to` is set; closing the loop
-# for `NATURAL_UNITS` on import needs those two fields mirrored into SiennaSchemas'
-# `TwoTerminalVSCLine.json` (alongside `rated_dc_voltage`'s existing entry) and regenerated
-# into PowerOpenAPIModels/PowerOperationsOpenAPIModels.
+# `rated_ac_voltage_from`/`rated_ac_voltage_to` are the AC-side counterparts of
+# `rated_dc_voltage` — real wire-row fields now (PowerFlowFileParser's `make_vscline!` writes
+# each from the terminal's own RAW bus base voltage), read straight through as kV, same as
+# `rated_dc_voltage`. `ac_setpoint_*`'s `AC_VOLTAGE` branch reads `setpoint_voltage_units` to
+# decide whether it can convert: `COMPONENT_BASE` is already per-unit of the converter's own
+# AC base voltage — PSY's own convention — so it passes through unscaled; `NATURAL_UNITS` is
+# kV and now converts through `rated_ac_voltage_from`/`rated_ac_voltage_to`, exactly like
+# `dc_setpoint_*`'s DC-voltage branches convert through `rated_dc_voltage` — see
+# `_vsc_import_ac_base_voltage`, the same `0.0`-is-unspecified guard as `_vsc_dc_base_voltage`.
 
 const TWO_TERMINAL_VSC_ADMITTANCE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
 const TWO_TERMINAL_VSC_VOLTAGE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
@@ -1208,26 +1207,44 @@ function _vsc_dc_setpoint(
     return setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
 end
 
+"""Errors when an `ac_setpoint_*` value needs an AC voltage base under `AC_VOLTAGE`/
+`NATURAL_UNITS` but the matching `rated_ac_voltage_from`/`rated_ac_voltage_to` is `0.0`
+(unspecified). Mirrors export's `_vsc_ac_base_voltage`; `0.0` is only usable while nothing
+actually needs the base, same posture as `_vsc_dc_base_voltage`."""
+function _vsc_import_ac_base_voltage(po, rated, value, field::AbstractString)
+    if !iszero(rated)
+        return rated
+    end
+    if iszero(value)
+        return one(rated)
+    end
+    return error(
+        "TwoTerminalVSCLine \"$(po.name)\": $field is $value but its rated AC voltage " *
+        "base is 0.0, so there is no AC voltage base to convert it against — set " *
+        "rated_ac_voltage_from/rated_ac_voltage_to",
+    )
+end
+
 """
 `ac_setpoint_*` follows `ac_control_*`: a dimensionless power factor under
 `AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE`, whose basis
 `setpoint_voltage_units` names. `COMPONENT_BASE` is already per-unit of the converter's own
 AC base voltage — PSY's own `ac_setpoint_*` convention — so it passes through unscaled (this
 is what PowerFlowFileParser's PSS/E reader writes; see `make_vscline!`'s docstring there).
-`NATURAL_UNITS` is kV, needing `rated_ac_voltage_from`/`rated_ac_voltage_to` to convert; the
-document has no field carrying that base back in (see this file's header), so that
-combination still errors.
+`NATURAL_UNITS` is kV, converted through `rated` — the caller's matching
+`rated_ac_voltage_from`/`rated_ac_voltage_to` — via `_vsc_import_ac_base_voltage`.
 """
-_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) = setpoint
-function _vsc_ac_setpoint(po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE})
+_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}, _rated) =
+    setpoint
+function _vsc_ac_setpoint(po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}, rated)
     po.setpoint_voltage_units == "COMPONENT_BASE" && return setpoint
+    if po.setpoint_voltage_units == "NATURAL_UNITS"
+        return setpoint / _vsc_import_ac_base_voltage(po, rated, setpoint, "ac_setpoint")
+    end
     return error(
         "TwoTerminalVSCLine \"$(po.name)\": ac_control is AC_VOLTAGE and " *
-        "setpoint_voltage_units is $(po.setpoint_voltage_units); ac_setpoint is kV in the " *
-        "document under NATURAL_UNITS and per-unit of rated_ac_voltage_from/" *
-        "rated_ac_voltage_to in PowerSystems — the document has no field carrying that base, " *
-        "so the value cannot be converted; producers should set setpoint_voltage_units to " *
-        "COMPONENT_BASE instead",
+        "setpoint_voltage_units is $(po.setpoint_voltage_units) — expected COMPONENT_BASE " *
+        "or NATURAL_UNITS",
     )
 end
 
@@ -1259,7 +1276,10 @@ function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
         dc_setpoint_from = _vsc_dc_setpoint(
             po, po.dc_setpoint_from, Val(dc_control_from), base_power, unit,
         ),
-        ac_setpoint_from = _vsc_ac_setpoint(po, po.ac_setpoint_from, Val(ac_control_from)),
+        ac_setpoint_from = _vsc_ac_setpoint(
+            po, po.ac_setpoint_from, Val(ac_control_from), po.rated_ac_voltage_from,
+        ),
+        rated_ac_voltage_from = po.rated_ac_voltage_from,
         converter_loss_from = _vsc_converter_loss(convert_cost(po.converter_loss_from)),
         max_dc_current_from = po.max_dc_current_from,
         rating_from = _vsc_power(po.rating_from, base_power, unit),
@@ -1275,7 +1295,10 @@ function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
         dc_setpoint_to = _vsc_dc_setpoint(
             po, po.dc_setpoint_to, Val(dc_control_to), base_power, unit,
         ),
-        ac_setpoint_to = _vsc_ac_setpoint(po, po.ac_setpoint_to, Val(ac_control_to)),
+        ac_setpoint_to = _vsc_ac_setpoint(
+            po, po.ac_setpoint_to, Val(ac_control_to), po.rated_ac_voltage_to,
+        ),
+        rated_ac_voltage_to = po.rated_ac_voltage_to,
         converter_loss_to = _vsc_converter_loss(convert_cost(po.converter_loss_to)),
         max_dc_current_to = po.max_dc_current_to,
         rating_to = _vsc_power(po.rating_to, base_power, unit),
