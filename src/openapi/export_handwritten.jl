@@ -932,9 +932,11 @@ end
 # fields and `dc_setpoint_*`'s `DC_POWER` branch multiply by the system base under `NaturalUnit`.
 # `voltage_limits_*`, `dc_voltage_droop_*`, the current fields, `rmpct_*`, the weighting
 # fractions, and `rated_dc_voltage` pass through — see import_handwritten.jl's header for why
-# each one is left alone. `ac_setpoint_*` under `AC_VOLTAGE` errors on the way out for the same
-# missing-AC-base reason it errors on the way in, rather than writing a per-unit magnitude into a
-# field the document declares in kV.
+# each one is left alone. `ac_setpoint_*` under `AC_VOLTAGE` converts pu → kV via
+# `rated_ac_voltage_from`/`rated_ac_voltage_to`, mirroring `dc_setpoint_*`'s DC-voltage
+# branches and `rated_dc_voltage`; unlike `rated_dc_voltage`, the two `rated_ac_voltage_*`
+# fields are PSY-only (the document has no field to carry them back on import — see
+# import_handwritten.jl's header).
 
 """pu → siemens via `Ybase = base_power / rated_dc_voltage^2` (kV, MVA)."""
 function _vsc_pu_to_siemens(vsc::TwoTerminalVSCLine, base_power)
@@ -976,13 +978,33 @@ function _vsc_dc_setpoint_to_openapi(
     return setpoint * _vsc_export_dc_base_voltage(vsc, setpoint, "dc_setpoint")
 end
 
-_vsc_ac_setpoint_to_openapi(_vsc, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) =
-    setpoint
-_vsc_ac_setpoint_to_openapi(vsc, _setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = error(
-    "TwoTerminalVSCLine \"$(get_name(vsc))\": ac_control is AC_VOLTAGE, whose ac_setpoint is " *
-    "per-unit of the converter's AC base voltage in PowerSystems and kV in the document — " *
-    "neither the component nor the document carries that base, so the value cannot be converted",
+"""Errors when an `ac_setpoint_*` value needs an AC voltage base under `AC_VOLTAGE` control
+but the matching `rated_ac_voltage_from`/`rated_ac_voltage_to` is `0.0` (unspecified)."""
+function _vsc_ac_base_voltage(vsc::TwoTerminalVSCLine, rated, value, field::AbstractString)
+    if !iszero(rated)
+        return rated
+    end
+    if iszero(value)
+        return one(rated)
+    end
+    return error(
+        "TwoTerminalVSCLine \"$(get_name(vsc))\": $field is $value but its rated AC " *
+        "voltage base is 0.0, so there is no AC voltage base to express it against — set " *
+        "rated_ac_voltage_from/rated_ac_voltage_to",
+    )
+end
+
+_vsc_ac_setpoint_to_openapi(
+    _vsc, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}, _rated,
+) = setpoint
+function _vsc_ac_setpoint_to_openapi(
+    vsc,
+    setpoint,
+    ::Val{VSCACControlModes.AC_VOLTAGE},
+    rated,
 )
+    return setpoint * _vsc_ac_base_voltage(vsc, rated, setpoint, "ac_setpoint")
+end
 
 """The shared body of both unit-system methods; only `unit` decides the power scaling."""
 function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAPIRefs, unit)
@@ -1019,6 +1041,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         ),
         ac_setpoint_from = _vsc_ac_setpoint_to_openapi(
             vsc, get_ac_setpoint_from(vsc), Val(ac_control_from),
+            get_rated_ac_voltage_from(vsc),
         ),
         converter_loss_from = convert_cost_to_openapi(get_converter_loss_from(vsc)),
         max_dc_current_from = get_max_dc_current_from(vsc),
@@ -1040,7 +1063,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
             vsc, get_dc_setpoint_to(vsc), Val(dc_control_to), base_power, unit,
         ),
         ac_setpoint_to = _vsc_ac_setpoint_to_openapi(
-            vsc, get_ac_setpoint_to(vsc), Val(ac_control_to),
+            vsc, get_ac_setpoint_to(vsc), Val(ac_control_to), get_rated_ac_voltage_to(vsc),
         ),
         converter_loss_to = convert_cost_to_openapi(get_converter_loss_to(vsc)),
         max_dc_current_to = get_max_dc_current_to(vsc),

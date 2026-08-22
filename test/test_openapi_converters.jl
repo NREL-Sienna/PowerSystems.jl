@@ -1105,6 +1105,30 @@ end
     @test get_g(device) == 200.0
 end
 
+@testset "OpenAPI converters: TwoTerminalVSCLine AC_VOLTAGE setpoint under COMPONENT_BASE" begin
+    refs = _refs_with_area_bus(; base_power = 100.0)
+    refs[10] =
+        PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
+
+    # `setpoint_voltage_units = COMPONENT_BASE` means `ac_setpoint_from` is already per-unit
+    # of the converter's own AC base voltage — PSY's own convention — so it passes through
+    # unscaled with no `rated_ac_voltage_from` needed. This is what
+    # PowerFlowFileParser's PSS/E reader writes for every VSC line (`make_vscline!`).
+    vsc_po = _vsc_po_minimal()
+    vsc_po.ac_control_from = "AC_VOLTAGE"
+    vsc_po.ac_setpoint_from = 1.03
+    vsc_po.setpoint_voltage_units = "COMPONENT_BASE"
+
+    natural = PSY.from_openapi(vsc_po, refs, NU)
+    @test get_ac_setpoint_from(natural) == 1.03
+    @test get_rated_ac_voltage_from(natural) == 0.0
+
+    vsc_po.id = 22
+    vsc_po.name = "vsc3"
+    device = PSY.from_openapi(vsc_po, refs, DU)
+    @test get_ac_setpoint_from(device) == 1.03
+end
+
 @testset "OpenAPI converters: TwoTerminalVSCLine quadratic converter loss" begin
     refs = _refs_with_area_bus(; base_power = 100.0)
     refs[10] =
@@ -1126,8 +1150,9 @@ end
     refs[10] =
         PSY.from_openapi(PSY.PO.Arc(; id = 10, from_id = 3, to_id = 4), refs, NU)
 
-    # An AC_VOLTAGE setpoint is kV here and per-unit of an AC base voltage in PSY that
-    # neither side records — the one branch with no faithful conversion.
+    # An AC_VOLTAGE setpoint is kV here and per-unit of rated_ac_voltage_from/to in PSY; the
+    # document has no field carrying that base back in, so this branch still has no faithful
+    # conversion on import (export already converts once rated_ac_voltage_from/to is set).
     ac_voltage = _vsc_po_minimal()
     ac_voltage.ac_control_from = "AC_VOLTAGE"
     @test_throws ErrorException PSY.from_openapi(ac_voltage, refs, NU)

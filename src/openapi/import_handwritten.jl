@@ -1094,9 +1094,17 @@ end
 #   power_factor_weighting_fraction_*
 #   rated_dc_voltage      kV on both sides.
 #
-# `ac_setpoint_*`'s `AC_VOLTAGE` branch is the one branch with no faithful conversion: the
-# document carries kV, PSY wants per-unit of the converter's AC-side base voltage, and neither
-# this struct nor the document records that base, so it errors rather than guessing.
+# `ac_setpoint_*`'s `AC_VOLTAGE` branch reads `setpoint_voltage_units` to decide whether it can
+# convert: `COMPONENT_BASE` is already per-unit of the converter's own AC base voltage — PSY's
+# own convention — so it passes through unscaled (this is what every current producer writes,
+# including PowerFlowFileParser's PSS/E reader). `NATURAL_UNITS` is kV, needing
+# `rated_ac_voltage_from`/`rated_ac_voltage_to` — real PSY fields now (mirroring
+# `rated_dc_voltage`) — but the OpenAPI schema has no matching field to carry that base back
+# in, so it still errors rather than guessing. Export (see export_handwritten.jl) already
+# converts pu → kV once `rated_ac_voltage_from`/`rated_ac_voltage_to` is set; closing the loop
+# for `NATURAL_UNITS` on import needs those two fields mirrored into SiennaSchemas'
+# `TwoTerminalVSCLine.json` (alongside `rated_dc_voltage`'s existing entry) and regenerated
+# into PowerOpenAPIModels/PowerOperationsOpenAPIModels.
 
 const TWO_TERMINAL_VSC_ADMITTANCE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
 const TWO_TERMINAL_VSC_VOLTAGE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
@@ -1178,16 +1186,26 @@ end
 
 """
 `ac_setpoint_*` follows `ac_control_*`: a dimensionless power factor under
-`AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE` — kV in the document, per-unit
-of a converter AC base voltage in PSY, which neither side records. That branch errors instead
-of storing a kV magnitude in a per-unit field.
+`AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE`, whose basis
+`setpoint_voltage_units` names. `COMPONENT_BASE` is already per-unit of the converter's own
+AC base voltage — PSY's own `ac_setpoint_*` convention — so it passes through unscaled (this
+is what PowerFlowFileParser's PSS/E reader writes; see `make_vscline!`'s docstring there).
+`NATURAL_UNITS` is kV, needing `rated_ac_voltage_from`/`rated_ac_voltage_to` to convert; the
+document has no field carrying that base back in (see this file's header), so that
+combination still errors.
 """
 _vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}) = setpoint
-_vsc_ac_setpoint(po, _setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}) = error(
-    "TwoTerminalVSCLine \"$(po.name)\": ac_control is AC_VOLTAGE, whose ac_setpoint is kV in " *
-    "the document and per-unit of the converter's AC base voltage in PowerSystems — neither " *
-    "the component nor the document carries that base, so the value cannot be converted",
-)
+function _vsc_ac_setpoint(po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE})
+    po.setpoint_voltage_units == "COMPONENT_BASE" && return setpoint
+    return error(
+        "TwoTerminalVSCLine \"$(po.name)\": ac_control is AC_VOLTAGE and " *
+        "setpoint_voltage_units is $(po.setpoint_voltage_units); ac_setpoint is kV in the " *
+        "document under NATURAL_UNITS and per-unit of rated_ac_voltage_from/" *
+        "rated_ac_voltage_to in PowerSystems — the document has no field carrying that base, " *
+        "so the value cannot be converted; producers should set setpoint_voltage_units to " *
+        "COMPONENT_BASE instead",
+    )
+end
 
 """The shared body of both unit-system methods; only `unit` and `base_power` differ."""
 function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)

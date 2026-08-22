@@ -734,6 +734,8 @@ export get_r_load
 export get_r_unitful
 export get_ramp_limits
 export get_ramp_limits_unitful
+export get_rated_ac_voltage_from
+export get_rated_ac_voltage_to
 export get_rated_current
 export get_rated_dc_voltage
 export get_rated_voltage
@@ -1431,6 +1433,8 @@ export set_r_23!
 export set_r_31!
 export set_r_load!
 export set_ramp_limits!
+export set_rated_ac_voltage_from!
+export set_rated_ac_voltage_to!
 export set_rated_current!
 export set_rated_dc_voltage!
 export set_rated_voltage!

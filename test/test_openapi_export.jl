@@ -21,6 +21,7 @@ _export_vsc(
     ac_control_from = VSCACControlModes.AC_REACTIVE_POWER,
     dc_control_to = VSCDCControlModes.DC_VOLTAGE,
     rated_dc_voltage = 200.0,
+    rated_ac_voltage_from = 0.0,
 ) = TwoTerminalVSCLine(;
     name = "vsc1", available = true, arc = arc,
     active_power_flow = 0.5, rating = 2.0,
@@ -30,6 +31,7 @@ _export_vsc(
     dc_control_from = VSCDCControlModes.DC_POWER,
     ac_control_from = ac_control_from,
     dc_setpoint_from = 0.4, ac_setpoint_from = 0.95,
+    rated_ac_voltage_from = rated_ac_voltage_from,
     converter_loss_from = LinearCurve(1.2, 0.5),
     max_dc_current_from = 1000.0, rating_from = 2.0,
     reactive_power_limits_from = (min = -1.0, max = 1.0),
@@ -39,6 +41,7 @@ _export_vsc(
     dc_control_to = dc_control_to,
     ac_control_to = VSCACControlModes.AC_REACTIVE_POWER,
     dc_setpoint_to = 1.02, ac_setpoint_to = 0.98,
+    rated_ac_voltage_to = 0.0,
     converter_loss_to = QuadraticCurve(0.01, 1.1, 0.4),
     max_dc_current_to = 1000.0, rating_to = 2.0,
     reactive_power_limits_to = (min = -1.0, max = 1.0),
@@ -1195,6 +1198,34 @@ end
     @test device_po.g == 0.5
 end
 
+@testset "OpenAPI export converters: TwoTerminalVSCLine AC_VOLTAGE setpoint" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    vsc = _export_vsc(
+        arc; ac_control_from = VSCACControlModes.AC_VOLTAGE,
+        rated_ac_voltage_from = 230.0,
+    )
+    sys = System(100.0)
+    for component in (bus1, bus2, arc, vsc)
+        add_component!(sys, component)
+    end
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = arc
+    refs[4] = vsc
+
+    # `rated_ac_voltage_from` is the AC-side base `ac_setpoint_from` converts pu -> kV
+    # against, exactly like `rated_dc_voltage` for `dc_setpoint_*` — unaffected by unit
+    # system, since it is a voltage, not a power field.
+    natural_po = PSY.to_openapi(vsc, refs, NU)
+    @test natural_po.ac_setpoint_from == 0.95 * 230.0
+    device_po = PSY.to_openapi(vsc, refs, DU)
+    @test device_po.ac_setpoint_from == 0.95 * 230.0
+end
+
 @testset "OpenAPI export: TwoTerminalVSCLine survives a document round trip" begin
     for unit_system in (:natural_units, :device_base)
         bus1 = _export_bus(; number = 1)
@@ -1222,6 +1253,8 @@ end
     arc = Arc(; from = bus1, to = bus2)
     refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
 
+    # A non-zero ac_setpoint_from with no AC voltage base (`rated_ac_voltage_from` unset,
+    # the default) has nothing to be expressed against.
     ac_voltage = _export_vsc(arc; ac_control_from = VSCACControlModes.AC_VOLTAGE)
     refs[4] = ac_voltage
     @test_throws ErrorException PSY.to_openapi(ac_voltage, refs, NU)
