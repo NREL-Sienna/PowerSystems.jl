@@ -26,6 +26,8 @@ _startup_stages_po_optional(::Nothing) = nothing
 _startup_stages_po_optional(nt) =
     PC.StartUpStages(; hot = nt.hot, warm = nt.warm, cold = nt.cold)
 
+_turbinepump_po(nt) = PC.TurbinePump(; turbine = nt.turbine, pump = nt.pump)
+
 _fromto_po(nt) = PC.FromTo(; from = nt.from, to = nt.to)
 _fromto_tofrom_po(nt) = PC.FromToToFrom(; from_to = nt.from_to, to_from = nt.to_from)
 _fromto_tofrom_po_scaled(nt, base) =
