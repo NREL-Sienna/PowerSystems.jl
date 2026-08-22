@@ -3,7 +3,7 @@
 The `System` is the main container of components and the time series data references.
 `PowerSystems.jl` uses a hybrid approach to data storage, where the component data and time
 series references are stored in volatile memory while the actual time series data is stored
-in an HDF5 file. This design loads into memory the portions of the data that are relevant
+on disk. This design loads into memory the portions of the data that are relevant
 at time of the query, and so avoids overwhelming the memory resources.
 
 ```@raw html

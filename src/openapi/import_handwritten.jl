@@ -80,12 +80,16 @@ _inout(m) = (in = m.in, out = m.out)
 """Resolve upstream/downstream `HydroUnit` ids to components; `nothing` means no
 association (a reservoir can legitimately have zero upstream/downstream turbines) and
 maps to an empty vector, matching `HydroReservoir`'s own `upstream_turbines`/
-`downstream_turbines` default — not an error to guard against."""
+`downstream_turbines` default — not an error to guard against.
+
+Called from the `defer_ref!` closure `from_openapi(::PO.HydroReservoir, ...)` queues, not
+from that function directly — see it for why."""
 _hydro_units(::OpenAPIRefs, ::Nothing) = HydroUnit[]
 _hydro_units(refs::OpenAPIRefs, ids) = HydroUnit[refs[id] for id in ids]
 
 """Resolve upstream reservoir ids to components; `nothing` means no association and maps
-to an empty vector, matching `HydroReservoir.upstream_reservoirs`'s own default."""
+to an empty vector, matching `HydroReservoir.upstream_reservoirs`'s own default. Same
+deferred caller as [`_hydro_units`](@ref)."""
 _reservoir_devices(::OpenAPIRefs, ::Nothing) = Device[]
 _reservoir_devices(refs::OpenAPIRefs, ids) = Device[refs[id] for id in ids]
 
@@ -298,11 +302,11 @@ end
 # `r`/`x` pass through for the same reason as `Line`'s: the descriptor tags them `:ohm` for
 # the general getter/setter machinery, but the type carries no `base_voltage` to build Zbase
 # from. Unlike `Line`, this type states the basis it was written in rather than leaving it
-# implicit, so the discriminator is checked instead of assumed — "DEVICE_BASE" is the only
+# implicit, so the discriminator is checked instead of assumed — "COMPONENT_BASE" is the only
 # basis with arithmetic here, and any other value errors rather than being silently treated
 # as pu.
 
-const GENERIC_ARC_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const GENERIC_ARC_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_generic_arc_param_units(po) = _check_unit_basis(
     po.parameter_units,
@@ -398,12 +402,12 @@ function from_openapi(
 end
 
 # ── TransformerCircuit ──────────────────────────────────────────────────────────
-# `r`/`x` are pu on `base_power` when `parameter_units == "DEVICE_BASE"` — the only basis
+# `r`/`x` are pu on `base_power` when `parameter_units == "COMPONENT_BASE"` — the only basis
 # implemented; `NATURAL_UNITS` errors loudly rather than silently guessing at ohms-to-pu
 # arithmetic. `rating`/`rating_b`/`rating_c`/`active_power_flow`/`reactive_power_flow` divide
 # by the circuit's own `base_power` only under `NaturalUnit`, as for every other device-based
 # type.
-const CIRCUIT_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const CIRCUIT_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 """One guard for every per-field unit-basis discriminator with no implemented arithmetic:
 error loudly naming the field, value, and the implemented set, rather than silently guessing
@@ -486,10 +490,10 @@ end
 
 # ── TwoWindingTransformer ───────────────────────────────────────────────────────
 # `magnetizing_shunt` is pu on the circuit's `base_power` when
-# `admittance_units == "DEVICE_BASE"` — the only basis implemented, independent of the
+# `admittance_units == "COMPONENT_BASE"` — the only basis implemented, independent of the
 # document's overall unit system (mirrors the reference and `TransformerCircuit`'s
 # `parameter_units` guard above).
-const SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_shunt_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
@@ -522,17 +526,17 @@ end
 
 # ── ThreeWindingTransformer ──────────────────────────────────────────────────────
 # `magnetizing_shunt` follows TwoWindingTransformer's pattern exactly (pu on the primary
-# circuit's `base_power`, `admittance_units` discriminator restricted to "DEVICE_BASE",
+# circuit's `base_power`, `admittance_units` discriminator restricted to "COMPONENT_BASE",
 # identity in both document unit systems). The pairwise impedances r_12/x_12/r_23/x_23/
 # r_31/x_31 have their own `parameter_units` discriminator (mirrors TransformerCircuit's) —
-# also restricted to "DEVICE_BASE", under which PSY stores them exactly as pu, so they pass
+# also restricted to "COMPONENT_BASE", under which PSY stores them exactly as pu, so they pass
 # through unconverted; `base_power_12`/`_23`/`_31` are base values themselves, not
 # unit-converted quantities, and also pass through directly. All are nullable together
-# (`check_pairwise_impedance_block`), but DEVICE_BASE performs no arithmetic on them so no
+# (`check_pairwise_impedance_block`), but COMPONENT_BASE performs no arithmetic on them so no
 # nothing-guard is needed. `primary_circuit`/`secondary_circuit`/`tertiary_circuit`/`star_bus`
 # resolve through `refs`, matching `TwoWindingTransformer.circuit`.
 
-const THREEWINDING_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const THREEWINDING_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 _check_three_winding_param_units(po) = _check_unit_basis(
     po.parameter_units,
     THREEWINDING_PARAM_UNITS_IMPLEMENTED,
@@ -540,7 +544,7 @@ _check_three_winding_param_units(po) = _check_unit_basis(
     " for $(po.name)",
 )
 
-const THREEWINDING_SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const THREEWINDING_SHUNT_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 _check_three_winding_shunt_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
     THREEWINDING_SHUNT_ADMITTANCE_UNITS_IMPLEMENTED,
@@ -587,12 +591,12 @@ end
 # `Y`'s basis is the per-field `admittance_units` discriminator, independent of the
 # document's own unit_system — same pattern as TwoWindingTransformer.magnetizing_shunt
 # above. A shunt has no device MVA rating of its own, so `ShuntAdmittanceUnitBasis` is
-# `NATURAL_UNITS`/`DEVICE_MVAR` only. `DEVICE_MVAR` is MVAr at unity voltage and divides by
+# `NATURAL_UNITS`/`COMPONENT_MVAR` only. `COMPONENT_MVAR` is MVAr at unity voltage and divides by
 # the document-level `refs.base_power`, the same fallback Area/LoadZone peaks and reserve
 # requirements use, to land on PSY's system-base pu storage. `NATURAL_UNITS` (physical
 # siemens, needing the bus's own `Z_base`) is not implemented, same posture as
 # `SHUNT_ADMITTANCE_UNITS_IMPLEMENTED` above.
-const FIXED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_MVAR"])
+const FIXED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_MVAR"])
 
 _check_fixed_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
@@ -623,14 +627,14 @@ function from_openapi(
 end
 
 # ── SwitchedAdmittance ────────────────────────────────────────────────────────────
-# `Y`/`Y_increase` are the same fixed-natural DEVICE_MVAR-on-system-base quantity as
+# `Y`/`Y_increase` are the same fixed-natural COMPONENT_MVAR-on-system-base quantity as
 # `FixedAdmittance.Y` (device_base.jl's `_DEVICEBASE_INSTANCE_DISPATCHED` lists both
 # `:skip`, identical treatment) — divided by the document's system base regardless of
 # `unit_system`, so the `NaturalUnit` method delegates to `DeviceBaseUnit` exactly like
 # `FixedAdmittance`. `admittance_limits` is a dimensionless multiplier bound on `Y`
 # (default `(min=1, max=1)`), not a raw admittance, and `initial_status`/`number_of_steps`
 # are per-block integer counts — none of the three need a unit conversion.
-const SWITCHED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["DEVICE_MVAR"])
+const SWITCHED_ADMITTANCE_UNITS_IMPLEMENTED = Set(["COMPONENT_MVAR"])
 
 _check_switched_admittance_units(po) = _check_unit_basis(
     po.admittance_units,
@@ -674,12 +678,12 @@ end
 # once a document declares one, this reads `po.base_power` directly, same as `PowerLoad`.
 # `max_shunt_current`/`max_reactive_power` (both MVA, declared `SU` on the PSY side) divide by
 # whatever base is resolved. `voltage_setpoint` is pu on system base per PSY's own docstring;
-# only `voltage_setpoint_units == "DEVICE_BASE"` is implemented — `NATURAL_UNITS` (kV) would
+# only `voltage_setpoint_units == "COMPONENT_BASE"` is implemented — `NATURAL_UNITS` (kV) would
 # need a bus base-voltage conversion no current producer exercises, so it errors loudly rather
 # than guessing. `reactive_power_required` (a dimensionless 0-1 fraction per the PO schema) and
 # `control_mode`/`shunt_control_type` (enums) pass through / map without scaling.
 
-const FACTS_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const FACTS_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_facts_voltage_setpoint_units(po) = _check_unit_basis(
     po.voltage_setpoint_units,
@@ -722,10 +726,19 @@ end
 # conversion, so also identical in both methods.
 # `operation_cost` is converted via `convert_cost`, rather than fabricated as a placeholder
 # when missing.
+#
+# `upstream_turbines`/`downstream_turbines`/`upstream_reservoirs` are NOT resolved
+# eagerly. `DOCUMENT_PLAN` converts `HydroReservoir` before `HydroPumpTurbine` (a valid
+# `HydroUnit`), so a reservoir's own turbine references can be forward references; and
+# `upstream_reservoirs` points at other `HydroReservoir`s converted in the same document-key
+# pass, so a cascading reservoir chain is a same-type reference no `DOCUMENT_PLAN` reordering
+# can express. Both are constructed at their empty defaults and patched in via
+# `defer_ref!` (see [`OpenAPIRefs`](@ref)), which runs once every component in the document
+# has converted and registered.
 
 function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit)
     max_level = po.storage_level_limits.max
-    return HydroReservoir(;
+    reservoir = HydroReservoir(;
         name = po.name,
         available = po.available,
         storage_level_limits = _minmax(po.storage_level_limits),
@@ -747,12 +760,23 @@ function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit
         intake_elevation = po.intake_elevation,
         head_to_volume_factor = convert_cost(po.head_to_volume_factor),
         evaporative_loss = po.evaporative_loss,
-        upstream_turbines = _hydro_units(refs, po.upstream_turbines),
-        downstream_turbines = _hydro_units(refs, po.downstream_turbines),
-        upstream_reservoirs = _reservoir_devices(refs, po.upstream_reservoirs),
+        upstream_turbines = HydroUnit[],
+        downstream_turbines = HydroUnit[],
+        upstream_reservoirs = Device[],
         operation_cost = convert_cost(po.operation_cost),
         level_data_type = ReservoirDataType(po.level_data_type),
     )
+    defer_ref!(
+        refs,
+        () -> begin
+            set_upstream_turbines!(reservoir, _hydro_units(refs, po.upstream_turbines))
+            set_downstream_turbines!(reservoir, _hydro_units(refs, po.downstream_turbines))
+            set_upstream_reservoirs!(
+                reservoir, _reservoir_devices(refs, po.upstream_reservoirs),
+            )
+        end,
+    )
+    return reservoir
 end
 
 function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::NaturalUnit)
@@ -910,8 +934,8 @@ end
 # ── TwoTerminalLCCLine ────────────────────────────────────────────────────────────
 # `parameter_units`/`dc_voltage_units` are always "NATURAL_UNITS" for every current producer
 # (fixed ohm/kV regardless of the document's overall unit_system, the mirror image of
-# TwoWindingTransformer's always-"DEVICE_BASE" fields) — only
-# that basis is implemented; "DEVICE_BASE" errors loudly rather than guessing. Because that
+# TwoWindingTransformer's always-"COMPONENT_BASE" fields) — only
+# that basis is implemented; "COMPONENT_BASE" errors loudly rather than guessing. Because that
 # representation is fixed, `r`/`rectifier_rc`/`rectifier_xc`/`rectifier_capacitor_reactance`/
 # `inverter_rc`/`inverter_xc`/`inverter_capacitor_reactance`/`compounding_resistance` need the
 # SAME ohm-to-pu conversion in BOTH `DeviceBaseUnit`/`NaturalUnit` methods (the Area/LoadZone
@@ -1117,11 +1141,18 @@ end
 #   max_dc_current_*
 #   rmpct_*,              dimensionless on both sides.
 #   power_factor_weighting_fraction_*
-#   rated_dc_voltage      kV on both sides.
+#   rated_dc_voltage,     kV on both sides.
+#   rated_ac_voltage_*
 #
-# `ac_setpoint_*`'s `AC_VOLTAGE` branch is the one branch with no faithful conversion: the
-# document carries kV, PSY wants per-unit of the converter's AC-side base voltage, and neither
-# this struct nor the document records that base, so it errors rather than guessing.
+# `rated_ac_voltage_from`/`rated_ac_voltage_to` are the AC-side counterparts of
+# `rated_dc_voltage` — real wire-row fields now (PowerFlowFileParser's `make_vscline!` writes
+# each from the terminal's own RAW bus base voltage), read straight through as kV, same as
+# `rated_dc_voltage`. `ac_setpoint_*`'s `AC_VOLTAGE` branch reads `setpoint_voltage_units` to
+# decide whether it can convert: `COMPONENT_BASE` is already per-unit of the converter's own AC
+# base voltage — PSY's own convention — so it passes through unscaled; `NATURAL_UNITS` is kV
+# and converts through `rated_ac_voltage_from`/`rated_ac_voltage_to`, exactly like
+# `dc_setpoint_*`'s DC-voltage branches convert through `rated_dc_voltage` — see
+# `_vsc_import_ac_base_voltage`, the same `0.0`-is-unspecified guard as `_vsc_dc_base_voltage`.
 
 const TWO_TERMINAL_VSC_ADMITTANCE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
 const TWO_TERMINAL_VSC_VOLTAGE_UNITS_IMPLEMENTED = Set(["NATURAL_UNITS"])
@@ -1141,10 +1172,10 @@ _check_vsc_voltage_units(po) = _check_unit_basis(
 )
 
 # Both bases are implemented: PSY stores these setpoints per-unit, and each kV one has a base to
-# divide by — `rated_dc_voltage` on the DC side, the connected bus's `base_voltage` on the AC
-# side. Unlike `voltage_units`, which tags `voltage_limits_*` only.
+# divide by — `rated_dc_voltage` on the DC side, `rated_ac_voltage_from`/`rated_ac_voltage_to`
+# on the AC side. Unlike `voltage_units`, which tags `voltage_limits_*` only.
 const TWO_TERMINAL_VSC_SETPOINT_VOLTAGE_UNITS_IMPLEMENTED =
-    Set(["NATURAL_UNITS", "DEVICE_BASE"])
+    Set(["NATURAL_UNITS", "COMPONENT_BASE"])
 
 _check_vsc_setpoint_voltage_units(po) = _check_unit_basis(
     po.setpoint_voltage_units,
@@ -1192,7 +1223,7 @@ _vsc_converter_loss(curve) = error(
 """
 `dc_setpoint_*` follows `dc_control_*`: MW under `DC_POWER` (a power field, so it divides
 with its siblings only under `NaturalUnit`), and per-unit under either DC-voltage-regulating
-mode — `setpoint_voltage_units` is checked to be `DEVICE_BASE`, so no base is applied.
+mode — `setpoint_voltage_units` is checked to be `COMPONENT_BASE`, so no base is applied.
 """
 _vsc_dc_setpoint(
     po,
@@ -1214,49 +1245,51 @@ function _vsc_dc_setpoint(
     return _vsc_dc_voltage_setpoint(po, setpoint, _vsc_setpoint_basis(po))
 end
 
+"""Errors when an `ac_setpoint_*` value needs an AC voltage base under `AC_VOLTAGE`/
+`NATURAL_UNITS` but the matching `rated_ac_voltage_from`/`rated_ac_voltage_to` is `0.0`
+(unspecified). `0.0` is only usable while nothing actually needs the base, same posture as
+`_vsc_dc_base_voltage`."""
+function _vsc_import_ac_base_voltage(po, rated, value, field::AbstractString)
+    if !iszero(rated)
+        return rated
+    end
+    if iszero(value)
+        return one(rated)
+    end
+    return error(
+        "TwoTerminalVSCLine \"$(po.name)\": $field is $value but its rated AC voltage " *
+        "base is 0.0, so there is no AC voltage base to convert it against — set " *
+        "rated_ac_voltage_from/rated_ac_voltage_to",
+    )
+end
+
 """
 The basis `setpoint_voltage_units` declares for the voltage-regulating setpoints. PSY stores
-them per-unit, so `DEVICE_BASE` passes through and only `NATURAL_UNITS` divides by a base.
+them per-unit, so `COMPONENT_BASE` passes through and only `NATURAL_UNITS` divides by a base.
 """
 _vsc_setpoint_basis(po) = Val(Symbol(po.setpoint_voltage_units))
 
-_vsc_dc_voltage_setpoint(_po, setpoint, ::Val{:DEVICE_BASE}) = setpoint
+_vsc_dc_voltage_setpoint(_po, setpoint, ::Val{:COMPONENT_BASE}) = setpoint
 _vsc_dc_voltage_setpoint(po, setpoint, ::Val{:NATURAL_UNITS}) =
     setpoint / _vsc_dc_base_voltage(po, setpoint, "dc_setpoint")
 
 """
 `ac_setpoint_*` follows `ac_control_*`: a dimensionless power factor under
-`AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE` — per-unit in PSY, and in the
-document whichever `setpoint_voltage_units` says. `bus` is the converter's own AC terminal,
-whose `base_voltage` is the kV base that side is expressed against.
+`AC_REACTIVE_POWER`, and an AC-side voltage under `AC_VOLTAGE`, whose basis
+`setpoint_voltage_units` names. `COMPONENT_BASE` is already per-unit of the converter's own AC
+base voltage — PSY's own `ac_setpoint_*` convention — so it passes through unscaled.
+`NATURAL_UNITS` is kV, converted through `rated` — the caller's matching
+`rated_ac_voltage_from`/`rated_ac_voltage_to` — via `_vsc_import_ac_base_voltage`.
 """
-_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}, _bus) = setpoint
-function _vsc_ac_setpoint(po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}, bus)
-    return _vsc_ac_voltage_setpoint(po, setpoint, bus, _vsc_setpoint_basis(po))
+_vsc_ac_setpoint(_po, setpoint, ::Val{VSCACControlModes.AC_REACTIVE_POWER}, _rated) =
+    setpoint
+function _vsc_ac_setpoint(po, setpoint, ::Val{VSCACControlModes.AC_VOLTAGE}, rated)
+    return _vsc_ac_voltage_setpoint(po, setpoint, rated, _vsc_setpoint_basis(po))
 end
 
-_vsc_ac_voltage_setpoint(_po, setpoint, _bus, ::Val{:DEVICE_BASE}) = setpoint
-_vsc_ac_voltage_setpoint(po, setpoint, bus, ::Val{:NATURAL_UNITS}) =
-    setpoint / _vsc_ac_base_voltage(po, bus, setpoint)
-
-"""
-Mirrors `_vsc_dc_base_voltage` on the AC side: the terminal bus's `base_voltage`, needed only
-when a non-zero kV setpoint actually has to be converted.
-"""
-function _vsc_ac_base_voltage(po, bus, value)
-    base = get_base_voltage(bus)
-    if !isnothing(base) && !iszero(base)
-        return base
-    end
-    if iszero(value)
-        return one(value)
-    end
-    return error(
-        "TwoTerminalVSCLine \"$(po.name)\": ac_setpoint is $value kV but its AC terminal " *
-        "\"$(get_name(bus))\" records no base_voltage to express that in per-unit against — " *
-        "set the bus base_voltage, or emit the setpoint on DEVICE_BASE",
-    )
-end
+_vsc_ac_voltage_setpoint(_po, setpoint, _rated, ::Val{:COMPONENT_BASE}) = setpoint
+_vsc_ac_voltage_setpoint(po, setpoint, rated, ::Val{:NATURAL_UNITS}) =
+    setpoint / _vsc_import_ac_base_voltage(po, rated, setpoint, "ac_setpoint")
 
 """The shared body of both unit-system methods; only `unit` and `base_power` differ."""
 function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
@@ -1289,8 +1322,9 @@ function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
             po, po.dc_setpoint_from, Val(dc_control_from), base_power, unit,
         ),
         ac_setpoint_from = _vsc_ac_setpoint(
-            po, po.ac_setpoint_from, Val(ac_control_from), get_from(arc),
+            po, po.ac_setpoint_from, Val(ac_control_from), po.rated_ac_voltage_from,
         ),
+        rated_ac_voltage_from = po.rated_ac_voltage_from,
         converter_loss_from = _vsc_converter_loss(convert_cost(po.converter_loss_from)),
         max_dc_current_from = po.max_dc_current_from,
         rating_from = _vsc_power(po.rating_from, base_power, unit),
@@ -1307,8 +1341,9 @@ function _two_terminal_vsc_line(po, refs::OpenAPIRefs, base_power, unit)
             po, po.dc_setpoint_to, Val(dc_control_to), base_power, unit,
         ),
         ac_setpoint_to = _vsc_ac_setpoint(
-            po, po.ac_setpoint_to, Val(ac_control_to), get_to(arc),
+            po, po.ac_setpoint_to, Val(ac_control_to), po.rated_ac_voltage_to,
         ),
+        rated_ac_voltage_to = po.rated_ac_voltage_to,
         converter_loss_to = _vsc_converter_loss(convert_cost(po.converter_loss_to)),
         max_dc_current_to = po.max_dc_current_to,
         rating_to = _vsc_power(po.rating_to, base_power, unit),
@@ -1355,7 +1390,7 @@ end
 # own base already — but the document states which basis it wrote them in, so the
 # discriminator is checked rather than assumed. `base_voltage` is a plain kV passthrough.
 
-const SOURCE_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const SOURCE_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_source_param_units(po) = _check_unit_basis(
     po.parameter_units,
@@ -1407,14 +1442,14 @@ end
 
 # ── TModelHVDCLine ──────────────────────────────────────────────────────────────
 # The cable exception. This type carries no `base_power` at all — its anchor is
-# `base_current` (A), which per-unitizes `l`/`c` and, under "DEVICE_BASE", `r`. It therefore
+# `base_current` (A), which per-unitizes `l`/`c` and, under "COMPONENT_BASE", `r`. It therefore
 # falls through `base_power_kind`'s `DeviceBasePower()` default to `_get_base_power(c::
 # Component) = _get_system_base_power(c)`, so the MW fields per-unitize on the *system* base
 # exactly like `Line`'s do — `base_current` never enters that arithmetic. Getting this
 # backwards (dividing MW by `base_current`) would be dimensionally meaningless, which is why
 # it is spelled out here.
 
-const TMODEL_PARAM_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const TMODEL_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_tmodel_param_units(po) = _check_unit_basis(
     po.parameter_units,
@@ -1465,7 +1500,7 @@ end
 # and quadratic shapes, so a piecewise document curve is named here rather than surfacing as
 # a constructor `MethodError`.
 
-const IC_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["DEVICE_BASE"])
+const IC_VOLTAGE_SETPOINT_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
 _check_ic_voltage_setpoint_units(po) = _check_unit_basis(
     po.voltage_setpoint_units,

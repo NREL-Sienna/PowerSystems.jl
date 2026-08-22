@@ -370,31 +370,85 @@ end
     @inferred set_active_power!(gen, 0.4 * SU)
 end
 
-@testset "time series multiplier units default to SU" begin
-    sys, gen = _sys_with_thermal()
+# NOTE: three testsets were dropped here as part of this merge, because each exercised a
+# mechanism the other branch removed. Neither is a regression in coverage of live code:
+#
+#  - "conversions ignore the display unit_system" and "_set_units_base! errors on detached
+#    component" (from feat/rust-time-series-store) drove `set_units_base_system!` /
+#    `with_units_base`, i.e. the stateful units system that psy6 retired in "remove last
+#    pieces of stateful units system". Unit selection is now an explicit per-call argument
+#    (`get_active_power(gen, SU)`), which the testsets above already cover.
+#
+#  - "time series multiplier units default to SU" (from psy6) drove a per-series multiplier
+#    and the `units` kwarg on `get_time_series_values`, both of which this branch removed.
+#    Time series now store actual per-device quantities, so there is no multiplier to
+#    resolve.
 
-    # Normalized scaling factors (0-1); SFM = get_max_active_power scales them.
-    t0 = Dates.DateTime("2024-01-01T00:00:00")
-    raw = [0.5, 0.7, 0.9]
-    ta = TimeSeries.TimeArray(
-        [t0 + Dates.Hour(i - 1) for i in 1:length(raw)],
-        raw,
-    )
-    ts = SingleTimeSeries(;
-        name = "max_active_power",
-        data = ta,
-        scaling_factor_multiplier = get_max_active_power,
-    )
-    add_time_series!(sys, gen, ts)
+@testset "TransformerCircuit base_value anchor lifecycle" begin
+    sys = System(100.0)
+    b1 = ACBus(nothing)
+    set_name!(b1, "b1")
+    set_number!(b1, 1)
+    b2 = ACBus(nothing)
+    set_name!(b2, "b2")
+    set_number!(b2, 2)
+    b3 = ACBus(nothing)
+    set_name!(b3, "b3")
+    set_number!(b3, 3)
+    star = ACBus(nothing)
+    set_name!(star, "star")
+    set_number!(star, 901)
+    for b in (b1, b2, b3, star)
+        set_base_voltage!(b, 100.0)
+        set_bustype!(b, ACBusTypes.PQ)
+        add_component!(sys, b)
+    end
+    set_bustype!(b1, ACBusTypes.REF)
+    a1 = Arc(b1, star)
+    a2 = Arc(b2, star)
+    a3 = Arc(b3, star)
+    foreach(a -> add_component!(sys, a), (a1, a2, a3))
+    t3w = ThreeWindingTransformer(nothing)
+    set_name!(t3w, "t3w")
+    set_arc!(get_primary_circuit(t3w), a1)
+    set_arc!(get_secondary_circuit(t3w), a2)
+    set_arc!(get_tertiary_circuit(t3w), a3)
+    foreach(c -> set_available!(c, true), get_circuits(t3w))
+    set_star_bus!(t3w, star)
 
-    vals_default = get_time_series_values(SingleTimeSeries, gen, "max_active_power")
-    vals_su = get_time_series_values(SingleTimeSeries, gen, "max_active_power"; units = SU)
-    vals_nu = get_time_series_values(SingleTimeSeries, gen, "max_active_power"; units = NU)
+    # detached: no anchor, SU conversion refuses
+    for w in get_circuits(t3w)
+        @test IS.get_base_value(w) === nothing
+    end
+    @test_throws ErrorException get_r(get_primary_circuit(t3w), SU)
 
-    @test vals_default == vals_su
+    add_component!(sys, t3w)
+    for w in get_circuits(t3w)
+        @test IS.get_base_value(w) == 100.0
+    end
 
-    base_nu = get_max_active_power(gen, NU) / get_max_active_power(gen, SU)
-    @test vals_nu ≈ vals_su .* base_nu
+    # set_circuit! propagates the anchor onto a replacement circuit
+    new_circuit = TransformerCircuit(nothing)
+    set_arc!(new_circuit, a1)
+    set_available!(new_circuit, true)
+    @test IS.get_base_value(new_circuit) === nothing
+    set_primary_circuit!(t3w, new_circuit)
+    @test IS.get_base_value(new_circuit) == 100.0
+
+    # anchor is never serialized; it is repopulated on attach during load
+    path = joinpath(mktempdir(), "anchor_sys.json")
+    to_json(sys, path)
+    sys2 = System(path)
+    t2 = only(get_components(ThreeWindingTransformer, sys2))
+    for w in get_circuits(t2)
+        @test IS.get_base_value(w) == 100.0
+    end
+
+    # detach clears the anchor on every circuit
+    remove_component!(sys, t3w)
+    for w in get_circuits(t3w)
+        @test IS.get_base_value(w) === nothing
+    end
 end
 
 @testset "TransformerCircuit base_value anchor lifecycle" begin

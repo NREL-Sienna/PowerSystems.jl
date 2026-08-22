@@ -19,8 +19,11 @@ side to cover the second arm of the `Union{LinearCurve, QuadraticCurve}` field.
 _export_vsc(
     arc;
     ac_control_from = VSCACControlModes.AC_REACTIVE_POWER,
+    ac_control_to = VSCACControlModes.AC_REACTIVE_POWER,
     dc_control_to = VSCDCControlModes.DC_VOLTAGE,
     rated_dc_voltage = 200.0,
+    rated_ac_voltage_from = 0.0,
+    rated_ac_voltage_to = 0.0,
 ) = TwoTerminalVSCLine(;
     name = "vsc1", available = true, arc = arc,
     active_power_flow = 0.5, rating = 2.0,
@@ -30,6 +33,7 @@ _export_vsc(
     dc_control_from = VSCDCControlModes.DC_POWER,
     ac_control_from = ac_control_from,
     dc_setpoint_from = 0.4, ac_setpoint_from = 0.95,
+    rated_ac_voltage_from = rated_ac_voltage_from,
     converter_loss_from = LinearCurve(1.2, 0.5),
     max_dc_current_from = 1000.0, rating_from = 2.0,
     reactive_power_limits_from = (min = -1.0, max = 1.0),
@@ -37,8 +41,9 @@ _export_vsc(
     voltage_limits_from = (min = 0.9, max = 1.1),
     dc_voltage_droop_from = 0.0, reactive_power_to = 0.2,
     dc_control_to = dc_control_to,
-    ac_control_to = VSCACControlModes.AC_REACTIVE_POWER,
+    ac_control_to = ac_control_to,
     dc_setpoint_to = 1.02, ac_setpoint_to = 0.98,
+    rated_ac_voltage_to = rated_ac_voltage_to,
     converter_loss_to = QuadraticCurve(0.01, 1.1, 0.4),
     max_dc_current_to = 1000.0, rating_to = 2.0,
     reactive_power_limits_to = (min = -1.0, max = 1.0),
@@ -175,7 +180,7 @@ end
     @test isnothing(circuit_natural.rating_b)
     @test circuit_natural.active_power_flow == 5.0
     @test circuit_natural.control_objective == "UNDEFINED"
-    @test circuit_natural.parameter_units == "DEVICE_BASE"
+    @test circuit_natural.parameter_units == "COMPONENT_BASE"
 
     circuit_device = PSY.to_openapi(circuit, refs, DU)
     @test circuit_device.rating == 2.0
@@ -284,11 +289,11 @@ end
         @test t3w_po.secondary_circuit == 9
         @test t3w_po.tertiary_circuit == 10
         @test t3w_po.star_bus == 4
-        @test t3w_po.parameter_units == "DEVICE_BASE"
+        @test t3w_po.parameter_units == "COMPONENT_BASE"
         @test t3w_po.r_12 == 0.01
         @test t3w_po.r_31 == 0.02
         @test t3w_po.base_power_23 == 100.0
-        @test t3w_po.admittance_units == "DEVICE_BASE"
+        @test t3w_po.admittance_units == "COMPONENT_BASE"
         @test t3w_po.magnetizing_shunt.real == 0.03
         @test t3w_po.shunt_location == "STAR"
     end
@@ -308,13 +313,13 @@ end
     refs[2] = shunt
 
     # The wire enum has no system-base member, so PSY's system-base pu Y rides as
-    # DEVICE_MVAR (MVAr at unity voltage) scaled by the document's system base —
+    # COMPONENT_MVAR (MVAr at unity voltage) scaled by the document's system base —
     # the same value regardless of the document's unit_system.
     for val in (DU, NU)
         shunt_po = PSY.to_openapi(shunt, refs, val)
         @test shunt_po.id == 2
         @test shunt_po.bus == 1
-        @test shunt_po.admittance_units == "DEVICE_MVAR"
+        @test shunt_po.admittance_units == "COMPONENT_MVAR"
         @test shunt_po.Y.real == 0.0
         @test shunt_po.Y.imag == -100.0
 
@@ -850,13 +855,13 @@ end
 @testset "OpenAPI export: round-trip" begin
     doc = make_openapi_test_doc(; bus1_bustype = "SLACK", include_fixed_admittance = false)
 
-    @testset "DEVICE_BASE -> PSY -> DEVICE_BASE is exact" begin
+    @testset "COMPONENT_BASE -> PSY -> COMPONENT_BASE is exact" begin
         device_doc = deepcopy(doc)
-        device_doc["unit_system"] = "DEVICE_BASE"
+        device_doc["unit_system"] = "COMPONENT_BASE"
         sys = PSY.from_openapi(System, to_test_document(device_doc))
-        out = PSY.to_openapi(sys; unit_system = :original)
-        @test PSY.PC.get_unit_system(out) == "DEVICE_BASE"
-        gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
+        out = PSY.to_openapi(sys; unit_system = :device_base)
+        @test PSY.PD.get_unit_system(out) == "COMPONENT_BASE"
+        gen_out = only(PSY.PD.get_components(out, "ThermalStandard"))
         @test gen_out.active_power == 50.0
         @test gen_out.rating == 100.0
         gen_in = only(device_doc["components"]["ThermalStandard"])
@@ -866,28 +871,28 @@ end
 
     @testset "NATURAL_UNITS -> PSY -> NATURAL_UNITS is approximate only" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
-        out = PSY.to_openapi(sys; unit_system = :original)
-        @test PSY.PC.get_unit_system(out) == "NATURAL_UNITS"
-        gen_out = only(PSY.PC.get_components(out, "ThermalStandard"))
+        out = PSY.to_openapi(sys; unit_system = :natural_units)
+        @test PSY.PD.get_unit_system(out) == "NATURAL_UNITS"
+        gen_out = only(PSY.PD.get_components(out, "ThermalStandard"))
         gen_in = only(doc["components"]["ThermalStandard"])
         @test gen_out.active_power ≈ gen_in["active_power"] rtol = 1e-15
         @test gen_out.rating ≈ gen_in["rating"] rtol = 1e-15
-        load_out = only(PSY.PC.get_components(out, "PowerLoad"))
+        load_out = only(PSY.PD.get_components(out, "PowerLoad"))
         load_in = only(doc["components"]["PowerLoad"])
         @test load_out.active_power ≈ load_in["active_power"] rtol = 1e-15
     end
 
     @testset "bustype SLACK round-trips as SLACK" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
-        out = PSY.to_openapi(sys; unit_system = :original)
-        bus1_out = first(b for b in PSY.PC.get_components(out, "ACBus") if b.number == 1)
+        out = PSY.to_openapi(sys; unit_system = :natural_units)
+        bus1_out = first(b for b in PSY.PD.get_components(out, "ACBus") if b.number == 1)
         @test bus1_out.bustype == "SLACK"
     end
 
-    @testset "to_openapi with no ledger and unit_system=:original errors" begin
+    @testset "to_openapi with an unmapped unit_system errors" begin
         sys = System(100.0)
         add_component!(sys, ACBus(nothing))
-        @test_throws ErrorException PSY.to_openapi(sys; unit_system = :original)
+        @test_throws ErrorException PSY.to_openapi(sys; unit_system = :bogus_units)
     end
 
     @testset "Line.base_power on export == get_base_power(sys) exactly" begin
@@ -906,7 +911,7 @@ end
         )
         add_component!(sys, line)
         out = PSY.to_openapi(sys; unit_system = :natural_units)
-        line_out = only(PSY.PC.get_components(out, "Line"))
+        line_out = only(PSY.PD.get_components(out, "Line"))
         @test line_out.base_power == PSY.get_base_power(sys)
     end
 end
@@ -922,14 +927,13 @@ end
     )
     add_component!(sys, load)
 
-    @test !PSY.has_ledger(sys)
     out_device = PSY.to_openapi(sys; unit_system = :device_base)
-    @test PSY.PC.get_unit_system(out_device) == "DEVICE_BASE"
-    load_out = only(PSY.PC.get_components(out_device, "PowerLoad"))
+    @test PSY.PD.get_unit_system(out_device) == "COMPONENT_BASE"
+    load_out = only(PSY.PD.get_components(out_device, "PowerLoad"))
     @test load_out.active_power == 0.3
 
     out_natural = PSY.to_openapi(sys; unit_system = :natural_units)
-    load_out_nat = only(PSY.PC.get_components(out_natural, "PowerLoad"))
+    load_out_nat = only(PSY.PD.get_components(out_natural, "PowerLoad"))
     @test load_out_nat.active_power == 30.0
 end
 
@@ -1005,7 +1009,8 @@ end
             "supplemental_attributes" => [openapi_raw(emissions_po)],
             "supplemental_attribute_associations" => [
                 Dict{String, Any}(
-                    "attribute_id" => 9, "entity_id" => 7,
+                    "attribute_id" => 9, "component_id" => 7,
+                    "component_type" => "PowerLoad",
                     "attribute_type" => "EmissionsData",
                 ),
             ],
@@ -1026,40 +1031,48 @@ end
         ta = TimeSeries.TimeArray(
             [Dates.DateTime(2024, 1, 1, h) for h in 0:2], [0.5, 0.6, 0.7],
         )
-        series = SingleTimeSeries(;
-            name = "max_active_power", data = ta,
-            scaling_factor_multiplier = get_max_active_power,
-        )
+        series = SingleTimeSeries(; name = "max_active_power", data = ta)
         add_time_series!(sys, load, series)
 
         ts_out_path = joinpath(dir, "export_time_series_storage.h5")
         out = PSY.to_openapi(
             sys;
-            unit_system = :original,
+            unit_system = :natural_units,
             time_series_storage_path = ts_out_path,
         )
 
-        @test PSY.PC.get_unit_system(out) == "NATURAL_UNITS"
-        @test length(PSY.PC.get_components(out, "ACBus")) == 2
-        @test length(only(PSY.PC.get_components(out, "Line")) |> x -> [x]) == 1
-        @test length(PSY.PC.get_components(out, "OnlineReserve")) == 1
+        @test PSY.PD.get_unit_system(out) == "NATURAL_UNITS"
+        @test length(PSY.PD.get_components(out, "ACBus")) == 2
+        @test length(only(PSY.PD.get_components(out, "Line")) |> x -> [x]) == 1
+        @test length(PSY.PD.get_components(out, "OnlineReserve")) == 1
         @test length(out.supplemental_attributes) == 1
         @test length(out.supplemental_attribute_associations) == 1
         assoc = only(out.supplemental_attribute_associations)
         @test assoc.attribute_type == "EmissionsData"
         @test length(out.service_associations) == 1
         service_assoc = only(out.service_associations)
-        @test service_assoc.entity_id == PSY.component_id(
-            PSY._build_export_refs(
-                sys, "NATURAL_UNITS", PSY._ledger_uuid_to_id(PSY.load_ledger(sys)),
-            ),
-            load,
-        )
-        @test length(out.time_series_associations) == 1
-        ts_assoc = only(out.time_series_associations)
-        @test ts_assoc.name == "max_active_power"
-        @test ts_assoc.scaling_factor_multiplier == "get_max_active_power"
+        # A component's document id is its IS component id, so the membership row points at
+        # the load by that id directly — no export-refs rebuild needed to resolve it.
+        @test service_assoc.entity_id == IS.get_id(load)
+        # The sidecar holds the values; the document lists one row per series so a consumer
+        # can see what the bundle contains without opening the store.
         @test isfile(ts_out_path)
+        # `.value` unwraps the oneOf: the discriminator selects one of the six concrete row
+        # types, and the type itself carries the columns.
+        ts_row = only(out.time_series_associations).value
+        @test ts_row isa PSY.PTS.SingleTimeSeries
+        @test ts_row.name == "max_active_power"
+        @test ts_row.time_series_type == "SingleTimeSeries"
+        @test ts_row.owner_category == "Component"
+        @test ts_row.owner_type == "PowerLoad"
+        @test ts_row.owner_id == IS.get_id(load)
+        @test ts_row.resolution == "PT1H"
+        @test ts_row.length == 3
+        @test ts_row.element_type == "f64"
+        # `uri`/`data_hash` are the store's own content hash, never a caller-supplied
+        # locator.
+        @test occursin(r"^[0-9a-f]{64}$", ts_row.uri)
+        @test ts_row.data_hash == ts_row.uri
     end
 end
 
@@ -1103,26 +1116,27 @@ end
         doc = PSY.to_openapi(
             sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
         )
-        # 3 rows: the surviving "load_hist" SingleTimeSeries, its DeterministicSingleTimeSeries
-        # transform (same UUID, one HDF5 write — see `_hdf5_series`), and the real Deterministic.
+        @test isfile(ts_out_path)
+        # 3 rows: the "load_hist" SingleTimeSeries, the DeterministicSingleTimeSeries its
+        # transform produced, and the real Deterministic. The forecast shape columns are
+        # carried on the rows, not just in the sidecar's catalog.
         @test length(doc.time_series_associations) == 3
-        det_assoc = only(
-            filter(
-                a -> a.time_series_type == "Deterministic",
-                doc.time_series_associations,
-            ),
-        )
-        @test det_assoc.horizon == "PT7200S"
-        @test det_assoc.interval == "PT3600S"
-        @test det_assoc.window_count == 3
-        dsts_assoc = only(
-            filter(
-                a -> a.time_series_type == "DeterministicSingleTimeSeries",
-                doc.time_series_associations,
-            ),
-        )
-        @test dsts_assoc.horizon == "PT7200S"
-        @test dsts_assoc.window_count == 3
+        rows = [a.value for a in doc.time_series_associations]
+        det_row = only(filter(r -> r isa PSY.PTS.Deterministic, rows))
+        # Durations carry the store's unit-style ISO-8601 spelling (`PT2H`), not the
+        # seconds-only style (`PT7200S`).
+        @test det_row.horizon == "PT2H"
+        @test det_row.interval == "PT1H"
+        @test det_row.count == 3
+        # A forecast's shape is horizon/interval/count; `length` is not a column its type
+        # declares, so it is absent rather than null.
+        @test !hasfield(typeof(det_row), :length)
+        dsts_row = only(filter(r -> r isa PSY.PTS.DeterministicSingleTimeSeries, rows))
+        @test dsts_row.horizon == "PT2H"
+        @test dsts_row.count == 3
+        # The transform's derived forecast is its own stored type, so it does not collide
+        # with the real Deterministic under the discriminator.
+        @test dsts_row.time_series_type == "DeterministicSingleTimeSeries"
 
         sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
         load2 = get_component(PowerLoad, sys2, "load1")
@@ -1138,8 +1152,11 @@ end
         dsts2 = get_time_series(DeterministicSingleTimeSeries, load2, "load_hist")
         @test get_horizon(dsts2) == Dates.Hour(2)
         @test IS.get_count(dsts2) == 3
-        @test TimeSeries.values(get_data(IS.get_single_time_series(dsts2))) ==
-              [0.11, 0.12, 0.13, 0.14]
+        # `DeterministicSingleTimeSeries` is a query-only marker on the rust-backed store —
+        # reads materialize a `Deterministic`, and there is no `get_single_time_series` to
+        # unwrap. The array it is derived from is its own `SingleTimeSeries`.
+        sts2 = get_time_series(SingleTimeSeries, load2, "load_hist")
+        @test TimeSeries.values(get_data(sts2)) == [0.11, 0.12, 0.13, 0.14]
     end
 end
 
@@ -1168,7 +1185,7 @@ end
     # written per-unit as stored, tagged by `setpoint_voltage_units`.
     @test natural_po.dc_setpoint_from == 40.0
     @test natural_po.dc_setpoint_to == 1.02
-    @test natural_po.setpoint_voltage_units == "DEVICE_BASE"
+    @test natural_po.setpoint_voltage_units == "COMPONENT_BASE"
     # pu → siemens against Ybase = 100 / 200^2.
     @test natural_po.g == 0.5
     @test natural_po.admittance_units == "NATURAL_UNITS"
@@ -1182,8 +1199,40 @@ end
     @test device_po.active_power_limits_from.min == -2.0
     @test device_po.dc_setpoint_from == 0.4
     @test device_po.dc_setpoint_to == 1.02
-    @test device_po.setpoint_voltage_units == "DEVICE_BASE"
+    @test device_po.setpoint_voltage_units == "COMPONENT_BASE"
     @test device_po.g == 0.5
+end
+
+@testset "OpenAPI export converters: TwoTerminalVSCLine AC_VOLTAGE setpoint" begin
+    bus1 = _export_bus(; number = 1)
+    bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+    arc = Arc(; from = bus1, to = bus2)
+    vsc = _export_vsc(
+        arc; ac_control_from = VSCACControlModes.AC_VOLTAGE,
+        rated_ac_voltage_from = 230.0,
+    )
+    sys = System(100.0)
+    for component in (bus1, bus2, arc, vsc)
+        add_component!(sys, component)
+    end
+
+    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs[1] = bus1
+    refs[2] = bus2
+    refs[3] = arc
+    refs[4] = vsc
+
+    # The setpoint is written per unit and the basis declared, so no base is needed to
+    # export it; `rated_ac_voltage_from` rides along as the base an importer reading a
+    # natural-units document divides by. Neither depends on the unit system, since both
+    # are voltages, not power fields.
+    natural_po = PSY.to_openapi(vsc, refs, NU)
+    @test natural_po.ac_setpoint_from == 0.95
+    @test natural_po.setpoint_voltage_units == "COMPONENT_BASE"
+    @test natural_po.rated_ac_voltage_from == 230.0
+    component_po = PSY.to_openapi(vsc, refs, DU)
+    @test component_po.ac_setpoint_from == 0.95
+    @test component_po.rated_ac_voltage_from == 230.0
 end
 
 @testset "OpenAPI export: TwoTerminalVSCLine survives a document round trip" begin
@@ -1207,12 +1256,44 @@ end
     end
 end
 
+@testset "OpenAPI export: TwoTerminalVSCLine AC voltage bases survive a document round trip" begin
+    # `ac_control_*` on `AC_VOLTAGE` with a non-zero `rated_ac_voltage_from`/`_to`: the wire
+    # row must carry both bases (not just convert the setpoints through them) for a
+    # PSY→doc→PSY round trip to reproduce the same PSY values back.
+    for unit_system in (:natural_units, :device_base)
+        bus1 = _export_bus(; number = 1)
+        bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
+        arc = Arc(; from = bus1, to = bus2)
+        vsc = _export_vsc(
+            arc;
+            ac_control_from = VSCACControlModes.AC_VOLTAGE,
+            ac_control_to = VSCACControlModes.AC_VOLTAGE,
+            rated_ac_voltage_from = 230.0,
+            rated_ac_voltage_to = 225.0,
+        )
+        sys = System(100.0)
+        for component in (bus1, bus2, arc, vsc)
+            add_component!(sys, component)
+        end
+
+        dir = mktempdir()
+        PSY.to_file(sys, dir; unit_system = unit_system, force = true)
+        restored = get_component(TwoTerminalVSCLine, PSY.from_file(System, dir), "vsc1")
+        for field in fieldnames(TwoTerminalVSCLine)
+            field in (:internal, :arc, :services) && continue
+            @test getfield(restored, field) == getfield(vsc, field)
+        end
+    end
+end
+
 @testset "OpenAPI export: TwoTerminalVSCLine unconvertible values error" begin
     bus1 = _export_bus(; number = 1)
     bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
     arc = Arc(; from = bus1, to = bus2)
     refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
 
+    # A non-zero ac_setpoint_from with no AC voltage base (`rated_ac_voltage_from` unset,
+    # the default) has nothing to be expressed against.
     ac_voltage = _export_vsc(arc; ac_control_from = VSCACControlModes.AC_VOLTAGE)
     refs[4] = ac_voltage
     @test_throws ErrorException PSY.to_openapi(ac_voltage, refs, NU)
@@ -1222,4 +1303,99 @@ end
         _export_vsc(arc; rated_dc_voltage = 0.0, dc_control_to = VSCDCControlModes.DC_POWER)
     refs[5] = no_base
     @test_throws ErrorException PSY.to_openapi(no_base, refs, NU)
+end
+
+_export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
+    name = name, available = true, status = true, bus = bus,
+    active_power = 0.4, reactive_power = 0.01, rating = 0.5,
+    prime_mover_type = PrimeMovers.ST, fuel = ThermalFuels.COAL,
+    active_power_limits = (min = 0.0, max = 0.4),
+    reactive_power_limits = (min = -0.3, max = 0.3),
+    time_limits = nothing, ramp_limits = nothing,
+    operation_cost = ThermalGenerationCost(CostCurve(LinearCurve(1400.0)), 0.0, 4.0, 2.0),
+    base_power = 100.0,
+)
+
+@testset "OpenAPI export: time series owned by a supplemental attribute round-trips" begin
+    # An attribute's document id is its own IS id, exactly like a component's, so the
+    # sidecar catalog's owner id resolves back on import.
+    mktempdir() do dir
+        bus = _export_bus(; number = 1)
+        gen = _export_thermal_gen(bus)
+        sys = System(100.0)
+        add_component!(sys, bus)
+        add_component!(sys, gen)
+
+        outage = GeometricDistributionForcedOutage(;
+            mean_time_to_recovery = 1.0, outage_transition_probability = 0.5,
+        )
+        add_supplemental_attribute!(sys, gen, outage)
+
+        ta = TimeSeries.TimeArray(
+            [Dates.DateTime(2024, 1, 1, h) for h in 0:2], [0.1, 0.2, 0.3],
+        )
+        add_time_series!(sys, outage, SingleTimeSeries(; name = "outage_series", data = ta))
+
+        ts_out_path = joinpath(dir, "attr_owned_series.h5")
+        doc = PSY.to_openapi(
+            sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+        )
+        @test isfile(ts_out_path)
+        ts_row = only(doc.time_series_associations).value
+        @test ts_row.owner_category == "SupplementalAttribute"
+        @test ts_row.owner_id == IS.get_id(outage)
+        @test ts_row.name == "outage_series"
+
+        sys2 = PSY.from_openapi(System, doc; time_series_storage_path = ts_out_path)
+        gen2 = get_component(ThermalStandard, sys2, "gen1")
+        outage2 = only(get_supplemental_attributes(GeometricDistributionForcedOutage, gen2))
+        # The attribute's id is stable across the round trip, exactly like a component's.
+        @test IS.get_id(outage2) == IS.get_id(outage)
+        ts2 = get_time_series(SingleTimeSeries, outage2, "outage_series")
+        @test TimeSeries.values(PSY.get_data(ts2)) == [0.1, 0.2, 0.3]
+    end
+end
+
+@testset "OpenAPI export: time series on an unexportable (dynamics) owner warns and is dropped" begin
+    mktempdir() do dir
+        bus = _export_bus(; number = 1)
+        static_gen = _export_thermal_gen(bus)
+        dyn_gen = DynamicGenerator(;
+            name = get_name(static_gen),
+            ω_ref = 1.0,
+            machine = BaseMachine(; R = 0.0, Xd_p = 0.2995, eq_p = 1.05),
+            shaft = SingleMass(; H = 5.148, D = 2.0),
+            avr = AVRFixed(; Vf = 1.05, V_ref = 1.0),
+            prime_mover = TGFixed(; efficiency = 1.0),
+            pss = PSSFixed(; V_pss = 0.0),
+        )
+
+        sys = System(100.0)
+        add_component!(sys, bus)
+        add_component!(sys, static_gen)
+        add_component!(sys, dyn_gen, static_gen)
+
+        ta = TimeSeries.TimeArray(
+            [Dates.DateTime(2024, 1, 1, h) for h in 0:2], [0.1, 0.2, 0.3],
+        )
+        add_time_series!(sys, dyn_gen, SingleTimeSeries(; name = "dyn_series", data = ta))
+        add_time_series!(
+            sys, static_gen, SingleTimeSeries(; name = "static_series", data = ta),
+        )
+
+        ts_out_path = joinpath(dir, "dynamics_owner.h5")
+        out = @test_logs(
+            (:warn, r"omitting component type"),
+            (:warn, r"omitting 1 time series row"),
+            match_mode = :any,
+            PSY.to_openapi(
+                sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+            ),
+        )
+        # The sidecar still holds both series — only the document's description of the
+        # dynamics-owned one is dropped, so the write itself is not blocked.
+        @test isfile(ts_out_path)
+        @test length(out.time_series_associations) == 1
+        @test only(out.time_series_associations).value.name == "static_series"
+    end
 end

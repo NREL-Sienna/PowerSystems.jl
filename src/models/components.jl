@@ -175,9 +175,7 @@ IS.display_units_arg(::typeof(set_base_power!), ::Type{<:Component}) = NU
 # Make `_strip_units` work for Unitful quantities; IS doesn't depend on Unitful.
 IS._strip_units(q::Unitful.Quantity) = Unitful.ustrip(q)
 
-# Units passed to 2-arg scaling-factor multipliers during time-series retrieval
-# when the caller does not specify them: system base, matching what
-# simulation/optimization consumers expect.
+# IS's hook for a domain package to declare its default unit system.
 IS.default_units(::Component) = SU
 
 #######################################################

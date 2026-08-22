@@ -236,10 +236,10 @@ end
 
 function _unit_val(unit_system::AbstractString)
     unit_system == "NATURAL_UNITS" && return NU
-    unit_system == "DEVICE_BASE" && return DU
+    unit_system == "COMPONENT_BASE" && return DU
     error(
         "from_openapi(System, doc): unmapped unit_system \"$unit_system\" — expected " *
-        "NATURAL_UNITS or DEVICE_BASE",
+        "NATURAL_UNITS or COMPONENT_BASE",
     )
 end
 
@@ -311,294 +311,6 @@ function _attach_service_membership!(entity, service, ::System)
     )
 end
 
-# ── Time series ingestion ───────────────────────────────────────────────────────
-
-"""Scaling-factor multiplier names a document may carry, resolved to the PSY getter each one
-names. The document field is a bare, unprefixed function name, so this is a closed registry
-rather than a runtime `getproperty(PowerSystems, Symbol(name))` — an unmapped string must error
-rather than resolve to an arbitrary function. [`SCALING_FACTOR_MULTIPLIER_TO_STRING`](@ref)
-inverts it for export, so the two directions cannot drift."""
-const SCALING_FACTOR_MULTIPLIERS = Dict{String, Function}(
-    string(nameof(f)) => f
-    for f in (
-        get_max_active_power,
-        get_max_reactive_power,
-        get_peak_active_power,
-        get_peak_reactive_power,
-        get_inflow,
-        get_level_targets,
-        get_requirement,
-        get_storage_capacity,
-    )
-)
-
-_resolve_scaling_factor_multiplier(::Nothing) = nothing
-function _resolve_scaling_factor_multiplier(name::AbstractString)
-    haskey(SCALING_FACTOR_MULTIPLIERS, name) || error(
-        "from_openapi(System, doc): unmapped scaling_factor_multiplier \"$name\"",
-    )
-    return SCALING_FACTOR_MULTIPLIERS[name]
-end
-
-"""Only the `PT<seconds>S` shape is implemented; any other ISO 8601 duration form errors
-loudly rather than attempting a general parse that is not needed yet."""
-function _parse_iso8601_seconds(s::AbstractString)
-    m = match(r"^PT(\d+)S$", s)
-    isnothing(m) && error(
-        "from_openapi(System, doc): unmapped resolution \"$s\" — only the PT<seconds>S " *
-        "form is implemented",
-    )
-    return Dates.Second(parse(Int, m.captures[1]))
-end
-
-"""
-Document `time_series_type` string → the PSY/IS type to reconstruct, dispatched on below
-rather than branched on.
-"""
-const TIME_SERIES_TYPE_FROM_STRING = Dict{String, DataType}(
-    "SingleTimeSeries" => SingleTimeSeries,
-    "Deterministic" => Deterministic,
-    "DeterministicSingleTimeSeries" => DeterministicSingleTimeSeries,
-)
-
-function _resolve_time_series_type(assoc::PC.TimeSeriesAssociation)
-    haskey(TIME_SERIES_TYPE_FROM_STRING, assoc.time_series_type) || error(
-        "from_openapi(System, doc): unmapped time_series_type=" *
-        "\"$(assoc.time_series_type)\" for association \"$(assoc.name)\"",
-    )
-    return TIME_SERIES_TYPE_FROM_STRING[assoc.time_series_type]
-end
-
-"""Reconstruct one `IS.SingleTimeSeries` from its association row plus the HDF5 sidecar.
-The HDF5 read API (`IS.deserialize_time_series`) requires a full `TimeSeriesMetadata`
-object, not a bare UUID — the metadata is rebuilt here from the association row's own
-fields (name, resolution, initial_timestamp, length) rather than read back out of the
-HDF5 group, since the group stores only the raw array plus a `data_type` attribute."""
-function _read_time_series(
-    ::Type{SingleTimeSeries},
-    storage::IS.Hdf5TimeSeriesStorage,
-    assoc::PC.TimeSeriesAssociation,
-)
-    metadata = IS.SingleTimeSeriesMetadata(;
-        name = assoc.name,
-        resolution = _parse_iso8601_seconds(assoc.resolution),
-        initial_timestamp = Dates.DateTime(assoc.initial_timestamp),
-        time_series_uuid = Base.UUID(assoc.time_series_uuid),
-        length = Int(assoc.length),
-        scaling_factor_multiplier = _resolve_scaling_factor_multiplier(
-            assoc.scaling_factor_multiplier,
-        ),
-    )
-    return IS.deserialize_time_series(
-        SingleTimeSeries, storage, metadata, 1:Int(assoc.length), 1:1,
-    )
-end
-
-"""Build the shared `IS.DeterministicMetadata` for a `Deterministic`/`DeterministicSingleTimeSeries`
-association row — IS has no dedicated metadata type for the latter."""
-function _deterministic_metadata(assoc::PC.TimeSeriesAssociation, ::Type{T}) where {T}
-    return IS.DeterministicMetadata(;
-        name = assoc.name,
-        resolution = _parse_iso8601_seconds(assoc.resolution),
-        initial_timestamp = Dates.DateTime(assoc.initial_timestamp),
-        interval = _parse_iso8601_seconds(assoc.interval),
-        count = Int(assoc.window_count),
-        time_series_uuid = Base.UUID(assoc.time_series_uuid),
-        horizon = _parse_iso8601_seconds(assoc.horizon),
-        time_series_type = T,
-        scaling_factor_multiplier = _resolve_scaling_factor_multiplier(
-            assoc.scaling_factor_multiplier,
-        ),
-    )
-end
-
-"""Reconstruct one `IS.Deterministic` from its association row plus the HDF5 sidecar.
-`DeterministicSingleTimeSeries` does not go through this path — see
-`_attach_deterministic_single_time_series!` below for why."""
-function _read_time_series(
-    ::Type{Deterministic},
-    storage::IS.Hdf5TimeSeriesStorage,
-    assoc::PC.TimeSeriesAssociation,
-)
-    metadata = _deterministic_metadata(assoc, Deterministic)
-    rows = 1:length(metadata)
-    columns = 1:IS.get_count(metadata)
-    return IS.deserialize_time_series(Deterministic, storage, metadata, rows, columns)
-end
-
-"""Read a required structural field off `assoc`, erroring with the association's name and
-the field when the document declares `time_series_type` but omits the field it needs. A
-`Probabilistic` row with no `percentiles`, or a `Scenarios` row with no `scenario_count`, is
-malformed input — never substitute a default."""
-function _require_field(assoc::PC.TimeSeriesAssociation, field::Symbol)
-    value = getproperty(assoc, field)
-    isnothing(value) && error(
-        "from_openapi(System, doc): time series association \"$(assoc.name)\" declares " *
-        "time_series_type=\"$(assoc.time_series_type)\" but is missing $field",
-    )
-    return value
-end
-
-"""Build the `IS.ProbabilisticMetadata` for a `Probabilistic` association row."""
-function _probabilistic_metadata(assoc::PC.TimeSeriesAssociation)
-    return IS.ProbabilisticMetadata(;
-        name = assoc.name,
-        resolution = _parse_iso8601_seconds(assoc.resolution),
-        initial_timestamp = Dates.DateTime(assoc.initial_timestamp),
-        interval = _parse_iso8601_seconds(assoc.interval),
-        count = Int(assoc.window_count),
-        percentiles = Float64.(_require_field(assoc, :percentiles)),
-        time_series_uuid = Base.UUID(assoc.time_series_uuid),
-        horizon = _parse_iso8601_seconds(assoc.horizon),
-        scaling_factor_multiplier = _resolve_scaling_factor_multiplier(
-            assoc.scaling_factor_multiplier,
-        ),
-    )
-end
-
-"""Reconstruct one `IS.Probabilistic` from its association row plus the HDF5 sidecar."""
-function _read_time_series(
-    ::Type{Probabilistic},
-    storage::IS.Hdf5TimeSeriesStorage,
-    assoc::PC.TimeSeriesAssociation,
-)
-    metadata = _probabilistic_metadata(assoc)
-    rows = 1:length(metadata)
-    columns = 1:IS.get_count(metadata)
-    return IS.deserialize_time_series(Probabilistic, storage, metadata, rows, columns)
-end
-
-"""Build the `IS.ScenariosMetadata` for a `Scenarios` association row."""
-function _scenarios_metadata(assoc::PC.TimeSeriesAssociation)
-    return IS.ScenariosMetadata(;
-        name = assoc.name,
-        resolution = _parse_iso8601_seconds(assoc.resolution),
-        initial_timestamp = Dates.DateTime(assoc.initial_timestamp),
-        interval = _parse_iso8601_seconds(assoc.interval),
-        scenario_count = Int(_require_field(assoc, :scenario_count)),
-        count = Int(assoc.window_count),
-        time_series_uuid = Base.UUID(assoc.time_series_uuid),
-        horizon = _parse_iso8601_seconds(assoc.horizon),
-        scaling_factor_multiplier = _resolve_scaling_factor_multiplier(
-            assoc.scaling_factor_multiplier,
-        ),
-    )
-end
-
-"""Reconstruct one `IS.Scenarios` from its association row plus the HDF5 sidecar."""
-function _read_time_series(
-    ::Type{Scenarios},
-    storage::IS.Hdf5TimeSeriesStorage,
-    assoc::PC.TimeSeriesAssociation,
-)
-    metadata = _scenarios_metadata(assoc)
-    rows = 1:length(metadata)
-    columns = 1:IS.get_count(metadata)
-    return IS.deserialize_time_series(Scenarios, storage, metadata, rows, columns)
-end
-
-"""
-Read the time series `assoc` names off the HDF5 sidecar, memoized in `materialized`.
-
-A series shared by N owner rows is read once rather than N times; every owner row still gets
-its own [`_attach_time_series_row!`](@ref) call. `DeterministicSingleTimeSeries` shares its
-`time_series_uuid` with the `SingleTimeSeries` it views, so rows of both kinds for that uuid
-resolve to the one cache entry regardless of which reads it first.
-"""
-function _materialize_time_series!(
-    materialized::Dict{Base.UUID, TimeSeriesData},
-    ::Type{T},
-    storage::IS.Hdf5TimeSeriesStorage,
-    assoc::PC.TimeSeriesAssociation,
-) where {T}
-    uuid = Base.UUID(assoc.time_series_uuid)
-    return get!(materialized, uuid) do
-        _read_time_series(T, storage, assoc)
-    end
-end
-function _materialize_time_series!(
-    materialized::Dict{Base.UUID, TimeSeriesData},
-    ::Type{DeterministicSingleTimeSeries},
-    storage::IS.Hdf5TimeSeriesStorage,
-    assoc::PC.TimeSeriesAssociation,
-)
-    uuid = Base.UUID(assoc.time_series_uuid)
-    return get!(materialized, uuid) do
-        metadata = _deterministic_metadata(assoc, DeterministicSingleTimeSeries)
-        single_metadata = IS.SingleTimeSeriesMetadata(;
-            name = get_name(metadata),
-            resolution = get_resolution(metadata),
-            initial_timestamp = IS.get_initial_timestamp(metadata),
-            time_series_uuid = IS.get_time_series_uuid(metadata),
-            length = Int(assoc.length),
-            scaling_factor_multiplier = IS.get_scaling_factor_multiplier(metadata),
-        )
-        IS.deserialize_time_series(
-            SingleTimeSeries, storage, single_metadata, 1:Int(assoc.length), 1:1,
-        )
-    end
-end
-
-"""
-Attach a `DeterministicSingleTimeSeries` association row directly to `entity`'s time-series
-manager rather than through `add_time_series!`, given the already-materialized `single_ts`
-it wraps ([`_materialize_time_series!`](@ref)).
-
-`DeterministicSingleTimeSeries` has no `IS.get_data` method — it is a view over its wrapped
-`SingleTimeSeries`, not an independently-materializable series — so `add_time_series!`'s
-generic `check_time_series_data` step (which calls `get_data`) `MethodError`s on it. IS's own
-`transform_single_time_series!` never goes through `add_time_series!` for this reason either:
-it writes the wrapped array once (idempotent — a no-op if already present, e.g. from that
-same series' own `SingleTimeSeries` association row) and registers an `IS.DeterministicMetadata`
-row directly via `IS.add_metadata!`. This mirrors that.
-"""
-function _attach_deterministic_single_time_series!(
-    entity,
-    assoc::PC.TimeSeriesAssociation,
-    single_ts::SingleTimeSeries,
-)
-    metadata = _deterministic_metadata(assoc, DeterministicSingleTimeSeries)
-    IS.serialize_time_series!(IS.get_time_series_storage(entity), single_ts)
-    IS.add_metadata!(
-        IS.get_metadata_store(IS.get_time_series_manager(entity)), entity, metadata,
-    )
-    return nothing
-end
-
-"""Attach one `time_series_associations` row to `entity`. Dispatched on the resolved type —
-every type but `DeterministicSingleTimeSeries` materializes via
-[`_materialize_time_series!`](@ref) and the ordinary `add_time_series!`; see
-`_attach_deterministic_single_time_series!` for why that one is different."""
-function _attach_time_series_row!(
-    ::Type{T},
-    sys::System,
-    materialized::Dict{Base.UUID, TimeSeriesData},
-    storage::IS.Hdf5TimeSeriesStorage,
-    entity,
-    assoc::PC.TimeSeriesAssociation,
-) where {T}
-    add_time_series!(
-        sys,
-        entity,
-        _materialize_time_series!(materialized, T, storage, assoc),
-    )
-    return nothing
-end
-function _attach_time_series_row!(
-    ::Type{DeterministicSingleTimeSeries},
-    ::System,
-    materialized::Dict{Base.UUID, TimeSeriesData},
-    storage::IS.Hdf5TimeSeriesStorage,
-    entity,
-    assoc::PC.TimeSeriesAssociation,
-)
-    single_ts = _materialize_time_series!(
-        materialized, DeterministicSingleTimeSeries, storage, assoc,
-    )
-    _attach_deterministic_single_time_series!(entity, assoc, single_ts)
-    return nothing
-end
-
 # ── Supplemental attributes ─────────────────────────────────────────────────────
 # Per-type converters below exist for every attribute PSY hand-writes a constructor for
 # AND that has a PO analogue: EmissionsData, GeometricDistributionForcedOutage,
@@ -623,9 +335,9 @@ means none declared and maps to an empty vector, matching the PSY constructors' 
 default — not an error to guard against."""
 function _monitored_component_uuids(refs::OpenAPIRefs, ids)
     if isnothing(ids)
-        return Base.UUID[]
+        return Int[]
     end
-    return Base.UUID[IS.get_uuid(refs[Int(id)]) for id in ids]
+    return Int[IS.get_id(refs[Int(id)]) for id in ids]
 end
 
 function from_openapi(po::PO.EmissionsData, ::OpenAPIRefs)
@@ -716,67 +428,38 @@ function from_openapi(po, ::OpenAPIRefs)
     )
 end
 
-# ── group_index dispatch (plant-family attributes) ──────────────────────────────
-# The shaft/penstock/PCC/HRSG/exclusion-group number for the five `PowerPlant` subtypes comes
-# from the matching `PlantAssociation`/`CombinedCycleAssociation` row (`sqlite_load.jl`'s
-# `_group_index_by_pair`), and is `nothing` for everything else. Each plant type's
-# `add_supplemental_attribute!` takes that number under its own keyword or position, so
-# dispatch on the attribute type picks the right call — never an `attribute_type` string
-# comparison.
+# ── attribute attach ────────────────────────────────────────────────────────────
+# An adopted sidecar already carries every association row the document names, so those pairs
+# only need attaching; a hand-built document (or one augmented with an attribute the sidecar
+# never saw) carries none, so those pairs need writing. Which case a row falls in is read
+# from `stored_pairs` rather than from a caller-supplied mode flag.
 
-"""No group index: the plain attribute path (`EmissionsData`, `GeographicInfo`, the `Outage`
-types, ...)."""
-_attach_attribute!(sys::System, component, attribute, ::Nothing) =
-    add_supplemental_attribute!(sys, component, attribute)
+"""
+Attach `attribute` to `component`, recording `group_index` on whichever forward map the
+attribute's type carries (a no-op for the plain attribute types, whose `group_index` is
+`nothing`).
 
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::ThermalPowerPlant,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute; shaft_number = Int(group_index))
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::HydroPowerPlant,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute, Int(group_index))
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::RenewablePowerPlant,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute, Int(group_index))
-_attach_attribute!(
-    sys::System,
-    component,
-    attribute::CombinedCycleBlock,
-    group_index::Integer,
-) =
-    add_supplemental_attribute!(sys, component, attribute; hrsg_number = Int(group_index))
+`stored_pairs` holds the `(component_id, attribute_id)` pairs the store already has; a pair
+written here is added to it.
+"""
 function _attach_attribute!(
     sys::System,
+    stored_pairs::Set{Tuple{Int, Int}},
     component,
-    attribute::CombinedCycleFractional,
-    group_index::Integer,
+    attribute,
+    group_index,
 )
-    return add_supplemental_attribute!(
-        sys, component, attribute; exclusion_group = Int(group_index),
-    )
-end
-
-"""Loud fallback: a `group_index` on an attribute type with no group-index dispatch is a
-malformed document, not something to attach without it."""
-function _attach_attribute!(::System, ::Any, attribute, group_index::Integer)
-    error(
-        "from_openapi(System, doc): $(nameof(typeof(attribute))) carries " *
-        "group_index=$group_index but has no group-index dispatch — only " *
-        "ThermalPowerPlant, HydroPowerPlant, RenewablePowerPlant, CombinedCycleBlock, " *
-        "and CombinedCycleFractional accept one",
-    )
+    pair = (IS.get_id(component), IS.get_id(attribute))
+    if pair in stored_pairs
+        IS.attach_supplemental_attribute!(
+            sys.data, component, attribute; allow_existing_time_series = true,
+        )
+    else
+        IS.add_supplemental_attribute!(sys.data, component, attribute)
+        push!(stored_pairs, pair)
+    end
+    _push_group_index!(component, attribute, group_index)
+    return nothing
 end
 
 # ── Document-level entry point ──────────────────────────────────────────────────
@@ -793,9 +476,9 @@ Carry the document's system-level metadata onto `sys`.
 only `name` and `description` are applied here. `frequency` is deliberately not applied:
 `System`'s own default stands, and a document that omits it must not silently reset it.
 """
-function _apply_document_metadata!(sys::System, doc::PC.SystemDocument)
-    _apply_metadata_field!(set_name!, sys, PC.get_name(doc))
-    _apply_metadata_field!(set_description!, sys, PC.get_description(doc))
+function _apply_document_metadata!(sys::System, doc::PD.SystemDocument)
+    _apply_metadata_field!(set_name!, sys, PD.get_name(doc))
+    _apply_metadata_field!(set_description!, sys, PD.get_description(doc))
     return nothing
 end
 
@@ -808,21 +491,25 @@ Takes the typed container, not JSON: reading a file belongs to
 `PowerCoreOpenAPIModels.read_document`, which [`from_file`](@ref) drives.
 
 Converts every component in dependency order ([`DOCUMENT_PLAN`](@ref), verified against
-dependency order), attaches supplemental attributes from `supplemental_attribute_associations`
+dependency order), then runs [`resolve_deferred_refs!`](@ref) once to patch in any
+component→component reference a converter deferred rather than resolve on that first pass (a
+forward or same-type reference — e.g. a cascading `HydroReservoir` chain — see
+[`OpenAPIRefs`](@ref)). It then attaches supplemental attributes from
+`supplemental_attribute_associations`
 (plus `plant_associations`/`combined_cycle_associations` for the plant-family ones) and
 reserve membership from `service_associations`, and — when `time_series_storage_path` is
-given — ingests `time_series_associations` from the document plus its HDF5 sidecar.
+given — adopts the HDF5 sidecar wholesale as the System's own time series store. There is no
+per-row ingestion of `doc.time_series_associations`: those rows are informational (the
+sidecar's catalog is authoritative), so instead of being replayed they are cross-checked
+against it by [`_validate_time_series_associations!`](@ref) — a validation pass that writes
+nothing and throws if the two disagree.
 
 Errors loudly (naming the offending type, id, or field) rather than silently skipping:
 a component type with no registered converter, an unresolved attribute/plant/service
 association or entity reference, or time-series owner reference, an unmapped time-series
 type, scaling-factor multiplier, or supplemental `attribute_type` (see
-[`load_supplemental_attribute_associations!`](@ref)), and a document that declares time
-series but supplies no `time_series_storage_path`.
-
-Stores the id↔UUID round-trip ledger (`store_ledger!`) so a later
-`to_openapi(sys; unit_system = :original)` can reproduce the document's ids and unit
-convention.
+[`load_supplemental_attribute_associations!`](@ref)), a document that declares time series
+but supplies no `time_series_storage_path`, and any drift this validation catches.
 
 `system_kwargs` pass straight through to the fresh `System(base_power; system_kwargs...)`
 this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series_read_only`,
@@ -831,42 +518,191 @@ this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series
 """
 function from_openapi(
     ::Type{System},
-    doc::PC.SystemDocument;
+    doc::PD.SystemDocument;
     time_series_storage_path = nothing,
     system_kwargs...,
 )
-    base_power = PC.get_base_power(doc)
-    unit_system = PC.get_unit_system(doc)
+    base_power = PD.get_base_power(doc)
+    unit_system = PD.get_unit_system(doc)
     unit_val = _unit_val(unit_system)
 
     _check_no_unconverted_component_types(doc.components)
 
-    sys = System(base_power; system_kwargs...)
+    sys = _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
     _apply_document_metadata!(sys, doc)
 
     refs = OpenAPIRefs(unit_system, base_power)
 
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
-        for po in PC.get_components(doc, key)
+        for po in PD.get_components(doc, key)
             component = from_openapi(po, refs, unit_val)
             extras = get(doc.ext, Int(po.id), nothing)
             isnothing(extras) || _merge_doc_ext!(component, extras)
             if addable
+                # Before adding, not after: `IS.assign_id!` keeps an id that is already set
+                # and only draws from the counter for an unassigned one. This is what makes
+                # the adopted sidecar's owner ids resolve — they are these same document ids.
+                IS.set_id!(component, Int(po.id))
                 add_component!(sys, component)
             end
             refs[Int(po.id)] = component
         end
     end
 
+    resolve_deferred_refs!(refs)
+
     _load_market_bid_service_offers!(refs, doc)
 
-    # Attributes first: a supplemental attribute that owns time series must be attached and
-    # registered in `refs` before the time-series pass can resolve its `owner_id`.
     load_supplemental_attribute_associations!(sys, refs, doc)
-    load_time_series_associations!(sys, refs, doc, time_series_storage_path)
 
-    store_ledger!(sys, refs)
+    _validate_time_series_associations!(sys, doc, time_series_storage_path)
+
     return sys
+end
+
+"""
+A `System` whose time series store is the document's InfraStore sidecar, adopted rather than
+replayed. Without a sidecar this is just `System(base_power; system_kwargs...)`.
+
+`time_series_read_only` and `time_series_directory` are read from `system_kwargs` (and left in
+place for `System` itself) because they govern how the store is opened: a read-only open
+attaches the file directly, while a writable one takes a working copy so adding series cannot
+corrupt the document's sidecar. The adopted store's `supplemental_attribute_associations` rows
+are left as they are — `load_supplemental_attribute_associations!` reads them.
+"""
+function _system_with_sidecar(
+    base_power,
+    doc::PD.SystemDocument,
+    time_series_storage_path;
+    system_kwargs...,
+)
+    isnothing(time_series_storage_path) && return System(base_power; system_kwargs...)
+    isfile(time_series_storage_path) || error(
+        "from_openapi(System, doc): time_series_storage_path " *
+        "\"$time_series_storage_path\" does not exist",
+    )
+    read_only = get(system_kwargs, :time_series_read_only, false)
+    directory = get(system_kwargs, :time_series_directory, nothing)
+    store = IS.open_deserialized_infrastore_store(
+        String(time_series_storage_path), directory, read_only,
+    )
+    attribute_manager = IS.SupplementalAttributeManager(store)
+    # Positional: IS's keyword `SystemData` constructor opens its own store and cannot adopt
+    # one. `1` is `next_id`; every id in the document is set explicitly, and `assign_id!`
+    # advances the counter past each one as components and attributes are adopted.
+    data = IS.SystemData(
+        IS.read_validation_descriptor(POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE),
+        IS.TimeSeriesManager(; data_store = store, read_only = read_only),
+        1,
+        Dict{String, Set{Int}}(),
+        attribute_manager,
+        IS.InfrastructureSystemsInternal(),
+    )
+    return System(data, base_power; system_kwargs...)
+end
+
+"""
+Cross-check the document's own `time_series_associations` rows against the adopted sidecar's
+catalog. A no-op when there is no sidecar or the document names no rows.
+
+The sidecar is authoritative, so this never writes: every document row must match a sidecar
+row, identified by `(owner_id, owner_category, time_series_type, name, resolution, interval,
+features)` — the same identity tuple the store's own uniqueness index keys on (`owner_type`
+is a denormalized label excluded from identity); a type that carries no `resolution`/
+`interval` field at all (e.g. `NonSequentialTimeSeries`) treats it as `nothing`. A matched row
+must then agree with its counterpart field-for-field — compared as canonical OpenAPI JSON,
+excluding `uri`/`data_hash` (informational: a document assembled from a different store may
+legitimately carry different values for either, so neither participates in identity or
+drift). A document row with no sidecar counterpart, or one that drifts from its match, means
+the bundle is corrupt and throws `IS.DataFormatError` naming the row and, for drift, the
+differing fields. Sidecar rows the document does not mention are tolerated (`@debug`-logged)
+— a document only ever names the owners it carries.
+"""
+function _validate_time_series_associations!(
+    sys::System,
+    doc::PD.SystemDocument,
+    time_series_storage_path,
+)
+    (isnothing(time_series_storage_path) || isempty(doc.time_series_associations)) &&
+        return nothing
+
+    store_rows = [
+        _unwrap_oneof(row) for row in IS.openapi_time_series_association_rows(sys.data)
+    ]
+    store_by_identity = Dict(_ts_row_identity(row) => row for row in store_rows)
+    referenced = Set{keytype(store_by_identity)}()
+
+    for assoc in doc.time_series_associations
+        row = _unwrap_oneof(assoc)
+        identity = _ts_row_identity(row)
+        store_row = get(store_by_identity, identity, nothing)
+        if isnothing(store_row)
+            throw(
+                IS.DataFormatError(
+                    "from_openapi(System, doc): time series association " *
+                    "$(_ts_row_label(identity)) has no matching row in the adopted " *
+                    "sidecar's catalog",
+                ),
+            )
+        end
+        push!(referenced, identity)
+        drift = _ts_row_drift(row, store_row)
+        isempty(drift) || throw(
+            IS.DataFormatError(
+                "from_openapi(System, doc): time series association " *
+                "$(_ts_row_label(identity)) drifted from the sidecar's catalog on: " *
+                "$(join(drift, ", "))",
+            ),
+        )
+    end
+
+    unmatched = setdiff(keys(store_by_identity), referenced)
+    isempty(unmatched) ||
+        @debug "from_openapi(System, doc): sidecar catalog rows the document does not mention" unmatched
+
+    return nothing
+end
+
+"""The wire field value of `field` on `row`, or `nothing` when `row`'s type does not carry
+that field at all (e.g. `NonSequentialTimeSeries` has no `resolution`/`interval`) — as
+opposed to carrying it unset, which is also `nothing`. Either way, absent and unset compare
+equal for identity purposes."""
+function _ts_field(row, field::Symbol)
+    hasproperty(row, field) && return getproperty(row, field)
+    return nothing
+end
+
+"""The `(owner_id, owner_category, time_series_type, name, resolution, interval, features)`
+named tuple a time series association row is matched by — the same identity the store's own
+uniqueness index keys on. See [`_validate_time_series_associations!`](@ref)."""
+_ts_row_identity(row) = (
+    owner_id = row.owner_id, owner_category = row.owner_category,
+    time_series_type = row.time_series_type, name = row.name,
+    resolution = _ts_field(row, :resolution), interval = _ts_field(row, :interval),
+    features = row.features,
+)
+
+"""Human-readable label for a time series association identity, for error messages."""
+function _ts_row_label(identity)
+    return "$(identity.time_series_type) owner $(identity.owner_id) \"$(identity.name)\""
+end
+
+"""Wire field names on which `doc_row` and `store_row` differ, comparing canonical OpenAPI
+JSON and excluding `uri`/`data_hash`."""
+function _ts_row_drift(doc_row, store_row)
+    doc_json = _ts_row_wire_dict(doc_row)
+    store_json = _ts_row_wire_dict(store_row)
+    fields = union(keys(doc_json), keys(store_json))
+    return sort!(
+        [f for f in fields if get(doc_json, f, nothing) != get(store_json, f, nothing)],
+    )
+end
+
+function _ts_row_wire_dict(row)
+    dict = JSON.parse(JSON.json(row))
+    delete!(dict, "uri")
+    delete!(dict, "data_hash")
+    return dict
 end
 
 """
@@ -875,7 +711,7 @@ Resolve each imported `MarketBidCost`'s `ancillary_service_offers` ids to the no
 services may not exist yet when the carrying device converts; this runs after the full
 component pass. Errors on an unresolved id rather than dropping the offer.
 """
-function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PC.SystemDocument)
+function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PD.SystemDocument)
     for po_components in values(doc.components), po in po_components
         hasproperty(po, :operation_cost) || continue
         po_cost = po.operation_cost

@@ -5,7 +5,7 @@
 
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
-    @test IS.get_uuid(generator) == IS.get_uuid(generators[1])
+    @test IS.get_id(generator) == IS.get_id(generators[1])
     @test_throws(IS.ArgumentError, add_component!(sys, generator))
     @test get_available_component(ThermalStandard, sys, get_name(generators[1])) ===
           generator
@@ -15,7 +15,7 @@
 
     generators2 = get_components_by_name(ThermalGen, sys, get_name(generators[1]))
     @test length(generators2) == 1
-    @test IS.get_uuid(generators2[1]) == IS.get_uuid(generators[1])
+    @test IS.get_id(generators2[1]) == IS.get_id(generators[1])
     @test !has_time_series(generators2[1])
 
     @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
@@ -155,9 +155,8 @@ end
 
     # Test debugging functions.
     component = first(components)
-    uuid = IS.get_uuid(component)
-    @test get_name(get_component(sys, uuid)) == get_name(component)
-    @test get_name(get_component(sys, string(uuid))) == get_name(component)
+    id = IS.get_id(component)
+    @test get_name(get_component(sys, id)) == get_name(component)
 end
 
 @testset "Test remove_component" begin
@@ -284,6 +283,141 @@ end
     end
 end
 
+@testset "Test time series sharing accessors" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gens = ThermalStandard[]
+    for i in 1:2
+        gen = ThermalStandard(nothing)
+        gen.name = string(i)
+        gen.bus = bus
+        add_component!(sys, gen)
+        push!(gens, gen)
+    end
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    dates = collect(range(initial_time; step = resolution, length = 24))
+    make_sts(name, data) =
+        SingleTimeSeries(; name = name, data = TimeSeries.TimeArray(dates, data))
+
+    # One array shared by both generators, one array owned by the first alone.
+    add_time_series!(sys, gens, make_sts("max_active_power", collect(1.0:24.0)))
+    add_time_series!(sys, gens[1], make_sts("solo", collect(25.0:48.0)))
+
+    shared_keys =
+        [only(get_time_series_keys(g; name = "max_active_power")) for g in gens]
+    solo_key = only(get_time_series_keys(gens[1]; name = "solo"))
+    shared_hash = get_time_series_hash(gens[1], shared_keys[1])
+    @test get_time_series_hash(gens[2], shared_keys[2]) == shared_hash
+    @test get_time_series_hash(gens[1], solo_key) != shared_hash
+
+    # By default only the shared array is reported.
+    groups = get_time_series_array_groups(sys)
+    @test collect(keys(groups)) == [shared_hash]
+    @test Set(get_name(o) for (o, _) in groups[shared_hash]) == Set(["1", "2"])
+
+    all_groups = get_time_series_array_groups(sys; only_shared = false)
+    @test length(all_groups) == 2
+    @test Set(get_name(o) for (o, _) in all_groups[shared_hash]) == Set(["1", "2"])
+    @test only(
+        get_name(o) for (o, _) in all_groups[get_time_series_hash(gens[1],
+            solo_key)]
+    ) == "1"
+end
+
+@testset "Test forecast reader over shared forecasts" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gens = ThermalStandard[]
+    for i in 1:2
+        gen = ThermalStandard(nothing)
+        gen.name = string(i)
+        gen.bus = bus
+        add_component!(sys, gen)
+        push!(gens, gen)
+    end
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    interval = Dates.Hour(24)
+    horizon = 24
+    initial_times = [initial_time, initial_time + interval]
+    data = Dict(it => collect(1.0:horizon) for it in initial_times)
+    add_time_series!(sys, gens, Deterministic("max_active_power", data, resolution))
+
+    reader = build_forecast_reader(sys, Deterministic; resolution = resolution)
+    @test reader isa ForecastReader
+    @test length(reader) == 2
+    # Both entries resolve to the one shared array, so one read serves both.
+    @test get_num_forecast_slots(reader) == 1
+    @test Set(get_name(e.owner) for e in get_forecast_reader_entries(reader)) ==
+          Set(["1", "2"])
+
+    timeline = get_forecast_reader_timeline(reader)
+    @test timeline.initial_timestamp == initial_time
+    @test timeline.count == length(initial_times)
+
+    read_forecast_window!(reader, initial_time)
+    @test get_forecast_window(reader, 1) == collect(1.0:horizon)
+    @test get_forecast_window(reader, 2) == get_forecast_window(reader, 1)
+end
+
+@testset "Test static time series reader" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gens = ThermalStandard[]
+    for i in 1:2
+        gen = ThermalStandard(nothing)
+        gen.name = string(i)
+        gen.bus = bus
+        add_component!(sys, gen)
+        push!(gens, gen)
+    end
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    resolution = Dates.Hour(1)
+    len = 24
+    timestamps = range(initial_time; length = len, step = resolution)
+    arrays = [collect(1.0:len) .* i for i in 1:2]
+    for (gen, vals) in zip(gens, arrays)
+        add_time_series!(
+            sys,
+            gen,
+            SingleTimeSeries(;
+                data = TimeSeries.TimeArray(timestamps, vals),
+                name = "max_active_power",
+            ),
+        )
+    end
+
+    reader = build_static_time_series_reader(sys; resolution = resolution)
+    @test reader isa StaticTimeSeriesReader
+    @test length(reader) == 2
+    # Both scalar series pack into one columnar group: one read per timestamp.
+    @test get_num_static_time_series_groups(reader) == 1
+    entries = get_static_time_series_reader_entries(reader)
+    @test Set(get_name(e.owner) for e in entries) == Set(["1", "2"])
+
+    grid = get_static_time_series_reader_grid(reader)
+    @test grid.initial_timestamp == initial_time
+    @test grid.length == len
+
+    by_name = Dict(get_name(e.owner) => i for (i, e) in enumerate(entries))
+    for (k, timestamp) in enumerate(timestamps)
+        read_static_time_series_values!(reader, timestamp)
+        for i in 1:2
+            @test get_static_time_series_value(reader, by_name["$i"]) == arrays[i][k]
+        end
+    end
+end
+
 @testset "Test bulk add of time series" begin
     sys = System(100.0)
     bus = ACBus(nothing)
@@ -302,22 +436,22 @@ end
     arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
     ts_name = "test"
 
-    open_time_series_store!(sys, "r+") do
+    time_series_transaction(sys) do txn
         for (i, ta) in enumerate(arrays)
             ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
-            add_time_series!(sys, component, ts)
+            add_time_series!(txn, component, ts)
         end
     end
 
-    open_time_series_store!(sys, "r") do
-        for (i, expected_array) in enumerate(arrays)
-            ts = IS.get_time_series(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
-            @test ts.data == expected_array
-        end
+    for (i, expected_array) in enumerate(arrays)
+        # `SingleTimeSeries.data` is a raw Array now; go through
+        # `get_time_series_array` to compare timestamps as well as values.
+        ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+        @test ta == expected_array
     end
 end
 
-@testset "Test begin_time_series_update" begin
+@testset "Test time_series_transaction" begin
     sys = System(100.0)
     bus = ACBus(nothing)
     bus.bustype = ACBusTypes.REF
@@ -335,19 +469,30 @@ end
     arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
     ts_name = "test"
 
-    begin_time_series_update(sys) do
+    time_series_transaction(sys) do txn
         for (i, ta) in enumerate(arrays)
             ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
-            add_time_series!(sys, component, ts)
+            add_time_series!(txn, component, ts)
         end
     end
 
-    open_time_series_store!(sys, "r") do
-        for (i, expected_array) in enumerate(arrays)
-            ts = IS.get_time_series(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
-            @test ts.data == expected_array
-        end
+    for (i, expected_array) in enumerate(arrays)
+        ta = IS.get_time_series_array(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+        @test ta == expected_array
     end
+
+    # A throw inside the block rolls back everything it buffered.
+    @test_throws ErrorException time_series_transaction(sys) do txn
+        ts = SingleTimeSeries(;
+            data = TimeSeries.TimeArray(timestamps, rand(len)),
+            name = "rolled_back",
+        )
+        add_time_series!(txn, component, ts)
+        error("abort the transaction")
+    end
+    @test isempty(
+        IS.get_time_series_keys(component; name = "rolled_back"),
+    )
 end
 
 @testset "Test set_name! of system component" begin
@@ -454,7 +599,9 @@ end
         sts_name;
         interval = interval1,
     )
-    @test ts1 isa DeterministicSingleTimeSeries
+    # Stored as a DeterministicSingleTimeSeries; a read materializes it into a regular
+    # Deterministic (the DST form is a storage-side optimization only).
+    @test ts1 isa Deterministic
     @test IS.get_interval(ts1) == interval1
 
     ts2 = get_time_series(
@@ -463,7 +610,7 @@ end
         sts_name;
         interval = interval2,
     )
-    @test ts2 isa DeterministicSingleTimeSeries
+    @test ts2 isa Deterministic
     @test IS.get_interval(ts2) == interval2
 
     @test_throws ArgumentError get_time_series(
@@ -535,7 +682,7 @@ end
     ts_dir = mktempdir()
     sys = System(100.0; time_series_directory = ts_dir)
     sys2 = deepcopy(sys)
-    @test dirname(sys2.data.time_series_manager.data_store.file_path) == ts_dir
+    @test dirname(IS._store_path(sys2.data.time_series_manager.data_store)) == ts_dir
 end
 
 @testset "Test time series counts" begin
@@ -569,9 +716,9 @@ end
         time_series_in_memory = true,
         force_build = true,
     )
-    @test sys.data.time_series_manager.data_store isa IS.InMemoryTimeSeriesStorage
+    @test sys.data.time_series_manager.data_store isa IS.Store
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_manager.data_store isa IS.InMemoryTimeSeriesStorage
+    @test sys2.data.time_series_manager.data_store isa IS.Store
     @test IS.compare_values(sys, sys2)
     # Ensure that the storage references got updated correctly.
     for component in get_components(x -> has_time_series(x), Component, sys2)
@@ -585,11 +732,9 @@ end
         time_series_in_memory = false,
         force_build = true,
     )
-    @test sys.data.time_series_manager.data_store isa IS.Hdf5TimeSeriesStorage
+    @test sys.data.time_series_manager.data_store isa IS.Store
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_manager.data_store isa IS.Hdf5TimeSeriesStorage
-    @test sys.data.time_series_manager.data_store.file_path !=
-          sys2.data.time_series_manager.data_store.file_path
+    @test sys2.data.time_series_manager.data_store isa IS.Store
     @test IS.compare_values(sys, sys2)
     for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.internal.shared_system_references.time_series_manager ===
@@ -630,7 +775,9 @@ end
 @testset "Test with compression enabled" begin
     @test get_compression_settings(System(100.0)) == CompressionSettings(; enabled = false)
 
-    settings = CompressionSettings(; enabled = true, type = CompressionTypes.BLOSC)
+    # The Rust/HDF5 time-series backend supports DEFLATE only; BLOSC came from the
+    # older HDF5.jl-based store.
+    settings = CompressionSettings(; enabled = true, type = CompressionTypes.DEFLATE)
     @test get_compression_settings(System(100.0; compression = settings)) == settings
     @test get_compression_settings(System(100.0; enable_compression = true)) ==
           CompressionSettings(; enabled = true)

@@ -169,25 +169,26 @@ load_values = [0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5, 0.6, 0.6,
     0.7, 0.8, 0.8, 0.8, 0.8, 0.8, 0.9, 0.8, 0.8, 0.8, 0.8, 0.8];
 load_timearray = TimeArray(timestamps, load_values);
 
-# Again, define a [`SingleTimeSeries`](@ref), but this time use the
-# `scaling_factor_multiplier` parameter to scale this time series from
-# normalized values to power values:
+# `load_values` is a normalized profile, but a time series stores *actual* per-device
+# quantities -- nothing rescales it on the way back out. So multiply the profile by each
+# load's own `max_active_power` before storing it:
 
-load_time_series = SingleTimeSeries(;
-    name = "max_active_power",
-    data = load_timearray,
-    scaling_factor_multiplier = get_max_active_power,
-);
+for load in (load1, load2)
+    add_time_series!(
+        system,
+        load,
+        SingleTimeSeries(;
+            name = "max_active_power",
+            data = load_timearray * get_max_active_power(load, SU),
+        ),
+    )
+end
 
-# Notice that we assigned the
-# [`get_max_active_power`](@ref get_max_active_power(value::PowerLoad)) *function*
-# to scale the time series, rather than a value, making the time series reusable for multiple
-# components or multiple fields in a component. Note that the values are normalized using
-# each device's `max_active_power` parameter, not the system-wide `base_power`.
-# Now, add the scaling factor time series to both loads to save memory and avoid data
-# duplication:
-
-add_time_series!(system, [load1, load2], load_time_series);
+# One series per load, rather than one shared series: `load1` and `load2` have the same
+# per-unit `max_active_power` but different `base_power`, so their actual power values
+# differ and a single shared array could not describe both. Loads that *do* share the same
+# values can still share one series -- pass them together as
+# `add_time_series!(system, [load1, load2], series)` -- which stores the array once.
 
 # Let's take a look at `load1`, including printing its parameters...
 

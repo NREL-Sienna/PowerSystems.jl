@@ -76,7 +76,7 @@ end
         ),
     )
     # Round-trip through a document: both `ShiftablePowerLoad` and `InterruptiblePowerLoad`
-    # are now in `DOCUMENT_PLAN`. DEVICE_BASE is an exact pass-through, so the DU values
+    # are now in `DOCUMENT_PLAN`. COMPONENT_BASE is an exact pass-through, so the DU values
     # below survive unchanged.
     sys2 = roundtrip_system(sys)
     @test get_active_power(

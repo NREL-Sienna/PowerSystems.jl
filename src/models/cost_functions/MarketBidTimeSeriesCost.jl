@@ -12,8 +12,9 @@ For static (non-time-varying) bids, use [`MarketBidCost`](@ref).
 mutable struct MarketBidTimeSeriesCost{U <: IS.AbstractUnitSystem} <: OfferCurveCost
     "No load cost (time series)"
     no_load_cost::TimeSeriesLinearCurve
-    "Start-up cost stages (time series)"
-    start_up::TupleTimeSeries{StartUpStages}
+    "Key of a time series of `NTuple{3, Float64}` start-up cost stages, resolved to a
+    `StartUpStages` at a chosen timestep by `get_start_up(device, cost; start_time)`"
+    start_up::IS.ConcreteTimeSeriesKey
     "Shut-down cost (time series)"
     shut_down::TimeSeriesLinearCurve
     "Sell Offer Curves data (time series)"

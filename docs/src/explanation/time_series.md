@@ -112,30 +112,45 @@ remove_time_series!(sys, DeterministicSingleTimeSeries, component, "max_active_p
 Omitting `interval` when multiple intervals exist for the same name will raise an
 `ArgumentError`.
 
+## Reading by Timestamp
+
+[`get_time_series_array`](@ref) and its variants are *series-oriented*: they return one
+component's whole array. Simulations need the transpose — every component's value at one
+timestamp, then the next — and cannot afford to hold every array in memory to get it.
+
+PowerSystems provides two *cross-sectional* readers for this. Build one once against a
+filter, then drive it forward through time:
+
+  - [`build_static_time_series_reader`](@ref) covers [`SingleTimeSeries`](@ref). Series
+    sharing an element type are packed into one columnar group and served by a single
+    storage read per timestamp.
+  - [`build_forecast_reader`](@ref) covers forecasts, returning each component's window.
+    Components whose forecasts are backed by the same array collapse into a single *slot*
+    and are read once per timestamp regardless of how many reference it — which is the
+    common case after [`transform_single_time_series!`](@ref).
+
+Each read touches only the values for the requested timestamp, so cost scales with the
+fleet's cross-section rather than with the length of its history.
+
+See [Read Time Series Data by Timestamp](@ref read_ts_by_timestamp).
+
 ## Data Storage
 
-By default PowerSystems stores time series data in an HDF5 file.
-This prevents
+By default PowerSystems stores time series data on disk, as an HDF5 file with a sidecar
+SQLite catalog. This prevents
 large datasets from overwhelming system memory. Refer to this
 [page](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/dev_guide/time_series/#Data-Format)
-for details on how the time series data is stored in HDF5 files.
+for details on how the time series data is stored.
 
-Time series data can be stored actual component values (for instance MW) or scaling
-factors intended to be multiplied by a scalar to generate the component values.
-By default PowerSystems treats the values in the time
-series data as physical units. In order to specify them as scaling factors, you
-must pass the accessor function that provides the multiplier value (e.g.,
-`get_time_series_array`). The scaling factor multiplier
-must be passed into the forecast when you create it to use this option.
+Time series data stores actual component values (for instance MW). A series is not scaled
+on retrieval: the values you read back are the values that were stored.
 
-The time series contains fields for `scaling_factor_multiplier` and `data`
-to identify the details of  th `Component` field that the time series describes, and the
-time series `data`. For example: we commonly want to use a time series to
-describe the maximum active power capability of a renewable generator. In this case, we
-can create a `SingleTimeSeries` with a `TimeArray` and an accessor function to the
-maximum active power field in the struct describing the generator. In this way, we can
-store a scaling factor time series that will get multiplied by the maximum active power
-rather than the magnitudes of the maximum active power time series.
+A series declares what its values mean through `units`, `quantity_kind`, and `unit_system`,
+alongside `data` and the `name` identifying the `Component` field it describes. For example:
+to describe the maximum active power capability of a renewable generator, create a
+`SingleTimeSeries` named `"max_active_power"` whose `TimeArray` already holds that
+generator's power values. A normalized profile must therefore be multiplied by the
+component's field value before it is stored, rather than at retrieval.
 
 Examples of how to create and add time series to system can be found in the
 [Add Time Series Example](https://sienna-platform.github.io/PowerSystems.jl/stable/tutorials/add_forecasts/)

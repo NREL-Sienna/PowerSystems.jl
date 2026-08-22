@@ -13,7 +13,7 @@ ensuring cleanup even if errors occur.
 PowerSystems provides two main context managers:
 
  1. [`begin_supplemental_attributes_update`](@ref) - Optimize bulk addition/removal of supplemental attributes
- 2. [`begin_time_series_update`](@ref) - Optimize bulk addition of time series data
+ 2. [`time_series_transaction`](@ref) - Optimize bulk addition of time series data
 
 !!! note
 
@@ -82,19 +82,25 @@ end
     when adding many attributes. The context manager batches all updates together for
     better performance.
 
-## Using `begin_time_series_update`
+## Using `time_series_transaction`
 
-The [`begin_time_series_update`](@ref) function optimizes performance when adding many time
-series arrays by keeping the HDF5 file open and batching SQLite database operations. This
-reduces the overhead of repeatedly opening/closing files and performing individual database
-transactions.
+The [`time_series_transaction`](@ref) function optimizes performance when adding many time
+series arrays. It yields a **context**: pass it to each `add_time_series!` in the block and
+the additions are buffered and written to the store as one bulk call, instead of one write
+per series.
 
-If an error occurs during the update, changes are automatically reverted.
+The block is also a transaction. If it throws, everything it did is rolled back — including
+**removals**, which are irreversible outside a block, because the store frees a time series
+array as soon as its last reference goes.
+
+!!! warning
+
+    An open block holds the store's write lock. Gather your data first — reading CSVs,
+    querying a database — and keep the block to the writes themselves.
 
 !!! note
 
-    This context manager is not necessary for in-memory time series stores, only for
-    HDF5-backed storage.
+    Blocks nest innermost-first: an inner block must finish before the one enclosing it.
 
 ### Example: Adding Multiple Time Series
 
@@ -112,16 +118,15 @@ data = Dict(
 # Get components
 generators = collect(get_components(ThermalStandard, sys))
 
-# Use context manager for efficient bulk addition
-begin_time_series_update(sys) do
+# Use a transaction for efficient bulk addition
+time_series_transaction(sys) do txn
     for (i, gen) in enumerate(generators)
         forecast = Deterministic(
             "max_active_power",
             data,
-            resolution;
-            scaling_factor_multiplier = get_max_active_power,
+            resolution,
         )
-        add_time_series!(sys, gen, forecast)
+        add_time_series!(txn, gen, forecast)
     end
 end
 ```
@@ -130,7 +135,7 @@ end
 
 ```julia
 # When you have time series data from multiple sources
-begin_time_series_update(sys) do
+time_series_transaction(sys) do txn
     for component in get_components(Generator, sys)
         # Create time series data specific to each component
         # (In practice, this might come from CSV files, databases, or other sources)
@@ -142,33 +147,32 @@ begin_time_series_update(sys) do
         forecast = Deterministic(
             "max_active_power",
             component_data,
-            resolution;
-            scaling_factor_multiplier = get_max_active_power,
+            resolution,
         )
-        add_time_series!(sys, component, forecast)
+        add_time_series!(txn, component, forecast)
     end
 end
 ```
 
 !!! tip
 
-    When adding thousands of time series arrays, using `begin_time_series_update` can
-    provide significant performance improvements by reducing file I/O and database
-    transaction overhead.
+    When adding thousands of time series arrays, `time_series_transaction` can provide
+    large performance improvements — but only for the additions made on the yielded
+    transaction. An `add_time_series!` on `sys` inside the block writes on its own.
 
 ## Best Practices
 
  1. **Always use context managers for bulk operations**: When adding multiple supplemental
     attributes or time series, use the appropriate context manager to improve performance.
 
- 2. **Automatic cleanup**: Context managers ensure cleanup happens even if errors occur, so
-    your system state remains consistent.
+ 2. **Automatic rollback**: If the block throws, `time_series_transaction` rolls its
+    transaction back, so the store is left exactly as it was — additions and removals alike.
 
  3. **Nested context managers**: You can nest context managers if needed:
 
     ```julia
     begin_supplemental_attributes_update(sys) do
-        begin_time_series_update(sys) do
+        time_series_transaction(sys) do context
             for gen in get_components(Generator, sys)
                 # ... add supplemental attributes and time series ...
             end
@@ -181,7 +185,7 @@ end
 
     ```julia
     try
-        begin_time_series_update(sys) do
+        time_series_transaction(sys) do context
             # ... operations ...
         end
     catch e

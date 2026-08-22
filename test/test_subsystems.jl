@@ -718,9 +718,19 @@ end
     base_sys = create_system_with_2_test_subsystems()[1]
     ts_counts = get_time_series_counts(base_sys)
     @test ts_counts.components_with_time_series == 6
-    @test ts_counts.forecast_count == 6
-    subsystem1_uuids = get_component_uuids(base_sys, "subsystem_1")
-    subsystem2_uuids = get_component_uuids(base_sys, "subsystem_2")
+    # `forecast_count` counts distinct stored arrays, not associations. The two areas of
+    # this system carry identical load profiles, so the content-addressed store shares one
+    # array between each area-1/area-2 pair: 6 forecast associations over 3 arrays.
+    @test ts_counts.forecast_count == 3
+    @test count(
+        k -> IS.get_time_series_type(k) <: IS.Forecast,
+        (
+            k for c in get_components(Component, base_sys) for
+            k in IS.get_time_series_keys(c)
+        ),
+    ) == 6
+    subsystem1_ids = get_component_ids(base_sys, "subsystem_1")
+    subsystem2_ids = get_component_ids(base_sys, "subsystem_2")
 
     sys1 = from_subsystem(base_sys, "subsystem_1")
     sys2 = from_subsystem(base_sys, "subsystem_2")
@@ -732,11 +742,11 @@ end
     @test length(sys1_components) < length(base_sys_components)
     @test length(sys2_components) < length(base_sys_components)
 
-    for (components, uuids) in
-        ((sys1_components, subsystem1_uuids), (sys2_components, subsystem2_uuids))
+    for (components, ids) in
+        ((sys1_components, subsystem1_ids), (sys2_components, subsystem2_ids))
         for component in components
             base_component = get_component(typeof(component), base_sys, get_name(component))
-            @test IS.get_uuid(base_component) in uuids
+            @test IS.get_id(base_component) in ids
         end
     end
 
