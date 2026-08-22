@@ -25,12 +25,12 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [sources]
 InfrastructureSystems = {rev = "feat/infrastore-integration", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
-# Sibling-checkout paths, not a git rev: the x-unit accessors these packages
-# expose are generated and not yet released. Switch to a tagged rev before merge.
-PowerCoreOpenAPIModels = {path = "../PowerOpenAPIModels/PowerCoreOpenAPIModels.jl"}
-PowerOpenAPIModels = {path = "../PowerOpenAPIModels/PowerOpenAPIModels.jl"}
-PowerOperationsOpenAPIModels = {path = "../PowerOpenAPIModels/PowerOperationsOpenAPIModels.jl"}
-PowerTimeSeriesOpenAPIModels = {path = "../PowerOpenAPIModels/PowerTimeSeriesOpenAPIModels.jl"}
+# Branch revs, not a tagged release: the x-unit accessors these packages expose are generated
+# and not yet released. Switch to a tagged rev at release.
+PowerCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "feat/infrastore-integration", subdir = "PowerCoreOpenAPIModels.jl"}
+PowerOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "feat/infrastore-integration", subdir = "PowerOpenAPIModels.jl"}
+PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "feat/infrastore-integration", subdir = "PowerOperationsOpenAPIModels.jl"}
+PowerTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "feat/infrastore-integration", subdir = "PowerTimeSeriesOpenAPIModels.jl"}
 
 [compat]
 DataStructures = "^0.19"
