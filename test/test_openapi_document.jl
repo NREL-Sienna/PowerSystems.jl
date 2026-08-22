@@ -405,6 +405,65 @@ end
     end
 end
 
+@testset "HydroReservoir round trip: forward turbine and cascading reservoir references" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+
+    # `HydroPumpTurbine` converts after `HydroReservoir` in `DOCUMENT_PLAN`, so a reservoir
+    # pointing at one is a genuine forward reference.
+    pump = HydroPumpTurbine(nothing)
+    pump.bus = bus
+    pump.name = "pump1"
+    add_component!(sys, pump)
+
+    head = HydroReservoir(;
+        name = "head", available = true,
+        storage_level_limits = (min = 0.0, max = 1000.0),
+        initial_level = 0.5, spillage_limits = nothing,
+        inflow = 10.0, outflow = 8.0, level_targets = nothing,
+        intake_elevation = 50.0,
+        head_to_volume_factor = LinearFunctionData(0.001, 0.0),
+        downstream_turbines = PSY.HydroUnit[pump],
+    )
+    add_component!(sys, head)
+
+    # `tail` references `head` — both `HydroReservoir`s, so this is a same-type reference
+    # within HydroReservoir's own document-key pass, the cascading case no `DOCUMENT_PLAN`
+    # reordering could fix.
+    tail = HydroReservoir(;
+        name = "tail", available = true,
+        storage_level_limits = (min = 0.0, max = 1000.0),
+        initial_level = 0.5, spillage_limits = nothing,
+        inflow = 10.0, outflow = 8.0, level_targets = nothing,
+        intake_elevation = 40.0,
+        head_to_volume_factor = LinearFunctionData(0.001, 0.0),
+        upstream_turbines = PSY.HydroUnit[pump],
+        upstream_reservoirs = Device[head],
+    )
+    add_component!(sys, tail)
+
+    for unit_system in (:device_base, :natural_units)
+        doc = to_openapi(sys; unit_system = unit_system)
+        sys2 = from_openapi(System, doc)
+
+        pump2 = get_component(HydroPumpTurbine, sys2, "pump1")
+        head2 = get_component(HydroReservoir, sys2, "head")
+        tail2 = get_component(HydroReservoir, sys2, "tail")
+        @test !isnothing(pump2)
+        @test !isnothing(head2)
+        @test !isnothing(tail2)
+
+        @test get_downstream_turbines(head2) == [pump2]
+        @test get_upstream_turbines(tail2) == [pump2]
+        @test get_upstream_reservoirs(tail2) == [head2]
+        @test isempty(get_upstream_reservoirs(head2))
+    end
+end
+
 @testset "DOCUMENT_PLAN: converters match the declared pair" begin
     # `from_openapi` dispatches on the PO type, so `psy_type` no longer reaches the import
     # call and a mis-paired entry would go unnoticed at run time — `is_document_exportable`

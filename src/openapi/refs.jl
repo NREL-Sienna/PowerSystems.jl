@@ -23,12 +23,47 @@ struct OpenAPIRefs
     "The document's system base power (MVA), used by converters for types carrying no
     device-level `base_power` of their own."
     base_power::Float64
+    "Component→component reference resolutions queued by [`defer_ref!`](@ref) because the
+    referenced component had not converted yet — drained by [`resolve_deferred_refs!`](@ref).
+    Import-only; export never defers, so this stays empty on that side."
+    deferred_refs::Vector{Function}
 end
 
 function OpenAPIRefs(unit_system::AbstractString, base_power::Real = 100.0)
     return OpenAPIRefs(
         Dict{Int, Any}(), IdDict{Any, Int}(), String(unit_system), Float64(base_power),
+        Function[],
     )
+end
+
+"""
+Defer a component→component reference a `from_openapi` converter cannot resolve on its own
+first pass: either a genuine forward reference (the referenced type converts later in
+`DOCUMENT_PLAN`) or a same-type reference (the referenced component is of the SAME type,
+converted earlier or later within that type's own document-key pass, so no `DOCUMENT_PLAN`
+reordering could express it — a cascading `HydroReservoir` chain is the motivating case).
+
+A converter facing either one constructs its component with that field left at its own
+empty/`nothing` default, then calls `defer_ref!(refs, f)` with a zero-argument `f` that
+performs the resolution (typically closing over the constructed component, `refs`, and the
+raw ids still to resolve) via a mutating setter. `f` runs later, from
+[`resolve_deferred_refs!`](@ref), once every component in the document is registered — a raw
+id still unresolvable then is genuinely absent from the document and errors from `refs`'s own
+`getindex`, not from here.
+"""
+defer_ref!(refs::OpenAPIRefs, f) = push!(refs.deferred_refs, f)
+
+"""
+Run every reference resolution queued by [`defer_ref!`](@ref), in the order queued, then clear
+the queue. Called once, after every component in the document has converted and registered —
+see `from_openapi(::Type{System}, doc)` in `import_document.jl`.
+"""
+function resolve_deferred_refs!(refs::OpenAPIRefs)
+    for f in refs.deferred_refs
+        f()
+    end
+    empty!(refs.deferred_refs)
+    return nothing
 end
 
 """Get the document-level unit system this [`OpenAPIRefs`](@ref) was built for."""

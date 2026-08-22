@@ -66,12 +66,16 @@ _inout(m) = (in = m.in, out = m.out)
 """Resolve upstream/downstream `HydroUnit` ids to components; `nothing` means no
 association (a reservoir can legitimately have zero upstream/downstream turbines) and
 maps to an empty vector, matching `HydroReservoir`'s own `upstream_turbines`/
-`downstream_turbines` default — not an error to guard against."""
+`downstream_turbines` default — not an error to guard against.
+
+Called from the `defer_ref!` closure `from_openapi(::PO.HydroReservoir, ...)` queues, not
+from that function directly — see it for why."""
 _hydro_units(::OpenAPIRefs, ::Nothing) = HydroUnit[]
 _hydro_units(refs::OpenAPIRefs, ids) = HydroUnit[refs[id] for id in ids]
 
 """Resolve upstream reservoir ids to components; `nothing` means no association and maps
-to an empty vector, matching `HydroReservoir.upstream_reservoirs`'s own default."""
+to an empty vector, matching `HydroReservoir.upstream_reservoirs`'s own default. Same
+deferred caller as [`_hydro_units`](@ref)."""
 _reservoir_devices(::OpenAPIRefs, ::Nothing) = Device[]
 _reservoir_devices(refs::OpenAPIRefs, ids) = Device[refs[id] for id in ids]
 
@@ -708,10 +712,19 @@ end
 # conversion, so also identical in both methods.
 # `operation_cost` is converted via `convert_cost`, rather than fabricated as a placeholder
 # when missing.
+#
+# `upstream_turbines`/`downstream_turbines`/`upstream_reservoirs` are NOT resolved
+# eagerly. `DOCUMENT_PLAN` converts `HydroReservoir` before `HydroPumpTurbine` (a valid
+# `HydroUnit`), so a reservoir's own turbine references can be forward references; and
+# `upstream_reservoirs` points at other `HydroReservoir`s converted in the same document-key
+# pass, so a cascading reservoir chain is a same-type reference no `DOCUMENT_PLAN` reordering
+# can express. Both are constructed at their empty defaults and patched in via
+# `defer_ref!` (see [`OpenAPIRefs`](@ref)), which runs once every component in the document
+# has converted and registered.
 
 function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit)
     max_level = po.storage_level_limits.max
-    return HydroReservoir(;
+    reservoir = HydroReservoir(;
         name = po.name,
         available = po.available,
         storage_level_limits = _minmax(po.storage_level_limits),
@@ -723,12 +736,23 @@ function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit
         intake_elevation = po.intake_elevation,
         head_to_volume_factor = convert_cost(po.head_to_volume_factor),
         evaporative_loss = po.evaporative_loss,
-        upstream_turbines = _hydro_units(refs, po.upstream_turbines),
-        downstream_turbines = _hydro_units(refs, po.downstream_turbines),
-        upstream_reservoirs = _reservoir_devices(refs, po.upstream_reservoirs),
+        upstream_turbines = HydroUnit[],
+        downstream_turbines = HydroUnit[],
+        upstream_reservoirs = Device[],
         operation_cost = convert_cost(po.operation_cost),
         level_data_type = ReservoirDataType(po.level_data_type),
     )
+    defer_ref!(
+        refs,
+        () -> begin
+            set_upstream_turbines!(reservoir, _hydro_units(refs, po.upstream_turbines))
+            set_downstream_turbines!(reservoir, _hydro_units(refs, po.downstream_turbines))
+            set_upstream_reservoirs!(
+                reservoir, _reservoir_devices(refs, po.upstream_reservoirs),
+            )
+        end,
+    )
+    return reservoir
 end
 
 function from_openapi(po::PO.HydroReservoir, refs::OpenAPIRefs, ::NaturalUnit)

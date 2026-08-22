@@ -614,15 +614,20 @@ end
         ),
         evaporative_loss = 0.0, level_data_type = "USABLE_VOLUME",
     )
+    reservoirs = HydroReservoir[]
     for val in (DU, NU)
         reservoir = PSY.from_openapi(reservoir_po, refs, val)
         # Absolute -> fraction-of-max, identical in both unit systems (semantic, not unit).
         @test get_initial_level(reservoir) == 0.5
         @test get_level_targets(reservoir) == 0.6
         @test get_inflow(reservoir) == 10.0
-        @test get_upstream_turbines(reservoir) == [turbine]
+        # `upstream_turbines` is a `defer_ref!` closure until `resolve_deferred_refs!` runs
+        # (see OpenAPIRefs) — the reservoir converts before its turbines can be relied on to
+        # have registered, so it must not resolve eagerly.
+        @test get_upstream_turbines(reservoir) == PSY.HydroUnit[]
         @test get_level_shortage_cost(get_operation_cost(reservoir)) == 1.0
         @test get_level_data_type(reservoir) == ReservoirDataType.USABLE_VOLUME
+        push!(reservoirs, reservoir)
     end
 
     # A HydroReservoir carrying upstream_turbines=null, upstream_reservoirs=null, and a
@@ -645,8 +650,22 @@ end
         ),
         evaporative_loss = 0.0, level_data_type = "USABLE_VOLUME",
     )
+    reservoir_heads = HydroReservoir[]
     for val in (DU, NU)
         reservoir_head = PSY.from_openapi(reservoir_head_po, refs, val)
+        @test get_upstream_turbines(reservoir_head) == PSY.HydroUnit[]
+        @test get_upstream_reservoirs(reservoir_head) == Device[]
+        @test get_downstream_turbines(reservoir_head) == PSY.HydroUnit[]
+        push!(reservoir_heads, reservoir_head)
+    end
+
+    # Draining the deferred queue is what actually resolves the turbine references above.
+    PSY.resolve_deferred_refs!(refs)
+    @test isempty(refs.deferred_refs)
+    for reservoir in reservoirs
+        @test get_upstream_turbines(reservoir) == [turbine]
+    end
+    for reservoir_head in reservoir_heads
         @test get_upstream_turbines(reservoir_head) == PSY.HydroUnit[]
         @test get_upstream_reservoirs(reservoir_head) == Device[]
         @test get_downstream_turbines(reservoir_head) == [turbine]

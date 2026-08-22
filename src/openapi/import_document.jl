@@ -488,7 +488,11 @@ Takes the typed container, not JSON: reading a file belongs to
 `PowerCoreOpenAPIModels.read_document`, which [`from_file`](@ref) drives.
 
 Converts every component in dependency order ([`DOCUMENT_PLAN`](@ref), verified against
-dependency order), attaches supplemental attributes from `supplemental_attribute_associations`
+dependency order), then runs [`resolve_deferred_refs!`](@ref) once to patch in any
+component→component reference a converter deferred rather than resolve on that first pass (a
+forward or same-type reference — e.g. a cascading `HydroReservoir` chain — see
+[`OpenAPIRefs`](@ref)). It then attaches supplemental attributes from
+`supplemental_attribute_associations`
 (plus `plant_associations`/`combined_cycle_associations` for the plant-family ones) and
 reserve membership from `service_associations`, and — when `time_series_storage_path` is
 given — adopts the HDF5 sidecar wholesale as the System's own time series store. There is no
@@ -541,6 +545,8 @@ function from_openapi(
             refs[Int(po.id)] = component
         end
     end
+
+    resolve_deferred_refs!(refs)
 
     _load_market_bid_service_offers!(refs, doc)
 
