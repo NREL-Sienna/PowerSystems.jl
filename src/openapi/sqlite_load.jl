@@ -84,7 +84,7 @@ function load_supplemental_attribute_associations!(
     # folded back in so a document that repeats a pair still attaches rather than re-adds.
     stored_pairs = Set{Tuple{Int, Int}}(
         (Int(row.component_id), Int(row.attribute_id)) for
-        row in IS.openapi_supplemental_attribute_association_rows(sys.data)
+        row in IS.list_supplemental_attribute_association_rows(sys.data)
     )
     IS.begin_association_batch(sys.data) do
         for assoc in doc.supplemental_attribute_associations

@@ -21,11 +21,13 @@ function _monitored_component_ids(refs::OpenAPIRefs, ids)
     if isempty(ids)
         return nothing
     end
+    document_ids = Int[]
     for id in ids
         has_ref(refs, Int(id)) ||
             error("to_openapi: an outage monitors id $id, absent from the document")
+        push!(document_ids, Int(id))
     end
-    return Int[Int(id) for id in ids]
+    return document_ids
 end
 
 function to_openapi(attr::EmissionsData, refs::OpenAPIRefs)
@@ -547,9 +549,8 @@ function _export_all_time_series(sys::System, refs::OpenAPIRefs, time_series_sto
     for assoc in IS.openapi_time_series_association_rows(sys.data)
         row = assoc.value
         owner_id = Int(row.owner_id)
-        tolerated = _absent_owner_is_tolerated(row)
         if !has_ref(refs, owner_id)
-            tolerated || error(
+            _absent_owner_is_tolerated(row) || error(
                 "to_openapi: supplemental attribute (owner id $owner_id, type " *
                 "$(row.owner_type)) owns time series \"$(row.name)\", but is not " *
                 "registered in the exported document — the sidecar and the attribute " *

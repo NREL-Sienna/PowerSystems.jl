@@ -658,18 +658,25 @@ end
 that field at all (e.g. `NonSequentialTimeSeries` has no `resolution`/`interval`) — as
 opposed to carrying it unset, which is also `nothing`. Either way, absent and unset compare
 equal for identity purposes."""
-_ts_field(row, field::Symbol) = hasproperty(row, field) ? getproperty(row, field) : nothing
+function _ts_field(row, field::Symbol)
+    hasproperty(row, field) && return getproperty(row, field)
+    return nothing
+end
 
 """The `(owner_id, owner_category, time_series_type, name, resolution, interval, features)`
-tuple a time series association row is matched by — the same identity the store's own
+named tuple a time series association row is matched by — the same identity the store's own
 uniqueness index keys on. See [`_validate_time_series_associations!`](@ref)."""
 _ts_row_identity(row) = (
-    row.owner_id, row.owner_category, row.time_series_type, row.name,
-    _ts_field(row, :resolution), _ts_field(row, :interval), row.features,
+    owner_id = row.owner_id, owner_category = row.owner_category,
+    time_series_type = row.time_series_type, name = row.name,
+    resolution = _ts_field(row, :resolution), interval = _ts_field(row, :interval),
+    features = row.features,
 )
 
-"""Human-readable label for a time series association identity tuple, for error messages."""
-_ts_row_label(identity) = "$(identity[3]) owner $(identity[1]) \"$(identity[4])\""
+"""Human-readable label for a time series association identity, for error messages."""
+function _ts_row_label(identity)
+    return "$(identity.time_series_type) owner $(identity.owner_id) \"$(identity.name)\""
+end
 
 """Wire field names on which `doc_row` and `store_row` differ, comparing canonical OpenAPI
 JSON and excluding `uri`/`data_hash`."""
@@ -682,7 +689,12 @@ function _ts_row_drift(doc_row, store_row)
     )
 end
 
-_ts_row_wire_dict(row) = delete!(delete!(JSON.parse(JSON.json(row)), "uri"), "data_hash")
+function _ts_row_wire_dict(row)
+    dict = JSON.parse(JSON.json(row))
+    delete!(dict, "uri")
+    delete!(dict, "data_hash")
+    return dict
+end
 
 """
 Resolve each imported `MarketBidCost`'s `ancillary_service_offers` ids to the now-imported
