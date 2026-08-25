@@ -434,10 +434,25 @@ end
 # never saw) carries none, so those pairs need writing. Which case a row falls in is read
 # from `stored_pairs` rather than from a caller-supplied mode flag.
 
+"""No group index: the plain attribute path needs no map update."""
+_push_group_indices!(component, attribute, ::Nothing) =
+    _push_group_index!(component, attribute, nothing)
+
+"""One or more group indices: record each on whichever forward map the attribute's type
+carries."""
+function _push_group_indices!(component, attribute, group_indices::Vector{Int})
+    for group_index in group_indices
+        _push_group_index!(component, attribute, group_index)
+    end
+    return nothing
+end
+
 """
-Attach `attribute` to `component`, recording `group_index` on whichever forward map the
-attribute's type carries (a no-op for the plain attribute types, whose `group_index` is
-`nothing`).
+Attach `attribute` to `component`, recording `group_indices` on whichever forward map the
+attribute's type carries (a no-op for the plain attribute types, whose `group_indices` is
+`nothing`). A plant-family attribute can carry several indices for one `(component, attribute)`
+pair — a CT/CA feeding more than one HRSG group, for instance — so every index in
+`group_indices` is pushed.
 
 `stored_pairs` holds the `(component_id, attribute_id)` pairs the store already has; a pair
 written here is added to it.
@@ -447,7 +462,7 @@ function _attach_attribute!(
     stored_pairs::Set{Tuple{Int, Int}},
     component,
     attribute,
-    group_index,
+    group_indices,
 )
     pair = (IS.get_id(component), IS.get_id(attribute))
     if pair in stored_pairs
@@ -458,7 +473,7 @@ function _attach_attribute!(
         IS.add_supplemental_attribute!(sys.data, component, attribute)
         push!(stored_pairs, pair)
     end
-    _push_group_index!(component, attribute, group_index)
+    _push_group_indices!(component, attribute, group_indices)
     return nothing
 end
 

@@ -410,8 +410,9 @@ function _push_plant_association!(
     return nothing
 end
 
-"""A CT/CA can feed more than one HRSG, but IS attaches a `CombinedCycleBlock` to a component
-once regardless — so only the lowest HRSG number is representable per association row."""
+"""A CT/CA can feed more than one HRSG. The document records the n-to-m relation as one
+`CombinedCycleAssociation` row per HRSG membership, matching the schema's multi-row contract,
+even though IS attaches the `CombinedCycleBlock` to the component only once."""
 function _group_association!(
     ::Vector,
     cc_rows::Vector{PO.CombinedCycleAssociation},
@@ -423,26 +424,28 @@ function _group_association!(
     id = IS.get_id(entity)
     ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), id)
     if !isempty(ct_hrsgs)
-        push!(
-            cc_rows,
-            PO.CombinedCycleAssociation(;
-                plant_id = attr_id,
-                entity_id = entity_id,
-                role = "CT",
-                hrsg_index = first(ct_hrsgs),
-            ),
-        )
+        for hrsg_index in ct_hrsgs
+            push!(
+                cc_rows,
+                PO.CombinedCycleAssociation(;
+                    plant_id = attr_id,
+                    entity_id = entity_id,
+                    role = "CT",
+                    hrsg_index = hrsg_index,
+                ),
+            )
+        end
         return nothing
     end
     ca_hrsgs = _group_indices(get_hrsg_ca_map(attr), id)
-    if !isempty(ca_hrsgs)
+    for hrsg_index in ca_hrsgs
         push!(
             cc_rows,
             PO.CombinedCycleAssociation(;
                 plant_id = attr_id,
                 entity_id = entity_id,
                 role = "CA",
-                hrsg_index = first(ca_hrsgs),
+                hrsg_index = hrsg_index,
             ),
         )
     end
