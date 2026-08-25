@@ -950,7 +950,7 @@ function _vsc_pu_to_siemens(vsc::TwoTerminalVSCLine, base_power)
     return g / (base_voltage^2 / base_power)
 end
 
-"""Inverse of import's `_vsc_dc_base_voltage`, but unlike it, never errors: a `0.0` rating
+"""Mirrors import's `_vsc_dc_base_voltage`, but unlike it, never errors: a `0.0` rating
 falls back to `one(rated)` regardless of `value`, so export always succeeds."""
 function _vsc_export_dc_base_voltage(vsc::TwoTerminalVSCLine, value, field::AbstractString)
     rated = get_rated_dc_voltage(vsc)
@@ -960,8 +960,10 @@ function _vsc_export_dc_base_voltage(vsc::TwoTerminalVSCLine, value, field::Abst
     # FIXME: rated_dc_voltage == 0.0 here is indistinguishable from "unspecified" because (a)
     # the parsers may not be populating it and (b) it is a plain Float64, not nullable, so
     # there is no explicit-null way to say "no base" in the schema. Until one of those is
-    # fixed, fall back to one(rated) — same as import's fallback — so g round-trips exactly;
-    # the emitted siemens value itself is not physically meaningful while the base is unset.
+    # fixed, fall back to one(rated), same as import's own fallback for iszero(value) — the
+    # emitted siemens value is not physically meaningful while the base is unset, and a
+    # non-zero value only round-trips as far as export; import's unchanged error branch
+    # still rejects re-importing it.
     return one(rated)
 end
 
