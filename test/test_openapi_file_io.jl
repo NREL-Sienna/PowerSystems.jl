@@ -1,3 +1,9 @@
+"""Close the sidecar store a `from_file` system holds open. Windows cannot delete an open
+file, so leaving the handle to `mktempdir` cleanup logs an EBUSY error there that fails the
+suite's zero-error-log gate."""
+_close_sidecar_store!(sys::System) =
+    IS.close!(IS.get_data_store(sys.data.time_series_manager))
+
 @testset "to_file/from_file: bundle round trip" begin
     sys = _file_io_fixture()
     mktempdir() do dir
@@ -30,6 +36,7 @@
         ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
         @test length(ts) == 6
         @test TimeSeries.values(PSY.get_data(ts)) == [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+        _close_sidecar_store!(sys2)
     end
 end
 
@@ -55,6 +62,7 @@ end
         ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
         @test length(ts) == 6
         @test TimeSeries.values(PSY.get_data(ts)) == [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+        _close_sidecar_store!(sys2)
     end
 end
 
