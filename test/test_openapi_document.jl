@@ -1,57 +1,51 @@
 # Document-level OpenAPI import path. A small synthetic document exercises the
-# dependency-ordered component pass, reserve membership, time series ingestion against a
-# real HDF5 sidecar, ledger round-trip, and every loud-error path.
+# dependency-ordered component pass, reserve membership, time series adoption from a real
+# InfraStore sidecar and every loud-error path.
 
 # The shared document fixture lives in common.jl (`make_openapi_test_doc`,
 # `openapi_raw`), also used by test_openapi_export.jl.
 
-"""Build a real HDF5 sidecar holding one `SingleTimeSeries` and return
-`(storage_path, time_series_uuid, values, resolution, initial_timestamp)`."""
-function _openapi_test_sidecar(dir)
+"""Build a real InfraStore sidecar holding one `SingleTimeSeries` owned by document id
+`owner_id`, and return `(path, values, resolution, initial_timestamp)`.
+
+The store's catalog is the association table — it keys the series by owner id, name, type
+and resolution — so the document carries no `time_series_associations` row for it. Import
+adopts this store wholesale; `owner_id` is a *document* id, which is what the imported
+component's id is set to.
+"""
+function _openapi_test_sidecar(dir; owner_id = 7, owner_type = "PowerLoad")
     timestamps = [
         Dates.DateTime(2024, 1, 1, 0),
         Dates.DateTime(2024, 1, 1, 1),
         Dates.DateTime(2024, 1, 1, 2),
     ]
     values = [0.5, 0.6, 0.7]
-    ta = TimeSeries.TimeArray(timestamps, values)
-    series = SingleTimeSeries(; name = "max_active_power", data = ta)
+    series = SingleTimeSeries(;
+        name = "max_active_power",
+        data = TimeSeries.TimeArray(timestamps, values),
+    )
     path = joinpath(dir, "doc_time_series_storage.h5")
-    storage = IS.Hdf5TimeSeriesStorage(true; filename = path)
-    IS.serialize_time_series!(storage, series)
+    store = IS.Store(; in_memory = true)
+    try
+        batch = IS.make_add_batch()
+        IS.serialize_single!(
+            batch,
+            owner_id,
+            owner_type,
+            IS.get_owner_category(IS.InfrastructureSystemsComponent),
+            IS.get_name(series),
+            series,
+        )
+        IS.commit_batch!(store, batch)
+        IS.serialize(store, path)
+    finally
+        IS.close!(store)
+    end
     return (
         path = path,
-        uuid = string(IS.get_uuid(series)),
         values = values,
         resolution = Dates.Hour(1),
         initial_timestamp = timestamps[1],
-    )
-end
-
-function _ts_association_row(; uuid, owner_id = 7, owner_category = "Component",
-    time_series_type = "SingleTimeSeries",
-    scaling_factor_multiplier = "get_max_active_power",
-    horizon = nothing, interval = nothing, window_count = nothing,
-    percentiles = nothing, scenario_count = nothing)
-    return Dict{String, Any}(
-        "id" => 1,
-        "time_series_uuid" => uuid,
-        "time_series_type" => time_series_type,
-        "initial_timestamp" => "2024-01-01T00:00:00+00:00",
-        "resolution" => "PT3600S",
-        "horizon" => horizon,
-        "interval" => interval,
-        "window_count" => window_count,
-        "length" => 3,
-        "name" => "max_active_power",
-        "owner_id" => owner_id,
-        "owner_type" => "PowerLoad",
-        "owner_category" => owner_category,
-        "features" => [],
-        "scaling_factor_multiplier" => scaling_factor_multiplier,
-        "metadata_uuid" => "11111111-1111-1111-1111-111111111111",
-        "percentiles" => percentiles,
-        "scenario_count" => scenario_count,
     )
 end
 
@@ -59,9 +53,7 @@ end
     mktempdir() do dir
         sidecar = _openapi_test_sidecar(dir)
         doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [_ts_association_row(; uuid = sidecar.uuid)]
-        # A document that declares time series must also name its sidecar; the kwarg only
-        # says where to find it.
+        # The sidecar carries the series and its metadata; the document only names the file.
         doc["time_series_storage_file"] = basename(sidecar.path)
 
         sys = PSY.from_openapi(
@@ -83,7 +75,7 @@ end
         @test get_name(get_area(bus2)) == "area1"
         @test get_name(get_load_zone(bus2)) == "lz1"
 
-        # DEVICE_MVAR divides by the document's system base
+        # COMPONENT_MVAR divides by the document's system base
         # (100 MVA) to land on PSY's SYSTEM_BASE pu storage: -50 MVAr / 100 MVA.
         shunt = get_component(FixedAdmittance, sys, "shunt1")
         @test get_bus(shunt) === bus2
@@ -94,19 +86,12 @@ end
         reserve = get_component(OnlineReserve, sys, "spin_up")
         @test has_service(gen, reserve)
 
-        # Time series, read back from the HDF5 sidecar.
+        # Time series, adopted from the InfraStore sidecar.
         load = get_component(PowerLoad, sys, "load1")
         ts = get_time_series(SingleTimeSeries, load, "max_active_power")
         @test get_resolution(ts) == sidecar.resolution
         @test TimeSeries.values(get_data(ts)) == sidecar.values
         @test first(TimeSeries.timestamp(get_data(ts))) == sidecar.initial_timestamp
-        @test IS.get_scaling_factor_multiplier(ts) === get_max_active_power
-
-        # Ledger round-trip.
-        @test PSY.has_ledger(sys)
-        ledger = PSY.load_ledger(sys)
-        @test ledger["unit_system"] == "NATURAL_UNITS"
-        @test ledger["id_to_uuid"]["6"] == string(IS.get_uuid(gen))
     end
 end
 
@@ -127,54 +112,16 @@ end
         ]
         @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
 
-        # Time series declared in a well-formed document, but no storage path passed: the
-        # document names its sidecar, so the missing kwarg is the only defect.
+        # A named sidecar that is not on disk. This is the one time-series error path left:
+        # the rest — unmapped time_series_type, a mismatched owner_category, series
+        # declared with no storage path — all validated a
+        # `time_series_associations` row, and the sidecar's own catalog is the association
+        # table now, written by the store rather than by a producer filling in columns.
         doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [_ts_association_row(; uuid = sidecar.uuid)]
-        doc["time_series_storage_file"] = basename(sidecar.path)
-        @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
-
-        # `Probabilistic` is a real PSY time-series type the document does not carry — it
-        # needs a percentile-identity field the schema has no home for. A document naming
-        # it must error rather than import a series with its percentiles invented.
-        doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [
-            _ts_association_row(;
-                uuid = sidecar.uuid, time_series_type = "Probabilistic",
-                horizon = "PT10800S", interval = "PT3600S", window_count = 3,
-            ),
-        ]
         doc["time_series_storage_file"] = basename(sidecar.path)
         @test_throws DocumentError PSY.from_openapi(
-            System, to_test_document(doc); time_series_storage_path = sidecar.path,
-        )
-
-        # Unmapped scaling_factor_multiplier.
-        doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [
-            _ts_association_row(;
-                uuid = sidecar.uuid,
-                scaling_factor_multiplier = "get_bogus",
-            ),
-        ]
-        doc["time_series_storage_file"] = basename(sidecar.path)
-        @test_throws DocumentError PSY.from_openapi(
-            System, to_test_document(doc); time_series_storage_path = sidecar.path,
-        )
-
-        # A declared owner_category must match what owner_id actually resolves to. Id 7 is a
-        # Component here, so claiming SupplementalAttribute is a malformed document, not an
-        # unimplemented case — SupplementalAttribute owners are supported (see sqlite_load.jl).
-        doc = make_openapi_test_doc()
-        doc["time_series_associations"] = [
-            _ts_association_row(;
-                uuid = sidecar.uuid,
-                owner_category = "SupplementalAttribute",
-            ),
-        ]
-        doc["time_series_storage_file"] = basename(sidecar.path)
-        @test_throws DocumentError PSY.from_openapi(
-            System, to_test_document(doc); time_series_storage_path = sidecar.path,
+            System, to_test_document(doc);
+            time_series_storage_path = joinpath(dir, "no_such_sidecar.h5"),
         )
 
         # Unmapped attribute_type: the association resolves to a real row, but no
@@ -184,7 +131,8 @@ end
             [Dict{String, Any}("id" => 1, "name" => "whatever")]
         doc["supplemental_attribute_associations"] = [
             Dict{String, Any}(
-                "attribute_id" => 1, "entity_id" => 3, "attribute_type" => "BogusType",
+                "attribute_id" => 1, "component_id" => 3, "component_type" => "ACBus",
+                "attribute_type" => "BogusType",
             ),
         ]
         @test_throws DocumentError PSY.from_openapi(System, to_test_document(doc))
@@ -193,7 +141,7 @@ end
         doc = make_openapi_test_doc()
         doc["supplemental_attribute_associations"] = [
             Dict{String, Any}(
-                "attribute_id" => 999, "entity_id" => 3,
+                "attribute_id" => 999, "component_id" => 3, "component_type" => "ACBus",
                 "attribute_type" => "GeographicInfo",
             ),
         ]
@@ -205,7 +153,7 @@ end
             [openapi_raw(PSY.PC.GeographicInfo(; id = 1, geo_json = Dict{String, Any}()))]
         doc["supplemental_attribute_associations"] = [
             Dict{String, Any}(
-                "attribute_id" => 1, "entity_id" => 999,
+                "attribute_id" => 1, "component_id" => 999, "component_type" => "ACBus",
                 "attribute_type" => "GeographicInfo",
             ),
         ]
@@ -239,12 +187,14 @@ end
     doc["supplemental_attribute_associations"] = [
         Dict{String, Any}(
             "attribute_id" => 100,
-            "entity_id" => 3,
+            "component_id" => 3,
+            "component_type" => "ACBus",
             "attribute_type" => "GeographicInfo",
         ),
         Dict{String, Any}(
             "attribute_id" => 101,
-            "entity_id" => 6,
+            "component_id" => 6,
+            "component_type" => "ThermalStandard",
             "attribute_type" => "EmissionsData",
         ),
     ]
@@ -299,7 +249,7 @@ end
     )
     outage = PSY.from_openapi(outage_po, refs)
     @test get_mean_time_to_recovery(outage) == 480.0
-    @test get_monitored_components(outage) == Set([IS.get_uuid(bus)])
+    @test get_monitored_components(outage) == Set([IS.get_id(bus)])
 
     fixed_po = PSY.PO.FixedForcedOutage(;
         id = 4,
@@ -455,9 +405,73 @@ end
     end
 end
 
+@testset "HydroReservoir round trip: forward turbine and cascading reservoir references" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+
+    # `DOCUMENT_PLAN` now converts both `HydroUnit` subtypes before `HydroReservoir`, so the
+    # turbine reference below is no longer a genuine forward reference — the reservoir-to-
+    # reservoir reference two components down still is (the cascading case no `DOCUMENT_PLAN`
+    # reordering can fix, since a reservoir can reference another reservoir). Both are read
+    # through the same [`PSY.defer_ref!`](@ref)/[`PSY.resolve_deferred_refs!`](@ref) queue,
+    # which does not care whether the id it resolves was already registered when queued.
+    pump = HydroPumpTurbine(nothing)
+    pump.bus = bus
+    pump.name = "pump1"
+    add_component!(sys, pump)
+
+    head = HydroReservoir(;
+        name = "head", available = true,
+        storage_level_limits = (min = 0.0, max = 1000.0),
+        initial_level = 0.5, spillage_limits = nothing,
+        inflow = 10.0, outflow = 8.0, level_targets = nothing,
+        intake_elevation = 50.0,
+        head_to_volume_factor = LinearFunctionData(0.001, 0.0),
+        downstream_turbines = PSY.HydroUnit[pump],
+    )
+    add_component!(sys, head)
+
+    # `tail` references `head` — both `HydroReservoir`s, so this is a same-type reference
+    # within HydroReservoir's own document-key pass, the cascading case no `DOCUMENT_PLAN`
+    # reordering could fix.
+    tail = HydroReservoir(;
+        name = "tail", available = true,
+        storage_level_limits = (min = 0.0, max = 1000.0),
+        initial_level = 0.5, spillage_limits = nothing,
+        inflow = 10.0, outflow = 8.0, level_targets = nothing,
+        intake_elevation = 40.0,
+        head_to_volume_factor = LinearFunctionData(0.001, 0.0),
+        upstream_turbines = PSY.HydroUnit[pump],
+        upstream_reservoirs = Device[head],
+    )
+    add_component!(sys, tail)
+
+    for unit_system in (:device_base, :natural_units)
+        doc = to_openapi(sys; unit_system = unit_system)
+        sys2 = from_openapi(System, doc)
+
+        pump2 = get_component(HydroPumpTurbine, sys2, "pump1")
+        head2 = get_component(HydroReservoir, sys2, "head")
+        tail2 = get_component(HydroReservoir, sys2, "tail")
+        @test !isnothing(pump2)
+        @test !isnothing(head2)
+        @test !isnothing(tail2)
+
+        @test get_downstream_turbines(head2) == [pump2]
+        @test get_upstream_turbines(tail2) == [pump2]
+        @test get_upstream_reservoirs(tail2) == [head2]
+        @test isempty(get_upstream_reservoirs(head2))
+    end
+end
+
 @testset "DOCUMENT_PLAN: turbines convert before the reservoirs referencing them" begin
-    # `HydroReservoir`'s `upstream_turbines`/`downstream_turbines` hold ids of either turbine
-    # type, and `refs[id]` errors on an id not yet registered — so both must precede it.
+    # No longer load-bearing — the `defer_ref!`/`resolve_deferred_refs!` queue (see the
+    # round-trip testset above) resolves a turbine or same-type reservoir reference
+    # regardless of plan order. Kept as a harmless extra guard on the plan's declared intent.
     order = [p.key for p in PSY.DOCUMENT_PLAN]
     plan_position(key) = findfirst(==(key), order)
     @test plan_position("HydroTurbine") < plan_position("HydroReservoir")

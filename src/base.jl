@@ -21,6 +21,32 @@ const DATA_FORMAT_VERSION = "5.0.0"
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
     description::Union{Nothing, String}
+    uuid::Base.UUID
+end
+
+SystemMetadata(name, description) = SystemMetadata(name, description, IS.make_uuid())
+
+# The System UUID is an identity, so a system deserialized with assign_new_ids still
+# compares equal to the original unless compare_ids is requested.
+function IS.compare_values(
+    match_fn::Union{Function, Nothing},
+    x::SystemMetadata,
+    y::SystemMetadata;
+    compare_ids = false,
+    exclude = Set{Symbol}(),
+)
+    match = true
+    for name in fieldnames(SystemMetadata)
+        name in exclude && continue
+        name == :uuid && !compare_ids && continue
+        val1 = getfield(x, name)
+        val2 = getfield(y, name)
+        if !_fetch_match_fn(match_fn)(val1, val2)
+            @error "SystemMetadata field=$name does not match" val1 val2
+            match = false
+        end
+    end
+    return match
 end
 
 """
@@ -52,26 +78,27 @@ System(; kwargs...)
 - `frequency::Float64`: (default = 60.0) Operating frequency (Hz).
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidValue if an error is found.
-- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
-- `time_series_directory::Union{Nothing, String}`: Directory for the time series HDF5 file.
-    Defaults to the tmp file system.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of on disk.
+- `time_series_directory::Union{Nothing, String}`: Directory for the time series storage
+    files. Defaults to the tmp file system.
 - `time_series_read_only::Bool=false`: Open the time series store in read-only mode.
     This is useful for reading time series data without modifying it.
-- `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
-- `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
+- `enable_compression::Bool=false`: Enable compression of time series data.
+- `compression::CompressionSettings`: Allows customization of the compression settings.
 - `config_path::String`: specify path to validation config file
 - `internal::IS.InfrastructureSystemsInternal`: Internal structure for [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a `System` manually.
 
-By default, time series data is stored in an HDF5 file in the tmp file system to prevent
-large datasets from overwhelming system memory (see [Data Storage](@ref)).
+By default, time series data is stored on disk (as an HDF5 file with a sidecar SQLite
+catalog) in the tmp file system to prevent large datasets from overwhelming system memory
+(see [Data Storage](@ref)).
 **If the system's time series data will be larger than the amount of tmp space available**, use the
 `time_series_directory` parameter to change its location.
 You can also override the location by setting the environment
 variable `SIENNA_TIME_SERIES_DIRECTORY` to another directory.
 
-HDF5 compression is not enabled by default, but you can enable
+Compression is not enabled by default, but you can enable
 it with `enable_compression` to get significant storage savings at the cost of CPU time.
-[`CompressionSettings`](@ref) can be used to customize the HDF5 compression.
+[`CompressionSettings`](@ref) can be used to customize the compression.
 
 If you know that your dataset will fit in your computer's memory, then you can increase
 performance by storing it in memory with `time_series_in_memory`.
@@ -84,7 +111,7 @@ sys = System(path_to_my_json_file)
 sys = System(100.0; enable_compression = true)
 sys = System(100.0; compression = CompressionSettings(
     enabled = true,
-    type = CompressionTypes.DEFLATE,  # BLOSC is also supported
+    type = CompressionTypes.DEFLATE,
     level = 3,
     shuffle = true)
 )
@@ -110,6 +137,7 @@ struct System <: IS.ComponentContainer
         time_series_directory = nothing,
         name = nothing,
         description = nothing,
+        uuid = IS.make_uuid(),
         kwargs...,
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
@@ -128,7 +156,7 @@ struct System <: IS.ComponentContainer
             Base.RefValue{Bool}(runchecks),
             base_power,
             time_series_directory,
-            SystemMetadata(name, description),
+            SystemMetadata(name, description, uuid),
             internal,
         )
     end
@@ -223,11 +251,11 @@ end
 
 """Constructs a System from a JSON file path ending with .json.
 
-`assign_new_uuids = true` will generate new UUIDs for the system and all components.
+`assign_new_ids = true` will generate new integer IDs for all components.
 """
 function System(
     file_path::AbstractString;
-    assign_new_uuids = false,
+    assign_new_ids = false,
     kwargs...,
 )
     ext = lowercase(splitext(file_path)[2])
@@ -255,13 +283,13 @@ function System(
     _post_deserialize_handling(
         sys;
         runchecks = runchecks,
-        assign_new_uuids = assign_new_uuids,
+        assign_new_ids = assign_new_ids,
     )
     return sys
 end
 
 """
-If assign_new_uuids = true, generate new UUIDs for the system and all components.
+If assign_new_ids = true, generate new integer IDs for all components.
 
 Warning: time series data is not restored by this method. If that is needed, use the normal
 process to construct the system from a serialized JSON file instead, such as with
@@ -271,7 +299,7 @@ function IS.from_json(
     io::Union{IO, String},
     ::Type{System};
     runchecks = true,
-    assign_new_uuids = false,
+    assign_new_ids = false,
     kwargs...,
 )
     data = JSON.parse(io; dicttype = Dict{String, Any})
@@ -279,21 +307,21 @@ function IS.from_json(
     _post_deserialize_handling(
         sys;
         runchecks = runchecks,
-        assign_new_uuids = assign_new_uuids,
+        assign_new_ids = assign_new_ids,
     )
     return sys
 end
 
-function _post_deserialize_handling(sys::System; runchecks = true, assign_new_uuids = false)
+function _post_deserialize_handling(sys::System; runchecks = true, assign_new_ids = false)
     runchecks && check(sys)
-    if assign_new_uuids
-        IS.assign_new_uuid!(sys)
+    if assign_new_ids
+        assign_new_uuid!(sys)
         for component in get_components(Component, sys)
-            IS.assign_new_uuid!(sys, component)
+            IS.assign_new_id!(sys, component)
         end
         for component in
             IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-            IS.assign_new_uuid!(sys, component)
+            IS.assign_new_id!(sys, component)
         end
         # Note: this does not change UUIDs for time series data because they are
         # shared with components.
@@ -315,10 +343,8 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
         error("subsystem = $subsystem is not stored")
     end
 
-    # It would be faster to create an empty system and then populate it with
-    # deep copies of each component in the subsystem. It would also result in a "clean" HDF5
-    # file (the result here will have deleted entries that need to repacked through
-    # serialization/de-serialization). That is not implemented because
+    # It would be faster to create an empty system and then populate it with deep copies of
+    # each component in the subsystem. That is not implemented because
     # 1. The performance loss should not be too large.
     # 2. We haven't yet implemented deepcopy(Component).
     # 3. There is extra code complexity in adding copied components in the correct order
@@ -326,9 +352,10 @@ function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true
     new_sys = deepcopy(sys)
     filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
 
-    IS.assign_new_uuid!(new_sys)
+    # Regenerate both identities so the derived system does not alias the filtered one.
+    assign_new_uuid!(new_sys)
     for component in get_components(Component, new_sys)
-        IS.assign_new_uuid!(new_sys, component)
+        IS.assign_new_id!(new_sys, component)
     end
 
     return new_sys
@@ -342,15 +369,15 @@ function filter_components_by_subsystem!(
     subsystem::AbstractString;
     runchecks = true,
 )
-    component_uuids = get_component_uuids(sys, subsystem)
+    component_ids = get_component_ids(sys, subsystem)
     for component in get_components(Component, sys)
-        if !in(IS.get_uuid(component), component_uuids)
+        if !in(IS.get_id(component), component_ids)
             remove_component!(sys, component)
         end
     end
 
     for component in IS.get_masked_components(Component, sys.data)
-        if !in(IS.get_uuid(component), component_uuids)
+        if !in(IS.get_id(component), component_ids)
             IS.remove_masked_component!(sys.data, component)
         end
     end
@@ -408,6 +435,7 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
+        "uuid" => string(get_system_uuid(sys)),
         "frequency" => sys.frequency,
         "time_series_resolutions_milliseconds" => resolutions,
         "component_counts" => IS.get_component_counts_by_type(sys.data),
@@ -423,8 +451,6 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
 
     @info "Serialized System metadata to $filename"
 end
-
-IS.assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
 
 """
 Return the internal of the system
@@ -508,6 +534,20 @@ set_name!(sys::System, name::AbstractString) = sys.metadata.name = name
 Get the name of the system.
 """
 get_name(sys::System) = sys.metadata.name
+
+"""
+Get the UUID of the system. Unlike components and supplemental attributes (which are
+identified by an integer id), the `System` retains a UUID for identity.
+"""
+get_system_uuid(sys::System) = sys.metadata.uuid
+
+"""
+Assign a new UUID to the system's identity.
+"""
+function assign_new_uuid!(sys::System)
+    sys.metadata.uuid = IS.make_uuid()
+    return
+end
 
 """
 Set the description of the system.
@@ -886,141 +926,31 @@ function add_service!(
 end
 
 """
-Open the time series store for bulk additions or reads
+Open a batch of time series work and run `func` on it, inside a store transaction.
 
-This is recommended before calling `add_time_series!` many times because of the overhead
-associated with opening and closing an HDF5 file.
+Call `add_time_series!` on the yielded transaction and the additions are buffered and
+written as one bulk call, which is much faster than adding them one at a time.
 
-This is not necessary for an in-memory time series store.
+The block is also a transaction. If it throws, everything it did is rolled back —
+including removals, which are irreversible outside a block. Blocks nest
+innermost-first.
+
+An open block holds the store's write lock, so gather your data first and keep the
+block to the writes.
 
 # Examples
 ```julia
 # Assume there is a system with an array of Components and SingleTimeSeries
 # stored in the variables components and single_time_series, respectively
-open_time_series_store!(sys, "r+") do
+time_series_transaction(sys) do txn
     for (component, ts) in zip(components, single_time_series)
-        add_time_series!(sys, component, ts)
+        add_time_series!(txn, component, ts)
     end
 end
 ```
-You can also use this function to make reads faster.
-Change the mode from `"r+"` to `"r"` to open the file read-only.
-
-See also: [`begin_time_series_update`](@ref)
 """
-function open_time_series_store!(
-    func::Function,
-    sys::System,
-    mode = "r",
-    args...;
-    kwargs...,
-)
-    IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
-end
-
-"""
-Begin an update of time series. Use this function when adding many time series arrays
-in order to improve performance.
-
-If an error occurs during the update, changes will be reverted.
-
-Using this function to remove time series is currently not supported.
-
-# Examples
-```julia
-begin_time_series_update(sys) do
-    add_time_series!(sys, component1, time_series1)
-    add_time_series!(sys, component2, time_series2)
-end
-```
-"""
-begin_time_series_update(func::Function, sys::System) =
-    IS.begin_time_series_update(func, sys.data.time_series_manager)
-
-"""
-Add time series data from a metadata file or metadata descriptors.
-
-# Arguments
-- `sys::System`: system
-- `metadata_file::AbstractString`: metadata file for timeseries
-  that includes an array of IS.TimeSeriesFileMetadata instances or a vector.
-- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
-"""
-function add_time_series!(sys::System, metadata_file::AbstractString; resolution = nothing)
-    return IS.add_time_series_from_file_metadata!(
-        sys.data,
-        Component,
-        metadata_file;
-        resolution = resolution,
-    )
-end
-
-"""
-Add time series data from a metadata file or metadata descriptors.
-
-# Arguments
-- `sys::System`: system
-- `timeseries_metadata::Vector{IS.TimeSeriesFileMetadata}`: metadata for timeseries
-- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
-"""
-function add_time_series!(
-    sys::System,
-    file_metadata::Vector{IS.TimeSeriesFileMetadata};
-    resolution = nothing,
-)
-    return IS.add_time_series_from_file_metadata!(
-        sys.data,
-        Component,
-        file_metadata;
-        resolution = resolution,
-    )
-end
-
-function IS.add_time_series_from_file_metadata_internal!(
-    data::IS.SystemData,
-    ::Type{<:Component},
-    cache::IS.TimeSeriesParsingCache,
-    file_metadata::IS.TimeSeriesFileMetadata,
-)
-    associations = TimeSeriesAssociation[]
-    IS.set_component!(file_metadata, data, PowerSystems)
-    component = file_metadata.component
-    if isnothing(component)
-        return associations
-    end
-
-    ts = IS.make_time_series!(cache, file_metadata)
-    if component isa AggregationTopology && file_metadata.scaling_factor_multiplier in
-       ["get_max_active_power", "get_max_reactive_power"]
-        uuids = Set{Base.UUID}()
-        for bus in _get_buses(data, component)
-            push!(uuids, IS.get_uuid(bus))
-        end
-        for _component in (
-            load for load in IS.get_components(ElectricLoad, data) if
-            IS.get_uuid(get_bus(load)) in uuids
-        )
-            file_metadata.component = _component
-            if !IS.has_assignment(cache, file_metadata)
-                IS.add_assignment!(cache, file_metadata)
-                push!(associations, TimeSeriesAssociation(_component, ts))
-            end
-        end
-        file_metadata.component = component
-        orig_sf = file_metadata.scaling_factor_multiplier
-        try
-            file_metadata.scaling_factor_multiplier = replace(orig_sf, "max" => "peak")
-            area_ts = IS.make_time_series!(cache, file_metadata)
-            IS.add_assignment!(cache, file_metadata)
-            push!(associations, TimeSeriesAssociation(component, area_ts))
-        finally
-            file_metadata.scaling_factor_multiplier = orig_sf
-        end
-    else
-        push!(associations, TimeSeriesAssociation(component, ts))
-        IS.add_assignment!(cache, file_metadata)
-    end
-    return associations
+function time_series_transaction(func::Function, sys::System; kwargs...)
+    return IS.time_series_transaction(func, sys.data; kwargs...)
 end
 
 """
@@ -1235,15 +1165,14 @@ function IS.get_components(
 end
 
 """
-Get the component by UUID.
+Get the component by integer id.
 """
-IS.get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
-IS.get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+IS.get_component(sys::System, id::Int) = IS.get_component(sys.data, id)
 
 """
-Change the UUID of a component.
+Assign a new id to a component, updating every reference to its old one.
 """
-IS.assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
+IS.assign_new_id!(sys::System, x::Component) = IS.assign_new_id!(sys.data, x)
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
@@ -1335,12 +1264,12 @@ const AGCContributingReservesMapping =
 Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, service::T) where {T <: Service}
-    uuid = IS.get_uuid(service)
+    id = IS.get_id(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Device, sys)
         if supports_services(device)
             for _service in get_services(device)
-                if IS.get_uuid(_service) == uuid
+                if IS.get_id(_service) == id
                     push!(devices.contributing_devices, device)
                     break
                 end
@@ -1354,12 +1283,12 @@ end
 Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, service::TransmissionInterface)
-    uuid = IS.get_uuid(service)
+    id = IS.get_id(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Branch, sys)
         if supports_services(device)
             for _service in get_services(device)
-                if IS.get_uuid(_service) == uuid
+                if IS.get_id(_service) == id
                     push!(devices.contributing_devices, device)
                     break
                 end
@@ -1431,13 +1360,13 @@ const TurbineConnectedDevicesMapping =
 Returns a TurbineConnectedDevices object.
 """
 function _get_connected_head_devices(sys::System, turbine::T) where {T <: HydroUnit}
-    uuid = IS.get_uuid(turbine)
+    id = IS.get_id(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
         # Only add reservoirs that have the turbine in their downstream_turbines field
         # That is, those reservoirs are a head reservoir to that turbine
         for _turbine in get_downstream_turbines(device)
-            if IS.get_uuid(_turbine) == uuid
+            if IS.get_id(_turbine) == id
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1450,13 +1379,13 @@ end
 Returns a TurbineConnectedDevices object.
 """
 function _get_connected_tail_devices(sys::System, turbine::T) where {T <: HydroUnit}
-    uuid = IS.get_uuid(turbine)
+    id = IS.get_id(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
         # Only add reservoirs that have the turbine in their upstream_turbines field
         # That is, those reservoirs are a tail reservoir to that turbine
         for _turbine in get_upstream_turbines(device)
-            if IS.get_uuid(_turbine) == uuid
+            if IS.get_id(_turbine) == id
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1518,7 +1447,7 @@ function is_component_in_aggregation_topology(
     aggregator::T,
 ) where {T <: AggregationTopology}
     accessor = get_aggregation_topology_accessor(T)
-    return IS.get_uuid(accessor(get_bus(comp))) == IS.get_uuid(aggregator)
+    return IS.get_id(accessor(get_bus(comp))) == IS.get_id(aggregator)
 end
 
 """
@@ -1562,7 +1491,7 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
     buses = Vector{ACBus}()
     for bus in IS.get_components(ACBus, data)
         _aggregator = accessor_func(bus)
-        if !isnothing(_aggregator) && IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
+        if !isnothing(_aggregator) && IS.get_id(_aggregator) == IS.get_id(aggregator)
             push!(buses, bus)
         end
     end
@@ -1628,37 +1557,6 @@ function add_time_series!(
 end
 
 """
-Add time series in bulk.
-
-Prefer use of [`begin_time_series_update`](@ref).
-
-# Examples
-```julia
-# Assumes `read_time_series` will return data appropriate for Deterministic forecasts
-# based on the generator name and the filenames match the component and time series names.
-resolution = Dates.Hour(1)
-associations = (
-    IS.TimeSeriesAssociation(
-        gen,
-        Deterministic(
-            data = read_time_series(get_name(gen) * ".csv"),
-            name = "get_max_active_power",
-            resolution=resolution),
-    )
-    for gen in get_components(ThermalStandard, sys)
-)
-bulk_add_time_series!(sys, associations)
-```
-"""
-function bulk_add_time_series!(
-    sys::System,
-    associations;
-    batch_size::Int = IS.ADD_TIME_SERIES_BATCH_SIZE,
-)
-    return IS.bulk_add_time_series!(sys.data, associations; batch_size = batch_size)
-end
-
-"""
 Add the same time series data to multiple components.
 
 This function stores a single copy of the data. Each component will store a reference to
@@ -1668,7 +1566,12 @@ array is stored.
 
 Throws ArgumentError if a component is not stored in the system.
 """
-function add_time_series!(sys::System, components, time_series::TimeSeriesData; features...)
+function add_time_series!(
+    sys::System,
+    components,
+    time_series::TimeSeriesData;
+    features...,
+)
     return IS.add_time_series!(sys.data, components, time_series; features...)
 end
 
@@ -1752,6 +1655,47 @@ get_forecast_interval(sys::System; kwargs...) =
     IS.get_forecast_interval(sys.data; kwargs...)
 
 """
+Build a `ForecastReader` over every forecast in the system of `time_series_type`.
+`resolution` is required and pins the reader to one forecast resolution; `name` and
+`features` further narrow the match.
+
+Drive the reader with `read_forecast_window!` and read each entry with
+`get_forecast_window`. Forecasts that share an underlying array are read from storage
+once per timestamp regardless of how many components reference them — see
+[`get_time_series_array_groups`](@ref).
+"""
+build_forecast_reader(
+    sys::System,
+    ::Type{T};
+    resolution::Dates.Period,
+    name::Union{Nothing, AbstractString} = nothing,
+    features...,
+) where {T <: Forecast} =
+    IS.build_forecast_reader(sys.data, T; resolution = resolution, name = name, features...)
+
+"""
+Build a `StaticTimeSeriesReader` over every `SingleTimeSeries` in the system.
+`resolution` is required and pins the reader to one resolution; `name` and
+`features` further narrow the match.
+
+Drive the reader with `read_static_time_series_values!` and read each entry with
+`get_static_time_series_value`. Series with the same element type are packed into one
+columnar group and served by a single storage read per timestamp.
+"""
+build_static_time_series_reader(
+    sys::System;
+    resolution::Dates.Period,
+    name::Union{Nothing, AbstractString} = nothing,
+    features...,
+) =
+    IS.build_static_time_series_reader(
+        sys.data;
+        resolution = resolution,
+        name = name,
+        features...,
+    )
+
+"""
 Return a sorted Vector of distinct resolutions for all time series of the given type
 (or all types).
 """
@@ -1813,13 +1757,23 @@ end
 """
 Clear all time series data from the system.
 
-If you are storing time series data in an HDF5 file, this will
-will delete the HDF5 file and create a new one.
-
-See also: [`remove_time_series!`](@ref remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData})
+If you are storing time series data on disk, this removes every association and frees the
+underlying arrays in place; it does not shrink the `.h5` file. Call
+[`compact_time_series!`](@ref) to reclaim that space.
 """
 function clear_time_series!(sys::System)
     return IS.clear_time_series!(sys.data)
+end
+
+"""
+Reclaim the space that removed time series left behind, returning an
+`InfraStore.CompactionReport` (`slots_reclaimed`, `feature_sets_reclaimed`,
+`timestamp_sets_reclaimed`, `bytes_reclaimed`).
+
+Removing time series does not shrink on-disk storage; this is what reclaims it.
+"""
+function compact_time_series!(sys::System)
+    return IS.compact_time_series!(sys.data)
 end
 
 """
@@ -1854,11 +1808,8 @@ Remove all the time series data for a time series type.
 
 See also: [`clear_time_series!`](@ref)
 
-If you are storing time series data in an HDF5 file, `remove_time_series!` does
-not actually free up file space (HDF5 behavior). If you want to remove all or
-most time series instances then consider using `clear_time_series!`. It
-will delete the HDF5 file and create a new one. PowerSystems has plans to
-automate this type of workflow.
+Removal drops the arrays but does not shrink on-disk storage; call
+[`compact_time_series!`](@ref) to reclaim that space.
 """
 function remove_time_series!(
     sys::System,
@@ -1928,13 +1879,13 @@ function add_supplemental_attribute!(
     outage::Outage,
 )
     if get_runchecks(sys)
-        for uuid in get_monitored_components(outage)
-            comp = IS.get_component(sys, uuid)  # throws ArgumentError on miss
+        for id in get_monitored_components(outage)
+            comp = IS.get_component(sys, id)  # throws ArgumentError on miss
             if !(comp isa Device)
                 throw(
                     ArgumentError(
-                        "monitored_components on $(typeof(outage)) references UUID " *
-                        "$(uuid), which resolves to $(typeof(comp)); only " *
+                        "monitored_components on $(typeof(outage)) references id " *
+                        "$(id), which resolves to $(typeof(comp)); only " *
                         "Device subtypes are allowed",
                     ),
                 )
@@ -2066,12 +2017,12 @@ function get_associated_supplemental_attributes(
 end
 
 """
-Return the supplemental attribute with the given uuid.
+Return the supplemental attribute with the given integer id.
 
 Throws ArgumentError if the attribute is not stored.
 """
-function get_supplemental_attribute(sys::System, uuid::Base.UUID)
-    return IS.get_supplemental_attribute(sys.data, uuid)
+function get_supplemental_attribute(sys::System, id::Int)
+    return IS.get_supplemental_attribute(sys.data, id)
 end
 
 """
@@ -2383,6 +2334,15 @@ function from_dict(
     metadata = get(raw, "metadata", Dict())
     name = get(metadata, "name", nothing)
     description = get(metadata, "description", nothing)
+    if !haskey(metadata, "uuid")
+        throw(
+            DataFormatError(
+                "The serialized System metadata has no \"uuid\" field. Regenerate the " *
+                "serialized system with this version of PowerSystems.",
+            ),
+        )
+    end
+    uuid = IS.deserialize(Base.UUID, metadata["uuid"])
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
     sys = System(
         data,
@@ -2390,6 +2350,7 @@ function from_dict(
         internal;
         name = name,
         description = description,
+        uuid = uuid,
         parsed_kwargs...,
     )
 
@@ -2432,9 +2393,9 @@ function deserialize_components!(sys::System, raw)
         push!(components, component)
     end
 
-    # Maintain a lookup of UUID to component because some component types encode
-    # composed types as UUIDs instead of actual types.
-    component_cache = Dict{Base.UUID, Component}()
+    # Maintain a lookup of id to component because some component types encode composed
+    # types as ids instead of actual types.
+    component_cache = Dict{Int, Component}()
 
     # Add each type to this as we parse.
     parsed_types = Set()
@@ -2462,7 +2423,7 @@ function deserialize_components!(sys::System, raw)
                 handle_deserialization_special_cases!(component, type)
                 comp = deserialize(type, component, component_cache)
                 add_component!(sys, comp)
-                component_cache[IS.get_uuid(comp)] = comp
+                component_cache[IS.get_id(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
                 end
@@ -2523,31 +2484,23 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     components::Vector{Dict},
     ::Type{HydroReservoir},
 )
-
-    # Build a mapping from UUID to component for quick lookup
-    uuid_to_component = Dict{String, Dict}()
-    for component in components
-        uuid_str = string(component["internal"]["uuid"])
-        uuid_to_component[uuid_str] = component
-    end
-
     # Build parent mapping for union-find (each reservoir points to its upstream reservoir)
-    parent = Dict{String, String}()
+    parent = Dict{Int, Int}()
     for component in components
-        uuid_str = string(component["internal"]["uuid"])
-        upstream_uuids = component["upstream_reservoirs"]
+        id = Int(component["internal"]["id"])
+        upstream_ids = component["upstream_reservoirs"]
 
-        if isempty(upstream_uuids)
-            parent[uuid_str] = uuid_str  # Root of its own chain
+        if isempty(upstream_ids)
+            parent[id] = id  # Root of its own chain
         else
             # Assume single upstream reservoir for simplicity
-            parent[uuid_str] = string(upstream_uuids[1])
+            parent[id] = Int(upstream_ids[1])
         end
     end
 
     # Find root of each chain iteratively
-    function find_root(uuid_str)
-        current = uuid_str
+    function find_root(id::Int)
+        current = id
         while parent[current] != current
             current = parent[current]
         end
@@ -2555,38 +2508,29 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     end
 
     # Group components by their chain root
-    chains = Dict{String, Vector{Dict}}()
+    chains = Dict{Int, Vector{Dict}}()
     for component in components
-        uuid_str = string(component["internal"]["uuid"])
-        root = find_root(uuid_str)
-
-        if !haskey(chains, root)
-            chains[root] = Vector{Dict}()
-        end
-        push!(chains[root], component)
+        root = find_root(Int(component["internal"]["id"]))
+        push!(get!(chains, root, Vector{Dict}()), component)
     end
 
     # Order each chain from upstream (root) to downstream
     ordered_components = Vector{Dict}()
-    for (root_uuid, chain) in chains
+    for chain in values(chains)
         # Sort chain by dependency order - upstream reservoirs first
         chain_ordered = Vector{Dict}()
+        chain_ids = Set{Int}()
         remaining = Set(chain)
 
         while !isempty(remaining)
             # Find next component whose upstream is already processed or is a root
             for component in remaining
-                upstream_uuids = component["upstream_reservoirs"]
-                can_add =
-                    isempty(upstream_uuids) ||
-                    all(
-                        string(uuid) in
-                        [string(c["internal"]["uuid"]) for c in chain_ordered] for
-                        uuid in upstream_uuids
-                    )
+                upstream_ids = component["upstream_reservoirs"]
+                can_add = all(Int(id) in chain_ids for id in upstream_ids)
 
                 if can_add
                     push!(chain_ordered, component)
+                    push!(chain_ids, Int(component["internal"]["id"]))
                     delete!(remaining, component)
                     break
                 end
@@ -2999,7 +2943,7 @@ function IS.compare_values(
     match_fn::Union{Function, Nothing},
     x::T,
     y::T;
-    compare_uuids = false,
+    compare_ids = false,
     exclude = Set{Symbol}(),
 ) where {T <: Union{StaticInjection, DynamicInjection}}
     # Must implement this method because a device of one of these subtypes might have a
@@ -3011,7 +2955,7 @@ function IS.compare_values(
         val1 = getfield(x, name)
         val2 = getfield(y, name)
         if val1 isa StaticInjection || val2 isa DynamicInjection
-            if !compare_uuids
+            if !compare_ids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
                 if !_fetch_match_fn(match_fn)(name1, name2)
@@ -3019,10 +2963,10 @@ function IS.compare_values(
                     match = false
                 end
             else
-                uuid1 = IS.get_uuid(val1)
-                uuid2 = IS.get_uuid(val2)
-                if uuid1 != uuid2
-                    @error "values do not match" T name uuid1 uuid2
+                id1 = IS.get_id(val1)
+                id2 = IS.get_id(val2)
+                if id1 != id2
+                    @error "values do not match" T name id1 id2
                     match = false
                 end
             end
@@ -3031,7 +2975,7 @@ function IS.compare_values(
                 match_fn,
                 val1,
                 val2;
-                compare_uuids = compare_uuids,
+                compare_ids = compare_ids,
                 exclude = exclude,
             )
                 @error "values do not match" T name val1 val2
@@ -3042,7 +2986,7 @@ function IS.compare_values(
                 match_fn,
                 val1,
                 val2;
-                compare_uuids = compare_uuids,
+                compare_ids = compare_ids,
                 exclude = exclude,
             )
                 match = false
@@ -3108,7 +3052,7 @@ function convert_component!(
         line.ext,
         _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(sys, line)
+    IS.assign_new_id!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -3155,7 +3099,7 @@ function convert_component!(
         line.ext,
         _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(sys, line)
+    IS.assign_new_id!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -3190,7 +3134,7 @@ function convert_component!(
         internal = _copy_internal_for_conversion(old_load),
         services = Device[],
     )
-    IS.assign_new_uuid!(sys, old_load)
+    IS.assign_new_id!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
     # TODO: PSY4
@@ -3235,7 +3179,7 @@ end
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
     return InfrastructureSystemsInternal(;
-        uuid = deepcopy(internal.uuid),
+        id = internal.id,
         base_value = IS.get_base_value(internal),
         shared_system_references = nothing,
         ext = deepcopy(internal.ext),
@@ -3272,17 +3216,38 @@ attributes.
 get_time_series_counts(sys::System) = IS.get_time_series_counts(sys.data)
 
 """
+Group the time series in the system by the array they are stored in. Returns a `Dict`
+mapping each content hash to the `(owner, key)` pairs that resolve to that one array.
+
+By default only the arrays referenced more than once are returned, which identifies the
+time series that share data, such as those added with
+`add_time_series!(sys, components, time_series)`. Pass `only_shared = false` to get every
+stored array.
+
+See also `get_time_series_hash` for the hash of a single `(owner, key)` pair.
+"""
+get_time_series_array_groups(sys::System; only_shared = true) =
+    IS.get_time_series_array_groups(sys.data; only_shared = only_shared)
+
+"""
 Checks time series in the system for inconsistencies.
 
 For SingleTimeSeries, returns a Tuple of initial_timestamp and length.
+Consistency is required per resolution; when the system stores SingleTimeSeries
+at more than one resolution, pass `resolution` to name the grid to check and
+return.
 
 This is a no-op for subtypes of Forecast because those are already guaranteed to be
 consistent.
 
 Throws InfrastructureSystems.InvalidValue if any time series is inconsistent.
 """
-function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeSeriesData}
-    return IS.check_time_series_consistency(sys.data, T)
+function check_time_series_consistency(
+    sys::System,
+    ::Type{T};
+    resolution::Union{Nothing, Dates.Period} = nothing,
+) where {T <: TimeSeriesData}
+    return IS.check_time_series_consistency(sys.data, T; resolution = resolution)
 end
 
 stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)

@@ -154,10 +154,10 @@ is_assigned_to_subsystem(
 ) = IS.is_assigned_to_subsystem(sys.data, component, subsystem_name)
 
 """
-Return the UUIDs of all components in the given subsystem.
+Return the integer IDs of all components in the given subsystem.
 """
-get_component_uuids(sys::System, subsystem_name::AbstractString) =
-    IS.get_component_uuids(sys.data, subsystem_name)
+get_component_ids(sys::System, subsystem_name::AbstractString) =
+    IS.get_component_ids(sys.data, subsystem_name)
 
 function check_subsystems(sys::System, component::Component)
     _check_arc_consistency(sys, component)

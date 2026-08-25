@@ -26,6 +26,8 @@ _startup_stages_po_optional(::Nothing) = nothing
 _startup_stages_po_optional(nt) =
     PC.StartUpStages(; hot = nt.hot, warm = nt.warm, cold = nt.cold)
 
+_turbinepump_po(nt) = PC.TurbinePump(; turbine = nt.turbine, pump = nt.pump)
+
 _fromto_po(nt) = PC.FromTo(; from = nt.from, to = nt.to)
 _fromto_tofrom_po(nt) = PC.FromToToFrom(; from_to = nt.from_to, to_from = nt.to_from)
 _fromto_tofrom_po_scaled(nt, base) =
@@ -33,7 +35,6 @@ _fromto_tofrom_po_scaled(nt, base) =
 _inout_po(nt) = PC.InOut(; in = nt.in, out = nt.out)
 _inout_po_optional(::Nothing) = nothing
 _inout_po_optional(nt) = _inout_po(nt)
-_turbinepump_po(nt) = PC.TurbinePump(; turbine = nt.turbine, pump = nt.pump)
 # Inverse of the import side's `_complex_number` (import_handwritten.jl).
 _complex_number_po(c) = PC.ComplexNumber(; real = real(c), imag = imag(c))
 
@@ -47,7 +48,7 @@ _component_id_optional(refs::OpenAPIRefs, component) = component_id(refs, compon
 
 # Scoped enums convert directly (`EnumType(s)` in, `string(e)` out — see `@scoped_enum` in
 # IS), so no enum tables exist anywhere in the converters. `_invert` remains for the
-# genuinely non-enum string maps (`RESERVE_DIRECTION`, a string → type-parameter table, and
-# `SCALING_FACTOR_MULTIPLIERS`, a string → function table), whose reverse directions are
-# derived from the forward tables rather than hand-written again, so the two cannot drift.
+# genuinely non-enum string maps (`RESERVE_DIRECTION`, a string → type-parameter table),
+# whose reverse direction is derived from the forward table rather than hand-written again,
+# so the two cannot drift.
 _invert(d) = Dict(v => k for (k, v) in d)

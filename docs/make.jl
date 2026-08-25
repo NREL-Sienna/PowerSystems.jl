@@ -45,6 +45,7 @@ pages = OrderedDict(
             "...add time-series data" => Any[
                 "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
                 "Improve performance with time series data" => "how_to/improve_ts_performance.md",
+                "Read time series data by timestamp" => "how_to/read_time_series_by_timestamp.md",
             ],
             "...add cost data" => Any[
                 "Add an Operating Cost" => "how_to/add_cost_curve.md",

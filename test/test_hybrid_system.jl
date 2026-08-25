@@ -79,8 +79,11 @@ end
 
     @test get_time_series(SingleTimeSeries, electric_load, "max_active_power") isa
           SingleTimeSeries
+    # DeterministicSingleTimeSeries is a storage-side optimization: it is stored as one
+    # (and stays one through a copy), but a read always materializes it into a regular
+    # Deterministic.
     @test get_time_series(Deterministic, electric_load, "max_active_power") isa
-          DeterministicSingleTimeSeries
+          Deterministic
 
     @test !has_time_series(thermal_unit)
     @test has_time_series(electric_load)

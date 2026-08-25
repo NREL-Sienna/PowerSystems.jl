@@ -72,13 +72,13 @@ const PSY = PowerSystems
         @test length(shaft_map) == 2
         @test length(shaft_map[1]) == 1
         @test length(shaft_map[2]) == 1
-        @test shaft_map[1][1] == IS.get_uuid(gen1)
-        @test shaft_map[2][1] == IS.get_uuid(gen2)
+        @test shaft_map[1][1] == IS.get_id(gen1)
+        @test shaft_map[2][1] == IS.get_id(gen2)
 
         # Verify reverse mappings
         reverse_map = get_reverse_shaft_map(plant)
-        @test reverse_map[IS.get_uuid(gen1)] == 1
-        @test reverse_map[IS.get_uuid(gen2)] == 2
+        @test reverse_map[IS.get_id(gen1)] == 1
+        @test reverse_map[IS.get_id(gen2)] == 2
 
         # Verify supplemental attributes are attached
         @test has_supplemental_attributes(gen1)
@@ -95,18 +95,18 @@ const PSY = PowerSystems
         add_supplemental_attribute!(sys, gen3, plant; shaft_number = 1)
 
         @test length(shaft_map[1]) == 2
-        @test shaft_map[1][2] == IS.get_uuid(gen3)
+        @test shaft_map[1][2] == IS.get_id(gen3)
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(get_reverse_shaft_map(plant), IS.get_uuid(gen1))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_id(gen1))
         @test length(shaft_map[1]) == 1
-        @test shaft_map[1][1] == IS.get_uuid(gen3)
+        @test shaft_map[1][1] == IS.get_id(gen3)
 
         # Remove last generator from shaft
         remove_supplemental_attribute!(sys, gen3, plant)
         @test !haskey(shaft_map, 1)
-        @test !haskey(get_reverse_shaft_map(plant), IS.get_uuid(gen3))
+        @test !haskey(get_reverse_shaft_map(plant), IS.get_id(gen3))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(sys, gen1, plant)
@@ -289,17 +289,17 @@ const PSY = PowerSystems
         # Verify penstock mappings
         penstock_map = get_penstock_map(plant)
         @test length(penstock_map) == 2
-        @test penstock_map[1][1] == IS.get_uuid(gen1)
-        @test penstock_map[2][1] == IS.get_uuid(gen2)
+        @test penstock_map[1][1] == IS.get_id(gen1)
+        @test penstock_map[2][1] == IS.get_id(gen2)
 
         # Verify reverse mappings
         reverse_map = get_reverse_penstock_map(plant)
-        @test reverse_map[IS.get_uuid(gen1)] == 1
-        @test reverse_map[IS.get_uuid(gen2)] == 2
+        @test reverse_map[IS.get_id(gen1)] == 1
+        @test reverse_map[IS.get_id(gen2)] == 2
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(get_reverse_penstock_map(plant), IS.get_uuid(gen1))
+        @test !haskey(get_reverse_penstock_map(plant), IS.get_id(gen1))
         @test !haskey(penstock_map, 1)
 
         # Test error for HydroDispatch
@@ -361,26 +361,26 @@ const PSY = PowerSystems
         @test length(pcc_map) == 2
         @test length(pcc_map[1]) == 2  # gen1 and storage on same PCC
         @test length(pcc_map[2]) == 1
-        @test IS.get_uuid(gen1) in pcc_map[1]
-        @test IS.get_uuid(storage) in pcc_map[1]
-        @test pcc_map[2][1] == IS.get_uuid(gen2)
+        @test IS.get_id(gen1) in pcc_map[1]
+        @test IS.get_id(storage) in pcc_map[1]
+        @test pcc_map[2][1] == IS.get_id(gen2)
 
         # Verify reverse mappings
         reverse_map = get_reverse_pcc_map(plant)
-        @test reverse_map[IS.get_uuid(gen1)] == 1
-        @test reverse_map[IS.get_uuid(gen2)] == 2
-        @test reverse_map[IS.get_uuid(storage)] == 1
+        @test reverse_map[IS.get_id(gen1)] == 1
+        @test reverse_map[IS.get_id(gen2)] == 2
+        @test reverse_map[IS.get_id(storage)] == 1
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, gen1, plant)
-        @test !haskey(get_reverse_pcc_map(plant), IS.get_uuid(gen1))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_id(gen1))
         @test length(pcc_map[1]) == 1
-        @test pcc_map[1][1] == IS.get_uuid(storage)
+        @test pcc_map[1][1] == IS.get_id(storage)
 
         # Remove storage
         remove_supplemental_attribute!(sys, storage, plant)
         @test !haskey(pcc_map, 1)
-        @test !haskey(get_reverse_pcc_map(plant), IS.get_uuid(storage))
+        @test !haskey(get_reverse_pcc_map(plant), IS.get_id(storage))
     end
 
     @testset "Serialization and deserialization of ThermalPowerPlant" begin
@@ -429,8 +429,8 @@ const PSY = PowerSystems
         reverse_map = get_reverse_shaft_map(plant_restored)
         @test length(shaft_map) == 2
         @test length(reverse_map) == 2
-        @test reverse_map[IS.get_uuid(gen1_restored)] == 1
-        @test reverse_map[IS.get_uuid(gen2_restored)] == 2
+        @test reverse_map[IS.get_id(gen1_restored)] == 1
+        @test reverse_map[IS.get_id(gen2_restored)] == 2
     end
 
     @testset "Serialization and deserialization of HydroPowerPlant" begin
@@ -568,21 +568,21 @@ const PSY = PowerSystems
         hrsg_ct_map = get_hrsg_ct_map(cc_block)
         @test length(hrsg_ct_map) == 1
         @test length(hrsg_ct_map[1]) == 1
-        @test hrsg_ct_map[1][1] == IS.get_uuid(ct_gen)
+        @test hrsg_ct_map[1][1] == IS.get_id(ct_gen)
 
         # Verify HRSG CA mappings
         hrsg_ca_map = get_hrsg_ca_map(cc_block)
         @test length(hrsg_ca_map) == 1
         @test length(hrsg_ca_map[1]) == 1
-        @test hrsg_ca_map[1][1] == IS.get_uuid(ca_gen)
+        @test hrsg_ca_map[1][1] == IS.get_id(ca_gen)
 
         # Verify reverse CT mapping
         ct_hrsg_map = get_ct_hrsg_map(cc_block)
-        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == [1]
+        @test ct_hrsg_map[IS.get_id(ct_gen)] == [1]
 
         # Verify reverse CA mapping
         ca_hrsg_map = get_ca_hrsg_map(cc_block)
-        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == [1]
+        @test ca_hrsg_map[IS.get_id(ca_gen)] == [1]
 
         # Verify supplemental attributes are attached
         @test has_supplemental_attributes(ct_gen)
@@ -598,18 +598,18 @@ const PSY = PowerSystems
             sys, ct_gen2, cc_block; hrsg_number = 1,
         )
         @test length(hrsg_ct_map[1]) == 2
-        @test hrsg_ct_map[1][2] == IS.get_uuid(ct_gen2)
+        @test hrsg_ct_map[1][2] == IS.get_id(ct_gen2)
 
         # Remove generator from block
         remove_supplemental_attribute!(sys, ct_gen, cc_block)
-        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_uuid(ct_gen))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_id(ct_gen))
         @test length(hrsg_ct_map[1]) == 1
-        @test hrsg_ct_map[1][1] == IS.get_uuid(ct_gen2)
+        @test hrsg_ct_map[1][1] == IS.get_id(ct_gen2)
 
         # Remove last CT generator from HRSG 1
         remove_supplemental_attribute!(sys, ct_gen2, cc_block)
         @test !haskey(hrsg_ct_map, 1)
-        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_uuid(ct_gen2))
+        @test !haskey(get_ct_hrsg_map(cc_block), IS.get_id(ct_gen2))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(
@@ -733,9 +733,9 @@ const PSY = PowerSystems
         @test length(ct_hrsg_map) == 1
         @test length(ca_hrsg_map) == 1
 
-        ct_gen_restored_uuid = IS.get_uuid(ct_gen_restored)
+        ct_gen_restored_uuid = IS.get_id(ct_gen_restored)
         ca_gen_restored = get_component(ThermalStandard, sys2, "cc_ca_gen1")
-        ca_gen_restored_uuid = IS.get_uuid(ca_gen_restored)
+        ca_gen_restored_uuid = IS.get_id(ca_gen_restored)
 
         @test ct_hrsg_map[ct_gen_restored_uuid] == [1]
         @test ca_hrsg_map[ca_gen_restored_uuid] == [1]
@@ -772,7 +772,7 @@ const PSY = PowerSystems
         # Maps should be unchanged after rejected adds
         @test length(get_shaft_map(plant)) == 1
         @test length(get_shaft_map(plant)[1]) == 1
-        @test get_reverse_shaft_map(plant)[IS.get_uuid(gen)] == 1
+        @test get_reverse_shaft_map(plant)[IS.get_id(gen)] == 1
     end
 
     @testset "Duplicate generator rejection for HydroPowerPlant" begin
@@ -799,7 +799,7 @@ const PSY = PowerSystems
         # Maps should be unchanged
         @test length(get_penstock_map(plant)) == 1
         @test length(get_penstock_map(plant)[1]) == 1
-        @test get_reverse_penstock_map(plant)[IS.get_uuid(turb)] == 1
+        @test get_reverse_penstock_map(plant)[IS.get_id(turb)] == 1
     end
 
     @testset "Duplicate generator rejection for RenewablePowerPlant" begin
@@ -826,7 +826,7 @@ const PSY = PowerSystems
         # Maps should be unchanged
         @test length(get_pcc_map(plant)) == 1
         @test length(get_pcc_map(plant)[1]) == 1
-        @test get_reverse_pcc_map(plant)[IS.get_uuid(wind)] == 1
+        @test get_reverse_pcc_map(plant)[IS.get_id(wind)] == 1
     end
 
     @testset "Duplicate generator rejection for CombinedCycleBlock" begin
@@ -884,8 +884,8 @@ const PSY = PowerSystems
         @test length(hrsg_ct_map[1]) == 1
         @test length(hrsg_ca_map) == 2
         @test length(hrsg_ca_map[1]) == 1
-        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == [1, 2]
-        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == [1, 2]
+        @test ct_hrsg_map[IS.get_id(ct_gen)] == [1, 2]
+        @test ca_hrsg_map[IS.get_id(ca_gen)] == [1, 2]
     end
 
     @testset "Multiple plants per generator" begin
@@ -987,6 +987,104 @@ const PSY = PowerSystems
             @test has_supplemental_attributes(renewable_gens[1])
         end
 
+        # Test to_json serialization
+        test_dir = mktempdir()
+        json_path = joinpath(test_dir, "system_with_plants.json")
+
+        try
+            # Serialize using to_json
+            to_json(sys, json_path; force = true)
+            @test isfile(json_path)
+
+            # Verify JSON file contains plant data
+            json_data = open(json_path, "r") do io
+                JSON.parse(io; dicttype = Dict{String, Any})
+            end
+            @test haskey(json_data, "data_format_version")
+            @test json_data["data_format_version"] == PSY.DATA_FORMAT_VERSION
+
+            # Test System(file) constructor
+            sys_loaded = System(json_path)
+
+            # Verify system loaded correctly
+            @test PSY._get_base_power(sys_loaded) == PSY._get_base_power(sys)
+            @test length(get_components(ThermalStandard, sys_loaded)) ==
+                  length(thermal_gens)
+
+            # Verify thermal power plant is preserved
+            gen1_loaded = get_component(
+                ThermalStandard,
+                sys_loaded,
+                get_name(thermal_gens[1]),
+            )
+            @test gen1_loaded !== nothing
+            @test has_supplemental_attributes(gen1_loaded)
+
+            attrs_loaded = get_supplemental_attributes(ThermalPowerPlant, gen1_loaded)
+            plant_loaded = only(attrs_loaded)
+            @test get_name(plant_loaded) == "Test Coal Plant"
+
+            # Verify shaft mappings are preserved
+            shaft_map = get_shaft_map(plant_loaded)
+            reverse_map = get_reverse_shaft_map(plant_loaded)
+            @test length(shaft_map) == 2
+            @test length(reverse_map) == 2
+
+            gen1_uuid = IS.get_id(gen1_loaded)
+            gen2_loaded = get_component(
+                ThermalStandard,
+                sys_loaded,
+                get_name(thermal_gens[2]),
+            )
+            gen2_uuid = IS.get_id(gen2_loaded)
+
+            @test reverse_map[gen1_uuid] == 1
+            @test reverse_map[gen2_uuid] == 2
+            @test gen1_uuid in shaft_map[1]
+            @test gen2_uuid in shaft_map[2]
+
+            # Verify renewable plant if it was added
+            if length(renewable_gens) >= 1
+                ren1_loaded = get_component(
+                    RenewableGen,
+                    sys_loaded,
+                    get_name(renewable_gens[1]),
+                )
+                @test has_supplemental_attributes(ren1_loaded)
+
+                ren_attrs = get_supplemental_attributes(RenewablePowerPlant, ren1_loaded)
+                ren_plant_loaded = only(ren_attrs)
+                @test get_name(ren_plant_loaded) == "Test Wind Farm"
+
+                pcc_map = get_pcc_map(ren_plant_loaded)
+                @test length(pcc_map) == 1
+                @test IS.get_id(ren1_loaded) in pcc_map[1]
+            end
+
+            # Test that we can serialize the loaded system again (round-trip)
+            json_path2 = joinpath(test_dir, "system_roundtrip.json")
+            to_json(sys_loaded, json_path2; force = true)
+            @test isfile(json_path2)
+
+            # Load the round-trip system
+            sys_roundtrip = System(json_path2)
+            @test PSY._get_base_power(sys_roundtrip) == PSY._get_base_power(sys)
+
+            # Verify plant still exists after round-trip
+            gen1_rt = get_component(
+                ThermalStandard,
+                sys_roundtrip,
+                get_name(thermal_gens[1]),
+            )
+            @test has_supplemental_attributes(gen1_rt)
+            attrs_rt = get_supplemental_attributes(ThermalPowerPlant, gen1_rt)
+            @test get_name(only(attrs_rt)) == "Test Coal Plant"
+
+        finally
+            # Clean up temporary files
+            rm(test_dir; recursive = true, force = true)
+        end
+
         # A plant attribute survives a document round trip: `group_index` rides on its
         # `PlantAssociation` row, and import dispatches shaft_number back from it.
         restored = roundtrip_system(sys)
@@ -999,8 +1097,8 @@ const PSY = PowerSystems
         @test get_name(restored_plant) == "Test Coal Plant"
         @test only(get_supplemental_attributes(ThermalPowerPlant, restored_gen2)) ===
               restored_plant
-        @test get_reverse_shaft_map(restored_plant)[IS.get_uuid(restored_gen1)] == 1
-        @test get_reverse_shaft_map(restored_plant)[IS.get_uuid(restored_gen2)] == 2
+        @test get_reverse_shaft_map(restored_plant)[IS.get_id(restored_gen1)] == 1
+        @test get_reverse_shaft_map(restored_plant)[IS.get_id(restored_gen2)] == 2
     end
 
     @testset "CombinedCycleFractional construction and basic accessors" begin
@@ -1060,14 +1158,14 @@ const PSY = PowerSystems
         excl_map = get_operation_exclusion_map(cc_frac)
         @test length(excl_map) == 1
         @test length(excl_map[1]) == 2
-        @test IS.get_uuid(cc_gen1) in excl_map[1]
-        @test IS.get_uuid(cc_gen2) in excl_map[1]
+        @test IS.get_id(cc_gen1) in excl_map[1]
+        @test IS.get_id(cc_gen2) in excl_map[1]
 
         # Verify inverse mappings
         inv_map = get_inverse_operation_exclusion_map(cc_frac)
         @test length(inv_map) == 2
-        @test inv_map[IS.get_uuid(cc_gen1)] == 1
-        @test inv_map[IS.get_uuid(cc_gen2)] == 1
+        @test inv_map[IS.get_id(cc_gen1)] == 1
+        @test inv_map[IS.get_id(cc_gen2)] == 1
 
         # Verify supplemental attributes are attached
         @test has_supplemental_attributes(cc_gen1)
@@ -1084,12 +1182,12 @@ const PSY = PowerSystems
         )
         @test length(excl_map) == 2
         @test length(excl_map[2]) == 1
-        @test excl_map[2][1] == IS.get_uuid(cc_gen3)
+        @test excl_map[2][1] == IS.get_id(cc_gen3)
 
         # Remove generator from plant
         remove_supplemental_attribute!(sys, cc_gen1, cc_frac)
         @test length(excl_map[1]) == 1
-        @test excl_map[1][1] == IS.get_uuid(cc_gen2)
+        @test excl_map[1][1] == IS.get_id(cc_gen2)
 
         # Remove last generator from group 1
         remove_supplemental_attribute!(sys, cc_gen2, cc_frac)
@@ -1286,9 +1384,9 @@ const PSY = PowerSystems
         @test length(excl_map) == 2
         @test length(inv_map) == 2
 
-        gen1_restored_uuid = IS.get_uuid(gen1_restored)
+        gen1_restored_uuid = IS.get_id(gen1_restored)
         gen2_restored = get_component(ThermalStandard, sys2, "cc_frac_gen2")
-        gen2_restored_uuid = IS.get_uuid(gen2_restored)
+        gen2_restored_uuid = IS.get_id(gen2_restored)
 
         @test gen1_restored_uuid in excl_map[1]
         @test gen2_restored_uuid in excl_map[2]

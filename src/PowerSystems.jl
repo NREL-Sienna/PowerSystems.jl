@@ -125,7 +125,6 @@ export is_market_bid_curve, make_market_bid_curve, make_market_bid_ts_curve
 export make_import_curve, make_export_curve, make_import_export_ts_curve
 export TimeSeriesLinearCurve, TimeSeriesQuadraticCurve, TimeSeriesPiecewisePointCurve
 export TimeSeriesPiecewiseIncrementalCurve, TimeSeriesPiecewiseAverageCurve
-export TupleTimeSeries
 export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
 export set_shut_down!
 export get_curtailment_cost
@@ -411,13 +410,16 @@ export HydroTurbineType
 export ReservoirLocation
 
 # from IS time_series_structs.jl, time_series_cache.jl
-export TimeSeriesAssociation
 export TimeSeriesKey
 export StaticTimeSeriesKey
 export ForecastKey
 export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
+export ForecastReader
+export ForecastReaderEntry
+export StaticTimeSeriesReader
+export StaticTimeSeriesReaderEntry
 # from IS time_series_metadata_store.jl and defined for System in base.jl
 export get_static_time_series_summary_table
 export get_forecast_summary_table
@@ -432,18 +434,18 @@ export StaticTimeSeries # static_time_series.jl
 export Deterministic # deterministic.jl
 export Probabilistic # Probabilistic.jl
 export SingleTimeSeries # Single_Time_Series.jl
+export NonSequentialTimeSeries # non_sequential_time_series.jl
 export DeterministicSingleTimeSeries # deterministic_single_time_series.jl
 export Scenarios # scenarios.jl
 
 export get_dynamic_components
 
-export open_time_series_store!
+export time_series_transaction
 export add_time_series!
-export bulk_add_time_series!
-export begin_time_series_update
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
+export compact_time_series!
 export copy_time_series!
 export copy_subcomponent_time_series!
 export add_component!
@@ -522,6 +524,20 @@ export supports_voltage_control
 export get_time_series_timestamps
 export get_time_series_values
 export get_time_series_counts
+export get_time_series_hash
+export get_time_series_array_groups
+export build_forecast_reader
+export read_forecast_window!
+export get_forecast_window
+export get_forecast_reader_timeline
+export get_forecast_reader_entries
+export get_num_forecast_slots
+export build_static_time_series_reader
+export read_static_time_series_values!
+export get_static_time_series_value
+export get_static_time_series_reader_grid
+export get_static_time_series_reader_entries
+export get_num_static_time_series_groups
 export get_scenario_count
 export get_percentiles
 export get_next_time_series_array!
@@ -569,7 +585,8 @@ export set_bus_number!
 export set_number!  # Remove this in v5.0.
 export get_name
 export set_name!
-export get_component_uuids
+export get_component_ids
+export get_system_uuid
 export get_description
 export set_description!
 export get_frequency
@@ -701,10 +718,14 @@ import PrettyTables
 import Unitful
 import PowerCoreOpenAPIModels
 import PowerOperationsOpenAPIModels
+import PowerTimeSeriesOpenAPIModels
+import PowerOpenAPIModels
 import OpenAPI
 import TimeZones
 const PC = PowerCoreOpenAPIModels
 const PO = PowerOperationsOpenAPIModels
+const PTS = PowerTimeSeriesOpenAPIModels
+const PD = PowerOpenAPIModels
 using Unitful: @u_str, @unit, Quantity, Units, uconvert, ustrip
 
 # Relative-unit primitives live in IS; PSY re-exports them for downstream
@@ -736,15 +757,19 @@ import InfrastructureSystems:
     Deterministic,
     Probabilistic,
     SingleTimeSeries,
+    NonSequentialTimeSeries,
     StaticTimeSeriesKey,
     DeterministicSingleTimeSeries,
     ForecastKey,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
+    ForecastReader,
+    ForecastReaderEntry,
+    StaticTimeSeriesReader,
+    StaticTimeSeriesReaderEntry,
     TimeSeriesKey,
     TimeSeriesCounts,
-    TimeSeriesAssociation,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
@@ -781,23 +806,32 @@ import InfrastructureSystems:
     get_window,
     get_name,
     get_num_components,
-    get_component_uuids,
+    get_component_ids,
     get_supplemental_attribute,
     get_supplemental_attributes,
     set_name!,
     get_internal,
-    set_internal!,
-    assign_new_uuid!,
     iterate_windows,
     get_time_series,
+    add_time_series!,
     has_time_series,
     get_time_series_type,
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
     get_time_series_keys,
+    get_time_series_hash,
+    read_forecast_window!,
+    get_forecast_window,
+    get_forecast_reader_timeline,
+    get_forecast_reader_entries,
+    get_num_forecast_slots,
+    read_static_time_series_values!,
+    get_static_time_series_value,
+    get_static_time_series_reader_grid,
+    get_static_time_series_reader_entries,
+    get_num_static_time_series_groups,
     show_time_series,
-    read_time_series_file_metadata,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
@@ -880,8 +914,6 @@ import InfrastructureSystems:
     TimeSeriesPiecewisePointCurve,
     TimeSeriesPiecewiseIncrementalCurve,
     TimeSeriesPiecewiseAverageCurve,
-    TupleTimeSeries,
-    build_static_tuple,
     get_function_data,
     get_initial_input,
     get_input_at_zero,
@@ -1030,8 +1062,6 @@ include("emissions_data.jl")
 # Definitions of PowerSystem
 include("base.jl")
 
-include("openapi/ledger.jl")
-
 include("plant_attribute.jl")
 
 # OpenAPI import must follow the supplemental-attribute constructors it calls (outages.jl,
@@ -1070,15 +1100,6 @@ include("models/serialization.jl")
 
 #Deprecated
 include("deprecated.jl")
-
-# Precompile hints (must be after all types are defined)
-precompile(TupleTimeSeries{StartUpStages}, (IS.TimeSeriesKey,))
-precompile(TupleTimeSeries{StartUpStages}, (IS.StaticTimeSeriesKey,))
-precompile(TupleTimeSeries{StartUpStages}, (IS.ForecastKey,))
-precompile(
-    IS.build_static_tuple,
-    (TupleTimeSeries{StartUpStages}, ThermalStandard, Dates.DateTime),
-)
 
 function __init__()
     Unitful.register(PowerSystems)

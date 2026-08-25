@@ -703,7 +703,7 @@ function openapi_export_scalar_exprs(
     return (device, "_scale_optional_po($device, $base)")
 end
 
-"""The PO constructor to call for a compound field in the DEVICE_BASE method: the
+"""The PO constructor to call for a compound field in the COMPONENT_BASE method: the
 `optional` variant when the field is nullable, `required` otherwise."""
 function openapi_export_compound_ctor_device(ctors, nullable)
     if nullable
@@ -713,7 +713,7 @@ function openapi_export_compound_ctor_device(ctors, nullable)
 end
 
 """The PO constructor to call for a compound field in the NATURAL_UNITS method: same as
-DEVICE_BASE when there is no conversion to apply, otherwise the `_scaled` sibling."""
+COMPONENT_BASE when there is no conversion to apply, otherwise the `_scaled` sibling."""
 function openapi_export_compound_ctor_natural(ctors, nullable, conversion)
     if conversion == :none
         return openapi_export_compound_ctor_device(ctors, nullable)

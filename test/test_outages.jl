@@ -7,11 +7,11 @@
     forced_outages =
         collect(get_supplemental_attributes(GeometricDistributionForcedOutage, sys))
     @test length(forced_outages) == 2
-    @test get_supplemental_attribute(sys, IS.get_uuid(forced_outages[1])) ==
+    @test get_supplemental_attribute(sys, IS.get_id(forced_outages[1])) ==
           forced_outages[1]
     planned_outages = collect(get_supplemental_attributes(PlannedOutage, sys))
     @test length(planned_outages) == 2
-    @test get_supplemental_attribute(sys, IS.get_uuid(planned_outages[1])) ==
+    @test get_supplemental_attribute(sys, IS.get_id(planned_outages[1])) ==
           planned_outages[1]
 
     geos = get_supplemental_attributes(GeographicInfo, sys)
@@ -34,7 +34,7 @@
         for type in (GeometricDistributionForcedOutage, PlannedOutage, GeographicInfo)
             attributes = get_supplemental_attributes(type, gen)
             @test length(attributes) == 1
-            uuid = IS.get_uuid(attributes[1])
+            uuid = IS.get_id(attributes[1])
             get_supplemental_attribute(sys, uuid)
             get_supplemental_attribute(gen, uuid)
             @test get_supplemental_attribute(gen, uuid) ==
@@ -154,8 +154,8 @@ end
     sys = create_system_with_outages()
     gens = collect(get_components(ThermalStandard, sys))
     gen1, gen2 = gens[1], gens[2]
-    uuid1 = IS.get_uuid(gen1)
-    uuid2 = IS.get_uuid(gen2)
+    uuid1 = IS.get_id(gen1)
+    uuid2 = IS.get_id(gen2)
 
     # Default is empty for all three concrete types
     @test isempty(
@@ -190,7 +190,7 @@ end
         outage_transition_probability = 0.5,
         monitored_components = get_components(ThermalStandard, sys),
     )
-    @test get_monitored_components(fo_iter) == Set(IS.get_uuid.(gens))
+    @test get_monitored_components(fo_iter) == Set(IS.get_id.(gens))
 
     # Construction silently dedups duplicate UUIDs
     fo_dup = GeometricDistributionForcedOutage(;
@@ -212,12 +212,12 @@ end
     @test get_monitored_components(o) == Set([uuid1])
     set_monitored_components!(o, [gen2])
     @test get_monitored_components(o) == Set([uuid2])
-    set_monitored_components!(o, Base.UUID[])
+    set_monitored_components!(o, Int[])
     @test isempty(get_monitored_components(o))
     # set_ also accepts a FlattenIteratorWrapper from get_components
     set_monitored_components!(o, get_components(ThermalStandard, sys))
-    @test get_monitored_components(o) == Set(IS.get_uuid.(gens))
-    set_monitored_components!(o, Base.UUID[])
+    @test get_monitored_components(o) == Set(IS.get_id.(gens))
+    set_monitored_components!(o, Int[])
 
     # add_monitored_component! with single UUID or Device, including dedup
     add_monitored_component!(o, uuid1)
@@ -235,7 +235,7 @@ end
     @test get_monitored_components(o2) == Set([uuid1, uuid2])
     o3 = FixedForcedOutage(; outage_status = 0.0)
     add_monitored_components!(o3, get_components(ThermalStandard, sys))
-    @test get_monitored_components(o3) == Set(IS.get_uuid.(gens))
+    @test get_monitored_components(o3) == Set(IS.get_id.(gens))
 
     # remove_monitored_component! with single UUID or Device
     remove_monitored_component!(o, uuid1)
@@ -251,10 +251,10 @@ end
     @test isempty(get_monitored_components(o3))
 
     # Validation under runchecks=true: a bogus UUID at attach time raises
-    bogus_uuid = Base.UUID("00000000-0000-0000-0000-000000000000")
+    bogus_id = 999_999_999
     bad_outage = FixedForcedOutage(;
         outage_status = 0.0,
-        monitored_components = [bogus_uuid],
+        monitored_components = [bogus_id],
     )
     @test_throws ArgumentError add_supplemental_attribute!(sys, gen1, bad_outage)
 
@@ -264,15 +264,15 @@ end
     gen_nc = first(get_components(ThermalStandard, sys_nocheck))
     bad_outage2 = FixedForcedOutage(;
         outage_status = 0.0,
-        monitored_components = [bogus_uuid],
+        monitored_components = [bogus_id],
     )
     add_supplemental_attribute!(sys_nocheck, gen_nc, bad_outage2)
-    @test bogus_uuid in get_monitored_components(bad_outage2)
+    @test bogus_id in get_monitored_components(bad_outage2)
 
     # A non-Device UUID is rejected under runchecks=true
     sys2 = create_system_with_outages()
     bus = first(get_components(ACBus, sys2))
-    bus_uuid = IS.get_uuid(bus)
+    bus_uuid = IS.get_id(bus)
     bad_kind = FixedForcedOutage(;
         outage_status = 0.0,
         monitored_components = [bus_uuid],
@@ -290,25 +290,45 @@ end
         set_monitored_components!(outage, gens)
     end
 
+    # `create_system_with_outages` attaches one `SingleTimeSeries` per outage. An outage's
+    # document id is its own IS id, stable across the round trip below, so its series is
+    # findable in the rebuilt system under that same id.
+    original_series = Dict{Int, Vector{Int}}(
+        IS.get_id(outage) =>
+            TimeSeries.values(
+                PSY.get_data(
+                    IS.get_time_series(outage, only(IS.get_time_series_keys(outage))),
+                ),
+            ) for outage in get_supplemental_attributes(Outage, sys)
+    )
+
     sys2 = roundtrip_system(sys)
 
     # Every outage must come back with the same monitored UUIDs (set semantics —
     # order is not preserved), and each UUID must still resolve to a Device in
     # the new system.
-    # The rebuilt system's UUIDs, not the original's: a document carries component ids rather
-    # than UUIDs, so every load mints fresh ones. What must hold is that each outage still
-    # points at the same *set of components*, resolvable in the system it came back in.
-    expected_uuids = Set(IS.get_uuid.(collect(get_components(ThermalStandard, sys2))))
+    # The rebuilt system's ids, not the original's: a load mints fresh component ids, so the
+    # original `gens` ids do not carry over. What must hold is that each outage still points
+    # at the same *set of components*, resolvable in the system it came back in.
+    expected_uuids = Set(IS.get_id.(collect(get_components(ThermalStandard, sys2))))
     outages2 = collect(get_supplemental_attributes(Outage, sys2))
     @test length(outages2) == 4
     for outage in outages2
         uuids = get_monitored_components(outage)
-        @test uuids isa Set{Base.UUID}
+        @test uuids isa Set{Int}
         @test uuids == expected_uuids
         for uuid in uuids
             comp = IS.get_component(sys2, uuid)
             @test comp isa ThermalStandard
         end
+    end
+
+    # The attribute-owned series survive value-for-value, keyed by the id that stays stable
+    # across the round trip.
+    for outage in outages2
+        key = only(IS.get_time_series_keys(outage))
+        values = TimeSeries.values(PSY.get_data(IS.get_time_series(outage, key)))
+        @test values == original_series[IS.get_id(outage)]
     end
 
     # Default (empty) monitored_components also round-trips without error.
@@ -317,6 +337,64 @@ end
     for outage in get_supplemental_attributes(Outage, sys_empty2)
         @test isempty(get_monitored_components(outage))
     end
+end
+
+@testset "Test attribute added by hand to a document survives import with no sidecar row" begin
+    # Attribute payloads stay document-authoritative: a document may name a supplemental
+    # attribute association the adopted sidecar's catalog does not (yet) carry — exactly the
+    # shape a hand-augmentation flow needs (see test_openapi_ptdp_end_to_end.jl's ATTRIBUTES
+    # phase) — and import writes it fresh rather than rejecting the document over it.
+    sys = create_system_with_outages()
+    dir = mktempdir()
+    to_file(sys, dir; force = true)
+    doc = PSY.PD.read_document(joinpath(dir, "system.json"))
+
+    geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [0.0, 0.0])
+    geo = PSY.PC.GeographicInfo(; id = PSY.PD.next_id!(doc), geo_json = geo_json)
+    # A load carries none of the outage/GeographicInfo attributes the fixture attaches only
+    # to the two generators and their buses, so it is unambiguously bare beforehand.
+    load_id = Int(first(PSY.PD.get_components(doc, "PowerLoad")).id)
+    PSY.PD.add_supplemental_attribute!(doc, geo, load_id)
+    PSY.PD.validate_document(doc)
+
+    sys2 = PSY.from_openapi(
+        System, doc; time_series_storage_path = joinpath(dir, "time_series.h5"),
+    )
+    component2 = IS.get_component(sys2, load_id)
+    geos2 = get_supplemental_attributes(GeographicInfo, component2)
+    @test length(geos2) == 1
+    @test IS.get_geo_json(only(geos2)) == geo_json
+end
+
+@testset "Test loud error: attribute_type mismatch caught on the full import path" begin
+    # `_check_resolved_type_matches` (sqlite_load.jl) fires through `from_openapi` itself,
+    # not only through the standalone loader unit tests in test_openapi_sqlite_load.jl.
+    sys = create_system_with_outages()
+    dir = mktempdir()
+    to_file(sys, dir; force = true)
+    doc = PSY.PD.read_document(joinpath(dir, "system.json"))
+    assoc = first(doc.supplemental_attribute_associations)
+    assoc.attribute_type = "EmissionsData"
+
+    @test_throws Exception PSY.from_openapi(
+        System, doc; time_series_storage_path = joinpath(dir, "time_series.h5"),
+    )
+end
+
+@testset "Test loud error: document/sidecar time series row drift caught by validation" begin
+    # The document's own `time_series_associations` rows are informational, but a strict
+    # validation against the adopted sidecar's catalog still catches drift between the two
+    # rather than silently trusting whichever the caller kept.
+    sys = create_system_with_outages()
+    dir = mktempdir()
+    to_file(sys, dir; force = true)
+    doc = PSY.PD.read_document(joinpath(dir, "system.json"))
+    row = first(doc.time_series_associations).value
+    row.name = "not_the_real_series_name"
+
+    @test_throws IS.DataFormatError PSY.from_openapi(
+        System, doc; time_series_storage_path = joinpath(dir, "time_series.h5"),
+    )
 end
 
 @testset "Test remove_supplemental_attributes! by type" begin

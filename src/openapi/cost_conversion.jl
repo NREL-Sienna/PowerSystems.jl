@@ -13,14 +13,22 @@ _require(::Nothing, context::AbstractString) =
     error("convert_cost: $context is required and missing")
 _require(x, ::AbstractString) = x
 
-_power_units_marker(::Nothing) =
+"""
+Call `f` with the unit marker the document string `s` names.
+
+Higher-order rather than marker-returning: the marker is a type parameter of
+`CostCurve`/`FuelCurve`, so returning it from a runtime string would hand the caller a
+`Union{NaturalUnit, DeviceBaseUnit}` and make the construction dynamic. Calling `f` inside each
+branch specializes the whole construction on one concrete marker.
+"""
+_with_power_units(::Any, ::Nothing) =
     error("convert_cost: power_units is required and missing")
-function _power_units_marker(s::AbstractString)
-    s == "NATURAL_UNITS" && return NaturalUnit()
-    s == "DEVICE_BASE" && return DeviceBaseUnit()
+function _with_power_units(f, s::AbstractString)
+    s == "NATURAL_UNITS" && return f(NaturalUnit())
+    s == "COMPONENT_BASE" && return f(DeviceBaseUnit())
     error(
         "convert_cost: unmapped power_units \"$s\" — expected one of " *
-        "NATURAL_UNITS, DEVICE_BASE",
+        "NATURAL_UNITS, COMPONENT_BASE",
     )
 end
 
@@ -70,20 +78,25 @@ convert_cost(v::AbstractString) = error(
 # ── ProductionVariableCostCurve: CostCurve / FuelCurve ─────────────────────────
 
 function convert_cost(c::PC.CostCurve)
-    return CostCurve(;
-        value_curve = convert_cost(_require(c.value_curve, "CostCurve.value_curve")),
-        power_units = _power_units_marker(c.power_units),
-        vom_cost = _vom_cost(c.vom_cost),
-    )
+    value_curve = convert_cost(_require(c.value_curve, "CostCurve.value_curve"))
+    vom_cost = _vom_cost(c.vom_cost)
+    return _with_power_units(c.power_units) do units
+        CostCurve(; value_curve = value_curve, power_units = units, vom_cost = vom_cost)
+    end
 end
 
 function convert_cost(f::PC.FuelCurve)
-    return FuelCurve(;
-        value_curve = convert_cost(_require(f.value_curve, "FuelCurve.value_curve")),
-        power_units = _power_units_marker(f.power_units),
-        fuel_cost = convert_cost(_require(f.fuel_cost, "FuelCurve.fuel_cost")),
-        vom_cost = _vom_cost(f.vom_cost),
-    )
+    value_curve = convert_cost(_require(f.value_curve, "FuelCurve.value_curve"))
+    fuel_cost = convert_cost(_require(f.fuel_cost, "FuelCurve.fuel_cost"))
+    vom_cost = _vom_cost(f.vom_cost)
+    return _with_power_units(f.power_units) do units
+        FuelCurve(;
+            value_curve = value_curve,
+            power_units = units,
+            fuel_cost = fuel_cost,
+            vom_cost = vom_cost,
+        )
+    end
 end
 
 _optional_cost_curve(::Nothing) = zero(CostCurve)

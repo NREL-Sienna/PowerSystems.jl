@@ -13,7 +13,7 @@ manually is:
     component for each row. Hard-code any required parameters that are missing in
     your dataset. Use [`add_component!`](@ref) to add each component to the [`System`](@ref).
  4. Similarly, add cost and time series data either within each `for` loop, or after the
-    components have been defined using [`begin_time_series_update`](@ref).
+    components have been defined using [`time_series_transaction`](@ref).
  5. [Save your `System` to a JSON](@ref "Write, View, and Load Data with a JSON") once you are
     finished
 
@@ -427,18 +427,18 @@ data frame, and build and attach each solar generator's time series:
 
 ```julia
 for row in eachrow(solar_gens)
-    norm = maximum(solar_time_series[:, row[name]])
     solar_data_MW = solar_time_series[:, row[name]]
-    base = row[rate]
-    if any((solar_data_MW ./ base) .> 1.0)
-        @warn "Generator $(row[name]) has a production larger than its base power. Normalizing by its maximum"
-        base = norm
+    if any((solar_data_MW ./ row[rate]) .> 1.0)
+        @warn "Generator $(row[name]) has a production larger than its base power"
     end
-    solar_array = TimeArray(timestamps, (solar_data_MW ./ base)) # normalize data
+    # Stored as actual power, not normalized: a time series is not rescaled on retrieval.
+    solar_array = TimeArray(timestamps, solar_data_MW)
     solar_TS = SingleTimeSeries(;
         name = "max_active_power",
         data = solar_array,
-        scaling_factor_multiplier = get_max_active_power,
+        units = "MW",
+        quantity_kind = "ActivePower",
+        unit_system = NU,
     )
     solar = RenewableDispatch(;
         name = row[name],
@@ -531,18 +531,18 @@ data frame, and build and attach each hydro generator's time series:
 
 ```julia
 for row in eachrow(hydro_gens)
-    norm = maximum(hydro_time_series[:, row[name]])
     hydro_data_MW = hydro_time_series[:, row[name]]
-    base = row[rate]
-    if any((hydro_data_MW ./ base) .> 1.0)
-        @warn "Generator $(row[name]) has a production larger than its base power. Normalizing by its maximum"
-        base = norm
+    if any((hydro_data_MW ./ row[rate]) .> 1.0)
+        @warn "Generator $(row[name]) has a production larger than its base power"
     end
-    hydro_array = TimeArray(timestamps, (hydro_data_MW ./ base)) # normalize data
+    # Stored as actual power, not normalized: a time series is not rescaled on retrieval.
+    hydro_array = TimeArray(timestamps, hydro_data_MW)
     hydro_TS = SingleTimeSeries(;
         name = "max_active_power",
         data = hydro_array,
-        scaling_factor_multiplier = get_max_active_power,
+        units = "MW",
+        quantity_kind = "ActivePower",
+        unit_system = NU,
     )
     hydro = HydroDispatch(;
         name = row[name],
@@ -649,7 +649,7 @@ end
 ```
 
 In a `for` loop, iterate over the regions in your [`System`](@ref), and use the
-[`begin_time_series_update`](@ref) function to create and attach the respective
+[`time_series_transaction`](@ref) function to create and attach the respective
 loads' time series to every load in a region at once. Note: due to how
 `max_active_power` is defined, the time series values are normalized to its
 maximum.
@@ -658,20 +658,19 @@ maximum.
 regions = unique(load_params[:, region])
 
 for reg in regions
-    norm = maximum(load_time_series[:, reg])
-    load_array = TimeArray(
-        timestamps,
-        (load_time_series[:, reg] ./ norm),
-    )
+    # Stored as actual power, not normalized: a time series is not rescaled on retrieval.
+    load_array = TimeArray(timestamps, load_time_series[:, reg])
     load_TS = SingleTimeSeries(;
         name = "max_active_power",
         data = load_array,
-        scaling_factor_multiplier = get_max_active_power,
+        units = "MW",
+        quantity_kind = "ActivePower",
+        unit_system = NU,
     )
     region = get_component(Area, sys, reg)
-    begin_time_series_update(sys) do
+    time_series_transaction(sys) do txn
         for component in get_components_in_aggregation_topology(PowerLoad, sys, region)
-            add_time_series!(sys, component, load_TS)
+            add_time_series!(txn, component, load_TS)
         end
     end
 end

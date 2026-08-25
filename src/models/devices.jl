@@ -4,7 +4,7 @@ This function add a service to the component without checking if the component a
 function add_service_internal!(device::Device, service::Service)
     services = get_services(device)
     for _service in services
-        if IS.get_uuid(service) == IS.get_uuid(_service)
+        if IS.get_id(service) == IS.get_id(_service)
             throw(
                 ArgumentError(
                     "service $(get_name(service)) is already attached to $(get_name(device))",
@@ -20,7 +20,7 @@ end
 function add_service_internal!(device::AGC, service::Service)
     reserves = get_reserves(device)
     for _reserve in reserves
-        if IS.get_uuid(service) == IS.get_uuid(_reserve)
+        if IS.get_id(service) == IS.get_id(_reserve)
             throw(
                 ArgumentError(
                     "service $(get_name(service)) is already attached to $(get_name(device))",
@@ -53,7 +53,7 @@ Return true if the service is attached to the device.
 """
 function has_service(device::Device, service::Service)
     for _service in get_services(device)
-        if IS.get_uuid(_service) == IS.get_uuid(service)
+        if IS.get_id(_service) == IS.get_id(service)
             return true
         end
     end
@@ -89,7 +89,7 @@ function _remove_service!(device::Device, service::Service)
     # The expectation is that there won't be many services in each device, and so
     # a faster lookup method is not needed.
     for (i, _service) in enumerate(services)
-        if IS.get_uuid(_service) == IS.get_uuid(service)
+        if IS.get_id(_service) == IS.get_id(service)
             deleteat!(services, i)
             removed = true
             @debug "Removed service $(get_name(service)) from $(get_name(device))" _group =
@@ -137,7 +137,7 @@ Return true if the reservoir has attached the upstream turbine.
 """
 function has_upstream_turbine(reservoir::HydroReservoir, turbine::HydroUnit)
     for _turbine in get_upstream_turbines(reservoir)
-        if IS.get_uuid(_turbine) == IS.get_uuid(turbine)
+        if IS.get_id(_turbine) == IS.get_id(turbine)
             return true
         end
     end
@@ -150,7 +150,7 @@ Return true if the reservoir has attached the upstream turbine.
 """
 function has_downstream_turbine(reservoir::HydroReservoir, turbine::HydroUnit)
     for _turbine in get_downstream_turbines(reservoir)
-        if IS.get_uuid(_turbine) == IS.get_uuid(turbine)
+        if IS.get_id(_turbine) == IS.get_id(turbine)
             return true
         end
     end
@@ -183,7 +183,7 @@ function _remove_turbine!(reservoir::HydroReservoir, device::HydroUnit)
     # The expectation is that there won't be many services in each device, and so
     # a faster lookup method is not needed.
     for (i, _turbine) in enumerate(down_turbines)
-        if IS.get_uuid(_turbine) == IS.get_uuid(device)
+        if IS.get_id(_turbine) == IS.get_id(device)
             deleteat!(down_turbines, i)
             removed = true
             @debug "Removed turbine $(get_name(_turbine)) from $(get_name(reservoir))" _group =
@@ -194,7 +194,7 @@ function _remove_turbine!(reservoir::HydroReservoir, device::HydroUnit)
 
     if !removed
         for (i, _turbine) in enumerate(up_turbines)
-            if IS.get_uuid(_turbine) == IS.get_uuid(device)
+            if IS.get_id(_turbine) == IS.get_id(device)
                 deleteat!(up_turbines, i)
                 removed = true
                 @debug "Removed turbine $(get_name(_turbine)) from $(get_name(reservoir))" _group =

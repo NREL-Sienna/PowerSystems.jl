@@ -1689,10 +1689,17 @@
                 },
                 {
                     "name": "ac_setpoint_from",
-                    "comment": "Converter AC setpoint in the `from` bus converter. If `voltage_control_from = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_from = false`, this value is the power factor setpoint.",
+                    "comment": "Converter AC setpoint in the `from` bus converter. When `ac_control_from` is `AC_VOLTAGE` this is the AC voltage on the AC side of the converter, in per-unit of `rated_ac_voltage_from`. When `ac_control_from` is `AC_REACTIVE_POWER`, this value is the power factor setpoint.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
+                },
+                {
+                    "name": "rated_ac_voltage_from",
+                    "comment": "Rated (base) AC voltage at the `from` converter's AC terminal in kV. Used as the AC voltage base for interpreting `ac_setpoint_from` when `ac_control_from` is `AC_VOLTAGE`; `0.0` means unspecified (the setpoint is taken as per-unit directly).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
                 },
                 {
                     "name": "converter_loss_from",
@@ -1784,10 +1791,17 @@
                 },
                 {
                     "name": "ac_setpoint_to",
-                    "comment": "Converter AC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint.",
+                    "comment": "Converter AC setpoint in the `to` bus converter. When `ac_control_to` is `AC_VOLTAGE` this is the AC voltage on the AC side of the converter, in per-unit of `rated_ac_voltage_to`. When `ac_control_to` is `AC_REACTIVE_POWER`, this value is the power factor setpoint.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
+                },
+                {
+                    "name": "rated_ac_voltage_to",
+                    "comment": "Rated (base) AC voltage at the `to` converter's AC terminal in kV. Used as the AC voltage base for interpreting `ac_setpoint_to` when `ac_control_to` is `AC_VOLTAGE`; `0.0` means unspecified (the setpoint is taken as per-unit directly).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
                 },
                 {
                     "name": "converter_loss_to",

@@ -16,20 +16,18 @@
 # sqlite_load.jl. None of these embed unit-converted fields, so unlike the per-component
 # exporters they take no unit-system argument.
 
-"""Resolve monitored-component UUIDs (an `Outage`'s own storage) back to document ids.
-Empty means no association and reverses to `nothing`, the inverse of
-`_monitored_component_uuids`'s own `nothing` -> empty-vector default. The uuid → id map is
-rebuilt from `refs` per call rather than threaded through every attribute converter's
-signature; outage attributes are rare enough that the O(components) rebuild does not
-matter."""
-function _monitored_component_ids(refs::OpenAPIRefs, uuids)
-    if isempty(uuids)
+"""Resolve monitored-component ids to document ids; empty reverses to `nothing`."""
+function _monitored_component_ids(refs::OpenAPIRefs, ids)
+    if isempty(ids)
         return nothing
     end
-    uuid_to_id = Dict{Base.UUID, Int}(
-        IS.get_uuid(c) => id for (id, c) in refs.by_id if _has_own_uuid(c)
-    )
-    return Int[uuid_to_id[u] for u in uuids]
+    document_ids = Int[]
+    for id in ids
+        has_ref(refs, Int(id)) ||
+            error("to_openapi: an outage monitors id $id, absent from the document")
+        push!(document_ids, Int(id))
+    end
+    return document_ids
 end
 
 function to_openapi(attr::EmissionsData, refs::OpenAPIRefs)
@@ -129,12 +127,12 @@ end
 # `Arc`/`TransformerCircuit`/`TransmissionInterface` carry no `ext` field at all — nothing to
 # write, so those overloads are no-ops rather than an error about a missing getter.
 
-_export_ext!(::PC.SystemDocument, ::Int, ::Arc) = nothing
-_export_ext!(::PC.SystemDocument, ::Int, ::TransformerCircuit) = nothing
-_export_ext!(::PC.SystemDocument, ::Int, ::TransmissionInterface) = nothing
+_export_ext!(::PD.SystemDocument, ::Int, ::Arc) = nothing
+_export_ext!(::PD.SystemDocument, ::Int, ::TransformerCircuit) = nothing
+_export_ext!(::PD.SystemDocument, ::Int, ::TransmissionInterface) = nothing
 
-function _export_ext!(doc::PC.SystemDocument, id::Int, component)
-    PC.set_ext!(doc, id, get_ext(component))
+function _export_ext!(doc::PD.SystemDocument, id::Int, component)
+    PD.set_ext!(doc, id, get_ext(component))
     return nothing
 end
 
@@ -169,21 +167,19 @@ end
 
 # ── unit_system resolution ──────────────────────────────────────────────────────
 
-"""Resolve the `unit_system` kwarg to `(document_unit_system_string, ledger_or_nothing)`.
-`:original` reads the round-trip ledger (`load_ledger` itself raises when absent);
-`:device_base`/`:natural_units` force that convention explicitly and require no ledger."""
-function _resolve_export_unit_system(sys::System, unit_system::Symbol)
-    if unit_system === :original
-        ledger = load_ledger(sys)
-        return String(ledger["unit_system"]), ledger
-    elseif unit_system === :device_base
-        return "DEVICE_BASE", nothing
+"""Resolve the `unit_system` kwarg to the document's `unit_system` string.
+
+The caller states the convention outright: a `System` records no unit system of its own — every
+getter takes one explicitly — so there is nothing to infer from `sys`."""
+function _resolve_export_unit_system(unit_system::Symbol)
+    if unit_system === :device_base
+        return "COMPONENT_BASE"
     elseif unit_system === :natural_units
-        return "NATURAL_UNITS", nothing
+        return "NATURAL_UNITS"
     else
         error(
-            "to_openapi(sys; unit_system=$unit_system): unmapped — expected :original, " *
-            ":device_base, or :natural_units",
+            "to_openapi(sys; unit_system=$unit_system): unmapped — expected " *
+            ":device_base or :natural_units",
         )
     end
 end
@@ -194,18 +190,25 @@ end
 # import uses; export does not need the ordering for resolution, since ids already exist or are
 # assigned fresh, but keeping it identical simplifies testing and mirrors import 1:1).
 #
-# Ids come from the ledger's `id_to_uuid` when a component's UUID is listed there (an
-# `:original` export, reproducing the document's ids); anything absent from the ledger —
-# every component when there is no ledger, or `TransformerCircuit` always
-# (`store_ledger!` skips it via `_has_own_uuid`, so it never has a ledger-backed id to
-# reproduce) — gets a fresh id from a counter that starts *after* the ledger's highest id, so
-# fresh and ledger-derived ids never collide.
+# A component's document id IS its IS component id. That keeps the document and the
+# InfraStore sidecar consistent by construction: the sidecar's catalog keys every series by
+# component id, and import resolves a series' owner by looking that id up as a document id.
+# A `from_openapi`-built System reproduces its original document ids for free, since import
+# sets each component's id to its document id.
+#
+# `TransformerCircuit` has no id of its own (`_has_own_id` false — it is embedded in its
+# owning transformer), so it draws from a counter that starts above every component id.
 
 """Enumerate the live instances of a `DOCUMENT_PLAN` type. `TransformerCircuit` is a
 `DeviceParameter` embedded in its owning transformer, never a standalone System component,
 so it enumerates through the owners — both `TwoWindingTransformer` (one circuit) and
-`ThreeWindingTransformer` (three, via `get_circuits`)."""
-_plan_components(sys::System, ::Type{T}) where {T} = get_components(T, sys)
+`ThreeWindingTransformer` (three, via `get_circuits`). A `HybridSystem`'s subcomponents are
+masked out of the System's own enumeration but are still exported by id, so the masked
+container is walked alongside the live one."""
+_plan_components(sys::System, ::Type{T}) where {T} = Iterators.flatten((
+    get_components(T, sys),
+    IS.get_masked_components(T, sys.data),
+))
 function _plan_components(sys::System, ::Type{TransformerCircuit})
     two_winding = (get_circuit(twt) for twt in get_components(TwoWindingTransformer, sys))
     three_winding = (
@@ -215,47 +218,41 @@ function _plan_components(sys::System, ::Type{TransformerCircuit})
     return Iterators.flatten((two_winding, three_winding))
 end
 
-"""Ledger id when the component's UUID is listed there; otherwise the next fresh id.
-Components with no UUID of their own (`_has_own_uuid` false — `TransformerCircuit`) are
-never in the ledger, so they always get a fresh id."""
-function _export_id!(next_id::Base.RefValue{Int}, uuid_to_id, component)
-    if _has_own_uuid(component)
-        return get(uuid_to_id, IS.get_uuid(component)) do
-            fresh = next_id[]
-            next_id[] += 1
-            return fresh
-        end
-    end
-    fresh = next_id[]
-    next_id[] += 1
-    return fresh
-end
+"""
+Whether `x` carries an id of its own, and so can supply the document id it is exported under.
 
-function _build_export_refs(
-    sys::System,
-    unit_system_string::AbstractString,
-    uuid_to_id::AbstractDict{Base.UUID, Int},
-)
+`TransformerCircuit` is embedded in its owning transformer and has no `internal` field, so no
+id — but it is still registered in [`OpenAPIRefs`](@ref), and must be skipped rather than error.
+"""
+_has_own_id(::Any) = true
+_has_own_id(::TransformerCircuit) = false
+
+function _build_export_refs(sys::System, unit_system_string::AbstractString)
     refs = OpenAPIRefs(unit_system_string, get_base_power(sys))
-    start_id = if isempty(uuid_to_id)
-        1
-    else
-        maximum(values(uuid_to_id)) + 1
-    end
-    next_id = Ref(start_id)
-    for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
+    # Components and supplemental attributes share one id stream, so a fresh
+    # `TransformerCircuit` id must clear the highest of both kinds.
+    highest = 0
+    circuits = TransformerCircuit[]
+    for (_po_type, psy_type, _key, _addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
-            refs[_export_id!(next_id, uuid_to_id, c)] = c
+            if _has_own_id(c)
+                id = IS.get_id(c)
+                highest = max(highest, id)
+                refs[id] = c
+            else
+                push!(circuits, c)
+            end
         end
+    end
+    for attr in IS.iterate_supplemental_attributes(sys.data)
+        highest = max(highest, IS.get_id(attr))
+    end
+    next_id = highest + 1
+    for circuit in circuits
+        refs[next_id] = circuit
+        next_id += 1
     end
     return refs
-end
-
-function _ledger_uuid_to_id(ledger)
-    return Dict{Base.UUID, Int}(
-        Base.UUID(uuid_str) => parse(Int, id_str) for
-        (id_str, uuid_str) in ledger["id_to_uuid"]
-    )
 end
 
 # ── component pass ───────────────────────────────────────────────────────────────
@@ -267,14 +264,14 @@ Convert every component in [`DOCUMENT_PLAN`](@ref) order and add it to `doc`.
 the document's `components` map needs no key bookkeeping here.
 """
 function _export_components!(
-    doc::PC.SystemDocument,
+    doc::PD.SystemDocument,
     refs::OpenAPIRefs,
     sys::System,
     val::IS.AbstractUnitSystem,
 )
     for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
         for c in _plan_components(sys, psy_type)
-            PC.add_component!(doc, to_openapi(c, refs, val))
+            PD.add_component!(doc, to_openapi(c, refs, val))
             _export_ext!(doc, component_id(refs, c), c)
         end
     end
@@ -400,7 +397,7 @@ function _push_plant_association!(
     attr_id::Int,
     entity_id::Int,
 )
-    indices = _group_indices(group_map, IS.get_uuid(entity))
+    indices = _group_indices(group_map, IS.get_id(entity))
     isempty(indices) && return nothing
     push!(
         plant_rows,
@@ -413,9 +410,31 @@ function _push_plant_association!(
     return nothing
 end
 
-"""A CT/CA can feed more than one HRSG, but IS attaches a `CombinedCycleBlock` to a component
-once regardless — so only the lowest HRSG number is representable per association row. Known
-limitation: no index survived a document at all before the plant-attribute feature was added."""
+"""Push one `CombinedCycleAssociation` row per index in `hrsgs` for `role`."""
+function _push_cc_associations!(
+    cc_rows,
+    hrsgs,
+    attr_id::Int,
+    entity_id::Int,
+    role::AbstractString,
+)
+    for hrsg_index in hrsgs
+        push!(
+            cc_rows,
+            PO.CombinedCycleAssociation(;
+                plant_id = attr_id,
+                entity_id = entity_id,
+                role = role,
+                hrsg_index = hrsg_index,
+            ),
+        )
+    end
+    return nothing
+end
+
+"""A CT/CA can feed more than one HRSG. The document records the n-to-m relation as one
+`CombinedCycleAssociation` row per HRSG membership, matching the schema's multi-row contract,
+even though IS attaches the `CombinedCycleBlock` to the component only once."""
 function _group_association!(
     ::Vector,
     cc_rows::Vector{PO.CombinedCycleAssociation},
@@ -424,85 +443,60 @@ function _group_association!(
     attr_id::Int,
     entity_id::Int,
 )
-    uuid = IS.get_uuid(entity)
-    ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), uuid)
-    if !isempty(ct_hrsgs)
-        push!(
+    id = IS.get_id(entity)
+    ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), id)
+    if isempty(ct_hrsgs)
+        _push_cc_associations!(
             cc_rows,
-            PO.CombinedCycleAssociation(;
-                plant_id = attr_id,
-                entity_id = entity_id,
-                role = "CT",
-                hrsg_index = first(ct_hrsgs),
-            ),
+            _group_indices(get_hrsg_ca_map(attr), id),
+            attr_id,
+            entity_id,
+            "CA",
         )
-        return nothing
-    end
-    ca_hrsgs = _group_indices(get_hrsg_ca_map(attr), uuid)
-    if !isempty(ca_hrsgs)
-        push!(
-            cc_rows,
-            PO.CombinedCycleAssociation(;
-                plant_id = attr_id,
-                entity_id = entity_id,
-                role = "CA",
-                hrsg_index = first(ca_hrsgs),
-            ),
-        )
+    else
+        _push_cc_associations!(cc_rows, ct_hrsgs, attr_id, entity_id, "CT")
     end
     return nothing
 end
 
 """
-Emit the attribute rows and their associations, drawing attribute ids from `doc`'s counter.
+Emit the attribute rows and their associations from the store's own OpenAPI export
+([`IS.openapi_supplemental_attribute_association_rows`](@ref)) rather than converting each
+association row by hand: the rows already carry `component_id`/`attribute_id` in the
+document's id space and their `attribute_type`/`component_type` labels.
 
-Ids come from the document's single counter, not a private one: SiennaGridDB's `entities` table
-keys a row by id without its type, so an id must mean exactly one thing across components *and*
-supplemental attributes. Sharing the counter is what makes that true by construction — a
-private counter here previously handed out attribute id 1 alongside component id 1.
-
-Each attribute is registered into `refs` under its id before conversion, so
-`to_openapi(attr, refs)` reads its own id back via `component_id` exactly like the generated
-component exporters — and so `refs` covers attributes the same way the import direction's
-does after `load_supplemental_attribute_associations!`.
+Only rows whose component has a document id are kept, mirroring
+[`warn_unexportable_components`](@ref): a dynamics component's attribute is dropped along
+with the component itself. Each distinct attribute is registered into `refs` under its own id
+before `to_openapi(attr, refs)` reads that id back. The store's rows already arrive sorted by
+`(component_id, attribute_id)`, so document order tracks component order with no local sort.
 """
-function _export_supplemental_attributes(
-    sorted_refs,
-    refs::OpenAPIRefs,
-    doc::PC.SystemDocument,
-)
+function _export_supplemental_attributes(refs::OpenAPIRefs, sys::System)
     attribute_rows = Any[]
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
-    attr_ids = Dict{Base.UUID, Int}()
-    for (entity_id, entity) in sorted_refs
-        _has_own_uuid(entity) || continue
-        for attr in get_supplemental_attributes(entity)
-            attr_uuid = IS.get_uuid(attr)
-            attr_id = get!(attr_ids, attr_uuid) do
-                id = PC.next_id!(doc)
-                refs[id] = attr
-                push!(attribute_rows, to_openapi(attr, refs))
-                return id
-            end
-            push!(
-                association_rows,
-                PC.SupplementalAttributeAssociation(;
-                    attribute_id = attr_id,
-                    entity_id = entity_id,
-                    attribute_type = string(nameof(typeof(attr))),
-                ),
-            )
-            _group_association!(
-                plant_association_rows,
-                combined_cycle_association_rows,
-                attr,
-                entity,
-                attr_id,
-                entity_id,
-            )
+    attributes_by_id = Dict{Int, SupplementalAttribute}(
+        IS.get_id(attr) => attr for attr in IS.iterate_supplemental_attributes(sys.data)
+    )
+    for row in IS.openapi_supplemental_attribute_association_rows(sys.data)
+        entity_id = Int(row.component_id)
+        has_ref(refs, entity_id) || continue
+        attr_id = Int(row.attribute_id)
+        attr = attributes_by_id[attr_id]
+        if !has_ref(refs, attr_id)
+            refs[attr_id] = attr
+            push!(attribute_rows, to_openapi(attr, refs))
         end
+        push!(association_rows, row)
+        _group_association!(
+            plant_association_rows,
+            combined_cycle_association_rows,
+            attr,
+            refs[entity_id],
+            attr_id,
+            entity_id,
+        )
     end
     return attribute_rows,
     association_rows,
@@ -510,127 +504,83 @@ function _export_supplemental_attributes(
     combined_cycle_association_rows
 end
 
-# ── time series (reverse of _attach_time_series!) ───────────────────────────────
-
-const SCALING_FACTOR_MULTIPLIER_TO_STRING = _invert(SCALING_FACTOR_MULTIPLIERS)
-
-_scaling_factor_multiplier_to_string(::Nothing) = nothing
-function _scaling_factor_multiplier_to_string(f::Function)
-    haskey(SCALING_FACTOR_MULTIPLIER_TO_STRING, f) || error(
-        "to_openapi: unmapped scaling_factor_multiplier function $f — no reverse string " *
-        "registered in SCALING_FACTOR_MULTIPLIER_TO_STRING",
-    )
-    return SCALING_FACTOR_MULTIPLIER_TO_STRING[f]
-end
-
-"""ISO 8601 duration, the reverse of `_parse_iso8601_seconds` (src/openapi/import_document.jl)."""
-_iso8601_duration(period::Dates.Period) =
-    string("PT", Dates.value(Dates.Second(period)), "S")
-
-# ── per-type time series export (dispatch, not a type-string branch) ────────────
+# ── time series ────────────────────────────────────────────────────────────────
 #
-# `TimeSeriesAssociation` carries every forecast column (`horizon`, `interval`,
-# `window_count`). `Probabilistic` and `Scenarios` are not supported: each needs a structural
-# field the document has no home for (percentile identity, scenario count), so they error
-# loudly here rather than exporting a row that silently loses it.
+# The mirror of import's store adoption: the System's InfraStore *is* the sidecar, so export
+# serializes it and describes it via the store's own OpenAPI export
+# (`IS.openapi_time_series_association_rows`) rather than walking series and converting each
+# metadata row by hand. The catalog's owner ids are already document ids for both owner
+# kinds, so a row's `owner_category` is read only to pick the right failure mode.
 
-"""The series whose UUID identifies the HDF5 payload and the association row.
-`DeterministicSingleTimeSeries` has no UUID of its own — IS.get_uuid has no method for it — it
-is a view over its wrapped `SingleTimeSeries`, which is what actually gets serialized."""
-_hdf5_series(ts::TimeSeriesData) = ts
-_hdf5_series(ts::DeterministicSingleTimeSeries) = IS.get_single_time_series(ts)
+"""Whether a time series owner absent from the document is a tolerated loss or a hard error.
 
-"""`(horizon, interval, window_count)` document columns. `nothing` for all three on a
-`SingleTimeSeries` — it is not a forecast."""
-_forecast_columns(::SingleTimeSeries) = (nothing, nothing, nothing)
-function _forecast_columns(ts::Union{Deterministic, DeterministicSingleTimeSeries})
-    return (
-        _iso8601_duration(get_horizon(ts)),
-        _iso8601_duration(IS.get_interval(ts)),
-        get_count(ts),
+A component owner may be absent because it has no converter — the same reported loss
+[`warn_unexportable_components`](@ref) already flags. An absent supplemental-attribute owner
+means the sidecar and the attribute manager disagree about what exists: every attribute the
+document can describe was registered into `refs` by `_export_supplemental_attributes` before
+this runs."""
+function _absent_owner_is_tolerated(row)
+    row.owner_category == "Component" && return true
+    row.owner_category == "SupplementalAttribute" && return false
+    error(
+        "to_openapi: time series \"$(row.name)\" (owner id $(row.owner_id)) has " *
+        "unrecognized owner_category $(row.owner_category)",
     )
 end
 
-"""`length` document column. For `SingleTimeSeries`, a plain series' own length. A real
-`Deterministic`'s shape is fully described by
-`horizon`/`interval`/`window_count`, so it carries none — but `DeterministicSingleTimeSeries`
-is a view over a wrapped `SingleTimeSeries` with no association row of its own to carry
-*that* series' length (it may have none, if the original was removed after transforming), so
-this row is its only carrier; import needs it to reread the wrapped array
-(`_attach_deterministic_single_time_series!`)."""
-_document_length(ts::SingleTimeSeries) = length(ts)
-_document_length(::Deterministic) = nothing
-_document_length(ts::DeterministicSingleTimeSeries) = length(IS.get_single_time_series(ts))
+"""
+Write the System's time series to `time_series_storage_path` and describe them in the
+document.
 
+Both halves matter and neither is redundant: the sidecar holds the values, and the document
+lists one row per series so a consumer can see what a bundle contains — and in what units, on
+what basis — without opening the store.
+
+The rows come from ONE store call, already sorted by identity and each stamped with the
+store's own `uri`/`data_hash`. Row `id`s are the store's own catalog rowids, carried through
+unchanged: they are informational, not part of the document's component/attribute id space.
+
+Rows whose owner has no document id are skipped and counted when that is tolerated (see
+[`_absent_owner_is_tolerated`](@ref)); the skips are reported in ONE `@warn` after the loop,
+since those series stay in the sidecar but cannot survive a round trip.
 """
-Emit one `PC.TimeSeriesAssociation` row per time series attached to `entity` (document id
-`entity_id`) — every [`TimeSeriesData`](@ref) subtype IS ships, dispatched per type rather
-than branched on a string. Writes each series' data to the HDF5 `storage` the first time its
-UUID is seen — a series shared by multiple owners must not be written twice.
-"""
-function _export_time_series!(
-    rows::Vector{PC.TimeSeriesAssociation},
-    written::Set{Base.UUID},
-    storage::Union{Nothing, IS.Hdf5TimeSeriesStorage},
-    entity,
-    entity_id::Int,
-    owner_type::AbstractString,
-)
-    IS.supports_time_series(entity) || return nothing
-    for ts in get_time_series_multiple(entity; type = nothing)
-        hdf5_series = _hdf5_series(ts)
-        uuid = IS.get_uuid(hdf5_series)
-        if !(uuid in written)
-            isnothing(storage) && error(
-                "to_openapi: $(summary(entity)) carries time series \"$(get_name(ts))\" " *
-                "but no time_series_storage_path was given — cannot write the HDF5 sidecar",
+function _export_all_time_series(sys::System, refs::OpenAPIRefs, time_series_storage_path)
+    rows = PTS.TimeSeriesAssociation[]
+    # Counted, not `isempty(store)`: one store holds the supplemental attribute associations
+    # as well, so a System with attributes and no series has a non-empty store and would
+    # otherwise demand a sidecar it has nothing to put in.
+    num_time_series = IS.get_num_time_series(sys.data)
+    iszero(num_time_series) && return rows
+    isnothing(time_series_storage_path) && error(
+        "to_openapi: $num_time_series time series are attached but no " *
+        "time_series_storage_path was given — cannot write the sidecar",
+    )
+    skipped_counts = Dict{String, Int}()
+    for assoc in IS.openapi_time_series_association_rows(sys.data)
+        row = assoc.value
+        owner_id = Int(row.owner_id)
+        if !has_ref(refs, owner_id)
+            _absent_owner_is_tolerated(row) || error(
+                "to_openapi: supplemental attribute (owner id $owner_id, type " *
+                "$(row.owner_type)) owns time series \"$(row.name)\", but is not " *
+                "registered in the exported document — the sidecar and the attribute " *
+                "manager disagree about what exists",
             )
-            IS.serialize_time_series!(storage, hdf5_series)
-            push!(written, uuid)
+            skipped_counts[row.owner_type] = get(skipped_counts, row.owner_type, 0) + 1
+            continue
         end
-        horizon, interval, window_count = _forecast_columns(ts)
-        push!(
-            rows,
-            PC.TimeSeriesAssociation(;
-                id = length(rows) + 1,
-                time_series_uuid = string(uuid),
-                time_series_type = string(nameof(typeof(ts))),
-                initial_timestamp = TimeZones.ZonedDateTime(
-                    IS.get_initial_timestamp(ts), TimeZones.tz"UTC",
-                ),
-                resolution = _iso8601_duration(get_resolution(ts)),
-                horizon = horizon,
-                interval = interval,
-                window_count = window_count,
-                length = _document_length(ts),
-                name = get_name(ts),
-                owner_id = entity_id,
-                owner_type = owner_type,
-                owner_category = "Component",
-                features = Dict{String, PC.FeatureValue}[],
-                scaling_factor_multiplier = _scaling_factor_multiplier_to_string(
-                    IS.get_scaling_factor_multiplier(ts),
-                ),
-            ),
-        )
+        push!(rows, assoc)
     end
-    return nothing
-end
-
-function _export_all_time_series(sorted_refs, time_series_storage_path)
-    storage = if isnothing(time_series_storage_path)
-        nothing
-    else
-        IS.Hdf5TimeSeriesStorage(true; filename = String(time_series_storage_path))
+    if !isempty(skipped_counts)
+        total = sum(values(skipped_counts))
+        types = join(sort(collect(keys(skipped_counts))), ", ")
+        @warn "to_openapi: omitting $total time series row(s) whose owning component has " *
+              "no OpenAPI converter ($types) — they remain in the sidecar but are not " *
+              "described in the document and will not survive a round trip"
     end
-    rows = PC.TimeSeriesAssociation[]
-    written = Set{Base.UUID}()
-    for (id, component) in sorted_refs
-        _has_own_uuid(component) || continue
-        _export_time_series!(
-            rows, written, storage, component, id, string(nameof(typeof(component))),
-        )
-    end
+    IS.serialize(
+        sys.data.time_series_manager.data_store, String(time_series_storage_path),
+    )
     return rows
 end
 
@@ -647,10 +597,9 @@ Returns the typed container, not JSON: writing it to disk belongs to
 — components and supplemental attributes alike — comes from the document's single counter, since
 consumers key a row by id without its type.
 
-`unit_system`: `:original` (default) reproduces the document `sys` was read from — requires an
-OpenAPI round-trip ledger (`from_openapi`-built `System`s carry one; [`load_ledger`](@ref)
-raises when absent). `:device_base`/`:natural_units` force that convention explicitly and need
-no ledger, so a `System` built directly via `add_component!` is exportable too.
+`unit_system`: `:device_base` (default) writes each component's values on its own base, the
+convention PSY stores natively, so no conversion happens; `:natural_units` converts to physical
+units on the way out. Any `System` is exportable either way, however it was built.
 
 Walks components in [`DOCUMENT_PLAN`](@ref) order (symmetry with import, not a resolution
 requirement — every id already exists or is assigned fresh before it is ever read). Emits
@@ -658,25 +607,19 @@ requirement — every id already exists or is assigned fresh before it is ever r
 `get_base_power(sys)` exactly — not reconstructed.
 
 Component `ext` is written through verbatim to `doc.ext`. Errors loudly rather than silently
-dropping data: a time series with no `time_series_storage_path` given, or an unmapped
-`scaling_factor_multiplier` function.
+dropping data: a time series with no `time_series_storage_path` given.
 """
 function to_openapi(
     sys::System;
-    unit_system::Symbol = :original,
+    unit_system::Symbol = :device_base,
     time_series_storage_path = nothing,
 )
     warn_unexportable_components(sys)
-    unit_system_string, ledger = _resolve_export_unit_system(sys, unit_system)
-    uuid_to_id = if isnothing(ledger)
-        Dict{Base.UUID, Int}()
-    else
-        _ledger_uuid_to_id(ledger)
-    end
-    refs = _build_export_refs(sys, unit_system_string, uuid_to_id)
+    unit_system_string = _resolve_export_unit_system(unit_system)
+    refs = _build_export_refs(sys, unit_system_string)
     val = _unit_val(unit_system_string)
 
-    doc = PC.SystemDocument(
+    doc = PD.SystemDocument(
         get_base_power(sys);
         unit_system = unit_system_string,
         name = get_name(sys),
@@ -684,19 +627,13 @@ function to_openapi(
         frequency = sys.frequency,
         time_series_storage_file = _sidecar_basename(time_series_storage_path),
     )
-    # Component ids are already assigned (from the ledger or fresh); tell the document so its
-    # counter continues past them instead of reissuing one to a supplemental attribute.
-    _reserve_component_ids!(doc, refs)
-
     _export_components!(doc, refs, sys, val)
     _export_market_bid_service_offers!(doc, refs)
-    # One id-ordered snapshot of the registry, shared by both document-order-sensitive
-    # walks below rather than each re-collecting and re-sorting it.
-    sorted_refs = sort(collect(refs.by_id); by = first)
     supplemental_attributes,
     supplemental_attribute_associations,
     plant_associations,
-    combined_cycle_associations = _export_supplemental_attributes(sorted_refs, refs, doc)
+    combined_cycle_associations =
+        _export_supplemental_attributes(refs, sys)
     append!(doc.supplemental_attributes, supplemental_attributes)
     append!(doc.supplemental_attribute_associations, supplemental_attribute_associations)
     append!(doc.plant_associations, plant_associations)
@@ -704,10 +641,11 @@ function to_openapi(
     append!(doc.service_associations, _export_service_associations(refs, sys))
     append!(
         doc.time_series_associations,
-        _export_all_time_series(sorted_refs, time_series_storage_path),
+        _export_all_time_series(sys, refs, time_series_storage_path),
     )
+    _reserve_ids!(doc, refs)
 
-    PC.validate_document(doc)
+    PD.validate_document(doc)
     return doc
 end
 
@@ -720,7 +658,7 @@ services. Runs after `_export_components!` so every service already has an id;
 `convert_cost_to_openapi(::MarketBidCost)` exports the list empty because the per-cost
 converter has no id registry.
 """
-function _export_market_bid_service_offers!(doc::PC.SystemDocument, refs::OpenAPIRefs)
+function _export_market_bid_service_offers!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     for po_components in values(doc.components), po in po_components
         hasproperty(po, :operation_cost) || continue
         po_cost = po.operation_cost
@@ -734,10 +672,13 @@ function _export_market_bid_service_offers!(doc::PC.SystemDocument, refs::OpenAP
     return nothing
 end
 
-function _reserve_component_ids!(doc::PC.SystemDocument, refs::OpenAPIRefs)
+"""Reserve `doc`'s own id counter above every id already assigned, so it cannot reissue one
+that collides. Components and supplemental attributes share one id stream, and `refs`
+registers both kinds by the time this runs."""
+function _reserve_ids!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     if isempty(refs.by_id)
         return nothing
     end
-    PC.reserve_ids!(doc, maximum(keys(refs.by_id)))
+    PD.reserve_ids!(doc, maximum(keys(refs.by_id)))
     return nothing
 end

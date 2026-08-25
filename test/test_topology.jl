@@ -63,11 +63,11 @@ end
         for gen in all_generators
             bus = get_bus(gen)
             if gen in in_generators
-                @test IS.get_uuid(accessor(bus)) == IS.get_uuid(agg)
+                @test IS.get_id(accessor(bus)) == IS.get_id(agg)
                 @test is_component_in_aggregation_topology(gen, agg)
                 covered_in = true
             else
-                @test IS.get_uuid(accessor(bus)) != IS.get_uuid(agg)
+                @test IS.get_id(accessor(bus)) != IS.get_id(agg)
                 @test !is_component_in_aggregation_topology(gen, agg)
                 covered_out = true
             end

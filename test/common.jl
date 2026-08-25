@@ -67,7 +67,7 @@ function create_system_with_outages()
     gen2 = gens[2]
     geo1 = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [1.0, 2.0]))
     geo2 = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [3.0, 4.0]))
-    begin_time_series_update(sys) do
+    time_series_transaction(sys) do txn
         begin_supplemental_attributes_update(sys) do
             add_supplemental_attribute!(sys, gen1, geo1)
             add_supplemental_attribute!(sys, gen1.bus, geo1)
@@ -95,7 +95,7 @@ function create_system_with_outages()
                 ta = TimeSeries.TimeArray(dates, data, ["1"])
                 name = "ts_$(i)"
                 ts = SingleTimeSeries(; name = name, data = ta)
-                add_time_series!(sys, outage, ts)
+                add_time_series!(txn, outage, ts)
             end
         end
     end
@@ -191,6 +191,40 @@ function test_accessors(component)
     end
 end
 
+function validate_serialization(
+    sys::System;
+    time_series_read_only = false,
+    runchecks = PSY.get_runchecks(sys),
+    assign_new_ids = false,
+)
+    # Every path below is absolute, so nothing here depends on the working directory.
+    path = joinpath(mktempdir(), "test_system_serialization.json")
+    @info "Serializing to $path"
+    get_ext(sys)["data"] = 5
+    bus = first(get_components(PSY.ACBus, sys))
+    ext_test_bus_name = PSY.get_name(bus)
+    PSY.get_ext(bus)["test_field"] = 1
+    to_json(sys, path; force = true)
+
+    data = open(path, "r") do io
+        JSON.parse(io; dicttype = Dict{String, Any})
+    end
+    @test data["data_format_version"] == PSY.DATA_FORMAT_VERSION
+
+    sys2 = System(
+        path;
+        time_series_read_only = time_series_read_only,
+        runchecks = runchecks,
+        assign_new_ids = assign_new_ids,
+    )
+    @test !isempty(get_bus_numbers(sys2))
+    @test get_ext(sys2)["data"] == 5
+    bus2 = PSY.get_component(PSY.ACBus, sys2, ext_test_bus_name)
+    isnothing(bus2) && error("the deserialized system lost bus $ext_test_bus_name")
+    @test PSY.get_ext(bus2)["test_field"] == 1
+    return sys2, PSY.compare_values(sys, sys2; compare_ids = !assign_new_ids)
+end
+
 """
 Round-trip `sys` through a `to_file`/`from_file` bundle and return the rebuilt system.
 
@@ -217,7 +251,7 @@ The fixtures build plain `Dict`s because that is the shape a document has on dis
 easy to mutate for negative tests; this is the same step `from_file` performs via
 `read_document`.
 """
-to_test_document(doc::AbstractDict) = PSY.PC.document_from_json(doc)
+to_test_document(doc::AbstractDict) = PSY.PD.document_from_json(doc)
 
 """
 Errors a malformed document can raise.
@@ -312,7 +346,7 @@ function make_openapi_test_doc(;
     if include_fixed_admittance
         shunt_po = PSY.PO.FixedAdmittance(;
             id = 9, name = "shunt1", available = true, bus = 4,
-            admittance_units = "DEVICE_MVAR",
+            admittance_units = "COMPONENT_MVAR",
             Y = PSY.PC.ComplexNumber(; real = 0.0, imag = -50.0),
         )
         components["FixedAdmittance"] = [openapi_raw(shunt_po)]
@@ -400,8 +434,7 @@ function _file_io_fixture(; with_time_series = true)
                         ),
                     ),
                     collect(0.1:0.1:0.6),
-                );
-                scaling_factor_multiplier = get_max_active_power,
+                ),
             ),
         )
     end

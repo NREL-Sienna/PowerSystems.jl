@@ -27,6 +27,8 @@ end
     # Defaults come from the `::Nothing` demo constructor.
     default_vsc = TwoTerminalVSCLine(nothing)
     @test get_rated_dc_voltage(default_vsc) == 0.0
+    @test get_rated_ac_voltage_from(default_vsc) == 0.0
+    @test get_rated_ac_voltage_to(default_vsc) == 0.0
     @test isnothing(get_remote_bus_control_from(default_vsc))
     @test isnothing(get_remote_bus_control_to(default_vsc))
     @test get_rmpct_from(default_vsc) == 100.0
@@ -42,23 +44,31 @@ end
         active_power_limits_from = (min = -2.0, max = 2.0),
         active_power_limits_to = (min = -2.0, max = 2.0),
         rated_dc_voltage = 320.0,
+        rated_ac_voltage_from = 230.0,
+        rated_ac_voltage_to = 138.0,
         remote_bus_control_from = 7,
         remote_bus_control_to = 9,
         rmpct_from = 75.0,
         rmpct_to = 50.0,
     )
     @test get_rated_dc_voltage(vsc) == 320.0
+    @test get_rated_ac_voltage_from(vsc) == 230.0
+    @test get_rated_ac_voltage_to(vsc) == 138.0
     @test get_remote_bus_control_from(vsc) == 7
     @test get_remote_bus_control_to(vsc) == 9
     @test get_rmpct_from(vsc) == 75.0
     @test get_rmpct_to(vsc) == 50.0
 
     set_rated_dc_voltage!(vsc, 500.0)
+    set_rated_ac_voltage_from!(vsc, 345.0)
+    set_rated_ac_voltage_to!(vsc, 161.0)
     set_remote_bus_control_from!(vsc, 11)
     set_remote_bus_control_to!(vsc, 13)
     set_rmpct_from!(vsc, 60.0)
     set_rmpct_to!(vsc, 40.0)
     @test get_rated_dc_voltage(vsc) == 500.0
+    @test get_rated_ac_voltage_from(vsc) == 345.0
+    @test get_rated_ac_voltage_to(vsc) == 161.0
     @test get_remote_bus_control_from(vsc) == 11
     @test get_remote_bus_control_to(vsc) == 13
     @test get_rmpct_from(vsc) == 60.0
