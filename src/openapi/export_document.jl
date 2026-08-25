@@ -445,17 +445,17 @@ function _group_association!(
 )
     id = IS.get_id(entity)
     ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), id)
-    if !isempty(ct_hrsgs)
+    if isempty(ct_hrsgs)
+        _push_cc_associations!(
+            cc_rows,
+            _group_indices(get_hrsg_ca_map(attr), id),
+            attr_id,
+            entity_id,
+            "CA",
+        )
+    else
         _push_cc_associations!(cc_rows, ct_hrsgs, attr_id, entity_id, "CT")
-        return nothing
     end
-    _push_cc_associations!(
-        cc_rows,
-        _group_indices(get_hrsg_ca_map(attr), id),
-        attr_id,
-        entity_id,
-        "CA",
-    )
     return nothing
 end
 
