@@ -108,7 +108,7 @@ wind_time_series = SingleTimeSeries(;
 # [PowerSimulations.jl](https://sienna-platform.github.io/PowerSimulations.jl/stable/formulation_library/RenewableGen/)
 # for simulations.
 # So far, this time series has been defined, but not attached to our [`System`](@ref) in any way. Now,
-# attach it to `wind1` using [`add_time_series!`](@ref add_time_series!(sys::System, component::Component, time_series::TimeSeriesData; features...)):
+# attach it to `wind1` using [`add_time_series!`](@ref add_time_series!(sys::System, component::Component, time_series::TimeSeriesData; features::Union{Nothing, Dict} = nothing)):
 
 add_time_series!(system, wind1, wind_time_series);
 
