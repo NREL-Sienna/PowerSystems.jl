@@ -1428,28 +1428,22 @@ end
     end
 end
 
+_cc_thermal_gen(bus, name, prime_mover) = ThermalStandard(;
+    name = name, available = true, status = true, bus = bus,
+    active_power = 0.0, reactive_power = 0.0, rating = 1.0,
+    active_power_limits = (min = 0.0, max = 1.0),
+    reactive_power_limits = (min = -1.0, max = 1.0), ramp_limits = nothing,
+    operation_cost = ThermalGenerationCost(nothing), base_power = 100.0,
+    time_limits = nothing, prime_mover_type = prime_mover,
+    fuel = ThermalFuels.NATURAL_GAS,
+)
+
 """The issue's MWE: a CT and a CA on the same bus, both members of one `CombinedCycleBlock`,
 with the CT feeding two HRSGs (`hrsg_number = 1` and `hrsg_number = 2`)."""
 function _build_combined_cycle_system()
     bus = _export_bus(; number = 1)
-    ct = ThermalStandard(;
-        name = "CT", available = true, status = true, bus = bus,
-        active_power = 0.0, reactive_power = 0.0, rating = 1.0,
-        active_power_limits = (min = 0.0, max = 1.0),
-        reactive_power_limits = (min = -1.0, max = 1.0), ramp_limits = nothing,
-        operation_cost = ThermalGenerationCost(nothing), base_power = 100.0,
-        time_limits = nothing, prime_mover_type = PrimeMovers.CT,
-        fuel = ThermalFuels.NATURAL_GAS,
-    )
-    ca = ThermalStandard(;
-        name = "CA", available = true, status = true, bus = bus,
-        active_power = 0.0, reactive_power = 0.0, rating = 1.0,
-        active_power_limits = (min = 0.0, max = 1.0),
-        reactive_power_limits = (min = -1.0, max = 1.0), ramp_limits = nothing,
-        operation_cost = ThermalGenerationCost(nothing), base_power = 100.0,
-        time_limits = nothing, prime_mover_type = PrimeMovers.CA,
-        fuel = ThermalFuels.NATURAL_GAS,
-    )
+    ct = _cc_thermal_gen(bus, "CT", PrimeMovers.CT)
+    ca = _cc_thermal_gen(bus, "CA", PrimeMovers.CA)
     sys = System(100.0)
     add_component!(sys, bus)
     add_component!(sys, ct)

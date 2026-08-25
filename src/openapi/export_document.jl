@@ -410,6 +410,28 @@ function _push_plant_association!(
     return nothing
 end
 
+"""Push one `CombinedCycleAssociation` row per index in `hrsgs` for `role`."""
+function _push_cc_associations!(
+    cc_rows,
+    hrsgs,
+    attr_id::Int,
+    entity_id::Int,
+    role::AbstractString,
+)
+    for hrsg_index in hrsgs
+        push!(
+            cc_rows,
+            PO.CombinedCycleAssociation(;
+                plant_id = attr_id,
+                entity_id = entity_id,
+                role = role,
+                hrsg_index = hrsg_index,
+            ),
+        )
+    end
+    return nothing
+end
+
 """A CT/CA can feed more than one HRSG. The document records the n-to-m relation as one
 `CombinedCycleAssociation` row per HRSG membership, matching the schema's multi-row contract,
 even though IS attaches the `CombinedCycleBlock` to the component only once."""
@@ -424,31 +446,16 @@ function _group_association!(
     id = IS.get_id(entity)
     ct_hrsgs = _group_indices(get_hrsg_ct_map(attr), id)
     if !isempty(ct_hrsgs)
-        for hrsg_index in ct_hrsgs
-            push!(
-                cc_rows,
-                PO.CombinedCycleAssociation(;
-                    plant_id = attr_id,
-                    entity_id = entity_id,
-                    role = "CT",
-                    hrsg_index = hrsg_index,
-                ),
-            )
-        end
+        _push_cc_associations!(cc_rows, ct_hrsgs, attr_id, entity_id, "CT")
         return nothing
     end
-    ca_hrsgs = _group_indices(get_hrsg_ca_map(attr), id)
-    for hrsg_index in ca_hrsgs
-        push!(
-            cc_rows,
-            PO.CombinedCycleAssociation(;
-                plant_id = attr_id,
-                entity_id = entity_id,
-                role = "CA",
-                hrsg_index = hrsg_index,
-            ),
-        )
-    end
+    _push_cc_associations!(
+        cc_rows,
+        _group_indices(get_hrsg_ca_map(attr), id),
+        attr_id,
+        entity_id,
+        "CA",
+    )
     return nothing
 end
 

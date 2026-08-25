@@ -18,7 +18,6 @@ roles never mix within one pair either, so one merged map stays unambiguous.
 """
 function _group_index_by_pair(doc::PD.SystemDocument)
     indices = Dict{Tuple{Int, Int}, Vector{Int}}()
-    plant_pairs = Set{Tuple{Int, Int}}()
     for a in doc.plant_associations
         key = (Int(a.plant_id), Int(a.entity_id))
         haskey(indices, key) && error(
@@ -26,8 +25,8 @@ function _group_index_by_pair(doc::PD.SystemDocument)
             "entity_id=$(key[2]) has a duplicate plant association row",
         )
         indices[key] = Int[Int(a.group_index)]
-        push!(plant_pairs, key)
     end
+    plant_pairs = Set(keys(indices))
     for a in doc.combined_cycle_associations
         key = (Int(a.plant_id), Int(a.entity_id))
         key in plant_pairs && error(
@@ -36,16 +35,13 @@ function _group_index_by_pair(doc::PD.SystemDocument)
             "combined_cycle_associations",
         )
         hrsg_index = Int(a.hrsg_index)
-        if haskey(indices, key)
-            hrsg_index in indices[key] && error(
-                "load_supplemental_attribute_associations!: plant_id=$(key[1]) " *
-                "entity_id=$(key[2]) hrsg_index=$hrsg_index has a duplicate " *
-                "combined_cycle_associations row",
-            )
-            push!(indices[key], hrsg_index)
-        else
-            indices[key] = Int[hrsg_index]
-        end
+        group = get!(indices, key, Int[])
+        hrsg_index in group && error(
+            "load_supplemental_attribute_associations!: plant_id=$(key[1]) " *
+            "entity_id=$(key[2]) hrsg_index=$hrsg_index has a duplicate " *
+            "combined_cycle_associations row",
+        )
+        push!(group, hrsg_index)
     end
     return indices
 end
