@@ -273,7 +273,7 @@ end
     # The verbose display spells `SU`/`DU` out; only terse contexts keep the tags.
     attached_out = sprint(show_component, gen)
     @test occursin("active_power: 1.25 p.u. in system base", attached_out)
-    @test occursin("rating: 1.0 p.u. in device base", attached_out)
+    @test occursin("rating: 1.0 p.u. in component base", attached_out)
     # Compound fields state their shared base once, after the tuple, rather than
     # repeating it per element.
     @test occursin(
@@ -301,7 +301,7 @@ end
     @test occursin("active_power: 125.0 MW", detached_out) # SU fails, falls back to NU
     # Reactive power reads in Mvar and the apparent-power `rating` in MVA, not MW.
     @test occursin("reactive_power: 25.0 Mvar", detached_out)
-    @test occursin("rating: 1.0 p.u. in device base", detached_out) # DU regardless of attachment
+    @test occursin("rating: 1.0 p.u. in component base", detached_out) # DU regardless of attachment
     @test occursin("base_power: 250.0 MVA", detached_out)
 
     # An explicit override that fails (SU on an unattached component) errors
@@ -373,7 +373,7 @@ end
     @test occursin("250.0 MW", text3)
 end
 
-@testset "dynamic models display in device base" begin
+@testset "dynamic models display in component base" begin
     machine = BaseMachine(nothing)
     machine_out = sprint(show, MIME"text/plain"(), machine)
     # Field-by-field, not the default single-line struct dump.
@@ -386,9 +386,9 @@ end
         AVRFixed(nothing), TGFixed(nothing), PSSFixed(nothing),
     )
     dyn_out = sprint(show_component, dyn)
-    @test occursin("in p.u. on the device base of 100.0 MVA", dyn_out)
+    @test occursin("in p.u. on the component base of 100.0 MVA", dyn_out)
 
     # Static components get no such footer: their fields carry their own units.
     _, gen = _sys_with_thermal()
-    @test !occursin("p.u. on the device base", sprint(show_component, gen))
+    @test !occursin("p.u. on the component base", sprint(show_component, gen))
 end
