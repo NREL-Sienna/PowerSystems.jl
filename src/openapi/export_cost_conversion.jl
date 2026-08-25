@@ -100,10 +100,69 @@ function _vom_cost_to_openapi(curve::InputOutputCurve)
     return convert_cost_to_openapi(curve)
 end
 
-# ── fuel_cost: PSY always stores a bare Float64 (the AbstractString/time-series variant is
-# not implemented on import, so it can never appear in a PSY component to reverse) ─────
+# ── Time-series FunctionData/ValueCurve — export reads association ids straight off the
+# PSY key, needs no store ──────────────────────────────────────────────────────
 
-_fuel_cost_to_openapi(v::Real) = PC.FuelCurveFuelCost(Float64(v))
+_ts_function_data_wire_type(::Type{LinearFunctionData}) = PC.TimeSeriesLinearFunctionData
+_ts_function_data_wire_type(::Type{QuadraticFunctionData}) =
+    PC.TimeSeriesQuadraticFunctionData
+_ts_function_data_wire_type(::Type{PiecewiseLinearData}) = PC.TimeSeriesPiecewiseLinearData
+_ts_function_data_wire_type(::Type{PiecewiseStepData}) = PC.TimeSeriesPiecewiseStepData
+
+function convert_cost_to_openapi(fd::TimeSeriesFunctionData{T}) where {T}
+    WireType = _ts_function_data_wire_type(T)
+    return WireType(; association_id = IS.get_association_id(IS.get_time_series_key(fd)))
+end
+
+"""`nothing` stays `nothing`; a present key emits its `association_id`."""
+_key_association_id(::Nothing) = nothing
+_key_association_id(key::IS.ConcreteTimeSeriesKey) = IS.get_association_id(key)
+
+function convert_cost_to_openapi(curve::TimeSeriesInputOutputCurve)
+    return PC.TimeSeriesInputOutputCurve(;
+        function_data = PC.FunctionData1(convert_cost_to_openapi(get_function_data(curve))),
+        input_at_zero = get_input_at_zero(curve),
+    )
+end
+
+"""`no_load_cost`'s own wire type — see `convert_cost(vc::PC.TimeSeriesInputOutputCurve2, ...)`
+in `cost_conversion.jl` for why it is a separate Julia type from the bare
+`TimeSeriesInputOutputCurve` above."""
+function _no_load_cost_to_openapi(curve::TimeSeriesLinearCurve)
+    return PC.TimeSeriesInputOutputCurve2(;
+        function_data = PC.FunctionData1(convert_cost_to_openapi(get_function_data(curve))),
+        input_at_zero = get_input_at_zero(curve),
+    )
+end
+
+"""`shut_down`'s own wire type — see `_no_load_cost_to_openapi`."""
+function _shut_down_to_openapi(curve::TimeSeriesLinearCurve)
+    return PC.TimeSeriesInputOutputCurve3(;
+        function_data = PC.FunctionData1(convert_cost_to_openapi(get_function_data(curve))),
+        input_at_zero = get_input_at_zero(curve),
+    )
+end
+
+function convert_cost_to_openapi(curve::TimeSeriesIncrementalCurve)
+    return PC.TimeSeriesIncrementalCurve(;
+        function_data = PC.FunctionData2(convert_cost_to_openapi(get_function_data(curve))),
+        initial_input_association_id = _key_association_id(get_initial_input(curve)),
+        input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
+    )
+end
+
+function convert_cost_to_openapi(curve::TimeSeriesAverageRateCurve)
+    return PC.TimeSeriesAverageRateCurve(;
+        function_data = PC.FunctionData2(convert_cost_to_openapi(get_function_data(curve))),
+        initial_input_association_id = _key_association_id(get_initial_input(curve)),
+        input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
+    )
+end
+
+# ── fuel_cost: PSY splits it into `fuel_cost`/`fuel_cost_time_series` — exactly one set ──
+
+_fuel_cost_time_series_id(::Nothing) = nothing
+_fuel_cost_time_series_id(key::IS.ConcreteTimeSeriesKey) = IS.get_association_id(key)
 
 # ── ProductionVariableCostCurve: CostCurve / FuelCurve ─────────────────────────
 
@@ -119,7 +178,10 @@ function convert_cost_to_openapi(cost::FuelCurve)
     return PC.FuelCurve(;
         power_units = _power_units_to_string(get_power_units(cost), cost),
         value_curve = PC.ValueCurve(convert_cost_to_openapi(get_value_curve(cost))),
-        fuel_cost = _fuel_cost_to_openapi(get_fuel_cost(cost)),
+        fuel_cost = get_fuel_cost(cost),
+        fuel_cost_time_series = _fuel_cost_time_series_id(
+            IS.get_fuel_cost_time_series(cost),
+        ),
         vom_cost = _vom_cost_to_openapi(get_vom_cost(cost)),
     )
 end
@@ -246,6 +308,75 @@ function convert_cost_to_openapi(cost::ImportExportCost)
         energy_export_weekly_limit = get_energy_export_weekly_limit(cost),
     )
 end
+
+"""
+Time-varying market bid. Unlike `convert_cost_to_openapi(::MarketBidCost)`, whose
+`ancillary_service_offers` the document-level `_export_market_bid_service_offers!`
+(`export_document.jl`) fills in after every component has an id, this cost type's ids are
+NOT filled by that pass — it gates on `PC.MarketBidCost` only, and extending it is blocked:
+`export_document.jl` is out of this task's edit scope. Rather than silently emitting an
+empty list and dropping real offers, this errors loudly on a non-empty
+`ancillary_service_offers` so the gap is visible instead of a silent data loss on export.
+"""
+function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
+    offers = get_ancillary_service_offers(cost)
+    if !isempty(offers)
+        error(
+            "convert_cost_to_openapi(MarketBidTimeSeriesCost): $(length(offers)) " *
+            "ancillary_service_offers cannot be exported — the document-level id-filling " *
+            "pass (_export_market_bid_service_offers!, export_document.jl) only resolves " *
+            "them for the static MarketBidCost, not this time-series variant. Remove the " *
+            "ancillary service offers before exporting, or resolve them another way.",
+        )
+    end
+    return PC.MarketBidTimeSeriesCost(;
+        no_load_cost = _no_load_cost_to_openapi(get_no_load_cost(cost)),
+        start_up_association_id = IS.get_association_id(get_start_up(cost)),
+        shut_down = _shut_down_to_openapi(get_shut_down(cost)),
+        incremental_offer_curves = convert_cost_to_openapi(
+            get_incremental_offer_curves(cost),
+        ),
+        decremental_offer_curves = convert_cost_to_openapi(
+            get_decremental_offer_curves(cost),
+        ),
+        ancillary_service_offers = Int64[],
+    )
+end
+
+"""`energy_import_weekly_limit`/`energy_export_weekly_limit` are stored in system-base
+p.u.-hours; the wire stores MWh — see `_scale_weekly_limit` (`cost_conversion.jl`) for the
+inverse and why `INFINITE_BOUND` rides across unscaled."""
+function _scale_weekly_limit_to_openapi(limit::Real, base_power::Real)
+    if limit == INFINITE_BOUND
+        return limit
+    end
+    return limit * base_power
+end
+
+"""
+Time-varying import/export bids. Unlike every other cost converter, needs `base_power` (the
+System's, not the device's own) to rescale the weekly limits — see
+`convert_cost_to_openapi(cost::OperationalCost, ::Real)` below for how a caller threads it
+uniformly, and `Source`'s `to_openapi` (`export_handwritten.jl`) for the one call site.
+"""
+function convert_cost_to_openapi(cost::ImportExportTimeSeriesCost, base_power::Real)
+    return PC.ImportExportTimeSeriesCost(;
+        import_offer_curves = convert_cost_to_openapi(get_import_offer_curves(cost)),
+        export_offer_curves = convert_cost_to_openapi(get_export_offer_curves(cost)),
+        energy_import_weekly_limit = _scale_weekly_limit_to_openapi(
+            get_energy_import_weekly_limit(cost), base_power,
+        ),
+        energy_export_weekly_limit = _scale_weekly_limit_to_openapi(
+            get_energy_export_weekly_limit(cost), base_power,
+        ),
+        ancillary_service_offers = Int64[],
+    )
+end
+
+"""2-arg fallback for operation costs that carry no system-base quantity to rescale — lets a
+caller (`Source`'s `to_openapi`) thread a system base uniformly across every `OperationalCost`
+variant without special-casing every type but the one that actually needs it."""
+convert_cost_to_openapi(cost::OperationalCost, ::Real) = convert_cost_to_openapi(cost)
 
 # ── Reserve Operating Reserve Demand Curve ─────────────────────────────────────
 

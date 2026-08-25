@@ -120,7 +120,7 @@ export OperationalCost,
     ImportExportCost, ImportExportTimeSeriesCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export HydroReservoirCost
-export get_fuel_cost, set_fuel_cost!, get_vom_cost
+export get_fuel_cost, get_fuel_cost_time_series, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve, make_market_bid_ts_curve
 export make_import_curve, make_export_curve, make_import_export_ts_curve
 export TimeSeriesLinearCurve, TimeSeriesQuadraticCurve, TimeSeriesPiecewisePointCurve
@@ -922,7 +922,8 @@ import InfrastructureSystems:
     get_vom_cost,
     get_startup_fuel_offtake,
     get_power_units,
-    get_fuel_cost
+    get_fuel_cost,
+    get_fuel_cost_time_series
 
 #################################################################################
 
