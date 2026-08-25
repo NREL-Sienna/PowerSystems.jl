@@ -27,12 +27,17 @@ struct OpenAPIRefs
     referenced component had not converted yet — drained by [`resolve_deferred_refs!`](@ref).
     Import-only; export never defers, so this stays empty on that side."
     deferred_refs::Vector{Function}
+    "Import-only: the adopted sidecar's time series store, used to resolve an
+    association-id-bearing cost's wire id to a `TimeSeriesKey` (`IS.get_time_series_key(store,
+    id)`). `nothing` on export — export reads association ids straight off PSY's own keys via
+    `IS.get_association_id`, no store needed — and on an import with no sidecar."
+    store::Any
 end
 
-function OpenAPIRefs(unit_system::AbstractString, base_power::Real = 100.0)
+function OpenAPIRefs(unit_system::AbstractString, base_power::Real = 100.0; store = nothing)
     return OpenAPIRefs(
         Dict{Int, Any}(), IdDict{Any, Int}(), String(unit_system), Float64(base_power),
-        Function[],
+        Function[], store,
     )
 end
 
@@ -71,6 +76,10 @@ get_unit_system(refs::OpenAPIRefs) = refs.unit_system
 
 """Get the document-level system base power (MVA) this [`OpenAPIRefs`](@ref) was built for."""
 get_base_power(refs::OpenAPIRefs) = refs.base_power
+
+"""Get the time series store bound for this import (see [`OpenAPIRefs`](@ref)'s `store`
+field), or `nothing` on export or for a sidecar-less import."""
+get_store(refs::OpenAPIRefs) = refs.store
 
 """Register `component` under document `id`. Errors on a duplicate id."""
 function Base.setindex!(refs::OpenAPIRefs, component, id::Integer)

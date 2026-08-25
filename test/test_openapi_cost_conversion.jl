@@ -324,12 +324,160 @@ end
     @test_throws ErrorException PSY.convert_reserve_variable(_po_cost_curve())
 end
 
-@testset "convert_cost: fuel_cost time-series reference not implemented" begin
+@testset "convert_cost: FuelCurve fuel_cost/fuel_cost_time_series are mutually exclusive" begin
+    # Neither set.
     @test_throws ErrorException PSY.convert_cost(
         PSY.PC.FuelCurve(;
             power_units = "NATURAL_UNITS",
             value_curve = PSY.PC.ValueCurve(_po_linear_io(1.0, 0.0)),
-            fuel_cost = "some_time_series_ref",
         ),
     )
+    # Both set — a document naming both is malformed regardless of whether either id
+    # resolves, so this errors before ever touching a store.
+    @test_throws ErrorException PSY.convert_cost(
+        PSY.PC.FuelCurve(;
+            power_units = "NATURAL_UNITS",
+            value_curve = PSY.PC.ValueCurve(_po_linear_io(1.0, 0.0)),
+            fuel_cost = 3.5,
+            fuel_cost_time_series = 7,
+        ),
+    )
+end
+
+@testset "convert_cost: FuelCurve with a time-series value curve and a fixed fuel_cost" begin
+    # A doubly-TS-backed shape only in the sense that the store binding is exercised twice
+    # over: `value_curve` is a TIME_SERIES_INCREMENTAL curve (needs the store) while
+    # `fuel_cost` is a plain scalar (does not). The 1-arg ambient form must resolve the
+    # store for the value curve regardless of which form `fuel_cost` takes.
+    store = IS.Store(; in_memory = true)
+    try
+        series = SingleTimeSeries(;
+            name = "heat_rate",
+            data = TimeSeries.TimeArray(
+                [
+                    Dates.DateTime(2024, 1, 1, 0),
+                    Dates.DateTime(2024, 1, 1, 1),
+                    Dates.DateTime(2024, 1, 1, 2),
+                ],
+                [8.0, 8.5, 9.0],
+            ),
+        )
+        batch = IS.make_add_batch()
+        IS.serialize_single!(
+            batch,
+            1,
+            "ThermalStandard",
+            IS.get_owner_category(IS.InfrastructureSystemsComponent),
+            IS.get_name(series),
+            series,
+        )
+        IS.commit_batch!(store, batch)
+        assoc_id = only(IS.list_time_series_metadata(store)).association_id
+
+        fc = PSY._with_import_store(store) do
+            PSY.convert_cost(
+                PSY.PC.FuelCurve(;
+                    power_units = "NATURAL_UNITS",
+                    value_curve = PSY.PC.ValueCurve(
+                        PSY.PC.TimeSeriesIncrementalCurve(;
+                            function_data = PSY.PC.FunctionData2(
+                                PSY.PC.TimeSeriesLinearFunctionData(;
+                                    association_id = assoc_id,
+                                ),
+                            ),
+                            initial_input_association_id = nothing,
+                        ),
+                    ),
+                    fuel_cost = 3.5,
+                ),
+            )
+        end
+        @test fc isa FuelCurve
+        @test get_fuel_cost(fc) == 3.5
+        @test get_fuel_cost_time_series(fc) === nothing
+        @test get_function_data(get_value_curve(fc)) isa PSY.TimeSeriesFunctionData
+    finally
+        IS.close!(store)
+    end
+end
+
+@testset "convert_cost: FuelCurve/MarketBidTimeSeriesCost need a bound import store" begin
+    # `fuel_cost_time_series` present but no active `from_openapi(System, doc)` import bound:
+    # the 1-arg ambient form errors rather than silently treating it as absent.
+    @test_throws ErrorException PSY.convert_cost(
+        PSY.PC.FuelCurve(;
+            power_units = "NATURAL_UNITS",
+            value_curve = PSY.PC.ValueCurve(_po_linear_io(1.0, 0.0)),
+            fuel_cost_time_series = 7,
+        ),
+    )
+    @test_throws ErrorException PSY.convert_cost(
+        PSY.PC.MarketBidTimeSeriesCost(;
+            no_load_cost = PSY.PC.TimeSeriesInputOutputCurve2(;
+                function_data = PSY.PC.FunctionData1(
+                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 1),
+                ),
+            ),
+            start_up_association_id = 2,
+            shut_down = PSY.PC.TimeSeriesInputOutputCurve3(;
+                function_data = PSY.PC.FunctionData1(
+                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 3),
+                ),
+            ),
+            incremental_offer_curves = PSY.PC.CostCurve(;
+                power_units = "NATURAL_UNITS",
+                value_curve = PSY.PC.ValueCurve(
+                    PSY.PC.TimeSeriesIncrementalCurve(;
+                        function_data = PSY.PC.FunctionData2(
+                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 4),
+                        ),
+                    ),
+                ),
+            ),
+            decremental_offer_curves = PSY.PC.CostCurve(;
+                power_units = "NATURAL_UNITS",
+                value_curve = PSY.PC.ValueCurve(
+                    PSY.PC.TimeSeriesIncrementalCurve(;
+                        function_data = PSY.PC.FunctionData2(
+                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 5),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+end
+
+@testset "_scale_weekly_limit / _scale_weekly_limit_to_openapi: base scaling and INFINITE_BOUND" begin
+    # Import direction: wire MWh -> PSY system-base p.u.-hours (divide by base_power).
+    @test PSY._scale_weekly_limit(500.0, 100.0) == 5.0
+    @test PSY._scale_weekly_limit(PSY.INFINITE_BOUND, 100.0) == PSY.INFINITE_BOUND
+
+    # Export direction: PSY system-base p.u.-hours -> wire MWh (multiply by base_power).
+    @test PSY._scale_weekly_limit_to_openapi(5.0, 100.0) == 500.0
+    @test PSY._scale_weekly_limit_to_openapi(PSY.INFINITE_BOUND, 100.0) ==
+          PSY.INFINITE_BOUND
+
+    # A finite value round-trips through both directions unchanged.
+    @test PSY._scale_weekly_limit(PSY._scale_weekly_limit_to_openapi(5.0, 100.0), 100.0) ==
+          5.0
+    # So does the sentinel — it never gets multiplied/divided at all.
+    @test PSY._scale_weekly_limit(
+        PSY._scale_weekly_limit_to_openapi(PSY.INFINITE_BOUND, 100.0), 100.0,
+    ) == PSY.INFINITE_BOUND
+end
+
+@testset "convert_cost_to_openapi(OperationalCost, base_power) fallback ignores base_power" begin
+    # `ImportExportCost` needs no system-base scaling; the 2-arg fallback must reduce to the
+    # plain 1-arg converter regardless of what `base_power` is passed.
+    cost = ImportExportCost(;
+        import_offer_curves = make_import_curve([0.0, 100.0], [10.0]),
+        export_offer_curves = make_export_curve([0.0, 50.0], [8.0]),
+        energy_import_weekly_limit = 1000.0,
+        energy_export_weekly_limit = 2000.0,
+    )
+    with_base = PSY.convert_cost_to_openapi(cost, 100.0)
+    without_base = PSY.convert_cost_to_openapi(cost)
+    @test with_base.energy_import_weekly_limit == without_base.energy_import_weekly_limit
+    @test with_base.energy_export_weekly_limit == without_base.energy_export_weekly_limit
 end

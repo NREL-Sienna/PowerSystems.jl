@@ -154,6 +154,131 @@ function _ptdp_e2e_system_component_counts(sys::System)
     return counts
 end
 
+"""
+Give one `ThermalStandard` in `sys` a `MarketBidTimeSeriesCost` (`no_load_cost`, `shut_down`,
+`start_up`, and both offer curves all time-series-backed, via `make_market_bid_ts_curve`) and
+another a `FuelCurve` with `fuel_cost_time_series` set instead of a fixed `fuel_cost`. Both
+generators' new series are staged onto `sys`'s own (adopted) time series store, exactly like
+any other `add_time_series!` call a user would make.
+
+Every new series is a plain `SingleTimeSeries` — the same time-series type the PTDP fixture's
+own staged series use (`_ptdp_e2e_staged_index`) — so `_ptdp_e2e_verify_time_series` can be
+extended to cover them too (`IS.get_array`, which that helper calls, is only defined for
+`SingleTimeSeries`/`NonSequentialTimeSeries`, not `Deterministic`). Only key round-tripping is
+under test here, not time-varying value resolution, so a constant-valued static series suffices.
+
+Returns `(market_bid_gen_name, keys, fuel_gen_name, fuel_key, new_staged)` — the original
+`TimeSeriesKey`s (carrying their `association_id`) to compare a round-tripped `System`'s costs
+back against, and `new_staged`, a `staged`-shaped `Dict` of the series just added, to merge into
+`staged_with_attr` before the next `_ptdp_e2e_verify_time_series` call.
+"""
+function _ptdp_e2e_attach_ts_costs!(sys::System)
+    thermals = collect(get_components(ThermalStandard, sys))
+    @test length(thermals) >= 2
+    market_bid_gen = thermals[1]
+    fuel_gen = thermals[2]
+    market_bid_id = IS.get_id(market_bid_gen)
+    fuel_id = IS.get_id(fuel_gen)
+
+    timestamps =
+        collect(Dates.DateTime(2020, 1, 1):Dates.Hour(1):Dates.DateTime(2020, 1, 1, 23))
+    pwl_values = vcat(
+        [PiecewiseStepData([1.0, 3.0, 5.0], [2.0, 4.0])],
+        fill(PiecewiseStepData([2.0, 4.0, 6.0], [3.0, 5.0]), 23),
+    )
+    linear_values = fill(LinearFunctionData(1.0, 0.0), 24)
+    start_up_values = fill((100.0, 150.0, 200.0), 24)
+    fuel_values = fill(3.3, 24)
+
+    _sts(name, values) =
+        IS.SingleTimeSeries(; name = name, data = TimeSeries.TimeArray(timestamps, values))
+
+    inc_ts = _sts("inc_offer_mb", pwl_values)
+    dec_ts = _sts("dec_offer_mb", pwl_values)
+    no_load_ts = _sts("no_load_mb", linear_values)
+    shut_down_ts = _sts("shut_down_mb", linear_values)
+    start_up_ts = _sts("start_up_mb", start_up_values)
+    fuel_ts = _sts("fuel_cost_ts", fuel_values)
+
+    inc_key = add_time_series!(sys, market_bid_gen, inc_ts)
+    dec_key = add_time_series!(sys, market_bid_gen, dec_ts)
+    no_load_key = add_time_series!(sys, market_bid_gen, no_load_ts)
+    shut_down_key = add_time_series!(sys, market_bid_gen, shut_down_ts)
+    start_up_key = add_time_series!(sys, market_bid_gen, start_up_ts)
+    fuel_key = add_time_series!(sys, fuel_gen, fuel_ts)
+
+    market_bid_cost = MarketBidTimeSeriesCost(;
+        no_load_cost = TimeSeriesLinearCurve(no_load_key),
+        start_up = start_up_key,
+        shut_down = TimeSeriesLinearCurve(shut_down_key),
+        incremental_offer_curves = make_market_bid_ts_curve(inc_key),
+        decremental_offer_curves = make_market_bid_ts_curve(dec_key),
+    )
+    set_operation_cost!(market_bid_gen, market_bid_cost)
+
+    old_variable = get_variable(get_operation_cost(fuel_gen))
+    new_variable = FuelCurve(;
+        value_curve = get_value_curve(old_variable),
+        power_units = get_power_units(old_variable),
+        fuel_cost_time_series = fuel_key,
+        startup_fuel_offtake = IS.get_startup_fuel_offtake(old_variable),
+        vom_cost = get_vom_cost(old_variable),
+    )
+    old_cost = get_operation_cost(fuel_gen)
+    set_operation_cost!(
+        fuel_gen,
+        ThermalGenerationCost(;
+            fixed = get_fixed(old_cost),
+            shut_down = get_shut_down(old_cost),
+            start_up = get_start_up(old_cost),
+            variable = new_variable,
+        ),
+    )
+
+    keys = (
+        incremental_offer_curves = inc_key, decremental_offer_curves = dec_key,
+        no_load_cost = no_load_key, shut_down = shut_down_key, start_up = start_up_key,
+    )
+    resolution = Dates.Millisecond(Dates.Hour(1))
+    new_staged = Dict(
+        (market_bid_id, "inc_offer_mb", resolution) => inc_ts,
+        (market_bid_id, "dec_offer_mb", resolution) => dec_ts,
+        (market_bid_id, "no_load_mb", resolution) => no_load_ts,
+        (market_bid_id, "shut_down_mb", resolution) => shut_down_ts,
+        (market_bid_id, "start_up_mb", resolution) => start_up_ts,
+        (fuel_id, "fuel_cost_ts", resolution) => fuel_ts,
+    )
+    return (get_name(market_bid_gen), keys, get_name(fuel_gen), fuel_key, new_staged)
+end
+
+"""Assert `sys`'s market-bid generator and fuel-curve generator carry back exactly the
+`TimeSeriesKey`s (association_id included) that `_ptdp_e2e_attach_ts_costs!` originally set."""
+function _ptdp_e2e_check_ts_costs(
+    sys::System,
+    market_bid_gen_name,
+    keys,
+    fuel_gen_name,
+    fuel_key,
+)
+    market_bid_gen = get_component(ThermalStandard, sys, market_bid_gen_name)
+    cost = get_operation_cost(market_bid_gen)
+    @test cost isa MarketBidTimeSeriesCost
+    @test get_start_up(cost) == keys.start_up
+    @test IS.get_time_series_key(get_no_load_cost(cost)) == keys.no_load_cost
+    @test IS.get_time_series_key(get_shut_down(cost)) == keys.shut_down
+    @test IS.get_time_series_key(get_value_curve(get_incremental_offer_curves(cost))) ==
+          keys.incremental_offer_curves
+    @test IS.get_time_series_key(get_value_curve(get_decremental_offer_curves(cost))) ==
+          keys.decremental_offer_curves
+
+    fuel_gen = get_component(ThermalStandard, sys, fuel_gen_name)
+    variable = get_variable(get_operation_cost(fuel_gen))
+    @test variable isa FuelCurve
+    @test isnothing(get_fuel_cost(variable))
+    @test IS.get_fuel_cost_time_series(variable) == fuel_key
+    return nothing
+end
+
 """Per-type supplemental attribute counts declared by a document's association rows."""
 function _ptdp_e2e_doc_attribute_counts(doc)
     counts = Dict{String, Int}()
@@ -360,6 +485,16 @@ end
         # (4) LOAD, on the default path: no time_series_read_only.
         sys2 = from_file(System, dir)
 
+        # Pre-declared here, not inside the testset below: `@testset` bodies are `let`
+        # blocks, so a name first assigned inside one is invisible to a sibling `@testset` —
+        # only a REassignment of an already-existing outer binding (like `staged_with_attr`
+        # below) is visible outside it.
+        market_bid_gen_name = ""
+        ts_cost_keys = NamedTuple()
+        fuel_gen_name = ""
+        fuel_ts_key = nothing
+        new_staged = Dict{Tuple{Int, String, Dates.Millisecond}, SingleTimeSeries}()
+
         @testset "cycle 1: PSY reads the PTDP-authored document" begin
             # (a) every type's bucket size.
             @test _ptdp_e2e_system_component_counts(sys2) ==
@@ -387,6 +522,20 @@ end
             # (f) the series owned by that same attribute, value-for-value.
             attr_ts2 = IS.get_time_series(SingleTimeSeries, outage2, attr_series_name)
             @test TimeSeries.values(IS.get_time_array(attr_ts2)) == attr_series_values
+
+            # (g) one RTS thermal gets a time-series-backed `MarketBidTimeSeriesCost`, another
+            # a `FuelCurve` with `fuel_cost_time_series` — proof that the association-id-bearing
+            # cost converters (Task 11) round-trip through the full document machinery, not
+            # just direct `convert_cost`/`convert_cost_to_openapi` calls.
+            market_bid_gen_name, ts_cost_keys, fuel_gen_name, fuel_ts_key, new_staged =
+                _ptdp_e2e_attach_ts_costs!(sys2)
+            _ptdp_e2e_check_ts_costs(
+                sys2, market_bid_gen_name, ts_cost_keys, fuel_gen_name, fuel_ts_key,
+            )
+            # `sys2`'s next `to_file` (cycle 2) will now emit these six series alongside the
+            # PTDP-authored ones, so cycle 2's own `_ptdp_e2e_verify_time_series` needs them
+            # in its expected set too.
+            staged_with_attr = merge(staged_with_attr, new_staged)
         end
 
         @testset "cycle 2: write back and reload with PSY's own writer" begin
@@ -407,13 +556,20 @@ end
             @test _ptdp_e2e_system_attribute_counts(sys3) ==
                   _ptdp_e2e_doc_attribute_counts(doc2)
 
+            # `doc1` predates (g)'s six time-series-backed-cost series above, so the expected
+            # set for this comparison is `doc1`'s own rows PLUS those six, not `doc1` as-is.
             triples1 = Set(
                 (Int(a.value.owner_id), a.value.name, a.value.time_series_type)
                 for a in doc1.time_series_associations
             )
+            new_triples = Set(
+                (owner_id, name, "SingleTimeSeries") for
+                (owner_id, name, _) in keys(new_staged)
+            )
+            triples1 = union(triples1, new_triples)
             triples2 = _ptdp_e2e_verify_time_series(doc2, sys3, staged_with_attr, "cycle 2")
             @test length(doc2.time_series_associations) ==
-                  length(doc1.time_series_associations)
+                  length(doc1.time_series_associations) + length(new_staged)
             @test triples2 == triples1
 
             # Both attributes survive PSY's export side too, under their own stable ids —
@@ -430,6 +586,13 @@ end
 
             attr_ts3 = IS.get_time_series(SingleTimeSeries, outage3, attr_series_name)
             @test TimeSeries.values(IS.get_time_array(attr_ts3)) == attr_series_values
+
+            # The time-series-backed costs from (g) above, surviving PSY's own
+            # to_openapi/from_openapi round trip — the actual proof for Task 11: every key
+            # (`==`, including `association_id`) comes back exactly as set on `sys2`.
+            _ptdp_e2e_check_ts_costs(
+                sys3, market_bid_gen_name, ts_cost_keys, fuel_gen_name, fuel_ts_key,
+            )
         end
     end
 end

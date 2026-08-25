@@ -355,6 +355,95 @@ end
     @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
 end
 
+"""Build a `System` with one `ThermalStandard` (`gen1`) carrying a
+`MarketBidTimeSeriesCost` and one `OnlineReserve{ReserveUp}` (`RESERVE`) the generator
+contributes to. Returns `(sys, gen, svc)`. Shared by the two testsets below: export cannot
+carry `ancillary_service_offers` for this cost type (the id-filling pass is gated on
+`MarketBidCost`, `export_document.jl`, out of edit scope), so one test proves export errors
+loudly instead of dropping them, and the other proves import resolves them correctly when a
+document (from any producer, not necessarily PSY's own writer) already carries the ids."""
+function _mbtc_service_offer_fixture()
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+    svc = OnlineReserve{ReserveUp}(;
+        name = "RESERVE", available = true, time_frame = 10.0, requirement = 0.1)
+    add_service!(sys, svc, [gen])
+
+    timestamps =
+        collect(Dates.DateTime(2024, 1, 1):Dates.Hour(1):Dates.DateTime(2024, 1, 1, 23))
+    pwl_values = fill(PiecewiseStepData([0.0, 100.0], [10.0]), 24)
+    linear_values = fill(LinearFunctionData(1.0, 0.0), 24)
+    _mbtc_sts(name, values) =
+        IS.SingleTimeSeries(; name = name, data = TimeSeries.TimeArray(timestamps, values))
+
+    inc_key = add_time_series!(sys, gen, _mbtc_sts("inc_offer", pwl_values))
+    dec_key = add_time_series!(sys, gen, _mbtc_sts("dec_offer", pwl_values))
+    no_load_key = add_time_series!(sys, gen, _mbtc_sts("no_load", linear_values))
+    shut_down_key = add_time_series!(sys, gen, _mbtc_sts("shut_down", linear_values))
+    start_up_key = add_time_series!(
+        sys, gen, _mbtc_sts("start_up", fill((100.0, 200.0, 300.0), 24)),
+    )
+    mbtc = MarketBidTimeSeriesCost(;
+        no_load_cost = TimeSeriesLinearCurve(no_load_key),
+        start_up = start_up_key,
+        shut_down = TimeSeriesLinearCurve(shut_down_key),
+        incremental_offer_curves = make_market_bid_ts_curve(inc_key),
+        decremental_offer_curves = make_market_bid_ts_curve(dec_key),
+    )
+    set_operation_cost!(gen, mbtc)
+    return (sys, gen, svc)
+end
+
+@testset "convert_cost_to_openapi(MarketBidTimeSeriesCost): non-empty ancillary_service_offers errors loudly" begin
+    sys, gen, svc = _mbtc_service_offer_fixture()
+    push!(get_ancillary_service_offers(get_operation_cost(gen)), svc)
+    @test_throws ErrorException PSY.convert_cost_to_openapi(get_operation_cost(gen))
+    # The document-level export path hits the same error rather than silently dropping it.
+    @test_throws ErrorException to_openapi(sys; unit_system = :natural_units)
+end
+
+@testset "MarketBidTimeSeriesCost: ancillary_service_offers resolve on import" begin
+    # Export cannot produce this document (the test above proves it errors instead), so this
+    # builds one the way an external producer's document would arrive: exported with no
+    # offers, then hand-patched to carry the id — exactly the shape
+    # `_load_market_bid_service_offers!` must resolve.
+    sys, gen, svc = _mbtc_service_offer_fixture()
+    gen_id = IS.get_id(gen)
+    svc_id = IS.get_id(svc)
+
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        document_path = joinpath(dir, "system.json")
+        doc = PSY.PD.read_document(document_path)
+        gen_row = only(
+            row for
+            row in PSY.PD.get_components(doc, "ThermalStandard") if Int(row.id) == gen_id
+        )
+        # `PD.read_document` parses the oneOf wrapper (`PO.ThermalStandardOperationCost`),
+        # not the bare cost `to_openapi`'s in-memory path hands back — set the field on the
+        # unwrapped `.value`, exactly what `_load_market_bid_service_offers!` reads.
+        gen_row.operation_cost.value.ancillary_service_offers = Int64[svc_id]
+        PSY.PD.write_document(doc, document_path; force = true)
+
+        sys2 = from_file(System, dir)
+        gen2 = get_component(ThermalStandard, sys2, "gen1")
+        mbtc2 = get_operation_cost(gen2)
+        @test mbtc2 isa MarketBidTimeSeriesCost
+        offers = get_ancillary_service_offers(mbtc2)
+        @test length(offers) == 1
+        @test get_name(only(offers)) == "RESERVE"
+        @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
+    end
+end
+
 @testset "ThermalMultiStart round trip: multi-start fields and MarketBidCost" begin
     sys = System(100.0)
     bus = ACBus(nothing)
