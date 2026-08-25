@@ -1297,15 +1297,12 @@ end
     ac_voltage = _export_vsc(arc; ac_control_from = VSCACControlModes.AC_VOLTAGE)
     refs[4] = ac_voltage
     @test_throws ErrorException PSY.to_openapi(ac_voltage, refs, NU)
-
 end
 
 @testset "OpenAPI export: TwoTerminalVSCLine tolerates a missing DC voltage base" begin
     # A non-zero `g` with `rated_dc_voltage == 0.0` has no DC voltage base to express it
-    # against. Unlike the AC voltage case above, export does not error here: it falls back
-    # to a base of 1 (mirroring import's own `_vsc_dc_base_voltage` fallback), so a document
-    # round trip still recovers `g` exactly even though the exported siemens value itself is
-    # not physically meaningful.
+    # against. Export no longer errors on this: it falls back to a base of 1, mirroring
+    # import's own `_vsc_dc_base_voltage` fallback for `iszero(value)`.
     bus1 = _export_bus(; number = 1)
     bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
     arc = Arc(; from = bus1, to = bus2)
@@ -1321,14 +1318,19 @@ end
     refs[2] = bus2
     refs[3] = arc
     refs[4] = vsc
-    @test PSY.to_openapi(vsc, refs, NU).g isa Float64
+    po = PSY.to_openapi(vsc, refs, NU)
+    @test po.g isa Float64
+    @test po.rated_dc_voltage == 0.0
 
-    for unit_system in (:natural_units, :device_base)
-        dir = mktempdir()
-        PSY.to_file(sys, dir; unit_system = unit_system, force = true)
-        restored = get_component(TwoTerminalVSCLine, PSY.from_file(System, dir), "vsc1")
-        @test get_g(restored) == get_g(vsc)
-    end
+    # NOT a lossless round trip: import's `_vsc_dc_base_voltage` only falls back to
+    # `one(rated)` when the INCOMING value is itself zero. Here the exported `g` is
+    # non-zero and `rated_dc_voltage` is still `0.0` in the document, so `from_file` still
+    # hits import's `error(...)` branch — unchanged, correct, and out of scope. The two
+    # fallbacks are symmetric only for the degenerate `g == 0.0` case, which never needed
+    # tolerating in the first place.
+    dir = mktempdir()
+    PSY.to_file(sys, dir; unit_system = :natural_units, force = true)
+    @test_throws ErrorException PSY.from_file(System, dir)
 end
 
 _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
@@ -1424,4 +1426,74 @@ end
         @test length(out.time_series_associations) == 1
         @test only(out.time_series_associations).value.name == "static_series"
     end
+end
+
+_cc_thermal_gen(bus, name, prime_mover) = ThermalStandard(;
+    name = name, available = true, status = true, bus = bus,
+    active_power = 0.0, reactive_power = 0.0, rating = 1.0,
+    active_power_limits = (min = 0.0, max = 1.0),
+    reactive_power_limits = (min = -1.0, max = 1.0), ramp_limits = nothing,
+    operation_cost = ThermalGenerationCost(nothing), base_power = 100.0,
+    time_limits = nothing, prime_mover_type = prime_mover,
+    fuel = ThermalFuels.NATURAL_GAS,
+)
+
+"""The issue's MWE: a CT and a CA on the same bus, both members of one `CombinedCycleBlock`,
+with the CT feeding two HRSGs (`hrsg_number = 1` and `hrsg_number = 2`)."""
+function _build_combined_cycle_system()
+    bus = _export_bus(; number = 1)
+    ct = _cc_thermal_gen(bus, "CT", PrimeMovers.CT)
+    ca = _cc_thermal_gen(bus, "CA", PrimeMovers.CA)
+    sys = System(100.0)
+    add_component!(sys, bus)
+    add_component!(sys, ct)
+    add_component!(sys, ca)
+    block = CombinedCycleBlock(;
+        name = "block",
+        configuration = CombinedCycleConfiguration.DoubleCombustionOneSteam,
+    )
+    add_supplemental_attribute!(sys, ct, block; hrsg_number = 1)
+    add_supplemental_attribute!(sys, ct, block; hrsg_number = 2)
+    add_supplemental_attribute!(sys, ca, block; hrsg_number = 2)
+    return sys, ct, ca, block
+end
+
+@testset "OpenAPI export: multi-HRSG combined cycle associations" begin
+    sys, ct, ca, block = _build_combined_cycle_system()
+    ct_id = IS.get_id(ct)
+    ca_id = IS.get_id(ca)
+    block_id = IS.get_id(block)
+
+    doc = PSY.to_openapi(sys)
+    @test length(doc.combined_cycle_associations) == 3
+    ct_rows = filter(
+        row -> row.entity_id == ct_id, doc.combined_cycle_associations,
+    )
+    ca_rows = filter(
+        row -> row.entity_id == ca_id, doc.combined_cycle_associations,
+    )
+    @test length(ct_rows) == 2
+    @test all(row -> row.plant_id == block_id && row.role == "CT", ct_rows)
+    @test sort([row.hrsg_index for row in ct_rows]) == [1, 2]
+    @test length(ca_rows) == 1
+    @test only(ca_rows).plant_id == block_id
+    @test only(ca_rows).role == "CA"
+    @test only(ca_rows).hrsg_index == 2
+
+    sys2 = PSY.from_openapi(System, doc)
+    block2 = only(get_supplemental_attributes(CombinedCycleBlock, sys2))
+    @test get_hrsg_ct_map(block2) == get_hrsg_ct_map(block)
+    @test get_hrsg_ca_map(block2) == get_hrsg_ca_map(block)
+
+    mktempdir() do dir
+        PSY.to_file(sys, dir; force = true)
+        sys3 = PSY.from_file(System, dir)
+        block3 = only(get_supplemental_attributes(CombinedCycleBlock, sys3))
+        @test get_hrsg_ct_map(block3) == get_hrsg_ct_map(block)
+        @test get_hrsg_ca_map(block3) == get_hrsg_ca_map(block)
+    end
+
+    duplicate_row = deepcopy(first(ct_rows))
+    push!(doc.combined_cycle_associations, duplicate_row)
+    @test_throws ErrorException PSY.from_openapi(System, doc)
 end

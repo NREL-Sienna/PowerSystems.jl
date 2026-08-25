@@ -10,23 +10,38 @@
 
 """
 Every group index a (plant_id, entity_id) pair carries, from `doc.plant_associations` and
-`doc.combined_cycle_associations` (whose `hrsg_index` fills the same role). The two tables
-never name the same pair — a plant is either a `PlantAssociation`-shaped plant or a
-`CombinedCycleBlock`, never both — so one merged map is unambiguous.
+`doc.combined_cycle_associations` (whose `hrsg_index` fills the same role) — a pair can carry
+several indices, one `CombinedCycleAssociation` row per HRSG membership. The two tables never
+name the same pair — a plant is either a `PlantAssociation`-shaped plant or a
+`CombinedCycleBlock`, never both — and a unit's prime mover fixes its CT/CA role so the two
+roles never mix within one pair either, so one merged map stays unambiguous.
 """
 function _group_index_by_pair(doc::PD.SystemDocument)
-    indices = Dict{Tuple{Int, Int}, Int}(
-        (Int(a.plant_id), Int(a.entity_id)) => Int(a.group_index) for
-        a in doc.plant_associations
-    )
-    for a in doc.combined_cycle_associations
+    indices = Dict{Tuple{Int, Int}, Vector{Int}}()
+    for a in doc.plant_associations
         key = (Int(a.plant_id), Int(a.entity_id))
         haskey(indices, key) && error(
+            "load_supplemental_attribute_associations!: plant_id=$(key[1]) " *
+            "entity_id=$(key[2]) has a duplicate plant association row",
+        )
+        indices[key] = Int[Int(a.group_index)]
+    end
+    plant_pairs = Set(keys(indices))
+    for a in doc.combined_cycle_associations
+        key = (Int(a.plant_id), Int(a.entity_id))
+        key in plant_pairs && error(
             "load_supplemental_attribute_associations!: plant_id=$(key[1]) " *
             "entity_id=$(key[2]) appears in both plant_associations and " *
             "combined_cycle_associations",
         )
-        indices[key] = Int(a.hrsg_index)
+        hrsg_index = Int(a.hrsg_index)
+        group = get!(indices, key, Int[])
+        hrsg_index in group && error(
+            "load_supplemental_attribute_associations!: plant_id=$(key[1]) " *
+            "entity_id=$(key[2]) hrsg_index=$hrsg_index has a duplicate " *
+            "combined_cycle_associations row",
+        )
+        push!(group, hrsg_index)
     end
     return indices
 end
@@ -62,8 +77,8 @@ way it already covers components.
 
 Every attach goes through [`_attach_attribute!`](@ref) (`import_document.jl`), which writes
 an association row only for pairs the store does not already hold. A plant-family attribute's
-group number for a given entity comes from the matching
-`plant_associations`/`combined_cycle_associations` row (there always is one — see
+group numbers for a given entity come from the matching
+`plant_associations`/`combined_cycle_associations` rows (there is always at least one — see
 [`_group_index_by_pair`](@ref)); every other attribute passes `nothing`.
 
 Errors, naming the id, when: an association's `entity_id`/`attribute_id`/`service_id` does
@@ -105,9 +120,9 @@ function load_supplemental_attribute_associations!(
                 refs[attribute_id] = built
                 return built
             end
-            group_index = get(group_index_by_pair, (attribute_id, component_id), nothing)
+            group_indices = get(group_index_by_pair, (attribute_id, component_id), nothing)
             _attach_attribute!(
-                sys, stored_pairs, refs[component_id], attribute, group_index,
+                sys, stored_pairs, refs[component_id], attribute, group_indices,
             )
         end
     end
