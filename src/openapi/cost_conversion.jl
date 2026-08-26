@@ -431,23 +431,14 @@ function convert_cost(po::PC.MarketBidTimeSeriesCost, store)
 end
 convert_cost(po::PC.MarketBidTimeSeriesCost) = convert_cost(po, _current_import_store())
 
-"""`energy_import_weekly_limit`/`energy_export_weekly_limit` ride the wire in MWh; PSY stores
-system-base p.u.-hours. `INFINITE_BOUND` is a finite sentinel for "no limit", not a real
-per-unit-hours quantity — dividing it by `base_power` would produce a different finite number
-that no longer round-trips as the sentinel, so it rides across unscaled."""
-function _scale_weekly_limit(limit::Real, base_power::Real)
-    if limit == INFINITE_BOUND
-        return limit
-    end
-    return limit / base_power
-end
-
 """
 Time-varying import/export bids. Mirrors `convert_cost(::PC.ImportExportCost)`, except the
-offer curves are time-series-backed (need `store`) and the weekly limits are on the system
-base, not the device's own (need `base_power` — see `_scale_weekly_limit`).
+offer curves are time-series-backed (need `store`). `energy_import_weekly_limit`/
+`energy_export_weekly_limit` are MWh on both sides of the wire, so they need no scaling;
+`base_power` is accepted only to match `_convert_source_operation_cost`'s uniform dispatch
+across every admissible `Source.operation_cost` variant.
 """
-function convert_cost(po::PC.ImportExportTimeSeriesCost, store, base_power::Real)
+function convert_cost(po::PC.ImportExportTimeSeriesCost, store, _base_power::Real)
     return ImportExportTimeSeriesCost(;
         import_offer_curves = convert_cost(
             _require(
@@ -461,19 +452,13 @@ function convert_cost(po::PC.ImportExportTimeSeriesCost, store, base_power::Real
             ),
             store,
         ),
-        energy_import_weekly_limit = _scale_weekly_limit(
-            _require(
-                po.energy_import_weekly_limit,
-                "ImportExportTimeSeriesCost.energy_import_weekly_limit",
-            ),
-            base_power,
+        energy_import_weekly_limit = _require(
+            po.energy_import_weekly_limit,
+            "ImportExportTimeSeriesCost.energy_import_weekly_limit",
         ),
-        energy_export_weekly_limit = _scale_weekly_limit(
-            _require(
-                po.energy_export_weekly_limit,
-                "ImportExportTimeSeriesCost.energy_export_weekly_limit",
-            ),
-            base_power,
+        energy_export_weekly_limit = _require(
+            po.energy_export_weekly_limit,
+            "ImportExportTimeSeriesCost.energy_export_weekly_limit",
         ),
     )
 end

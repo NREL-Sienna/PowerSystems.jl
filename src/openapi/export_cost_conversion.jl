@@ -343,23 +343,12 @@ function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
     )
 end
 
-"""`energy_import_weekly_limit`/`energy_export_weekly_limit` are stored in system-base
-p.u.-hours; the wire stores MWh — see `_scale_weekly_limit` (`cost_conversion.jl`) for the
-inverse and why `INFINITE_BOUND` rides across unscaled."""
-function _scale_weekly_limit_to_openapi(limit::Real, base_power::Real)
-    if limit == INFINITE_BOUND
-        return limit
-    end
-    return limit * base_power
-end
-
 """
-Time-varying import/export bids. Unlike every other cost converter, needs `base_power` (the
-System's, not the device's own) to rescale the weekly limits — see
-`convert_cost_to_openapi(cost::OperationalCost, ::Real)` below for how a caller threads it
-uniformly, and `Source`'s `to_openapi` (`export_handwritten.jl`) for the one call site.
+Time-varying import/export bids. Mirrors `convert_cost_to_openapi(::ImportExportCost)`:
+`energy_import_weekly_limit`/`energy_export_weekly_limit` are MWh on both sides of the wire, so
+no scaling and no `base_power` argument.
 """
-function convert_cost_to_openapi(cost::ImportExportTimeSeriesCost, base_power::Real)
+function convert_cost_to_openapi(cost::ImportExportTimeSeriesCost)
     offers = get_ancillary_service_offers(cost)
     if !isempty(offers)
         error(
@@ -373,23 +362,14 @@ function convert_cost_to_openapi(cost::ImportExportTimeSeriesCost, base_power::R
     return PC.ImportExportTimeSeriesCost(;
         import_offer_curves = convert_cost_to_openapi(get_import_offer_curves(cost)),
         export_offer_curves = convert_cost_to_openapi(get_export_offer_curves(cost)),
-        energy_import_weekly_limit = _scale_weekly_limit_to_openapi(
-            get_energy_import_weekly_limit(cost), base_power,
-        ),
-        energy_export_weekly_limit = _scale_weekly_limit_to_openapi(
-            get_energy_export_weekly_limit(cost), base_power,
-        ),
+        energy_import_weekly_limit = get_energy_import_weekly_limit(cost),
+        energy_export_weekly_limit = get_energy_export_weekly_limit(cost),
         # Always empty: reaching here means the cost carries no offers (guarded above),
         # and unlike the static `ImportExportCost` this schema does have the field, so it
         # has to be emitted rather than omitted.
         ancillary_service_offers = Int64[],
     )
 end
-
-"""2-arg fallback for operation costs that carry no system-base quantity to rescale — lets a
-caller (`Source`'s `to_openapi`) thread a system base uniformly across every `OperationalCost`
-variant without special-casing every type but the one that actually needs it."""
-convert_cost_to_openapi(cost::OperationalCost, ::Real) = convert_cost_to_openapi(cost)
 
 # ── Reserve Operating Reserve Demand Curve ─────────────────────────────────────
 
