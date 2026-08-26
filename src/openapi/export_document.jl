@@ -529,6 +529,40 @@ function _absent_owner_is_tolerated(row)
 end
 
 """
+Refuse to emit a document whose costs reference series it does not describe.
+
+A cost may reference a series owned by another component, and `_export_all_time_series`
+skips the association rows of owners the document cannot describe (see
+[`_absent_owner_is_tolerated`](@ref)). The two together produce a document carrying a bare
+`association_id` with no declared identity beside it, and an import has then nothing to
+check that id against: resolved against a different sidecar it binds the cost to whichever
+series happens to hold that id there, silently.
+
+A dataset in that state has a broken relationship -- a cost pointing at something the
+document does not contain -- so this errors rather than dropping the reference. Dropping it
+would change the model on the way out, and quietly.
+"""
+function _check_costs_reference_declared_series!(doc::PD.SystemDocument, emitted::Set{Int})
+    isempty(emitted) && return nothing
+    declared = Set{Int}(
+        _unwrap_oneof(row).association_id for row in doc.time_series_associations
+    )
+    dangling = sort!(collect(setdiff(emitted, declared)))
+    isempty(dangling) && return nothing
+    throw(
+        IS.DataFormatError(
+            "to_openapi: $(length(dangling)) time-series-backed cost(s) reference " *
+            "association id(s) $(join(dangling, ", ")) that the document does not " *
+            "describe. A cost may reference a series owned by another component, and a " *
+            "series whose owner has no OpenAPI converter is omitted from the document " *
+            "(see the omission warnings above) -- so the reference cannot survive a " *
+            "round trip and would resolve against an unrelated series in another " *
+            "sidecar. Give the owning component a converter, or remove the reference.",
+        ),
+    )
+end
+
+"""
 Write the System's time series to `time_series_storage_path` and describe them in the
 document.
 
@@ -627,24 +661,31 @@ function to_openapi(
         frequency = sys.frequency,
         time_series_storage_file = _sidecar_basename(time_series_storage_path),
     )
-    _export_components!(doc, refs, sys, val)
-    _export_market_bid_service_offers!(doc, refs)
-    supplemental_attributes,
-    supplemental_attribute_associations,
-    plant_associations,
-    combined_cycle_associations =
-        _export_supplemental_attributes(refs, sys)
-    append!(doc.supplemental_attributes, supplemental_attributes)
-    append!(doc.supplemental_attribute_associations, supplemental_attribute_associations)
-    append!(doc.plant_associations, plant_associations)
-    append!(doc.combined_cycle_associations, combined_cycle_associations)
-    append!(doc.service_associations, _export_service_associations(refs, sys))
-    append!(
-        doc.time_series_associations,
-        _export_all_time_series(sys, refs, time_series_storage_path),
-    )
-    _reserve_ids!(doc, refs)
+    emitted = Set{Int}()
+    task_local_storage(_EMITTED_ASSOCIATION_IDS_KEY, emitted) do
+        _export_components!(doc, refs, sys, val)
+        _export_market_bid_service_offers!(doc, refs)
+        supplemental_attributes,
+        supplemental_attribute_associations,
+        plant_associations,
+        combined_cycle_associations =
+            _export_supplemental_attributes(refs, sys)
+        append!(doc.supplemental_attributes, supplemental_attributes)
+        append!(
+            doc.supplemental_attribute_associations,
+            supplemental_attribute_associations,
+        )
+        append!(doc.plant_associations, plant_associations)
+        append!(doc.combined_cycle_associations, combined_cycle_associations)
+        append!(doc.service_associations, _export_service_associations(refs, sys))
+        append!(
+            doc.time_series_associations,
+            _export_all_time_series(sys, refs, time_series_storage_path),
+        )
+        _reserve_ids!(doc, refs)
+    end
 
+    _check_costs_reference_declared_series!(doc, emitted)
     PD.validate_document(doc)
     return doc
 end
