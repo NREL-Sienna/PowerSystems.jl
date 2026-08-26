@@ -530,3 +530,61 @@ end
         IS.close!(store)
     end
 end
+
+@testset "to_openapi refuses a cost referencing a series the document omits" begin
+    # A cost may reference a series owned by a *different* component, and a component with
+    # no OpenAPI converter is omitted from the document along with its association rows.
+    # The document would then carry a bare association id with no declared identity beside
+    # it, and importing that against another sidecar binds the cost to whichever series
+    # holds that id there — silently, since the identity cross-check has nothing to match.
+    sys = System(100.0)
+    bus = ACBus(;
+        number = 1, name = "b", available = true, bustype = ACBusTypes.REF,
+        angle = 0.0, magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+    add_component!(sys, bus)
+
+    gen = ThermalStandard(;
+        name = "A", available = true, status = true, bus = bus,
+        active_power = 1.0, reactive_power = 0.0, rating = 2.0,
+        active_power_limits = (min = 0.0, max = 2.0), reactive_power_limits = nothing,
+        ramp_limits = nothing, operation_cost = ThermalGenerationCost(nothing),
+        base_power = 100.0, time_limits = nothing, must_run = false,
+        prime_mover_type = PrimeMovers.OT, fuel = ThermalFuels.OTHER,
+    )
+    add_component!(sys, gen)
+
+    src = Source(;
+        name = "S", available = true, bus = bus, active_power = 0.0,
+        reactive_power = 0.0, R_th = 0.0, X_th = 1.0, internal_voltage = 1.0,
+        internal_angle = 0.0,
+    )
+    add_component!(sys, src)
+
+    # No dynamic type has a converter yet, so this owner cannot be described.
+    dyn = PeriodicVariableSource(; name = "S", R_th = 0.0, X_th = 1.0)
+    add_component!(sys, dyn, src)
+    @test !PowerSystems.is_document_exportable(dyn)
+
+    series = SingleTimeSeries(;
+        name = "fuel_price",
+        data = TimeSeries.TimeArray(
+            [Dates.DateTime(2030, 1, 1, 0), Dates.DateTime(2030, 1, 1, 1)],
+            [10.0, 12.0],
+        ),
+    )
+    key = add_time_series!(sys, dyn, series)
+    set_operation_cost!(
+        gen,
+        ThermalGenerationCost(;
+            variable = FuelCurve(LinearCurve(1.0), key),
+            fixed = 0.0, start_up = 0.0, shut_down = 0.0,
+        ),
+    )
+
+    dir = mktempdir()
+    @test_throws IS.DataFormatError to_openapi(
+        sys; time_series_storage_path = joinpath(dir, "sidecar.h5"),
+    )
+end

@@ -111,12 +111,35 @@ _ts_function_data_wire_type(::Type{PiecewiseStepData}) = PC.TimeSeriesPiecewiseS
 
 function convert_cost_to_openapi(fd::TimeSeriesFunctionData{T}) where {T}
     WireType = _ts_function_data_wire_type(T)
-    return WireType(; association_id = IS.get_association_id(IS.get_time_series_key(fd)))
+    return WireType(;
+        association_id = _key_association_id(IS.get_time_series_key(fd)),
+    )
+end
+
+# Every association id the document emits passes through here.
+#
+# A cost may reference a series owned by a different component, and that owner may
+# be one the document cannot describe -- a dynamic component today, since none has
+# a converter yet. `_export_all_time_series` then skips the series' association row
+# and the document ships a cost pointing at a series it never declares. Importing
+# that against another sidecar resolves the bare id against whatever holds it
+# there, silently binding the cost to the wrong series.
+#
+# Recording each id as it is emitted lets `_check_costs_reference_declared_series!`
+# catch that before the document exists, and it stays correct for cost shapes added
+# later: a new emit point routes through here or it does not emit an id at all.
+const _EMITTED_ASSOCIATION_IDS_KEY = :psy_openapi_export_emitted_association_ids
+
+function _record_emitted_association_id(id::Int)
+    ids = get(task_local_storage(), _EMITTED_ASSOCIATION_IDS_KEY, nothing)
+    isnothing(ids) || push!(ids, id)
+    return id
 end
 
 """`nothing` stays `nothing`; a present key emits its `association_id`."""
 _key_association_id(::Nothing) = nothing
-_key_association_id(key::IS.ConcreteTimeSeriesKey) = IS.get_association_id(key)
+_key_association_id(key::IS.ConcreteTimeSeriesKey) =
+    _record_emitted_association_id(IS.get_association_id(key))
 
 function convert_cost_to_openapi(curve::TimeSeriesInputOutputCurve)
     return PC.TimeSeriesInputOutputCurve(;
@@ -161,8 +184,7 @@ end
 
 # ── fuel_cost: PSY splits it into `fuel_cost`/`fuel_cost_time_series` — exactly one set ──
 
-_fuel_cost_time_series_id(::Nothing) = nothing
-_fuel_cost_time_series_id(key::IS.ConcreteTimeSeriesKey) = IS.get_association_id(key)
+_fuel_cost_time_series_id(fuel_cost) = _key_association_id(fuel_cost)
 
 # ── ProductionVariableCostCurve: CostCurve / FuelCurve ─────────────────────────
 
@@ -331,7 +353,7 @@ function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
     end
     return PC.MarketBidTimeSeriesCost(;
         no_load_cost = _no_load_cost_to_openapi(get_no_load_cost(cost)),
-        start_up_association_id = IS.get_association_id(get_start_up(cost)),
+        start_up_association_id = _key_association_id(get_start_up(cost)),
         shut_down = _shut_down_to_openapi(get_shut_down(cost)),
         incremental_offer_curves = convert_cost_to_openapi(
             get_incremental_offer_curves(cost),
