@@ -224,10 +224,7 @@ function to_openapi(src::Source, refs::OpenAPIRefs, ::DeviceBaseUnit)
         internal_angle = get_internal_angle(src),
         base_voltage = get_base_voltage(src),
         base_power = _get_base_power(src),
-        operation_cost = convert_cost_to_openapi(
-            get_operation_cost(src),
-            get_base_power(refs),
-        ),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(src)),
     )
 end
 
@@ -251,10 +248,7 @@ function to_openapi(src::Source, refs::OpenAPIRefs, ::NaturalUnit)
         internal_angle = get_internal_angle(src),
         base_voltage = get_base_voltage(src),
         base_power = dbp,
-        operation_cost = convert_cost_to_openapi(
-            get_operation_cost(src),
-            get_base_power(refs),
-        ),
+        operation_cost = convert_cost_to_openapi(get_operation_cost(src)),
     )
 end
 

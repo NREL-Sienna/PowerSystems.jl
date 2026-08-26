@@ -448,36 +448,85 @@ end
     )
 end
 
-@testset "_scale_weekly_limit / _scale_weekly_limit_to_openapi: base scaling and INFINITE_BOUND" begin
-    # Import direction: wire MWh -> PSY system-base p.u.-hours (divide by base_power).
-    @test PSY._scale_weekly_limit(500.0, 100.0) == 5.0
-    @test PSY._scale_weekly_limit(PSY.INFINITE_BOUND, 100.0) == PSY.INFINITE_BOUND
-
-    # Export direction: PSY system-base p.u.-hours -> wire MWh (multiply by base_power).
-    @test PSY._scale_weekly_limit_to_openapi(5.0, 100.0) == 500.0
-    @test PSY._scale_weekly_limit_to_openapi(PSY.INFINITE_BOUND, 100.0) ==
-          PSY.INFINITE_BOUND
-
-    # A finite value round-trips through both directions unchanged.
-    @test PSY._scale_weekly_limit(PSY._scale_weekly_limit_to_openapi(5.0, 100.0), 100.0) ==
-          5.0
-    # So does the sentinel — it never gets multiplied/divided at all.
-    @test PSY._scale_weekly_limit(
-        PSY._scale_weekly_limit_to_openapi(PSY.INFINITE_BOUND, 100.0), 100.0,
-    ) == PSY.INFINITE_BOUND
-end
-
-@testset "convert_cost_to_openapi(OperationalCost, base_power) fallback ignores base_power" begin
-    # `ImportExportCost` needs no system-base scaling; the 2-arg fallback must reduce to the
-    # plain 1-arg converter regardless of what `base_power` is passed.
+@testset "weekly limits are MWh, unscaled, in both directions" begin
+    # `INFINITE_BOUND` is a real value on the wire now, not a sentinel a scaling step has
+    # to dodge — it rides across every conversion identically to any other MWh value.
     cost = ImportExportCost(;
         import_offer_curves = make_import_curve([0.0, 100.0], [10.0]),
         export_offer_curves = make_export_curve([0.0, 50.0], [8.0]),
-        energy_import_weekly_limit = 1000.0,
-        energy_export_weekly_limit = 2000.0,
+        energy_import_weekly_limit = PSY.INFINITE_BOUND,
+        energy_export_weekly_limit = 4321.0,
     )
-    with_base = PSY.convert_cost_to_openapi(cost, 100.0)
-    without_base = PSY.convert_cost_to_openapi(cost)
-    @test with_base.energy_import_weekly_limit == without_base.energy_import_weekly_limit
-    @test with_base.energy_export_weekly_limit == without_base.energy_export_weekly_limit
+    wire = PSY.convert_cost_to_openapi(cost)
+    @test wire.energy_import_weekly_limit == PSY.INFINITE_BOUND
+    @test wire.energy_export_weekly_limit == 4321.0
+    round_tripped = PSY.convert_cost(wire)
+    @test get_energy_import_weekly_limit(round_tripped) == PSY.INFINITE_BOUND
+    @test get_energy_export_weekly_limit(round_tripped) == 4321.0
+end
+
+@testset "convert_cost_to_openapi(ImportExportTimeSeriesCost): no base_power argument" begin
+    # The 2-arg fallback and base_power threading this converter used to need for scaling
+    # are gone now that the field is MWh; it takes the cost alone.
+    @test !hasmethod(
+        PSY.convert_cost_to_openapi, Tuple{ImportExportTimeSeriesCost, Real},
+    )
+    @test !hasmethod(PSY.convert_cost_to_openapi, Tuple{OperationalCost, Real})
+end
+
+@testset "convert_cost: ImportExportCost and ImportExportTimeSeriesCost weekly limits round trip identically" begin
+    # Regression test for the fixed asymmetry: a static `ImportExportCost` and a
+    # time-series-backed `ImportExportTimeSeriesCost` carrying the same weekly limit value
+    # must produce the same wire value and round-trip back to the same PSY value —
+    # previously the time-series cost alone divided/multiplied by `base_power`, so a
+    # non-1.0 base_power made the two diverge.
+    store = IS.Store(; in_memory = true)
+    try
+        series = SingleTimeSeries(;
+            name = "import_price",
+            data = TimeSeries.TimeArray(
+                [Dates.DateTime(2024, 1, 1, 0), Dates.DateTime(2024, 1, 1, 1)],
+                [10.0, 12.0],
+            ),
+        )
+        batch = IS.make_add_batch()
+        IS.serialize_single!(
+            batch,
+            1,
+            "Source",
+            IS.get_owner_category(IS.InfrastructureSystemsComponent),
+            IS.get_name(series),
+            series,
+        )
+        IS.commit_batch!(store, batch)
+        assoc_id = only(IS.list_time_series_metadata(store)).association_id
+        ts_key = IS.get_time_series_key(store, Int(assoc_id))
+
+        static_cost = ImportExportCost(;
+            import_offer_curves = make_import_curve([0.0, 100.0], [10.0]),
+            export_offer_curves = make_export_curve([0.0, 50.0], [8.0]),
+            energy_import_weekly_limit = 1000.0,
+            energy_export_weekly_limit = 2000.0,
+        )
+        ts_cost = ImportExportTimeSeriesCost(;
+            import_offer_curves = make_import_export_ts_curve(ts_key),
+            export_offer_curves = make_import_export_ts_curve(ts_key),
+            energy_import_weekly_limit = 1000.0,
+            energy_export_weekly_limit = 2000.0,
+        )
+
+        static_wire = PSY.convert_cost_to_openapi(static_cost)
+        ts_wire = PSY.convert_cost_to_openapi(ts_cost)
+        @test static_wire.energy_import_weekly_limit == ts_wire.energy_import_weekly_limit
+        @test static_wire.energy_export_weekly_limit == ts_wire.energy_export_weekly_limit
+
+        # A wildly non-1.0 base_power must not perturb the round trip.
+        ts_round_tripped = PSY.convert_cost(ts_wire, store, 250.0)
+        @test get_energy_import_weekly_limit(ts_round_tripped) ==
+              get_energy_import_weekly_limit(ts_cost)
+        @test get_energy_export_weekly_limit(ts_round_tripped) ==
+              get_energy_export_weekly_limit(ts_cost)
+    finally
+        IS.close!(store)
+    end
 end
