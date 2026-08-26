@@ -360,6 +360,16 @@ System's, not the device's own) to rescale the weekly limits — see
 uniformly, and `Source`'s `to_openapi` (`export_handwritten.jl`) for the one call site.
 """
 function convert_cost_to_openapi(cost::ImportExportTimeSeriesCost, base_power::Real)
+    offers = get_ancillary_service_offers(cost)
+    if !isempty(offers)
+        error(
+            "convert_cost_to_openapi(ImportExportTimeSeriesCost): $(length(offers)) " *
+            "ancillary_service_offers cannot be exported — the document-level id-filling " *
+            "pass (_export_market_bid_service_offers!, export_document.jl) only resolves " *
+            "them for the static MarketBidCost, not this time-series variant. Remove the " *
+            "ancillary service offers before exporting, or resolve them another way.",
+        )
+    end
     return PC.ImportExportTimeSeriesCost(;
         import_offer_curves = convert_cost_to_openapi(get_import_offer_curves(cost)),
         export_offer_curves = convert_cost_to_openapi(get_export_offer_curves(cost)),
@@ -369,6 +379,9 @@ function convert_cost_to_openapi(cost::ImportExportTimeSeriesCost, base_power::R
         energy_export_weekly_limit = _scale_weekly_limit_to_openapi(
             get_energy_export_weekly_limit(cost), base_power,
         ),
+        # Always empty: reaching here means the cost carries no offers (guarded above),
+        # and unlike the static `ImportExportCost` this schema does have the field, so it
+        # has to be emitted rather than omitted.
         ancillary_service_offers = Int64[],
     )
 end
