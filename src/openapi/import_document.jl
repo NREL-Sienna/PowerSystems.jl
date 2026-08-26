@@ -356,7 +356,7 @@ end
 
 function from_openapi(po::PO.GeometricDistributionForcedOutage, refs::OpenAPIRefs)
     return GeometricDistributionForcedOutage(;
-        mean_time_to_recovery = Float64(po.mean_time_to_recovery),
+        mean_time_to_recovery = po.mean_time_to_recovery,
         outage_transition_probability = po.outage_transition_probability,
         monitored_components = _monitored_component_uuids(refs, po.monitored_components),
     )

@@ -48,7 +48,7 @@ end
 function to_openapi(outage::GeometricDistributionForcedOutage, refs::OpenAPIRefs)
     return PO.GeometricDistributionForcedOutage(;
         id = component_id(refs, outage),
-        mean_time_to_recovery = Int(round(get_mean_time_to_recovery(outage))),
+        mean_time_to_recovery = get_mean_time_to_recovery(outage),
         outage_transition_probability = get_outage_transition_probability(outage),
         monitored_components = _monitored_component_ids(
             refs, get_monitored_components(outage),
