@@ -149,6 +149,21 @@ convert_cost(fd::PC.TimeSeriesPiecewiseStepData) = convert_cost(fd, _current_imp
 _resolve_optional_key(::Any, ::Nothing) = nothing
 _resolve_optional_key(store, id::Integer) = IS.get_time_series_key(store, id)
 
+"""Wire representation of [`CurveStyles`](@ref): a plain integer (0/1/2), deliberately not
+the string-enum convention used elsewhere in the schemas — see `curve_style` on
+`MarketBidCost`/`MarketBidTimeSeriesCost`."""
+function _curve_style_from_wire(id::Integer)
+    if id ∉ (0, 1, 2)
+        throw(
+            ArgumentError(
+                "convert_cost: curve_style $id is not a valid CurveStyles value; " *
+                "expected 0 (CURVE), 1 (FIXED), or 2 (VARIABLE)",
+            ),
+        )
+    end
+    return CurveStyles(Int(id))
+end
+
 convert_cost(vc::PC.TimeSeriesInputOutputCurve, store) =
     TimeSeriesInputOutputCurve(convert_cost(vc.function_data, store), vc.input_at_zero)
 convert_cost(vc::PC.TimeSeriesInputOutputCurve) = convert_cost(vc, _current_import_store())
@@ -322,8 +337,8 @@ objects only after every service is imported, so this conversion leaves the vect
 """
 function convert_cost(po::PC.MarketBidCost)
     return MarketBidCost(;
-        no_load_cost = convert_cost(
-            _require(po.no_load_cost, "MarketBidCost.no_load_cost"),
+        minimum_energy_offer = convert_cost(
+            _require(po.minimum_energy_offer, "MarketBidCost.minimum_energy_offer"),
         ),
         start_up = convert_cost(_require(po.start_up, "MarketBidCost.start_up")),
         shut_down = convert_cost(_require(po.shut_down, "MarketBidCost.shut_down")),
@@ -332,6 +347,17 @@ function convert_cost(po::PC.MarketBidCost)
         ),
         decremental_offer_curves = convert_cost(
             _require(po.decremental_offer_curves, "MarketBidCost.decremental_offer_curves"),
+        ),
+        incremental_slope = _require(
+            po.incremental_slope,
+            "MarketBidCost.incremental_slope",
+        ),
+        decremental_slope = _require(
+            po.decremental_slope,
+            "MarketBidCost.decremental_slope",
+        ),
+        curve_style = _curve_style_from_wire(
+            _require(po.curve_style, "MarketBidCost.curve_style"),
         ),
     )
 end
@@ -371,8 +397,11 @@ offer curves.
 """
 function convert_cost(po::PC.MarketBidTimeSeriesCost, store)
     return MarketBidTimeSeriesCost(;
-        no_load_cost = convert_cost(
-            _require(po.no_load_cost, "MarketBidTimeSeriesCost.no_load_cost"), store,
+        minimum_energy_offer = convert_cost(
+            _require(
+                po.minimum_energy_offer,
+                "MarketBidTimeSeriesCost.minimum_energy_offer",
+            ), store,
         ),
         start_up = IS.get_time_series_key(
             store,
@@ -399,6 +428,15 @@ function convert_cost(po::PC.MarketBidTimeSeriesCost, store)
                 "MarketBidTimeSeriesCost.decremental_offer_curves",
             ),
             store,
+        ),
+        incremental_slope = _require(
+            po.incremental_slope, "MarketBidTimeSeriesCost.incremental_slope",
+        ),
+        decremental_slope = _require(
+            po.decremental_slope, "MarketBidTimeSeriesCost.decremental_slope",
+        ),
+        curve_style = _curve_style_from_wire(
+            _require(po.curve_style, "MarketBidTimeSeriesCost.curve_style"),
         ),
     )
 end

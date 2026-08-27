@@ -171,9 +171,9 @@ function get_export_variable_cost(
         device, get_export_offer_curves(cost), start_time, len)
 end
 
-# ── START-UP / SHUT-DOWN / NO-LOAD GETTERS (time-series variants) ──────────
+# ── START-UP / SHUT-DOWN / MINIMUM-ENERGY-OFFER GETTERS (time-series variants) ──────────
 
-function get_no_load_cost(
+function get_minimum_energy_offer(
     device::StaticInjection,
     cost::MarketBidTimeSeriesCost;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
@@ -181,7 +181,7 @@ function get_no_load_cost(
 )
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for MarketBidTimeSeriesCost"))
-    return _build_static(get_no_load_cost(cost), device, start_time, len)
+    return _build_static(get_minimum_energy_offer(cost), device, start_time, len)
 end
 
 function get_shut_down(
@@ -445,7 +445,7 @@ function _replace_offer_curve(
         _retag_placeholder(get_decremental_offer_curves(cost), U)
     end
     return MarketBidCost(;
-        no_load_cost = get_no_load_cost(cost),
+        minimum_energy_offer = get_minimum_energy_offer(cost),
         start_up = get_start_up(cost),
         shut_down = get_shut_down(cost),
         incremental_offer_curves = inc,
@@ -691,4 +691,61 @@ function set_service_bid!(
     ::IS.AbstractUnitSystem,
 )
     return _reject_ts_eltype(:set_service_bid!, PiecewiseStepData, time_series_data)
+end
+
+# ── Hub Bid Setter ──────────────────────────────────────────────────────────
+
+"""
+Adds trading-hub bid time-series data to the cost.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `vp::VirtualParticipant`: Virtual participant bidding at the hub
+- `hub::TradingHub`: Trading hub the participant settles bids at
+- `time_series_data::IS.TimeSeriesData{<:PiecewiseStepData}`: TimeSeriesData whose values
+  are `PiecewiseStepData`
+"""
+function set_hub_bid!(
+    sys::System,
+    vp::VirtualParticipant,
+    hub::TradingHub,
+    time_series_data::IS.TimeSeriesData{<:PiecewiseStepData},
+    power_units::IS.AbstractUnitSystem,
+)
+    if get_name(time_series_data) != get_name(hub)
+        error(
+            "Name provided in the TimeSeries Data $(get_name(time_series_data)), doesn't match the TradingHub $(get_name(hub)).",
+        )
+    end
+    if power_units != IS.NaturalUnit()
+        throw(
+            ArgumentError(
+                "Power Unit specified for hub market bids must be NATURAL_UNITS",
+            ),
+        )
+    end
+    if !has_trading_hub(vp, hub)
+        error(
+            "$(get_name(vp)) is not associated with hub $(get_name(hub)); call add_trading_hub! first.",
+        )
+    end
+    if has_time_series(vp, typeof(time_series_data), get_name(hub))
+        error(
+            "$(get_name(vp)) already has a hub bid time series named $(get_name(hub)).",
+        )
+    end
+    add_time_series!(sys, vp, time_series_data)
+    return
+end
+
+# Hub bids must be piecewise step data; report the mismatch rather than letting the
+# narrowed signature above surface as a bare MethodError.
+function set_hub_bid!(
+    ::System,
+    ::VirtualParticipant,
+    ::TradingHub,
+    time_series_data::IS.TimeSeriesData,
+    ::IS.AbstractUnitSystem,
+)
+    return _reject_ts_eltype(:set_hub_bid!, PiecewiseStepData, time_series_data)
 end

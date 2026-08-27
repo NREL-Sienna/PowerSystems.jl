@@ -131,6 +131,9 @@ include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
 include("GenericDER.jl")
+include("TradingHub.jl")
+include("VirtualParticipant.jl")
+include("PointToPointBid.jl")
 
 export get_A
 export get_A1
@@ -520,6 +523,7 @@ export get_branch_id_control
 export get_branch_status
 export get_bus
 export get_bus_control
+export get_buses
 export get_bustype
 export get_c
 export get_c_dc
@@ -659,6 +663,7 @@ export get_level_data_type
 export get_level_targets
 export get_lf
 export get_lg
+export get_linked_crr
 export get_load_balance_time_horizon
 export get_load_response
 export get_load_zone
@@ -682,6 +687,7 @@ export get_max_dc_current
 export get_max_dc_current_from
 export get_max_dc_current_to
 export get_max_dc_current_unitful
+export get_max_demand
 export get_max_flow
 export get_max_flow_unitful
 export get_max_impedance_active_power
@@ -692,6 +698,7 @@ export get_max_reactive_power
 export get_max_reactive_power_unitful
 export get_max_shunt_current
 export get_max_shunt_current_unitful
+export get_max_supply
 export get_min_compounding_voltage
 export get_minimum_time
 export get_motor_technology
@@ -720,6 +727,7 @@ export get_power_mode
 export get_power_trajectory
 export get_power_trajectory_unitful
 export get_powerhouse_elevation
+export get_price_limits
 export get_primary_circuit
 export get_prime_mover_type
 export get_q_nl
@@ -797,10 +805,12 @@ export get_scheduled_dc_voltage
 export get_secondary_circuit
 export get_self_discharge
 export get_services
+export get_settlement_point
 export get_shunt_control_type
 export get_shunt_location
 export get_speed_error_signal
 export get_spillage_limits
+export get_spread_bid
 export get_standing_loss
 export get_standing_loss_unitful
 export get_star_bus
@@ -829,6 +839,7 @@ export get_time_limits
 export get_to
 export get_to_area
 export get_to_branch_control
+export get_trading_hubs
 export get_transfer_setpoint
 export get_transition_time
 export get_travel_time
@@ -1251,6 +1262,7 @@ export set_branch_id_control!
 export set_branch_status!
 export set_bus!
 export set_bus_control!
+export set_buses!
 export set_bustype!
 export set_c!
 export set_c_dc!
@@ -1379,6 +1391,7 @@ export set_level_data_type!
 export set_level_targets!
 export set_lf!
 export set_lg!
+export set_linked_crr!
 export set_load_balance_time_horizon!
 export set_load_response!
 export set_load_zone!
@@ -1395,11 +1408,13 @@ export set_max_current_reactive_power!
 export set_max_dc_current!
 export set_max_dc_current_from!
 export set_max_dc_current_to!
+export set_max_demand!
 export set_max_flow!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
 export set_max_reactive_power!
 export set_max_shunt_current!
+export set_max_supply!
 export set_min_compounding_voltage!
 export set_minimum_time!
 export set_motor_technology!
@@ -1424,6 +1439,7 @@ export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
 export set_powerhouse_elevation!
+export set_price_limits!
 export set_primary_circuit!
 export set_prime_mover_type!
 export set_q_nl!
@@ -1484,10 +1500,12 @@ export set_scheduled_dc_voltage!
 export set_secondary_circuit!
 export set_self_discharge!
 export set_services!
+export set_settlement_point!
 export set_shunt_control_type!
 export set_shunt_location!
 export set_speed_error_signal!
 export set_spillage_limits!
+export set_spread_bid!
 export set_standing_loss!
 export set_star_bus!
 export set_start_time_limits!
@@ -1514,6 +1532,7 @@ export set_time_limits!
 export set_to!
 export set_to_area!
 export set_to_branch_control!
+export set_trading_hubs!
 export set_transfer_setpoint!
 export set_transition_time!
 export set_travel_time!

@@ -141,6 +141,10 @@ _key_association_id(::Nothing) = nothing
 _key_association_id(key::IS.ConcreteTimeSeriesKey) =
     _record_emitted_association_id(IS.get_association_id(key))
 
+"""Wire representation of [`CurveStyles`](@ref): a plain integer (0/1/2) — see
+`cost_conversion.jl`'s `_curve_style_from_wire` for the import-direction counterpart."""
+_curve_style_to_wire(style::CurveStyles) = style.value
+
 function convert_cost_to_openapi(curve::TimeSeriesInputOutputCurve)
     return PC.TimeSeriesInputOutputCurve(;
         function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
@@ -260,7 +264,7 @@ stores component ids, and this converter has no id registry, so it exports the l
 function convert_cost_to_openapi(cost::MarketBidCost)
     start_up = get_start_up(cost)
     return PC.MarketBidCost(;
-        no_load_cost = convert_cost_to_openapi(get_no_load_cost(cost)),
+        minimum_energy_offer = convert_cost_to_openapi(get_minimum_energy_offer(cost)),
         start_up = PC.StartUpStages(;
             hot = start_up.hot,
             warm = start_up.warm,
@@ -274,6 +278,9 @@ function convert_cost_to_openapi(cost::MarketBidCost)
             get_decremental_offer_curves(cost),
         ),
         ancillary_service_offers = Int64[],
+        incremental_slope = get_incremental_slope(cost),
+        decremental_slope = get_decremental_slope(cost),
+        curve_style = _curve_style_to_wire(get_curve_style(cost)),
     )
 end
 
@@ -334,7 +341,7 @@ function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
         )
     end
     return PC.MarketBidTimeSeriesCost(;
-        no_load_cost = convert_cost_to_openapi(get_no_load_cost(cost)),
+        minimum_energy_offer = convert_cost_to_openapi(get_minimum_energy_offer(cost)),
         start_up_association_id = _key_association_id(get_start_up(cost)),
         shut_down = convert_cost_to_openapi(get_shut_down(cost)),
         incremental_offer_curves = convert_cost_to_openapi(
@@ -344,6 +351,9 @@ function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
             get_decremental_offer_curves(cost),
         ),
         ancillary_service_offers = Int64[],
+        incremental_slope = get_incremental_slope(cost),
+        decremental_slope = get_decremental_slope(cost),
+        curve_style = _curve_style_to_wire(get_curve_style(cost)),
     )
 end
 

@@ -413,7 +413,7 @@ end
     )
     @test_throws ErrorException PSY.convert_cost(
         PSY.PC.MarketBidTimeSeriesCost(;
-            no_load_cost = PSY.PC.TimeSeriesInputOutputCurve(;
+            minimum_energy_offer = PSY.PC.TimeSeriesInputOutputCurve(;
                 function_data = PSY.PC.FunctionData(
                     PSY.PC.TimeSeriesLinearFunctionData(; association_id = 1),
                 ),
