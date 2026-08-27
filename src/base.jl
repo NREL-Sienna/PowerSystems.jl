@@ -865,6 +865,37 @@ function add_service!(device::Device, service::Service, sys::System)
     return
 end
 
+_reject_hub_addition(::Nothing, vp::VirtualParticipant) = nothing
+
+function _reject_hub_addition(settlement_point::Topology, vp::VirtualParticipant)
+    throw(
+        ArgumentError(
+            "$(get_name(vp)) cannot set both settlement_point " *
+            "($(get_name(settlement_point))) and trading_hubs; choose one location mode",
+        ),
+    )
+end
+
+"""
+Associate `hub` with `vp`. Both must already be attached to `sys`.
+"""
+function add_trading_hub!(sys::System, vp::VirtualParticipant, hub::TradingHub)
+    throw_if_not_attached(vp, sys)
+    throw_if_not_attached(hub, sys)
+    _reject_hub_addition(get_settlement_point(vp), vp)
+    add_trading_hub_internal!(vp, hub)
+    return
+end
+
+"""
+Return the `VirtualParticipant`s in `sys` associated with `hub`.
+"""
+function get_contributing_virtuals(sys::System, hub::TradingHub)
+    return [
+        vp for vp in get_components(VirtualParticipant, sys) if has_trading_hub(vp, hub)
+    ]
+end
+
 """
 Similar to [`add_component!`](@ref) but for GroupReserve.
 
@@ -1523,8 +1554,8 @@ ts3 = SingleTimeSeries(
     data = time_array_2,
 )
 key1 = add_time_series!(system, component, ts1)
-key2 = add_time_series!(system, component, ts2, scenario = "high")
-key3 = add_time_series!(system, component, ts3, scenario = "low")
+key2 = add_time_series!(system, component, ts2; features = Dict("scenario" => "high"))
+key3 = add_time_series!(system, component, ts3; features = Dict("scenario" => "low"))
 ts1_b = get_time_series(component, key1)
 ts2_b = get_time_series(component, key2)
 ts3_b = get_time_series(component, key3)
@@ -1534,9 +1565,9 @@ function add_time_series!(
     sys::System,
     component::Component,
     time_series::TimeSeriesData;
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 )
-    return IS.add_time_series!(sys.data, component, time_series; features...)
+    return IS.add_time_series!(sys.data, component, time_series; features = features)
 end
 
 """
@@ -1551,9 +1582,9 @@ function add_time_series!(
     sys::System,
     attribute::SupplementalAttribute,
     time_series::TimeSeriesData;
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 )
-    return IS.add_time_series!(sys.data, attribute, time_series; features...)
+    return IS.add_time_series!(sys.data, attribute, time_series; features = features)
 end
 
 """
@@ -1562,7 +1593,8 @@ Add the same time series data to multiple components.
 This function stores a single copy of the data. Each component will store a reference to
 that data. This is significantly more efficent than calling `add_time_series!` for each
 component individually with the same data because in this case, only one time series
-array is stored.
+array is stored. Each component gets its own association, so this returns a `Vector` of
+keys, one per component, in the order of `components`.
 
 Throws ArgumentError if a component is not stored in the system.
 """
@@ -1570,9 +1602,9 @@ function add_time_series!(
     sys::System,
     components,
     time_series::TimeSeriesData;
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 )
-    return IS.add_time_series!(sys.data, components, time_series; features...)
+    return IS.add_time_series!(sys.data, components, time_series; features = features)
 end
 
 #=
@@ -1669,9 +1701,15 @@ build_forecast_reader(
     ::Type{T};
     resolution::Dates.Period,
     name::Union{Nothing, AbstractString} = nothing,
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 ) where {T <: Forecast} =
-    IS.build_forecast_reader(sys.data, T; resolution = resolution, name = name, features...)
+    IS.build_forecast_reader(
+        sys.data,
+        T;
+        resolution = resolution,
+        name = name,
+        features = features,
+    )
 
 """
 Build a `StaticTimeSeriesReader` over every `SingleTimeSeries` in the system.
@@ -1686,13 +1724,13 @@ build_static_time_series_reader(
     sys::System;
     resolution::Dates.Period,
     name::Union{Nothing, AbstractString} = nothing,
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 ) =
     IS.build_static_time_series_reader(
         sys.data;
         resolution = resolution,
         name = name,
-        features...,
+        features = features,
     )
 
 """
@@ -1790,7 +1828,7 @@ function remove_time_series!(
     name::String;
     resolution::Union{Nothing, Dates.Period} = nothing,
     interval::Union{Nothing, Dates.Period} = nothing,
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 ) where {T <: TimeSeriesData}
     return IS.remove_time_series!(
         sys.data,
@@ -1799,7 +1837,7 @@ function remove_time_series!(
         name;
         resolution = resolution,
         interval = interval,
-        features...,
+        features = features,
     )
 end
 
@@ -2361,7 +2399,11 @@ function from_dict(
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
     try
-        deserialize_components!(sys, raw["data"])
+        # A key reaches the JSON as its association id; resolving it back needs the
+        # store those ids were minted against.
+        IS.with_deserialization_store(IS.get_data_store(sys.data)) do
+            deserialize_components!(sys, raw["data"])
+        end
     finally
         pop!(ext, "deserialization_in_progress")
         isempty(ext) && clear_ext!(sys)
@@ -2447,6 +2489,7 @@ function deserialize_components!(sys::System, raw)
     )
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
+    deserialize_and_add!(; include_types = [TradingHub])
     deserialize_and_add!(;
         include_types = [Arc, Service],
         skip_types = [GroupReserve],
@@ -2673,6 +2716,13 @@ function check_attached_buses(sys::System, component::Arc)
     return
 end
 
+function check_attached_buses(sys::System, component::TradingHub)
+    for bus in get_associated_buses(component)
+        throw_if_not_attached(bus, sys)
+    end
+    return
+end
+
 """
 Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 
@@ -2699,6 +2749,58 @@ function check_component_removal(sys::System, area::Area)
             throw(
                 ArgumentError(
                     "Area $(summary(area)) cannot be removed with attached AreaInterchange: $(summary(interchange))",
+                ),
+            )
+        end
+    end
+    _check_vp_settlement_removal(sys, area)
+    return
+end
+
+"""
+Throws ArgumentError if any `VirtualParticipant` settles at `topology`.
+"""
+function _check_vp_settlement_removal(sys::System, topology::Topology)
+    for vp in get_components(VirtualParticipant, sys)
+        if get_settlement_point(vp) === topology
+            throw(
+                ArgumentError(
+                    "$(summary(topology)) cannot be removed while $(summary(vp)) " *
+                    "settles there",
+                ),
+            )
+        end
+    end
+    return
+end
+
+function check_component_removal(sys::System, topology::Topology)
+    _check_vp_settlement_removal(sys, topology)
+    return
+end
+
+function check_component_removal(sys::System, bus::ACBus)
+    for hub in get_components(TradingHub, sys)
+        if bus in get_associated_buses(hub)
+            throw(
+                ArgumentError(
+                    "$(summary(bus)) cannot be removed with attached TradingHub: " *
+                    "$(summary(hub))",
+                ),
+            )
+        end
+    end
+    _check_vp_settlement_removal(sys, bus)
+    return
+end
+
+function check_component_removal(sys::System, hub::TradingHub)
+    for ptp in get_components(PointToPointBid, sys)
+        if get_from(ptp) === hub || get_to(ptp) === hub
+            throw(
+                ArgumentError(
+                    "$(summary(hub)) cannot be removed with attached PointToPointBid: " *
+                    "$(summary(ptp))",
                 ),
             )
         end
@@ -2782,6 +2884,58 @@ function check_component_addition(sys::System, bus::Bus; kwargs...)
     if !isnothing(load_zone)
         throw_if_not_attached(load_zone, sys)
     end
+end
+
+function _check_vp_location(sys::System, ::VirtualParticipant, ::Nothing, hubs)
+    for hub in hubs
+        throw_if_not_attached(hub, sys)
+    end
+    return nothing
+end
+
+function _check_vp_location(
+    sys::System,
+    vp::VirtualParticipant,
+    settlement_point::Topology,
+    hubs,
+)
+    if !isempty(hubs)
+        throw(
+            ArgumentError(
+                "$(get_name(vp)) cannot set both settlement_point " *
+                "($(get_name(settlement_point))) and trading_hubs; choose one location mode",
+            ),
+        )
+    end
+    throw_if_not_attached(settlement_point, sys)
+    return nothing
+end
+
+"""
+Throws ArgumentError if `vp` sets both `settlement_point` and `trading_hubs`, or if a set
+`settlement_point` is not attached to `sys`. Hub attachment is not checked here: hubs may be
+associated after `add_component!`, like services.
+"""
+function check_component_addition(sys::System, vp::VirtualParticipant; kwargs...)
+    _check_vp_location(sys, vp, get_settlement_point(vp), get_trading_hubs(vp))
+    return
+end
+
+"""
+Throws ArgumentError if `ptp`'s `from`/`to` terminals are not a Topology or a TradingHub, if
+they are identical, or if either is not attached to `sys`.
+"""
+function check_component_addition(sys::System, ptp::PointToPointBid; kwargs...)
+    from = get_from(ptp)
+    to = get_to(ptp)
+    _check_ptp_terminal(from)
+    _check_ptp_terminal(to)
+    if from === to
+        throw(ArgumentError("PointToPointBid $(get_name(ptp)) has identical terminals"))
+    end
+    throw_if_not_attached(from, sys)
+    throw_if_not_attached(to, sys)
+    return
 end
 
 function handle_component_addition!(sys::System, bus::Bus; kwargs...)
@@ -2887,6 +3041,13 @@ function handle_component_removal!(sys::System, service::Service)
             continue
         end
         _remove_service!(device, service)
+    end
+end
+
+function handle_component_removal!(sys::System, hub::TradingHub)
+    _handle_component_removal_common!(hub)
+    for vp in get_components(VirtualParticipant, sys)
+        _remove_trading_hub!(vp, hub)
     end
 end
 

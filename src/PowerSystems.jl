@@ -125,7 +125,7 @@ export is_market_bid_curve, make_market_bid_curve, make_market_bid_ts_curve
 export make_import_curve, make_export_curve, make_import_export_ts_curve
 export TimeSeriesLinearCurve, TimeSeriesQuadraticCurve, TimeSeriesPiecewisePointCurve
 export TimeSeriesPiecewiseIncrementalCurve, TimeSeriesPiecewiseAverageCurve
-export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
+export get_minimum_energy_offer, set_minimum_energy_offer!, get_start_up, set_start_up!
 export set_shut_down!
 export get_curtailment_cost
 export set_curtailment_cost!
@@ -363,6 +363,11 @@ export set_energy_unit!
 export set_basis_and_energy_unit!
 
 export Service
+export MarketComponent
+export MarketTransaction
+export TradingHub
+export VirtualParticipant
+export PointToPointBid
 export AbstractReserve
 export Reserve
 export ReserveDirection
@@ -393,6 +398,7 @@ export TransmissionInterface
 
 export AngleUnits
 export ACBusTypes
+export CurveStyles
 export FACTSOperationModes
 export VSCDCControlModes
 export VSCACControlModes
@@ -459,6 +465,11 @@ export remove_service!
 export clear_services!
 export get_services
 export has_service
+export add_trading_hub!
+export has_trading_hub
+export remove_trading_hub!
+export clear_trading_hubs!
+export get_contributing_virtuals
 export remove_turbine!
 export clear_turbines!
 export has_upstream_turbine
@@ -487,6 +498,7 @@ export get_component
 export get_components
 export get_num_components
 export get_associated_components
+export get_associated_buses
 export show_components
 export show_component
 export get_subcomponents
@@ -552,12 +564,15 @@ export iterate_components
 export get_time_series_multiple
 export get_variable_cost
 export get_incremental_variable_cost, get_decremental_variable_cost
-export get_no_load_cost
+export get_minimum_energy_offer
 export get_start_up
 export get_shut_down
 export get_incremental_offer_curves, set_incremental_offer_curves!
 export get_decremental_offer_curves, set_decremental_offer_curves!
 export get_ancillary_service_offers, set_ancillary_service_offers!
+export get_incremental_slope, set_incremental_slope!
+export get_decremental_slope, set_decremental_slope!
+export get_curve_style, set_curve_style!
 export get_import_offer_curves, set_import_offer_curves!
 export get_export_offer_curves, set_export_offer_curves!
 export get_import_variable_cost, get_export_variable_cost
@@ -568,6 +583,7 @@ export set_variable_cost!
 export set_incremental_variable_cost!, set_decremental_variable_cost!
 export set_import_variable_cost!, set_export_variable_cost!
 export set_service_bid!
+export set_hub_bid!
 export iterate_windows
 export get_window
 export transform_single_time_series!
@@ -987,6 +1003,7 @@ include("models/branches.jl")
 
 # Static types
 include("models/services.jl")
+include("models/market_components.jl")
 include("models/reserves.jl")
 include("models/generation.jl")
 include("models/storage.jl")
@@ -1032,6 +1049,14 @@ include("openapi/import_handwritten.jl")
 # Hand-written methods on the generated `TransformerCircuit` type; included after
 # generated/includes.jl so the type is defined.
 include("models/transformer_circuits.jl")
+
+# Hand-written methods on the generated market types; included after
+# generated/includes.jl so the types are defined. Their `MarketComponent`/
+# `MarketTransaction` supertypes stay in models/market_components.jl, which
+# generated/includes.jl needs in scope.
+include("models/trading_hub.jl")
+include("models/virtual_participant.jl")
+include("models/point_to_point_bid.jl")
 
 #Methods for devices
 include("models/components.jl")

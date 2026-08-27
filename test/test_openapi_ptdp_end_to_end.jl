@@ -155,7 +155,7 @@ function _ptdp_e2e_system_component_counts(sys::System)
 end
 
 """
-Give one `ThermalStandard` in `sys` a `MarketBidTimeSeriesCost` (`no_load_cost`, `shut_down`,
+Give one `ThermalStandard` in `sys` a `MarketBidTimeSeriesCost` (`minimum_energy_offer`, `shut_down`,
 `start_up`, and both offer curves all time-series-backed, via `make_market_bid_ts_curve`) and
 another a `FuelCurve` with `fuel_cost_time_series` set instead of a fixed `fuel_cost`. Both
 generators' new series are staged onto `sys`'s own (adopted) time series store, exactly like
@@ -208,7 +208,7 @@ function _ptdp_e2e_attach_ts_costs!(sys::System)
     fuel_key = add_time_series!(sys, fuel_gen, fuel_ts)
 
     market_bid_cost = MarketBidTimeSeriesCost(;
-        no_load_cost = TimeSeriesLinearCurve(no_load_key),
+        minimum_energy_offer = TimeSeriesLinearCurve(no_load_key),
         start_up = start_up_key,
         shut_down = TimeSeriesLinearCurve(shut_down_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -237,7 +237,8 @@ function _ptdp_e2e_attach_ts_costs!(sys::System)
 
     keys = (
         incremental_offer_curves = inc_key, decremental_offer_curves = dec_key,
-        no_load_cost = no_load_key, shut_down = shut_down_key, start_up = start_up_key,
+        minimum_energy_offer = no_load_key, shut_down = shut_down_key,
+        start_up = start_up_key,
     )
     resolution = Dates.Millisecond(Dates.Hour(1))
     new_staged = Dict(
@@ -264,7 +265,8 @@ function _ptdp_e2e_check_ts_costs(
     cost = get_operation_cost(market_bid_gen)
     @test cost isa MarketBidTimeSeriesCost
     @test get_start_up(cost) == keys.start_up
-    @test IS.get_time_series_key(get_no_load_cost(cost)) == keys.no_load_cost
+    @test IS.get_time_series_key(get_minimum_energy_offer(cost)) ==
+          keys.minimum_energy_offer
     @test IS.get_time_series_key(get_shut_down(cost)) == keys.shut_down
     @test IS.get_time_series_key(get_value_curve(get_incremental_offer_curves(cost))) ==
           keys.incremental_offer_curves
@@ -525,8 +527,8 @@ end
 
             # (g) one RTS thermal gets a time-series-backed `MarketBidTimeSeriesCost`, another
             # a `FuelCurve` with `fuel_cost_time_series` — proof that the association-id-bearing
-            # cost converters (Task 11) round-trip through the full document machinery, not
-            # just direct `convert_cost`/`convert_cost_to_openapi` calls.
+            # cost converters round-trip through the full document machinery, not just
+            # direct `convert_cost`/`convert_cost_to_openapi` calls.
             market_bid_gen_name, ts_cost_keys, fuel_gen_name, fuel_ts_key, new_staged =
                 _ptdp_e2e_attach_ts_costs!(sys2)
             _ptdp_e2e_check_ts_costs(
@@ -588,8 +590,8 @@ end
             @test TimeSeries.values(IS.get_time_array(attr_ts3)) == attr_series_values
 
             # The time-series-backed costs from (g) above, surviving PSY's own
-            # to_openapi/from_openapi round trip — the actual proof for Task 11: every key
-            # (`==`, including `association_id`) comes back exactly as set on `sys2`.
+            # to_openapi/from_openapi round trip: every key (`==`, including
+            # `association_id`) comes back exactly as set on `sys2`.
             _ptdp_e2e_check_ts_costs(
                 sys3, market_bid_gen_name, ts_cost_keys, fuel_gen_name, fuel_ts_key,
             )
