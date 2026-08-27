@@ -3,13 +3,17 @@ const _ENCODE_AS_ID = (
     Area,
     Bus,
     LoadZone,
+    Topology,
     DynamicInjection,
     StaticInjection,
     HydroReservoir,
+    Component,
     Vector{Service},
     Vector{Reserve},
     Vector{HydroUnit},
     Vector{Device},
+    Vector{ACBus},
+    Vector{TradingHub},
 )
 
 should_encode_as_id(val) = any(x -> val isa x, _ENCODE_AS_ID)

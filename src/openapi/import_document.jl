@@ -179,6 +179,21 @@ const DOCUMENT_PLAN = [
     ),
     # After the reserves it regulates; membership arrives as service_associations rows.
     (po_type = PO.AGC, psy_type = AGC, key = "AGC", addable = true),
+    # Hub membership (member buses) arrives as trading_hub_associations rows, the same
+    # shape as service membership above.
+    (po_type = PO.TradingHub, psy_type = TradingHub, key = "TradingHub", addable = true),
+    # After every settlement-point candidate (Area, LoadZone, ACBus) and TradingHub: a
+    # VirtualParticipant's `settlement_point` and hub membership both resolve by reference.
+    (
+        po_type = PO.VirtualParticipant, psy_type = VirtualParticipant,
+        key = "VirtualParticipant", addable = true,
+    ),
+    # After every Topology candidate (Area, LoadZone, ACBus, DCBus, Arc) and TradingHub: a
+    # PointToPointBid's `from`/`to` terminals resolve by reference to either.
+    (
+        po_type = PO.PointToPointBid, psy_type = PointToPointBid,
+        key = "PointToPointBid", addable = true,
+    ),
 ]
 
 """
@@ -308,6 +323,35 @@ function _attach_service_membership!(entity, service, ::System)
     error(
         "from_openapi(System, doc): unmapped service membership pair — entity=" *
         "$(typeof(entity)) service=$(typeof(service))",
+    )
+end
+
+# ── trading hub membership dispatch ─────────────────────────────────────────────
+# Hub membership arrives as rows in the document's own `trading_hub_associations` table
+# rather than an inline array on `TradingHub`, so each `entity_id` is attached by type here.
+
+"""Attach a member bus to `hub`."""
+function _attach_trading_hub_membership!(entity::ACBus, hub::TradingHub, sys::System)
+    throw_if_not_attached(entity, sys)
+    throw_if_not_attached(hub, sys)
+    add_hub_bus_internal!(hub, entity)
+    return nothing
+end
+
+"""Record `entity` as settling at `hub`."""
+function _attach_trading_hub_membership!(
+    entity::VirtualParticipant,
+    hub::TradingHub,
+    ::System,
+)
+    add_trading_hub_internal!(entity, hub)
+    return nothing
+end
+
+function _attach_trading_hub_membership!(entity, hub, ::System)
+    error(
+        "from_openapi(System, doc): unmapped trading hub membership pair — entity=" *
+        "$(typeof(entity)) hub=$(typeof(hub))",
     )
 end
 

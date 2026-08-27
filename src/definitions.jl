@@ -724,3 +724,19 @@ Enumeration of energy units for emissions rate denominator.
 - `GJ = 2`: Gigajoules
 - `MWH = 3`: Megawatt-hours
 """ EnergyUnit
+
+IS.@scoped_enum(
+    CurveStyles,
+    CURVE = 0,
+    FIXED = 1,
+    VARIABLE = 2,
+)
+@doc """
+Enumeration of market-bid curve-clearing styles. Corresponds to ERCOT's DAM `PriceCurve`
+`curveStyle` field (`"CURVE"` | `"FIXED"` | `"VARIABLE"`).
+
+# Values
+- `CURVE = 0`: Ordinary divisible price-setting curve (default).
+- `FIXED = 1`: The bid clears as one indivisible all-or-nothing package over its period.
+- `VARIABLE = 2`: Divisible quantity, block-priced; cannot set the settlement-point price.
+""" CurveStyles

@@ -118,7 +118,7 @@ test_costs = Dict(
 
 @testset "Test MarketBidCost defaults and nothing constructor" begin
     mbc = MarketBidCost(nothing)
-    @test get_no_load_cost(mbc) == LinearCurve(0.0)
+    @test get_minimum_energy_offer(mbc) == LinearCurve(0.0)
     @test get_start_up(mbc) ==
           (hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)
     @test get_shut_down(mbc) == LinearCurve(0.0)
@@ -378,7 +378,7 @@ end
     )
 
     mbtc = MarketBidTimeSeriesCost(;
-        no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
+        minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
         start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -422,7 +422,7 @@ end
     su_key = add_time_series!(sys, generator, su_sts)
 
     mbtc = MarketBidTimeSeriesCost(;
-        no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
+        minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
         start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -571,7 +571,7 @@ function _build_min_mbtc(sys, component)
         IS.SingleTimeSeries(; name = "start_up_stages_len", data = su_ta),
     )
     return MarketBidTimeSeriesCost(;
-        no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
+        minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
         start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -597,7 +597,7 @@ end
     @test get_function_data(get_value_curve(window[2])) == _TS_RESOLVE_PWL_DATA[2]
     @test only(get_variable_cost(gen, mbtc; start_time = t0, len = 1)) == resolved
 
-    nl_window = get_no_load_cost(gen, mbtc; start_time = t0, len = 24)
+    nl_window = get_minimum_energy_offer(gen, mbtc; start_time = t0, len = 24)
     @test nl_window isa Vector
     @test length(nl_window) == 24
 

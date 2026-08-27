@@ -324,6 +324,35 @@ function _export_service_associations(refs::OpenAPIRefs, sys::System)
     return rows
 end
 
+# ── trading hub membership (reverse of the trading-hub-membership branch in
+# load_supplemental_attribute_associations!) ──────────────────────────────────────
+function _export_trading_hub_associations(refs::OpenAPIRefs, sys::System)
+    rows = PO.TradingHubAssociation[]
+    for hub in get_components(TradingHub, sys)
+        for bus in get_associated_buses(hub)
+            push!(
+                rows,
+                PO.TradingHubAssociation(;
+                    trading_hub_id = component_id(refs, hub),
+                    entity_id = component_id(refs, bus),
+                ),
+            )
+        end
+    end
+    for vp in get_components(VirtualParticipant, sys)
+        for hub in get_trading_hubs(vp)
+            push!(
+                rows,
+                PO.TradingHubAssociation(;
+                    trading_hub_id = component_id(refs, hub),
+                    entity_id = component_id(refs, vp),
+                ),
+            )
+        end
+    end
+    return rows
+end
+
 # ── supplemental attributes (reverse of _attach_supplemental_attribute_associations!) ──
 
 # A plant-family attribute (`ThermalPowerPlant`, `HydroPowerPlant`, `RenewablePowerPlant`,
@@ -683,6 +712,10 @@ function to_openapi(
         append!(doc.plant_associations, plant_associations)
         append!(doc.combined_cycle_associations, combined_cycle_associations)
         append!(doc.service_associations, _export_service_associations(refs, sys))
+        append!(
+            doc.trading_hub_associations,
+            _export_trading_hub_associations(refs, sys),
+        )
         append!(
             doc.time_series_associations,
             _export_all_time_series(sys, refs, time_series_storage_path),

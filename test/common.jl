@@ -368,6 +368,7 @@ function make_openapi_test_doc(;
         "service_associations" => [
             Dict{String, Any}("service_id" => 8, "entity_id" => 6),
         ],
+        "trading_hub_associations" => [],
         "time_series_associations" => [],
         "ext" => Dict{String, Any}(),
         "time_series_storage_file" => nothing,
@@ -439,4 +440,21 @@ function _file_io_fixture(; with_time_series = true)
         )
     end
     return sys
+end
+
+"""Fresh 100 MVA system with two attached buses (`b1` REF, `b2` PV) and a `TradingHub`
+named `western_hub` over both. Returns `(sys, b1, b2, hub)`."""
+function _market_hub_fixture()
+    sys = System(100.0)
+    b1 = ACBus(; number = 1, name = "b1", available = true, bustype = ACBusTypes.REF,
+        angle = 0.0, magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0)
+    b2 = ACBus(; number = 2, name = "b2", available = true, bustype = ACBusTypes.PV,
+        angle = 0.0, magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0)
+    add_component!(sys, b1)
+    add_component!(sys, b2)
+    hub = TradingHub(; name = "western_hub", buses = [b1, b2])
+    add_component!(sys, hub)
+    return (sys, b1, b2, hub)
 end

@@ -171,9 +171,21 @@ end
 
 # `reserves` is AGC's regulated-reserve list: like `services`, it is membership, carried by
 # the document's `service_associations` rows and filled in by the association loader — never
-# an inline field on one side.
-const OPENAPI_SKIP_FIELDS =
-    Set(["ext", "internal", "services", "dynamic_injector", "reserves"])
+# an inline field on one side. `buses` and `trading_hubs` are TradingHub's and
+# VirtualParticipant's analogous membership lists, carried by `trading_hub_associations`
+# instead.
+const OPENAPI_SKIP_FIELDS = Set([
+    "ext",
+    "internal",
+    "services",
+    "dynamic_injector",
+    "reserves",
+    "buses",
+    "trading_hubs",
+])
+# Abstract reference types that are not themselves generated structs: `bare in struct_names`
+# misses them, so without this the classifier falls through to `:enum`.
+const OPENAPI_REFERENCE_TYPES = Set(["Topology", "Component"])
 const OPENAPI_SCALAR_TYPES = Set(["Float64", "Int", "Int32", "Int64", "String", "Bool"])
 const OPENAPI_COMPOUND_MEMBERS = Dict(
     "MinMax" => ("min", "max"),
@@ -258,7 +270,7 @@ function openapi_classify_field(struct_name, field, struct_names)
     if name in OPENAPI_SKIP_FIELDS
         return (:skip, field["data_type"], false)
     end
-    if name == "operation_cost"
+    if name in ("operation_cost", "spread_bid")
         return (:cost, field["data_type"], false)
     end
     bare, nullable = openapi_strip_nullable(field["data_type"])
@@ -268,7 +280,7 @@ function openapi_classify_field(struct_name, field, struct_names)
     if haskey(OPENAPI_COMPOUND_MEMBERS, bare)
         return (:compound, bare, nullable)
     end
-    if bare in struct_names
+    if bare in struct_names || bare in OPENAPI_REFERENCE_TYPES
         return (:reference, bare, nullable)
     end
     if !occursin(r"^[A-Za-z_][A-Za-z0-9_]*$", bare)
@@ -820,7 +832,8 @@ function compute_openapi_export_converter!(item, struct_names)
             continue
         end
         if kind == :cost
-            expr = "convert_cost_to_openapi(get_operation_cost(value))"
+            getter = "$(openapi_export_getter_name(field))(value)"
+            expr = "convert_cost_to_openapi($getter)"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
