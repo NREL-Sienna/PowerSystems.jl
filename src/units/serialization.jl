@@ -24,7 +24,7 @@ const STRING_TO_UNIT = Dict{String, Any}(
     "SU" => SU,
     # Canonical Unitful (matches output of `string(unit)`)
     "MW" => MW,
-    "Mvar" => Mvar,
+    "MVAr" => MVAr,
     "MVA" => MVA,
     "kV" => kV,
     "Ω" => OHMS,

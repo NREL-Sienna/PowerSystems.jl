@@ -299,8 +299,8 @@ end
     )
     detached_out = sprint(show_component, detached)
     @test occursin("active_power: 125.0 MW", detached_out) # SU fails, falls back to NU
-    # Reactive power reads in Mvar and the apparent-power `rating` in MVA, not MW.
-    @test occursin("reactive_power: 25.0 Mvar", detached_out)
+    # Reactive power reads in MVAr and the apparent-power `rating` in MVA, not MW.
+    @test occursin("reactive_power: 25.0 MVAr", detached_out)
     @test occursin("rating: 1.0 p.u. in component base", detached_out) # DU regardless of attachment
     @test occursin("base_power: 250.0 MVA", detached_out)
 

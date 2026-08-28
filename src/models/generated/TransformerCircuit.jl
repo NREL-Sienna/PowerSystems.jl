@@ -42,7 +42,7 @@ A [`TwoWindingTransformer`](@ref) has one circuit; a [`ThreeWindingTransformer`]
 - `control_objective::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Tap-changer / phase-shifter control objective. `UNDEFINED` means this circuit has no control block. See [`TransformerControlObjective`](@ref)
 - `regulated_bus_number::Int`: (default: `0`) Controlled bus number; the sign indicates the regulation side
 - `control_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Control band: tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control
-- `controlled_quantity_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`
+- `controlled_quantity_limits::MinMax`: (default: `(min=0.9, max=1.1)`) Controlled-quantity band: pu voltage / MVAr / MW bounds depending on `control_objective`
 - `number_of_tap_positions::Int`: (default: `33`) Number of tap positions
 - `rating::Union{Nothing, Float64}`: (default: `nothing`) Thermal rating (MVA) stored in device base per unit on `base_power`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
@@ -73,7 +73,7 @@ mutable struct TransformerCircuit <: DeviceParameter
     regulated_bus_number::Int
     "Control band: tap-ratio bounds for voltage/reactive-power control or phase-angle bounds (rad) for active-power control"
     control_limits::MinMax
-    "Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`"
+    "Controlled-quantity band: pu voltage / MVAr / MW bounds depending on `control_objective`"
     controlled_quantity_limits::MinMax
     "Number of tap positions"
     number_of_tap_positions::Int

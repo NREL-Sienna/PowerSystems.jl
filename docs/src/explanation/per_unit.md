@@ -25,7 +25,7 @@ per-unit base:
 | Quantity       | Natural unit | Example fields                                    |
 |:-------------- |:------------ |:------------------------------------------------- |
 | Active power   | `MW`         | `active_power`, `active_power_limits`, `max_flow` |
-| Reactive power | `Mvar`       | `reactive_power`, `reactive_power_limits`         |
+| Reactive power | `MVAr`       | `reactive_power`, `reactive_power_limits`         |
 | Apparent power | `MVA`        | `rating`, `rating_b`, `base_power`                |
 | Impedance      | `Ω`          | `r`, `x`                                          |
 | Admittance     | `S`          | `b`, `g`                                          |
@@ -33,7 +33,7 @@ per-unit base:
 
 ```julia
 get_active_power(gen, NU)            # 125.0 (MW)
-get_reactive_power_unitful(gen, NU)  # 25.0 Mvar
+get_reactive_power_unitful(gen, NU)  # 25.0 MVAr
 get_rating_unitful(gen, NU)          # 250.0 MVA
 ```
 

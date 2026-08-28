@@ -27,7 +27,7 @@ PSY.get_base_voltage(::MockLine) = 230.0
 
 @testset "Unit categories" begin
     @test natural_unit(ACTIVE_POWER) == MW
-    @test natural_unit(REACTIVE_POWER) == Mvar
+    @test natural_unit(REACTIVE_POWER) == MVAr
     @test natural_unit(APPARENT_POWER) == MVA
     @test natural_unit(IMPEDANCE) == u"Ω"
     @test natural_unit(ADMITTANCE) == u"S"
@@ -212,9 +212,9 @@ end
 end
 
 @testset "Custom Unitful units" begin
-    @test 1.0Mvar == 1.0u"MW"  # same dimension
+    @test 1.0MVAr == 1.0u"MW"  # same dimension
     @test 1.0MVA == 1.0u"MW"
-    @test sprint(show, 1.0Mvar) == "1.0 Mvar"
+    @test sprint(show, 1.0MVAr) == "1.0 MVAr"
     @test sprint(show, 1.0MVA) == "1.0 MVA"
 end
 
@@ -224,17 +224,17 @@ end
     # All three share one per-unit base and differ only in the natural unit they
     # carry, so the numbers match while the units do not.
     @test Unitful.unit(get_active_power_unitful(gen, NU)) == MW
-    @test Unitful.unit(get_reactive_power_unitful(gen, NU)) == Mvar
+    @test Unitful.unit(get_reactive_power_unitful(gen, NU)) == MVAr
     @test Unitful.unit(get_rating_unitful(gen, NU)) == MVA
     @test get_rating(gen, NU) ≈ get_rating(gen, DU) * 250.0
 
     limits = get_reactive_power_limits_unitful(gen, NU)
-    @test Unitful.unit(limits.min) == Mvar
-    @test Unitful.unit(limits.max) == Mvar
+    @test Unitful.unit(limits.min) == MVAr
+    @test Unitful.unit(limits.max) == MVAr
 
     # Setters accept any power-dimensioned unit; the category only picks how a
     # value reads back, not how it is stored.
-    set_reactive_power!(gen, 25.0 * Mvar)
+    set_reactive_power!(gen, 25.0 * MVAr)
     @test get_reactive_power(gen, DU) ≈ 0.1
     @test get_reactive_power(gen, NU) ≈ 25.0
 end

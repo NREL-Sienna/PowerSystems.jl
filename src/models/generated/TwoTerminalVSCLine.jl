@@ -95,8 +95,8 @@ This model is appropriate for operational simulations with a linearized DC power
 - `rated_dc_voltage::Float64`: (default: `0.0`) Rated (base) DC voltage of the link in kV. Used as the DC voltage base for interpreting DC-voltage setpoints; `0.0` means unspecified (DC-voltage setpoints are taken as per-unit directly).
 - `remote_bus_control_from::Union{Nothing, Int}`: (default: `nothing`) Number of the AC bus whose voltage the `from` converter regulates when `ac_control_from` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus., validation range: `(1, nothing)`
 - `remote_bus_control_to::Union{Nothing, Int}`: (default: `nothing`) Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus., validation range: `(1, nothing)`
-- `rmpct_from::Float64`: (default: `100.0`) Percent of the total Mvar required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.
-- `rmpct_to::Float64`: (default: `100.0`) Percent of the total Mvar required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter.
+- `rmpct_from::Float64`: (default: `100.0`) Percent of the total MVAr required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.
+- `rmpct_to::Float64`: (default: `100.0`) Percent of the total MVAr required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `base_power::Float64`: (default: `100.0`) System base power for per-unitization of this component's per-unit fields, recorded per component in lieu of a system-level table (MVA), validation range: `(0.0001, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -179,9 +179,9 @@ mutable struct TwoTerminalVSCLine <: TwoTerminalHVDC
     remote_bus_control_from::Union{Nothing, Int}
     "Number of the AC bus whose voltage the `to` converter regulates when `ac_control_to` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus."
     remote_bus_control_to::Union{Nothing, Int}
-    "Percent of the total Mvar required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter."
+    "Percent of the total MVAr required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter."
     rmpct_from::Float64
-    "Percent of the total Mvar required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter."
+    "Percent of the total MVAr required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter."
     rmpct_to::Float64
     "Services that this device contributes to"
     services::Vector{Service}

@@ -8,7 +8,7 @@
 ###############################
 
 # Power-system-specific natural units (same dimension as MW, different display)
-@unit Mvar "Mvar" Mvar 1u"MW" false
+@unit MVAr "MVAr" MVAr 1u"MW" false
 @unit MVA "MVA" MVA 1u"MW" false
 
 # Re-export common Unitful units for power systems

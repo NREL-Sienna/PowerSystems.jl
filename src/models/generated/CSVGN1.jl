@@ -36,7 +36,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 - `T3::Float64`: Time constant in s, validation range: `(eps(), nothing)`
 - `T4::Float64`: Time constant in s, validation range: `(0, nothing)`
 - `T5::Float64`: Time constant in s, validation range: `(0, nothing)`
-- `Rmin::Float64`: Reactor minimum Mvar, validation range: `(0, nothing)`
+- `Rmin::Float64`: Reactor minimum MVAr, validation range: `(0, nothing)`
 - `Vmax::Float64`: Maximum voltage in pu, validation range: `(0, nothing)`
 - `Vmin::Float64`: Minimum voltage in pu, validation range: `(0, nothing)`
 - `CBase::Float64`: Capacitor (MVAR), validation range: `(0, nothing)`
@@ -66,7 +66,7 @@ mutable struct CSVGN1 <: DynamicInjection
     T4::Float64
     "Time constant in s"
     T5::Float64
-    "Reactor minimum Mvar"
+    "Reactor minimum MVAr"
     Rmin::Float64
     "Maximum voltage in pu"
     Vmax::Float64

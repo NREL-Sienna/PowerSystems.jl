@@ -654,7 +654,7 @@ export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
 # Unit types for explicit units in getters/setters
-export MW, Mvar, MVA, kV, OHMS, SIEMENS
+export MW, MVAr, MVA, kV, OHMS, SIEMENS
 export DU, SU, NU, DeviceBaseUnit, SystemBaseUnit, NaturalUnit
 export AbstractRelativeUnit, RelativeQuantity
 export UnitCategory, AbstractPowerCategory,

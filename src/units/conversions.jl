@@ -45,7 +45,7 @@ abstract type UnitCategory end
 Supertype of the three power categories. Active, reactive, and apparent power share
 one dimension and one per-unit base (the device/system base power), so every base and
 ratio rule below is written once against this supertype; the categories differ only in
-which natural unit they print as (`MW` / `Mvar` / `MVA`).
+which natural unit they print as (`MW` / `MVAr` / `MVA`).
 """
 abstract type AbstractPowerCategory <: UnitCategory end
 
@@ -75,7 +75,7 @@ const CURRENT = CurrentCategory()
 The natural (physical) unit for this category.
 """
 natural_unit(::ActivePowerCategory) = MW
-natural_unit(::ReactivePowerCategory) = Mvar
+natural_unit(::ReactivePowerCategory) = MVAr
 natural_unit(::ApparentPowerCategory) = MVA
 natural_unit(::ImpedanceCategory) = u"Ω"
 natural_unit(::AdmittanceCategory) = u"S"

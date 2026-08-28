@@ -54,7 +54,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `ac_setpoint::Float64`: (default: `1.0`) AC-voltage magnitude target (when ac_voltage_control is true), in per unit.
 - `dc_voltage_droop::Float64`: (default: `0.0`) DC-voltage droop gain relating DC voltage to converter active power as V_dc = dc_setpoint - dc_voltage_droop * P_c. A value of 0.0 disables droop.
 - `remote_bus_control::Union{Nothing, Int}`: (default: `nothing`) Number of the AC bus whose voltage the converter regulates when `ac_control` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus., validation range: `(1, nothing)`
-- `rmpct::Float64`: (default: `100.0`) Percent of the total Mvar required to hold the voltage at the bus regulated by this converter that is contributed by this converter.
+- `rmpct::Float64`: (default: `100.0`) Percent of the total MVAr required to hold the voltage at the bus regulated by this converter that is contributed by this converter.
 - `power_factor_weighting_fraction::Float64`: (default: `1.0`) Power weighting factor fraction used in reducing the active power order and either the reactive power order when the converter rating is violated. When is 0.0, only the active power is reduced; when is 1.0, only the reactive power is reduced; otherwise, a weighted reduction of both active and reactive power is applied., validation range: `(0, 1)`
 - `voltage_limits::MinMax`: (default: `(min=0.0, max=999.9)`) Limits on the voltage at the DC bus in [per unit](@ref per_unit).
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -99,7 +99,7 @@ mutable struct InterconnectingConverter <: StaticInjection
     dc_voltage_droop::Float64
     "Number of the AC bus whose voltage the converter regulates when `ac_control` is `AC_VOLTAGE`; `nothing` regulates its own terminal bus."
     remote_bus_control::Union{Nothing, Int}
-    "Percent of the total Mvar required to hold the voltage at the bus regulated by this converter that is contributed by this converter."
+    "Percent of the total MVAr required to hold the voltage at the bus regulated by this converter that is contributed by this converter."
     rmpct::Float64
     "Power weighting factor fraction used in reducing the active power order and either the reactive power order when the converter rating is violated. When is 0.0, only the active power is reduced; when is 1.0, only the reactive power is reduced; otherwise, a weighted reduction of both active and reactive power is applied."
     power_factor_weighting_fraction::Float64

@@ -556,7 +556,7 @@
                 },
                 {
                     "name": "controlled_quantity_limits",
-                    "comment": "Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`",
+                    "comment": "Controlled-quantity band: pu voltage / MVAr / MW bounds depending on `control_objective`",
                     "null_value": "(min=0.9, max=1.1)",
                     "data_type": "MinMax",
                     "default": "(min=0.9, max=1.1)"
@@ -1894,14 +1894,14 @@
                 },
                 {
                     "name": "rmpct_from",
-                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.",
+                    "comment": "Percent of the total MVAr required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "default": "100.0"
                 },
                 {
                     "name": "rmpct_to",
-                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter.",
+                    "comment": "Percent of the total MVAr required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter.",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "default": "100.0"
@@ -4428,7 +4428,7 @@
                 },
                 {
                     "name": "rmpct",
-                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by this converter that is contributed by this converter.",
+                    "comment": "Percent of the total MVAr required to hold the voltage at the bus regulated by this converter that is contributed by this converter.",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "default": "100.0"
@@ -4557,7 +4557,7 @@
                 },
                 {
                     "name": "Rmin",
-                    "comment": "Reactor minimum Mvar",
+                    "comment": "Reactor minimum MVAr",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {

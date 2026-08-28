@@ -58,12 +58,12 @@ add_component!(system, gas1)
 ### Step 3: Add Data with "setter" Functions
 
 Use individual "setter" functions, passing **unit-tagged** natural-units values (`MW`,
-`Mvar`, etc.). The setters convert each value to device base behind the scenes:
+`MVAr`, etc.). The setters convert each value to device base behind the scenes:
 
 ```@repl add_in_nu
 set_rating!(gas1, 30.0 * MVA)
 set_active_power_limits!(gas1, (min = 6.0 * MW, max = 30.0 * MW))
-set_reactive_power_limits!(gas1, (min = 6.0 * Mvar, max = 30.0 * Mvar))
+set_reactive_power_limits!(gas1, (min = 6.0 * MVAr, max = 30.0 * MVAr))
 set_ramp_limits!(gas1, (up = 6.0 * MW, down = 6.0 * MW)) # ramp limits per-unitize by base_power
 ```
 
