@@ -771,13 +771,23 @@ end
 
 """The `(owner_id, owner_category, time_series_type, name, resolution, interval, features)`
 named tuple a time series association row is matched by — the same identity the store's own
-uniqueness index keys on. See [`_validate_time_series_associations!`](@ref)."""
+uniqueness index keys on. See [`_validate_time_series_associations!`](@ref).
+
+Features are compared by value: the wire type wraps each value in a mutable
+`TimeSeriesFeatureValue`, which compares by object identity, so a document row and its store
+counterpart would never match on the wrappers themselves."""
 _ts_row_identity(row) = (
     owner_id = row.owner_id, owner_category = row.owner_category,
     time_series_type = row.time_series_type, name = row.name,
     resolution = _ts_field(row, :resolution), interval = _ts_field(row, :interval),
-    features = row.features,
+    features = _ts_feature_values(row.features),
 )
+
+_ts_feature_values(::Nothing) = nothing
+_ts_feature_values(features::AbstractDict) =
+    Dict{String, Any}(String(k) => _ts_feature_value(v) for (k, v) in features)
+_ts_feature_value(v::PowerTimeSeriesOpenAPIModels.TimeSeriesFeatureValue) = v.value
+_ts_feature_value(v) = v
 
 """Human-readable label for a time series association identity, for error messages."""
 function _ts_row_label(identity)
