@@ -20,27 +20,27 @@ convert_cost(w::OpenAPI.OneOfAPIModel, store) = convert_cost(w.value, store)
 # overloads below pull it back out via `_current_import_store`. A hand-written converter
 # that already receives `refs` (e.g. `Source`) should call the explicit-`store` form
 # instead — see `_convert_source_operation_cost`.
-const _IMPORT_STORE_KEY = :psy_openapi_import_store
+#
+# The binding itself is IS's `with_deserialization_store`: a document naming a series by
+# its association id is deserialization, and that scope is what `IS.deserialize` on a
+# `TimeSeriesKey` reads. These two wrappers exist only to keep the error domain-specific.
+
+"""No sidecar was adopted, so there is nothing to bind; a document that then names a
+time-series-backed cost fails in `_current_import_store`."""
+_with_import_store(f, ::Nothing) = f()
+
+"""Bind `store` for the duration of `f()`. `ScopedValue`-based, so a nested import and a
+task spawned inside one both see the innermost binding."""
+_with_import_store(f, store::IS.Store) = IS.with_deserialization_store(f, store)
 
 function _current_import_store()
-    tls = task_local_storage()
-    haskey(tls, _IMPORT_STORE_KEY) || error(
-        "convert_cost: an association-id-bearing cost converted outside an active " *
-        "from_openapi(System, doc) import — no time series store is bound",
+    IS.has_deserialization_store() || error(
+        "convert_cost: the document names a time-series-backed cost, but no time series " *
+        "store is bound — either this ran outside an active from_openapi(System, doc) " *
+        "import, or no time_series_storage_path sidecar was adopted for it",
     )
-    store = tls[_IMPORT_STORE_KEY]
-    isnothing(store) && error(
-        "convert_cost: the document names a time-series-backed cost but no " *
-        "time_series_storage_path sidecar was adopted for this import",
-    )
-    return store
+    return IS.get_deserialization_store()
 end
-
-"""Bind `store` as the current import's time series store for the duration of `f()` —
-task-scoped via `task_local_storage`, so concurrent imports on different tasks do not
-interfere. `store` may be `nothing` (no sidecar); `_current_import_store` errors if a
-document then actually asks for one."""
-_with_import_store(f, store) = task_local_storage(f, _IMPORT_STORE_KEY, store)
 
 """Fallback: a PO type that carries no association id converts identically whether or not a
 store is available for this call."""
@@ -113,56 +113,41 @@ convert_cost(v::Real) = Float64(v)
 # ── Time-series FunctionData/ValueCurve — need the adopted store to resolve an
 # association_id to a TimeSeriesKey ────────────────────────────────────────────
 
+"""The `TimeSeriesKey` the wire type's required `association_id` names. `what` names the
+wire type for the error a missing id raises."""
+_function_data_key(fd, store, what::AbstractString) =
+    IS.get_time_series_key(store, _require(fd.association_id, "$what.association_id"))
+
 convert_cost(fd::PC.TimeSeriesLinearFunctionData, store) =
     TimeSeriesFunctionData{LinearFunctionData}(
-        IS.get_time_series_key(
-            store,
-            Int(_require(fd.association_id, "TimeSeriesLinearFunctionData.association_id")),
-        ),
+        _function_data_key(fd, store, "TimeSeriesLinearFunctionData"),
     )
 convert_cost(fd::PC.TimeSeriesLinearFunctionData) =
     convert_cost(fd, _current_import_store())
 
 convert_cost(fd::PC.TimeSeriesQuadraticFunctionData, store) =
     TimeSeriesFunctionData{QuadraticFunctionData}(
-        IS.get_time_series_key(
-            store,
-            Int(
-                _require(
-                    fd.association_id, "TimeSeriesQuadraticFunctionData.association_id",
-                ),
-            ),
-        ),
+        _function_data_key(fd, store, "TimeSeriesQuadraticFunctionData"),
     )
 convert_cost(fd::PC.TimeSeriesQuadraticFunctionData) =
     convert_cost(fd, _current_import_store())
 
 convert_cost(fd::PC.TimeSeriesPiecewiseLinearData, store) =
     TimeSeriesFunctionData{PiecewiseLinearData}(
-        IS.get_time_series_key(
-            store,
-            Int(
-                _require(
-                    fd.association_id, "TimeSeriesPiecewiseLinearData.association_id",
-                ),
-            ),
-        ),
+        _function_data_key(fd, store, "TimeSeriesPiecewiseLinearData"),
     )
 convert_cost(fd::PC.TimeSeriesPiecewiseLinearData) =
     convert_cost(fd, _current_import_store())
 
 convert_cost(fd::PC.TimeSeriesPiecewiseStepData, store) =
     TimeSeriesFunctionData{PiecewiseStepData}(
-        IS.get_time_series_key(
-            store,
-            Int(_require(fd.association_id, "TimeSeriesPiecewiseStepData.association_id")),
-        ),
+        _function_data_key(fd, store, "TimeSeriesPiecewiseStepData"),
     )
 convert_cost(fd::PC.TimeSeriesPiecewiseStepData) = convert_cost(fd, _current_import_store())
 
 """`nothing` stays `nothing`; a wire association id resolves against `store`."""
 _resolve_optional_key(::Any, ::Nothing) = nothing
-_resolve_optional_key(store, id::Integer) = IS.get_time_series_key(store, Int(id))
+_resolve_optional_key(store, id::Integer) = IS.get_time_series_key(store, id)
 
 convert_cost(vc::PC.TimeSeriesInputOutputCurve, store) =
     TimeSeriesInputOutputCurve(convert_cost(vc.function_data, store), vc.input_at_zero)
@@ -209,7 +194,7 @@ end
 scalar branch, so a plain `fuel_cost` converts with no active import at all."""
 _fuel_cost_fields(::Any, fuel_cost::Real, ::Nothing) = (Float64(fuel_cost), nothing)
 _fuel_cost_fields(store, ::Nothing, fuel_cost_time_series::Integer) =
-    (nothing, IS.get_time_series_key(store, Int(fuel_cost_time_series)))
+    (nothing, IS.get_time_series_key(store, fuel_cost_time_series))
 _fuel_cost_fields(::Any, ::Nothing, ::Nothing) = error(
     "convert_cost: FuelCurve requires exactly one of fuel_cost or fuel_cost_time_series",
 )
@@ -239,7 +224,7 @@ store is pulled lazily, only inside the `fuel_cost_time_series` branch, so a pla
 `fuel_cost` still needs no active import bound at all."""
 _fuel_cost_fields_ambient(fuel_cost::Real, ::Nothing) = (Float64(fuel_cost), nothing)
 _fuel_cost_fields_ambient(::Nothing, fuel_cost_time_series::Integer) =
-    (nothing, IS.get_time_series_key(_current_import_store(), Int(fuel_cost_time_series)))
+    (nothing, IS.get_time_series_key(_current_import_store(), fuel_cost_time_series))
 _fuel_cost_fields_ambient(::Nothing, ::Nothing) = error(
     "convert_cost: FuelCurve requires exactly one of fuel_cost or fuel_cost_time_series",
 )
