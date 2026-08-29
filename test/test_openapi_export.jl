@@ -1578,3 +1578,27 @@ end
     push!(doc.combined_cycle_associations, duplicate_row)
     @test_throws ErrorException PSY.from_openapi(System, doc)
 end
+
+@testset "OpenAPI document round trip: feature-keyed time series" begin
+    sys = System(100.0)
+    bus = _export_bus(; number = 1)
+    add_component!(sys, bus)
+    zone = LoadZone(; name = "lz1", peak_active_power = 1.0, peak_reactive_power = 0.0)
+    add_component!(sys, zone)
+    stamps = collect(range(DateTime(2026, 1, 1); step = Hour(1), length = 3))
+    for (number, value) in ((1, 0.25), (2, 0.75))
+        ts = SingleTimeSeries(; name = "factor", data = TimeSeries.TimeArray(stamps, fill(value, 3)))
+        add_time_series!(sys, zone, ts; features = Dict("bus" => number))
+    end
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+        zone2 = get_component(LoadZone, sys2, "lz1")
+        @test get_time_series_values(
+            SingleTimeSeries, zone2, "factor"; features = Dict("bus" => 1),
+        ) == fill(0.25, 3)
+        @test get_time_series_values(
+            SingleTimeSeries, zone2, "factor"; features = Dict("bus" => 2),
+        ) == fill(0.75, 3)
+    end
+end
