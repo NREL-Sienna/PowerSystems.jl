@@ -128,8 +128,8 @@ println(get_static_time_series_reader_grid(reader))
 StaticGrid(initial_timestamp=DateTime("2024-01-01T00:00:00"), resolution=Millisecond(3600000), length=24)
 ```
 
-`resolution` is required and pins the reader to one resolution; `name` and any feature
-key/value pairs narrow the match further:
+`resolution` is required and pins the reader to one resolution; `name` and a `features`
+dictionary narrow the match further:
 
 ```julia
 build_static_time_series_reader(sys; resolution = resolution, name = "load")
@@ -137,7 +137,7 @@ build_static_time_series_reader(
     sys;
     resolution = resolution,
     name = "load",
-    scenario = "high",
+    features = Dict("scenario" => "high"),
 )
 ```
 
