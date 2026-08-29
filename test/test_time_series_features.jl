@@ -98,9 +98,9 @@ end
     name = "max_active_power"
     high = Dict("scenario" => "high")
 
-    key = add_time_series!(sys, gens, _features_sts(name, collect(1.0:24.0));
+    keys = add_time_series!(sys, gens, _features_sts(name, collect(1.0:24.0));
         features = high)
-    @test IS.get_features(key) == Dict{String, Any}("scenario" => "high")
+    @test all(k -> IS.get_features(k) == Dict{String, Any}("scenario" => "high"), keys)
 
     # Every component gets the features, and the array itself is still stored once.
     keys_by_gen = [only(get_time_series_keys(g; name = name)) for g in gens]

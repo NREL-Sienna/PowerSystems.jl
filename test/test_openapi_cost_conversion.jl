@@ -372,7 +372,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = only(IS.list_time_series_metadata(store)).association_id
+        assoc_id = only(IS.list_time_series_metadata(store)).id
 
         fc = PSY._with_import_store(store) do
             PSY.convert_cost(
@@ -380,7 +380,7 @@ end
                     power_units = "NATURAL_UNITS",
                     value_curve = PSY.PC.ValueCurve(
                         PSY.PC.TimeSeriesIncrementalCurve(;
-                            function_data = PSY.PC.FunctionData2(
+                            function_data = PSY.PC.FunctionData(
                                 PSY.PC.TimeSeriesLinearFunctionData(;
                                     association_id = assoc_id,
                                 ),
@@ -413,14 +413,14 @@ end
     )
     @test_throws ErrorException PSY.convert_cost(
         PSY.PC.MarketBidTimeSeriesCost(;
-            no_load_cost = PSY.PC.TimeSeriesInputOutputCurve2(;
-                function_data = PSY.PC.FunctionData1(
+            no_load_cost = PSY.PC.TimeSeriesInputOutputCurve(;
+                function_data = PSY.PC.FunctionData(
                     PSY.PC.TimeSeriesLinearFunctionData(; association_id = 1),
                 ),
             ),
             start_up_association_id = 2,
-            shut_down = PSY.PC.TimeSeriesInputOutputCurve3(;
-                function_data = PSY.PC.FunctionData1(
+            shut_down = PSY.PC.TimeSeriesInputOutputCurve(;
+                function_data = PSY.PC.FunctionData(
                     PSY.PC.TimeSeriesLinearFunctionData(; association_id = 3),
                 ),
             ),
@@ -428,7 +428,7 @@ end
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
                     PSY.PC.TimeSeriesIncrementalCurve(;
-                        function_data = PSY.PC.FunctionData2(
+                        function_data = PSY.PC.FunctionData(
                             PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 4),
                         ),
                     ),
@@ -438,7 +438,7 @@ end
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
                     PSY.PC.TimeSeriesIncrementalCurve(;
-                        function_data = PSY.PC.FunctionData2(
+                        function_data = PSY.PC.FunctionData(
                             PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 5),
                         ),
                     ),
@@ -499,7 +499,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = only(IS.list_time_series_metadata(store)).association_id
+        assoc_id = only(IS.list_time_series_metadata(store)).id
         ts_key = IS.get_time_series_key(store, Int(assoc_id))
 
         static_cost = ImportExportCost(;

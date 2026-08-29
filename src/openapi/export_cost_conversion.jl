@@ -143,32 +143,28 @@ _key_association_id(key::IS.ConcreteTimeSeriesKey) =
 
 function convert_cost_to_openapi(curve::TimeSeriesInputOutputCurve)
     return PC.TimeSeriesInputOutputCurve(;
-        function_data = PC.FunctionData1(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         input_at_zero = get_input_at_zero(curve),
     )
 end
 
-"""`no_load_cost`'s own wire type — see `convert_cost(vc::PC.TimeSeriesInputOutputCurve2, ...)`
-in `cost_conversion.jl` for why it is a separate Julia type from the bare
-`TimeSeriesInputOutputCurve` above."""
 function _no_load_cost_to_openapi(curve::TimeSeriesLinearCurve)
-    return PC.TimeSeriesInputOutputCurve2(;
-        function_data = PC.FunctionData1(convert_cost_to_openapi(get_function_data(curve))),
+    return PC.TimeSeriesInputOutputCurve(;
+        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         input_at_zero = get_input_at_zero(curve),
     )
 end
 
-"""`shut_down`'s own wire type — see `_no_load_cost_to_openapi`."""
 function _shut_down_to_openapi(curve::TimeSeriesLinearCurve)
-    return PC.TimeSeriesInputOutputCurve3(;
-        function_data = PC.FunctionData1(convert_cost_to_openapi(get_function_data(curve))),
+    return PC.TimeSeriesInputOutputCurve(;
+        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         input_at_zero = get_input_at_zero(curve),
     )
 end
 
 function convert_cost_to_openapi(curve::TimeSeriesIncrementalCurve)
     return PC.TimeSeriesIncrementalCurve(;
-        function_data = PC.FunctionData2(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         initial_input_association_id = _key_association_id(get_initial_input(curve)),
         input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
     )
@@ -176,7 +172,7 @@ end
 
 function convert_cost_to_openapi(curve::TimeSeriesAverageRateCurve)
     return PC.TimeSeriesAverageRateCurve(;
-        function_data = PC.FunctionData2(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         initial_input_association_id = _key_association_id(get_initial_input(curve)),
         input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
     )

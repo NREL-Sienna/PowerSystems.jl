@@ -168,18 +168,6 @@ convert_cost(vc::PC.TimeSeriesInputOutputCurve, store) =
     TimeSeriesInputOutputCurve(convert_cost(vc.function_data, store), vc.input_at_zero)
 convert_cost(vc::PC.TimeSeriesInputOutputCurve) = convert_cost(vc, _current_import_store())
 
-"""`no_load_cost`'s own wire type: structurally identical to `TimeSeriesInputOutputCurve`,
-a separate Julia type only because it is used directly (not through the `ValueCurve` oneOf) —
-see `openapi-config-core.json`'s `inlineSchemaNameMappings`."""
-convert_cost(vc::PC.TimeSeriesInputOutputCurve2, store) =
-    TimeSeriesInputOutputCurve(convert_cost(vc.function_data, store), vc.input_at_zero)
-convert_cost(vc::PC.TimeSeriesInputOutputCurve2) = convert_cost(vc, _current_import_store())
-
-"""`shut_down`'s own wire type — see `TimeSeriesInputOutputCurve2`."""
-convert_cost(vc::PC.TimeSeriesInputOutputCurve3, store) =
-    TimeSeriesInputOutputCurve(convert_cost(vc.function_data, store), vc.input_at_zero)
-convert_cost(vc::PC.TimeSeriesInputOutputCurve3) = convert_cost(vc, _current_import_store())
-
 convert_cost(vc::PC.TimeSeriesIncrementalCurve, store) =
     TimeSeriesIncrementalCurve(
         convert_cost(vc.function_data, store),
