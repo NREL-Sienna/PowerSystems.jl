@@ -38,12 +38,12 @@ InfraStore = {rev = "dt/function-data-values", url = "https://github.com/NatLabR
 # PowerDynamics-/PowerInvestmentsOpenAPIModels are not imported here — they are deps of the
 # PowerOpenAPIModels umbrella, and [sources] are not inherited transitively, so this env must
 # pin them itself or a fresh resolve fails on "has no known versions".
-PowerCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerCoreOpenAPIModels.jl"}
-PowerDynamicsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerDynamicsOpenAPIModels.jl"}
-PowerInvestmentsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerInvestmentsOpenAPIModels.jl"}
-PowerOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerOpenAPIModels.jl"}
-PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerOperationsOpenAPIModels.jl"}
-PowerTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerTimeSeriesOpenAPIModels.jl"}
+PowerCoreOpenAPIModels = {rev = "jd/market_components", subdir = "PowerCoreOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
+PowerDynamicsOpenAPIModels = {rev = "jd/market_components", subdir = "PowerDynamicsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
+PowerInvestmentsOpenAPIModels = {rev = "jd/market_components", subdir = "PowerInvestmentsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
+PowerOpenAPIModels = {rev = "jd/market_components", subdir = "PowerOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
+PowerOperationsOpenAPIModels = {rev = "jd/market_components", subdir = "PowerOperationsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
+PowerTimeSeriesOpenAPIModels = {rev = "jd/market_components", subdir = "PowerTimeSeriesOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
 
 [compat]
 # For the `[extras]`/`[sources]` co-dev pin above; Aqua requires every extra to carry one.
