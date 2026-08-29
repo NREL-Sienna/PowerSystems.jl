@@ -151,10 +151,10 @@ systems that carry dynamics, and dynamics is not going to production on this lin
 converter is added to [`DOCUMENT_PLAN`](@ref), its type drops out of this warning automatically.
 """
 function warn_unexportable_components(sys::System)
-    counts = Dict{String, Int}()
+    counts = Dict{Symbol, Int}()
     for component in get_components(Component, sys)
         if !is_document_exportable(component)
-            name = string(nameof(typeof(component)))
+            name = nameof(typeof(component))
             counts[name] = get(counts, name, 0) + 1
         end
     end
@@ -472,7 +472,7 @@ before `to_openapi(attr, refs)` reads that id back. The store's rows already arr
 `(component_id, attribute_id)`, so document order tracks component order with no local sort.
 """
 function _export_supplemental_attributes(refs::OpenAPIRefs, sys::System)
-    attribute_rows = Any[]
+    attribute_rows = OpenAPI.APIModel[]
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
@@ -483,6 +483,11 @@ function _export_supplemental_attributes(refs::OpenAPIRefs, sys::System)
         entity_id = Int(row.component_id)
         has_ref(refs, entity_id) || continue
         attr_id = Int(row.attribute_id)
+        haskey(attributes_by_id, attr_id) || error(
+            "to_openapi: supplemental attribute association (attribute id $attr_id, " *
+            "entity id $entity_id) references an attribute absent from the attribute " *
+            "manager — the store and the attribute manager disagree about what exists",
+        )
         attr = attributes_by_id[attr_id]
         if !has_ref(refs, attr_id)
             refs[attr_id] = attr
@@ -702,14 +707,18 @@ converter has no id registry.
 function _export_market_bid_service_offers!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     for po_components in values(doc.components), po in po_components
         hasproperty(po, :operation_cost) || continue
-        po_cost = po.operation_cost
-        po_cost isa PC.MarketBidCost || continue
-        component = refs.by_id[Int(po.id)]
-        offers = get_ancillary_service_offers(get_operation_cost(component))
-        isempty(offers) && continue
-        po_cost.ancillary_service_offers =
-            Int64[refs.id_by_component[service] for service in offers]
+        _fill_service_offers!(po.operation_cost, po, refs)
     end
+    return nothing
+end
+
+_fill_service_offers!(::Any, ::Any, ::OpenAPIRefs) = nothing
+function _fill_service_offers!(po_cost::PC.MarketBidCost, po, refs::OpenAPIRefs)
+    component = refs[Int(po.id)]
+    offers = get_ancillary_service_offers(get_operation_cost(component))
+    isempty(offers) && return nothing
+    po_cost.ancillary_service_offers =
+        Int64[component_id(refs, service) for service in offers]
     return nothing
 end
 

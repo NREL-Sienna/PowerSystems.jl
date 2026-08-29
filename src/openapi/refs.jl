@@ -15,9 +15,9 @@ call [`has_ref`](@ref) / [`has_component_id`](@ref) first when absence is a vali
 """
 struct OpenAPIRefs
     "Id → component, populated by `setindex!` as each component is converted."
-    by_id::Dict{Int, Any}
+    by_id::Dict{Int, IS.InfrastructureSystemsType}
     "Component → id, keyed by object identity."
-    id_by_component::IdDict{Any, Int}
+    id_by_component::IdDict{IS.InfrastructureSystemsType, Int}
     "The document's declared unit system (e.g. \"NATURAL_UNITS\"), fixed for the whole document."
     unit_system::String
     "The document's system base power (MVA), used by converters for types carrying no
@@ -31,13 +31,14 @@ struct OpenAPIRefs
     association-id-bearing cost's wire id to a `TimeSeriesKey` (`IS.get_time_series_key(store,
     id)`). `nothing` on export — export reads association ids straight off PSY's own keys via
     `IS.get_association_id`, no store needed — and on an import with no sidecar."
-    store::Any
+    store::Union{Nothing, IS.Store}
 end
 
 function OpenAPIRefs(unit_system::AbstractString, base_power::Real = 100.0; store = nothing)
     return OpenAPIRefs(
-        Dict{Int, Any}(), IdDict{Any, Int}(), String(unit_system), Float64(base_power),
-        Function[], store,
+        Dict{Int, IS.InfrastructureSystemsType}(),
+        IdDict{IS.InfrastructureSystemsType, Int}(),
+        String(unit_system), Float64(base_power), Function[], store,
     )
 end
 
@@ -116,11 +117,11 @@ resolve_ref(refs::OpenAPIRefs, id::Integer) = refs[id]
 
 """
 Resolve a reference whose PSY type the descriptor already states, asserting it on the way
-out. `by_id` is a `Dict{Int, Any}` — it holds every converted type — so the 2-arg form
-returns `Any` and every generated converter that used it handed the constructor an
-untyped value. The assert costs one type check and makes a document that points a `bus`
-field at, say, an `Arc` fail there, naming both types, instead of deeper inside the
-component constructor.
+out. `by_id` is a `Dict{Int, IS.InfrastructureSystemsType}` — it holds every converted type
+under that common abstract supertype — so the 2-arg form returns `IS.InfrastructureSystemsType`
+and every generated converter that used it handed the constructor an under-typed value. The
+assert costs one type check and makes a document that points a `bus` field at, say, an `Arc`
+fail there, naming both types, instead of deeper inside the component constructor.
 """
 resolve_ref(::OpenAPIRefs, ::Nothing, ::Type) = nothing
 resolve_ref(refs::OpenAPIRefs, id::Integer, ::Type{T}) where {T} = refs[id]::T

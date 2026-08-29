@@ -148,20 +148,6 @@ function convert_cost_to_openapi(curve::TimeSeriesInputOutputCurve)
     )
 end
 
-function _no_load_cost_to_openapi(curve::TimeSeriesLinearCurve)
-    return PC.TimeSeriesInputOutputCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
-        input_at_zero = get_input_at_zero(curve),
-    )
-end
-
-function _shut_down_to_openapi(curve::TimeSeriesLinearCurve)
-    return PC.TimeSeriesInputOutputCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
-        input_at_zero = get_input_at_zero(curve),
-    )
-end
-
 function convert_cost_to_openapi(curve::TimeSeriesIncrementalCurve)
     return PC.TimeSeriesIncrementalCurve(;
         function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
@@ -348,9 +334,9 @@ function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
         )
     end
     return PC.MarketBidTimeSeriesCost(;
-        no_load_cost = _no_load_cost_to_openapi(get_no_load_cost(cost)),
+        no_load_cost = convert_cost_to_openapi(get_no_load_cost(cost)),
         start_up_association_id = _key_association_id(get_start_up(cost)),
-        shut_down = _shut_down_to_openapi(get_shut_down(cost)),
+        shut_down = convert_cost_to_openapi(get_shut_down(cost)),
         incremental_offer_curves = convert_cost_to_openapi(
             get_incremental_offer_curves(cost),
         ),
