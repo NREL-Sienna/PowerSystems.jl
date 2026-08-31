@@ -80,7 +80,7 @@ mutable struct OnlineReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} 
     "Operating reserve demand curve (static or time-series-backed). `ZERO_OFFER_CURVE` means no curve is defined"
     variable::Union{
         CostCurve{PiecewiseIncrementalCurve, U},
-        CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
+        CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U},
     }
     "The time in minutes reserve contribution must be sustained at a specified level"
     sustained_time::Float64
@@ -194,7 +194,7 @@ mutable struct OfflineReserve{U <: IS.AbstractUnitSystem} <: AbstractReserve
     "Operating reserve demand curve (static or time-series-backed). `ZERO_OFFER_CURVE` means no curve is defined"
     variable::Union{
         CostCurve{PiecewiseIncrementalCurve, U},
-        CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
+        CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U},
     }
     "The time in minutes reserve contribution must be sustained at a specified level"
     sustained_time::Float64
@@ -313,7 +313,7 @@ mutable struct GroupReserve{T <: ReserveDirection, U <: IS.AbstractUnitSystem} <
     "Operating reserve demand curve for the group (static or time-series-backed). `ZERO_OFFER_CURVE` means no curve is defined"
     variable::Union{
         CostCurve{PiecewiseIncrementalCurve, U},
-        CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
+        CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U},
     }
     "An extra dictionary for users to add metadata that are not used in simulation"
     ext::Dict{String, Any}
@@ -500,4 +500,4 @@ end
 
 # The `ZERO_OFFER_CURVE` sentinel is a static curve, so a time-series-backed curve is always a
 # real demand curve.
-_is_zero_offer_curve(::CostCurve{TimeSeriesPiecewiseIncrementalCurve}) = false
+_is_zero_offer_curve(::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve}) = false

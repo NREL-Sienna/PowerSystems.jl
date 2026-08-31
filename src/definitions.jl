@@ -7,6 +7,15 @@ const TurbinePump = NamedTuple{(:turbine, :pump), Tuple{Float64, Float64}}
 const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 const StartUpStages = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
 
+"""
+A [`TimeSeriesKey`](@ref) naming a series whose values are the three start-up cost stages.
+
+Stored series carry their value element type in the key's parameter, so a field declared
+as this rejects a key naming a series of anything but 3-tuples at assignment — the point
+where the mistake was made — instead of at the read that would have unpacked them.
+"""
+const StartUpStagesKey = IS.TimeSeriesKey{<:IS.TimeSeriesData{NTuple{3, Float64}}}
+
 # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
 # Operators use `hot` when they don’t have multiple stages.
 "Convert a single start-up cost value to a `StartUpStages`"

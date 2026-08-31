@@ -25,8 +25,20 @@ PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 
+[extras]
+# Present only so the `[sources]` pin below is legal: Pkg requires a sourced package to
+# appear in `deps` or `extras`.
+InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
+
 [sources]
-InfrastructureSystems = {rev = "IS4", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
+# Co-dev branch revs, not IS4/a release: this branch tracks the association-id time series
+# keys and the function-data element codec. InfraStore is pinned here because it reaches
+# this env only through InfrastructureSystems, and `[sources]` are not inherited
+# transitively. Its git rev supplies the Julia wrapper; the matching native library is NOT
+# in the pinned artifacts, so set INFRASTORE_LIB to a locally built libinfrastore_ffi from
+# the same rev. Switch both to a tagged rev at release.
+InfrastructureSystems = {rev = "dt/key-by-association-id", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
+InfraStore = {rev = "dt/function-data-values", url = "https://github.com/NatLabRockies/infrastore", subdir = "julia/InfraStore.jl"}
 PowerCoreOpenAPIModels = {rev = "main", subdir = "PowerCoreOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
 PowerDynamicsOpenAPIModels = {rev = "main", subdir = "PowerDynamicsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
 PowerFlowFileParser = {rev = "psy6", url = "https://github.com/Sienna-Platform/PowerFlowFileParser.jl"}

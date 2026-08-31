@@ -351,6 +351,9 @@ end
     # store for the value curve regardless of which form `fuel_cost` takes.
     store = IS.Store(; in_memory = true)
     try
+        # `LinearFunctionData` values, not bare floats: the wire type below is a
+        # `TimeSeriesLinearFunctionData`, and a key naming a `Float64`-valued series
+        # cannot back one — the element type is part of the key's type now.
         series = SingleTimeSeries(;
             name = "heat_rate",
             data = TimeSeries.TimeArray(
@@ -359,7 +362,11 @@ end
                     Dates.DateTime(2024, 1, 1, 1),
                     Dates.DateTime(2024, 1, 1, 2),
                 ],
-                [8.0, 8.5, 9.0],
+                [
+                    IS.LinearFunctionData(8.0, 0.0),
+                    IS.LinearFunctionData(8.5, 0.0),
+                    IS.LinearFunctionData(9.0, 0.0),
+                ],
             ),
         )
         batch = IS.make_add_batch()
@@ -372,7 +379,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = only(IS.list_time_series_metadata(store)).id
+        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
 
         fc = PSY._with_import_store(store) do
             PSY.convert_cost(
@@ -482,11 +489,16 @@ end
     # non-1.0 base_power made the two diverge.
     store = IS.Store(; in_memory = true)
     try
+        # An import/export offer curve is backed by `PiecewiseStepData` values; a
+        # `Float64`-valued series' key no longer types as one.
         series = SingleTimeSeries(;
             name = "import_price",
             data = TimeSeries.TimeArray(
                 [Dates.DateTime(2024, 1, 1, 0), Dates.DateTime(2024, 1, 1, 1)],
-                [10.0, 12.0],
+                [
+                    PiecewiseStepData([0.0, 100.0], [10.0]),
+                    PiecewiseStepData([0.0, 100.0], [12.0]),
+                ],
             ),
         )
         batch = IS.make_add_batch()
@@ -499,7 +511,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = only(IS.list_time_series_metadata(store)).id
+        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
         ts_key = IS.get_time_series_key(store, Int(assoc_id))
 
         static_cost = ImportExportCost(;
