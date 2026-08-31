@@ -31,14 +31,9 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 
 [sources]
-# Co-dev branch revs, not IS4/a release: this branch tracks the association-id time series
-# keys and the function-data element codec. InfraStore is pinned here because it reaches
-# this env only through InfrastructureSystems, and `[sources]` are not inherited
-# transitively. Its git rev supplies the Julia wrapper; the matching native library is NOT
-# in the pinned artifacts, so set INFRASTORE_LIB to a locally built libinfrastore_ffi from
-# the same rev. Switch both to a tagged rev at release.
-InfrastructureSystems = {rev = "dt/key-by-association-id", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
-InfraStore = {rev = "dt/function-data-values", url = "https://github.com/NatLabRockies/infrastore", subdir = "julia/InfraStore.jl"}
+# IS4 carries the association-id keys (dt/key-by-association-id merged 2026-08-31), and
+# InfraStore 0.11 is registered with its own native library - the co-dev pins are retired.
+InfrastructureSystems = {rev = "IS4", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
 # Branch revs, not a tagged release: the x-unit accessors these packages expose are generated
 # and not yet released. Switch to a tagged rev at release.
 # PowerDynamics-/PowerInvestmentsOpenAPIModels are not imported here — they are deps of the
@@ -52,8 +47,8 @@ PowerOperationsOpenAPIModels = {rev = "jd/market_components", subdir = "PowerOpe
 PowerTimeSeriesOpenAPIModels = {rev = "jd/market_components", subdir = "PowerTimeSeriesOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
 
 [compat]
-# For the `[extras]`/`[sources]` co-dev pin above; Aqua requires every extra to carry one.
-InfraStore = "0.10"
+# For the `[extras]` entry; Aqua requires every extra to carry a compat bound.
+InfraStore = "0.11"
 DataStructures = "^0.19"
 Dates = "1"
 DocStringExtensions = "^0.9.2"
