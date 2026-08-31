@@ -372,7 +372,7 @@ function get_services_bid(
     if IS.is_time_series_backed(offer_curves)
         ts_key = IS.get_time_series_key(get_value_curve(offer_curves))
         ts = get_time_series(
-            ts_key.time_series_type,
+            IS.get_time_series_type(ts_key),
             device,
             get_name(service);
             start_time = start_time,
