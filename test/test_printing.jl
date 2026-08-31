@@ -270,9 +270,16 @@ end
 @testset "show_component prints explicit unit suffixes" begin
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
 
+    # The verbose display spells `SU`/`DU` out; only terse contexts keep the tags.
     attached_out = sprint(show_component, gen)
-    @test occursin("active_power: 1.25 SU", attached_out)
-    @test occursin("rating: 1.0 DU", attached_out)
+    @test occursin("active_power: 1.25 p.u. in system base", attached_out)
+    @test occursin("rating: 1.0 p.u. in component base", attached_out)
+    # Compound fields state their shared base once, after the tuple, rather than
+    # repeating it per element.
+    @test occursin(
+        "active_power_limits: (min = 0.0 p.u., max = 2.5 p.u.) in system base",
+        attached_out,
+    )
 
     io = IOBuffer()
     show_component(io, gen; units = MW)
@@ -292,7 +299,10 @@ end
     )
     detached_out = sprint(show_component, detached)
     @test occursin("active_power: 125.0 MW", detached_out) # SU fails, falls back to NU
-    @test occursin("rating: 1.0 DU", detached_out) # DU regardless of attachment
+    # Reactive power reads in MVAr and the apparent-power `rating` in MVA, not MW.
+    @test occursin("reactive_power: 25.0 MVAr", detached_out)
+    @test occursin("rating: 1.0 p.u. in component base", detached_out) # DU regardless of attachment
+    @test occursin("base_power: 250.0 MVA", detached_out)
 
     # An explicit override that fails (SU on an unattached component) errors
     # rather than silently falling back to NU/DU.
@@ -328,4 +338,57 @@ end
     )
     text3 = String(take!(io3))
     @test occursin("2.0", text3)
+end
+
+@testset "show_components accepts per-column units" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+
+    io = IOBuffer()
+    show_components(
+        io,
+        sys,
+        ThermalStandard,
+        [:active_power, :rating];
+        units = Dict(:active_power => MW, :rating => DU),
+    )
+    text = String(take!(io))
+    @test occursin("125.0 MW", text)
+    @test occursin("1.0 DU", text)
+
+    # A column absent from the mapping keeps its own `display_units_arg` default
+    # (SU for active_power) rather than inheriting a neighbour's unit.
+    io2 = IOBuffer()
+    show_components(io2, sys, ThermalStandard, [:active_power, :rating];
+        units = Dict(:rating => MW))
+    text2 = String(take!(io2))
+    @test occursin("1.25 SU", text2)
+    @test occursin("250.0 MW", text2)
+
+    # NamedTuple mappings work the same way.
+    io3 = IOBuffer()
+    show_components(io3, sys, ThermalStandard, [:active_power, :rating];
+        units = (active_power = DU, rating = MW))
+    text3 = String(take!(io3))
+    @test occursin("0.5 DU", text3)
+    @test occursin("250.0 MW", text3)
+end
+
+@testset "dynamic models display in component base" begin
+    machine = BaseMachine(nothing)
+    machine_out = sprint(show, MIME"text/plain"(), machine)
+    # Field-by-field, not the default single-line struct dump.
+    @test occursin("BaseMachine:", machine_out)
+    @test occursin("\n   R: ", machine_out)
+    @test occursin("p.u. on the parent device's base power", machine_out)
+
+    dyn = DynamicGenerator(
+        "dyn", 1.0, BaseMachine(nothing), FiveMassShaft(nothing),
+        AVRFixed(nothing), TGFixed(nothing), PSSFixed(nothing),
+    )
+    dyn_out = sprint(show_component, dyn)
+    @test occursin("in p.u. on the component base of 100.0 MVA", dyn_out)
+
+    # Static components get no such footer: their fields carry their own units.
+    _, gen = _sys_with_thermal()
+    @test !occursin("p.u. on the component base", sprint(show_component, gen))
 end

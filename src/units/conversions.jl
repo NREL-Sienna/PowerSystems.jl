@@ -41,13 +41,25 @@ function get_base_voltage end
 
 abstract type UnitCategory end
 
-struct PowerCategory <: UnitCategory end
+"""
+Supertype of the three power categories. Active, reactive, and apparent power share
+one dimension and one per-unit base (the device/system base power), so every base and
+ratio rule below is written once against this supertype; the categories differ only in
+which natural unit they print as (`MW` / `MVAr` / `MVA`).
+"""
+abstract type AbstractPowerCategory <: UnitCategory end
+
+struct ActivePowerCategory <: AbstractPowerCategory end
+struct ReactivePowerCategory <: AbstractPowerCategory end
+struct ApparentPowerCategory <: AbstractPowerCategory end
 struct ImpedanceCategory <: UnitCategory end
 struct AdmittanceCategory <: UnitCategory end
 struct VoltageCategory <: UnitCategory end
 struct CurrentCategory <: UnitCategory end
 
-const POWER = PowerCategory()
+const ACTIVE_POWER = ActivePowerCategory()
+const REACTIVE_POWER = ReactivePowerCategory()
+const APPARENT_POWER = ApparentPowerCategory()
 const IMPEDANCE = ImpedanceCategory()
 const ADMITTANCE = AdmittanceCategory()
 const VOLTAGE = VoltageCategory()
@@ -62,7 +74,9 @@ const CURRENT = CurrentCategory()
 
 The natural (physical) unit for this category.
 """
-natural_unit(::PowerCategory) = u"MW"
+natural_unit(::ActivePowerCategory) = MW
+natural_unit(::ReactivePowerCategory) = MVAr
+natural_unit(::ApparentPowerCategory) = MVA
 natural_unit(::ImpedanceCategory) = u"Ω"
 natural_unit(::AdmittanceCategory) = u"S"
 natural_unit(::VoltageCategory) = u"kV"
@@ -81,7 +95,7 @@ end
 
 1.0 DU of this category = `base_value(c, cat)` natural units.
 """
-base_value(c, ::PowerCategory) = _get_device_base_power(c)
+base_value(c, ::AbstractPowerCategory) = _get_device_base_power(c)
 base_value(c, ::ImpedanceCategory) =
     _checked_base_voltage(c)^2 / _get_device_base_power(c)
 base_value(c, ::AdmittanceCategory) =
@@ -94,7 +108,7 @@ base_value(c, ::CurrentCategory) = _get_device_base_power(c) / _checked_base_vol
 
 1.0 SU of this category = `system_base_value(c, cat)` natural units.
 """
-system_base_value(c, ::PowerCategory) = _get_system_base_power(c)
+system_base_value(c, ::AbstractPowerCategory) = _get_system_base_power(c)
 system_base_value(c, ::ImpedanceCategory) =
     _checked_base_voltage(c)^2 / _get_system_base_power(c)
 system_base_value(c, ::AdmittanceCategory) =
@@ -104,7 +118,7 @@ system_base_value(c, ::CurrentCategory) =
     _get_system_base_power(c) / _checked_base_voltage(c)
 
 # DU→SU ratio (voltage cancels, only power bases needed)
-_du_to_su_ratio(c, ::Union{PowerCategory, AdmittanceCategory, CurrentCategory}) =
+_du_to_su_ratio(c, ::Union{AbstractPowerCategory, AdmittanceCategory, CurrentCategory}) =
     _get_device_base_power(c) / _get_system_base_power(c)
 _du_to_su_ratio(c, ::ImpedanceCategory) =
     _get_system_base_power(c) / _get_device_base_power(c)
@@ -121,9 +135,9 @@ Convert a value between unit systems.
 
 # Examples
 ```julia
-convert_units(gen, 0.6, POWER, DU, MW)       # → 30.0 MW
-convert_units(gen, 30.0MW, POWER, MW, DU)    # → 0.6 DU
-convert_units(gen, 0.6, POWER, DU, SU)       # → 0.3 SU
+convert_units(gen, 0.6, ACTIVE_POWER, DU, MW)       # → 30.0 MW
+convert_units(gen, 30.0MW, ACTIVE_POWER, MW, DU)    # → 0.6 DU
+convert_units(gen, 0.6, ACTIVE_POWER, DU, SU)       # → 0.3 SU
 ```
 """
 function convert_units end

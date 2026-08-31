@@ -488,6 +488,7 @@ export get_num_components
 export get_associated_components
 export show_components
 export show_component
+export show_device_parameter
 export get_subcomponents
 export get_components_by_name
 export get_available
@@ -655,13 +656,15 @@ export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
 # Unit types for explicit units in getters/setters
-export MW, Mvar, MVA, kV, OHMS, SIEMENS
+export MW, MVAr, MVA, kV, OHMS, SIEMENS
 export DU, SU, NU, DeviceBaseUnit, SystemBaseUnit, NaturalUnit
 export AbstractRelativeUnit, RelativeQuantity
-export UnitCategory,
-    PowerCategory, ImpedanceCategory, AdmittanceCategory,
+export UnitCategory, AbstractPowerCategory,
+    ActivePowerCategory, ReactivePowerCategory, ApparentPowerCategory,
+    ImpedanceCategory, AdmittanceCategory,
     VoltageCategory, CurrentCategory
-export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
+export ACTIVE_POWER, REACTIVE_POWER, APPARENT_POWER
+export IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
 export natural_unit, base_value, system_base_value, convert_units
 # Hand-written unit-bearing companion for the `exclude_getter` `base_power`
 # descriptor entry (its bare-number counterpart gets exported via

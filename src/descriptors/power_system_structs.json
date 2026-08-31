@@ -18,7 +18,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
 
                 },
                 {
@@ -28,7 +28,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "load_response",
@@ -93,7 +93,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "null_value": "Area(nothing)",
@@ -113,7 +113,7 @@
                     "comment": "Max flow between the areas. It ignores lines and other branches totals",
                     "data_type": "FromTo_ToFrom",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "base_power",
@@ -170,7 +170,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "peak_reactive_power",
@@ -178,7 +178,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -234,7 +234,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "violation_penalty",
@@ -556,7 +556,7 @@
                 },
                 {
                     "name": "controlled_quantity_limits",
-                    "comment": "Controlled-quantity band: pu voltage / Mvar / MW bounds depending on `control_objective`",
+                    "comment": "Controlled-quantity band: pu voltage / MVAr / MW bounds depending on `control_objective`",
                     "null_value": "(min=0.9, max=1.1)",
                     "data_type": "MinMax",
                     "default": "(min=0.9, max=1.1)"
@@ -605,7 +605,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_flow",
@@ -614,7 +614,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -679,7 +679,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_flow",
@@ -687,7 +687,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -842,7 +842,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_flow",
@@ -850,7 +850,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "null_value": "0.0",
@@ -858,7 +858,7 @@
                     "comment": "Maximum allowable flow on the generic impedance. When defining a GenericArcImpedance before it is attached to a `System`, `max_flow` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -936,7 +936,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_flow",
@@ -944,7 +944,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -1062,7 +1062,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_flow",
@@ -1070,7 +1070,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -1123,7 +1123,7 @@
                     "comment": "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`",
                     "data_type": "FromTo_ToFrom",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "null_value": "0.0",
@@ -1497,7 +1497,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -1511,7 +1511,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "active_power_limits_to",
@@ -1519,7 +1519,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits_from",
@@ -1527,7 +1527,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "reactive_power_limits_to",
@@ -1535,7 +1535,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "loss",
@@ -1611,7 +1611,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "rating",
@@ -1633,7 +1633,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "active_power_limits_to",
@@ -1641,7 +1641,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "null_value": "0.0",
@@ -1663,7 +1663,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mvar",
                     "default": "0.0"
                 },
                 {
@@ -1731,7 +1731,7 @@
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=0.0)",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "power_factor_weighting_fraction_from",
@@ -1765,7 +1765,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mvar",
                     "default": "0.0"
                 },
                 {
@@ -1833,7 +1833,7 @@
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=0.0)",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "power_factor_weighting_fraction_to",
@@ -1894,14 +1894,14 @@
                 },
                 {
                     "name": "rmpct_from",
-                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.",
+                    "comment": "Percent of the total MVAr required to hold the voltage at the bus regulated by the `from` converter that is contributed by this converter.",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "default": "100.0"
                 },
                 {
                     "name": "rmpct_to",
-                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter.",
+                    "comment": "Percent of the total MVAr required to hold the voltage at the bus regulated by the `to` converter that is contributed by this converter.",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "default": "100.0"
@@ -1973,7 +1973,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "null_value": "0.0",
@@ -2171,7 +2171,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mw",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2180,7 +2180,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mw",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2189,7 +2189,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mvar",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2198,7 +2198,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mvar",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2269,7 +2269,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "null_value": "Arc(DCBus(nothing), DCBus(nothing))",
@@ -2301,7 +2301,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "active_power_limits_to",
@@ -2309,7 +2309,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "base_current",
@@ -2376,7 +2376,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -2384,7 +2384,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_active_power",
@@ -2392,7 +2392,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_reactive_power",
@@ -2400,7 +2400,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -2515,7 +2515,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "constant_reactive_power",
@@ -2524,7 +2524,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "impedance_active_power",
@@ -2533,7 +2533,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "impedance_reactive_power",
@@ -2542,7 +2542,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "current_active_power",
@@ -2551,7 +2551,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "current_reactive_power",
@@ -2560,7 +2560,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_constant_active_power",
@@ -2569,7 +2569,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_constant_reactive_power",
@@ -2578,7 +2578,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_impedance_active_power",
@@ -2587,7 +2587,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_impedance_reactive_power",
@@ -2596,7 +2596,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_current_active_power",
@@ -2605,7 +2605,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_current_reactive_power",
@@ -2614,7 +2614,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "services",
@@ -2678,7 +2678,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "active_power_limits",
@@ -2686,7 +2686,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -2694,7 +2694,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_active_power",
@@ -2702,7 +2702,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_reactive_power",
@@ -2710,7 +2710,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -2824,7 +2824,7 @@
                     "default": "9999.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "shunt_control_type",
@@ -3099,7 +3099,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -3107,7 +3107,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -3128,7 +3128,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_reactive_power",
@@ -3136,7 +3136,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "conformity",
@@ -3206,7 +3206,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -3214,7 +3214,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -3249,7 +3249,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -3258,7 +3258,7 @@
                     "data_type": "Union{Nothing, MinMax}",
                     "default": "nothing",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
             {
                     "name": "motor_technology",
@@ -3343,7 +3343,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "constant_reactive_power",
@@ -3352,7 +3352,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "impedance_active_power",
@@ -3361,7 +3361,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "impedance_reactive_power",
@@ -3370,7 +3370,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "current_active_power",
@@ -3379,7 +3379,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "current_reactive_power",
@@ -3388,7 +3388,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_constant_active_power",
@@ -3397,7 +3397,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_constant_reactive_power",
@@ -3406,7 +3406,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_impedance_active_power",
@@ -3415,7 +3415,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_impedance_reactive_power",
@@ -3424,7 +3424,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "max_current_active_power",
@@ -3433,7 +3433,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_current_reactive_power",
@@ -3442,7 +3442,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "conformity",
@@ -3512,7 +3512,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -3520,7 +3520,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "α",
@@ -3565,7 +3565,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "max_reactive_power",
@@ -3573,7 +3573,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "conformity",
@@ -4308,7 +4308,7 @@
                     "valid_range": "active_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "rating",
@@ -4330,7 +4330,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "base_power",
@@ -4351,7 +4351,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mvar",
                     "default": "nothing"
                 },
                 {
@@ -4428,7 +4428,7 @@
                 },
                 {
                     "name": "rmpct",
-                    "comment": "Percent of the total Mvar required to hold the voltage at the bus regulated by this converter that is contributed by this converter.",
+                    "comment": "Percent of the total MVAr required to hold the voltage at the bus regulated by this converter that is contributed by this converter.",
                     "null_value": "100.0",
                     "data_type": "Float64",
                     "default": "100.0"
@@ -4557,7 +4557,7 @@
                 },
                 {
                     "name": "Rmin",
-                    "comment": "Reactor minimum Mvar",
+                    "comment": "Reactor minimum MVAr",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -4680,7 +4680,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -4690,7 +4690,7 @@
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -4723,7 +4723,7 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -4732,7 +4732,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "ramp_limits",
@@ -4745,7 +4745,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "time_limits",
@@ -4854,7 +4854,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -4864,7 +4864,7 @@
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -4891,7 +4891,7 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -4900,7 +4900,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -4946,7 +4946,7 @@
                     "validation_action": "error",
                     "needs_conversion": true,
                     "default": "nothing",
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "time_limits",
@@ -5070,7 +5070,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -5080,7 +5080,7 @@
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -5107,7 +5107,7 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -5116,7 +5116,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "active_power_limits_pump",
@@ -5129,7 +5129,7 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "outflow_limits",
@@ -5160,7 +5160,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "time_limits",
@@ -5215,7 +5215,7 @@
                     "default": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "efficiency",
@@ -5457,7 +5457,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -5465,7 +5465,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -5493,7 +5493,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "power_factor",
@@ -5587,7 +5587,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -5595,7 +5595,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -5711,7 +5711,7 @@
                     "valid_range": "active_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -5721,7 +5721,7 @@
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -5748,7 +5748,7 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -5756,7 +5756,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "ramp_limits",
@@ -5769,7 +5769,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "operation_cost",
@@ -5894,7 +5894,7 @@
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -5916,7 +5916,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -5943,7 +5943,7 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "services",
@@ -6015,7 +6015,7 @@
                     "valid_range": "active_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -6025,7 +6025,7 @@
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "rating",
@@ -6059,7 +6059,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -6067,7 +6067,7 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "ramp_limits",
@@ -6079,7 +6079,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "power_trajectory",
@@ -6092,7 +6092,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "time_limits",
@@ -6233,7 +6233,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "storage_level_limits",
@@ -6272,7 +6272,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "input_active_power_limits",
@@ -6285,7 +6285,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "output_active_power_limits",
@@ -6298,7 +6298,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "efficiency",
@@ -6319,7 +6319,7 @@
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -6327,7 +6327,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -6381,7 +6381,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mw",
                     "default": "nothing"
                 },
                 {
@@ -6407,7 +6407,7 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva",
+                    "conversion_unit": ":mw",
                     "default": "0.0"
                 },
                 {
@@ -6478,7 +6478,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -6487,7 +6487,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "base_power",
@@ -6565,7 +6565,7 @@
                     "data_type": "Union{Nothing, MinMax}",
                     "default": "nothing",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "output_active_power_limits",
@@ -6574,7 +6574,7 @@
                     "data_type": "Union{Nothing, MinMax}",
                     "default": "nothing",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -6583,7 +6583,7 @@
                     "data_type": "Union{Nothing, MinMax}",
                     "default": "nothing",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "interconnection_efficiency",
@@ -18802,7 +18802,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power",
@@ -18811,7 +18811,7 @@
                     "data_type": "Float64",
                     "default": "0.0",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "active_power_limits",
@@ -18820,7 +18820,7 @@
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=0.0)",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -18830,7 +18830,7 @@
                     "data_type": "Union{Nothing, MinMax}",
                     "default": "(min=0.0, max=0.0)",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mvar"
                 },
                 {
                     "name": "R_th",
@@ -19566,7 +19566,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "variable"
@@ -19649,7 +19649,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "variable"
@@ -19722,7 +19722,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
-                    "conversion_unit": ":mva"
+                    "conversion_unit": ":mw"
                 },
                 {
                     "name": "ext"

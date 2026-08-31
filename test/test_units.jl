@@ -26,7 +26,9 @@ PSY._get_system_base_power(::MockLine) = 100.0
 PSY.get_base_voltage(::MockLine) = 230.0
 
 @testset "Unit categories" begin
-    @test natural_unit(POWER) == u"MW"
+    @test natural_unit(ACTIVE_POWER) == MW
+    @test natural_unit(REACTIVE_POWER) == MVAr
+    @test natural_unit(APPARENT_POWER) == MVA
     @test natural_unit(IMPEDANCE) == u"Ω"
     @test natural_unit(ADMITTANCE) == u"S"
     @test natural_unit(VOLTAGE) == u"kV"
@@ -36,8 +38,8 @@ end
 @testset "base_value and system_base_value" begin
     gen = MockGen(0.6, 50.0)  # 50 MVA device, 100 MVA system
 
-    @test base_value(gen, POWER) == 50.0
-    @test system_base_value(gen, POWER) == 100.0
+    @test base_value(gen, ACTIVE_POWER) == 50.0
+    @test system_base_value(gen, ACTIVE_POWER) == 100.0
 
     # Impedance: V² / S
     @test base_value(gen, IMPEDANCE) ≈ 230.0^2 / 50.0
@@ -54,38 +56,38 @@ end
 @testset "convert_units: DU → other" begin
     gen = MockGen(0.6, 50.0)
 
-    result = convert_units(gen, 0.6, POWER, DU, MW)
+    result = convert_units(gen, 0.6, ACTIVE_POWER, DU, MW)
     @test result isa Unitful.Quantity
     @test Unitful.ustrip(result) ≈ 30.0
 
-    result = convert_units(gen, 0.6, POWER, DU, SU)
+    result = convert_units(gen, 0.6, ACTIVE_POWER, DU, SU)
     @test result isa RelativeQuantity{Float64, SystemBaseUnit}
     @test ustrip(result) ≈ 0.3
 
-    result = convert_units(gen, 0.6, POWER, DU, DU)
+    result = convert_units(gen, 0.6, ACTIVE_POWER, DU, DU)
     @test ustrip(result) ≈ 0.6
 end
 
 @testset "convert_units: SU → other" begin
     gen = MockGen(0.6, 50.0)
 
-    result = convert_units(gen, 0.3, POWER, SU, MW)
+    result = convert_units(gen, 0.3, ACTIVE_POWER, SU, MW)
     @test Unitful.ustrip(result) ≈ 30.0
 
-    result = convert_units(gen, 0.3, POWER, SU, DU)
+    result = convert_units(gen, 0.3, ACTIVE_POWER, SU, DU)
     @test ustrip(result) ≈ 0.6
 
-    result = convert_units(gen, 0.3, POWER, SU, SU)
+    result = convert_units(gen, 0.3, ACTIVE_POWER, SU, SU)
     @test ustrip(result) ≈ 0.3
 end
 
 @testset "convert_units: natural → per-unit" begin
     gen = MockGen(0.6, 50.0)
 
-    result = convert_units(gen, 30.0MW, POWER, MW, DU)
+    result = convert_units(gen, 30.0MW, ACTIVE_POWER, MW, DU)
     @test ustrip(result) ≈ 0.6
 
-    result = convert_units(gen, 30.0MW, POWER, MW, SU)
+    result = convert_units(gen, 30.0MW, ACTIVE_POWER, MW, SU)
     @test ustrip(result) ≈ 0.3
 end
 
@@ -103,19 +105,19 @@ end
 
 @testset "convert_units: nothing passthrough" begin
     gen = MockGen(0.6, 50.0)
-    @test convert_units(gen, nothing, POWER, DU, MW) === nothing
+    @test convert_units(gen, nothing, ACTIVE_POWER, DU, MW) === nothing
 end
 
 @testset "convert_units: round-trip consistency" begin
     gen = MockGen(0.6, 50.0)
     original = 0.6
 
-    mw = convert_units(gen, original, POWER, DU, MW)
-    back = convert_units(gen, mw, POWER, MW, DU)
+    mw = convert_units(gen, original, ACTIVE_POWER, DU, MW)
+    back = convert_units(gen, mw, ACTIVE_POWER, MW, DU)
     @test ustrip(back) ≈ original
 
-    su = convert_units(gen, original, POWER, DU, SU)
-    back = convert_units(gen, ustrip(su), POWER, SU, DU)
+    su = convert_units(gen, original, ACTIVE_POWER, DU, SU)
+    back = convert_units(gen, ustrip(su), ACTIVE_POWER, SU, DU)
     @test ustrip(back) ≈ original
 end
 
@@ -131,14 +133,14 @@ end
 @testset "convert_units: NU (natural units)" begin
     gen = MockGen(0.6, 50.0)
 
-    result = convert_units(gen, 0.6, POWER, DU, NU)
+    result = convert_units(gen, 0.6, ACTIVE_POWER, DU, NU)
     @test result isa Unitful.Quantity
     @test Unitful.ustrip(result) ≈ 30.0
 
     result = convert_units(gen, 0.01, IMPEDANCE, DU, NU)
     @test Unitful.dimension(Unitful.unit(result)) == Unitful.dimension(u"Ω")
 
-    result = convert_units(gen, 30.0MW, POWER, NU, DU)
+    result = convert_units(gen, 30.0MW, ACTIVE_POWER, NU, DU)
     @test ustrip(result) ≈ 0.6
 end
 
@@ -189,7 +191,15 @@ end
 
 @testset "_du_to_su_ratio agrees with base_value ratio for every category" begin
     gen = MockGen(0.6, 50.0)  # 50 MVA device base, 100 MVA system base, 230 kV
-    for cat in (POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT)
+    for cat in (
+        ACTIVE_POWER,
+        REACTIVE_POWER,
+        APPARENT_POWER,
+        IMPEDANCE,
+        ADMITTANCE,
+        VOLTAGE,
+        CURRENT,
+    )
         @test PSY._du_to_su_ratio(gen, cat) ≈
               base_value(gen, cat) / system_base_value(gen, cat)
     end
@@ -202,10 +212,31 @@ end
 end
 
 @testset "Custom Unitful units" begin
-    @test 1.0Mvar == 1.0u"MW"  # same dimension
+    @test 1.0MVAr == 1.0u"MW"  # same dimension
     @test 1.0MVA == 1.0u"MW"
-    @test sprint(show, 1.0Mvar) == "1.0 Mvar"
+    @test sprint(show, 1.0MVAr) == "1.0 MVAr"
     @test sprint(show, 1.0MVA) == "1.0 MVA"
+end
+
+@testset "natural-unit getters distinguish active/reactive/apparent power" begin
+    _, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+
+    # All three share one per-unit base and differ only in the natural unit they
+    # carry, so the numbers match while the units do not.
+    @test Unitful.unit(get_active_power_unitful(gen, NU)) == MW
+    @test Unitful.unit(get_reactive_power_unitful(gen, NU)) == MVAr
+    @test Unitful.unit(get_rating_unitful(gen, NU)) == MVA
+    @test get_rating(gen, NU) ≈ get_rating(gen, DU) * 250.0
+
+    limits = get_reactive_power_limits_unitful(gen, NU)
+    @test Unitful.unit(limits.min) == MVAr
+    @test Unitful.unit(limits.max) == MVAr
+
+    # Setters accept any power-dimensioned unit; the category only picks how a
+    # value reads back, not how it is stored.
+    set_reactive_power!(gen, 25.0 * MVAr)
+    @test get_reactive_power(gen, DU) ≈ 0.1
+    @test get_reactive_power(gen, NU) ≈ 25.0
 end
 
 @testset "base_value lifecycle" begin
@@ -276,10 +307,10 @@ end
 @testset "convert_units rejects marker/value mismatches" begin
     sys, gen = _sys_with_thermal()
 
-    @test_throws ArgumentError convert_units(gen, 30.0 * MW, POWER, SU, DU)
-    @test_throws ArgumentError convert_units(gen, 30.0 * MW, POWER, DU, SU)
-    @test_throws ArgumentError convert_units(gen, 0.5 * DU, POWER, SU, NU)
-    @test_throws ArgumentError convert_units(gen, 0.5, POWER, MW, SU)
+    @test_throws ArgumentError convert_units(gen, 30.0 * MW, ACTIVE_POWER, SU, DU)
+    @test_throws ArgumentError convert_units(gen, 30.0 * MW, ACTIVE_POWER, DU, SU)
+    @test_throws ArgumentError convert_units(gen, 0.5 * DU, ACTIVE_POWER, SU, NU)
+    @test_throws ArgumentError convert_units(gen, 0.5, ACTIVE_POWER, MW, SU)
 end
 
 # Build a minimal System + Line (100 MVA base, 138 kV buses) for impedance/

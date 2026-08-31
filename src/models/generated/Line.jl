@@ -118,15 +118,15 @@ get_name(value::Line) = value.name
 """Get [`Line`](@ref) `available`."""
 get_available(value::Line) = value.available
 """Get [`Line`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
-get_active_power_flow(value::Line, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mva), units))
+get_active_power_flow(value::Line, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mw), units))
 """Get [`Line`](@ref) `active_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow`](@ref)."""
-get_active_power_flow_unitful(value::Line, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+get_active_power_flow_unitful(value::Line, units) = get_value(value, Val(:active_power_flow), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{Line}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{Line}) = InfrastructureSystems.SU
 """Get [`Line`](@ref) `reactive_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_flow_unitful`](@ref)."""
-get_reactive_power_flow(value::Line, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mva), units))
+get_reactive_power_flow(value::Line, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mvar), units))
 """Get [`Line`](@ref) `reactive_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_flow`](@ref)."""
-get_reactive_power_flow_unitful(value::Line, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
+get_reactive_power_flow_unitful(value::Line, units) = get_value(value, Val(:reactive_power_flow), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow), ::Type{Line}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow_unitful), ::Type{Line}) = InfrastructureSystems.SU
 """Get [`Line`](@ref) `arc`."""
@@ -187,9 +187,9 @@ get_internal(value::Line) = value.internal
 """Set [`Line`](@ref) `available`."""
 set_available!(value::Line, val) = value.available = val
 """Set [`Line`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
+set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
 """Set [`Line`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
+set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
 """Set [`Line`](@ref) `arc`."""
 set_arc!(value::Line, val) = value.arc = val
 """Set [`Line`](@ref) `r`."""

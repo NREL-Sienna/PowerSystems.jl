@@ -104,15 +104,15 @@ get_available(value::RenewableNonDispatch) = value.available
 """Get [`RenewableNonDispatch`](@ref) `bus`."""
 get_bus(value::RenewableNonDispatch) = value.bus
 """Get [`RenewableNonDispatch`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
-get_active_power(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+get_active_power(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mw), units))
 """Get [`RenewableNonDispatch`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
-get_active_power_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:active_power), Val(:mva), units)
+get_active_power_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:active_power), Val(:mw), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{RenewableNonDispatch}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{RenewableNonDispatch}) = InfrastructureSystems.SU
 """Get [`RenewableNonDispatch`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
-get_reactive_power(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+get_reactive_power(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mvar), units))
 """Get [`RenewableNonDispatch`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
-get_reactive_power_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+get_reactive_power_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:reactive_power), Val(:mvar), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{RenewableNonDispatch}) = InfrastructureSystems.SU
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{RenewableNonDispatch}) = InfrastructureSystems.SU
 """Get [`RenewableNonDispatch`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_unitful`](@ref)."""
@@ -141,9 +141,9 @@ set_available!(value::RenewableNonDispatch, val) = value.available = val
 """Set [`RenewableNonDispatch`](@ref) `bus`."""
 set_bus!(value::RenewableNonDispatch, val) = value.bus = val
 """Set [`RenewableNonDispatch`](@ref) `active_power`."""
-set_active_power!(value::RenewableNonDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
+set_active_power!(value::RenewableNonDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
 """Set [`RenewableNonDispatch`](@ref) `reactive_power`."""
-set_reactive_power!(value::RenewableNonDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
+set_reactive_power!(value::RenewableNonDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
 """Set [`RenewableNonDispatch`](@ref) `rating`."""
 set_rating!(value::RenewableNonDispatch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`RenewableNonDispatch`](@ref) `prime_mover_type`."""

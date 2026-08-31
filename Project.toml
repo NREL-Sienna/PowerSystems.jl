@@ -31,13 +31,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 
 [sources]
-# Co-dev branch revs, not IS4/a release: this branch tracks the association-id time series
-# keys and the function-data element codec. InfraStore is pinned here because it reaches
-# this env only through InfrastructureSystems, and `[sources]` are not inherited
-# transitively. Its git rev supplies the Julia wrapper; the matching native library is NOT
-# in the pinned artifacts, so set INFRASTORE_LIB to a locally built libinfrastore_ffi from
-# the same rev. Switch both to a tagged rev at release.
-InfrastructureSystems = {rev = "dt/key-by-association-id", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
+InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "IS4"}
 InfraStore = {rev = "dt/function-data-values", url = "https://github.com/NatLabRockies/infrastore", subdir = "julia/InfraStore.jl"}
 # Branch revs, not a tagged release: the x-unit accessors these packages expose are generated
 # and not yet released. Switch to a tagged rev at release.

@@ -344,8 +344,13 @@ get_x(t::TwoWindingTransformer, units) = get_x(get_circuit(t), units)
 get_x_unitful(t::TwoWindingTransformer, units) = get_x_unitful(get_circuit(t), units)
 set_x!(t::TwoWindingTransformer, val) = set_x!(get_circuit(t), val)
 
-# Physical category implied by a field's conversion unit.
-_unit_category(::Val{:mva}) = POWER
+# Physical category implied by a field's conversion unit. The three power tokens
+# share a per-unit base and differ only in the natural unit they print as, so a
+# field's token is chosen by what the quantity *is* (`:mw` active, `:mvar`
+# reactive, `:mva` apparent), not by how it is per-unitized.
+_unit_category(::Val{:mw}) = ACTIVE_POWER
+_unit_category(::Val{:mvar}) = REACTIVE_POWER
+_unit_category(::Val{:mva}) = APPARENT_POWER
 _unit_category(::Val{:ohm}) = IMPEDANCE
 _unit_category(::Val{:siemens}) = ADMITTANCE
 

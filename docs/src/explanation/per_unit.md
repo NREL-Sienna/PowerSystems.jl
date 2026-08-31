@@ -3,7 +3,8 @@
 It is often useful to express power systems data in relative terms using per-unit conventions.
 `PowerSystems.jl` supports conversion of data between three different unit systems:
 
- 1. `NU` (natural units): The naturally defined units of each parameter (typically MW).
+ 1. `NU` (natural units): The naturally defined units of each parameter (see
+    [Natural units by quantity](@ref natural_units_by_quantity) below).
  2. `SU` (system base): Parameter values are divided by the system `base_power`.
  3. `DU` (device base): Parameter values are divided by the device `base_power`.
 
@@ -14,6 +15,30 @@ sets use different units systems by convention, such as:
   - Network data (e.g., reactance, resistance) is often defined in system base
   - Production cost modeling data is often gathered from variety of data sources,
     which are typically defined in natural units
+
+## [Natural units by quantity](@id natural_units_by_quantity)
+
+`NU` resolves to the unit that fits the physical quantity the field holds, so active,
+reactive, and apparent power read back distinctly even though all three share one
+per-unit base:
+
+| Quantity       | Natural unit | Example fields                                    |
+|:-------------- |:------------ |:------------------------------------------------- |
+| Active power   | `MW`         | `active_power`, `active_power_limits`, `max_flow` |
+| Reactive power | `MVAr`       | `reactive_power`, `reactive_power_limits`         |
+| Apparent power | `MVA`        | `rating`, `rating_b`, `base_power`                |
+| Impedance      | `Ω`          | `r`, `x`                                          |
+| Admittance     | `S`          | `b`, `g`                                          |
+| Voltage        | `kV`         | `base_voltage`                                    |
+
+```julia
+get_active_power(gen, NU)            # 125.0 (MW)
+get_reactive_power_unitful(gen, NU)  # 25.0 MVAr
+get_rating_unitful(gen, NU)          # 250.0 MVA
+```
+
+Because the three power units share a dimension, any of them is accepted wherever a
+power-dimensioned unit is expected — `get_rating(gen, MW)` and `set_reactive_power!(gen, 25.0 * MW)` both work, and `uconvert` handles the relabeling.
 
 ## Explicit units in accessors
 
@@ -101,6 +126,15 @@ The same check applies to the display path: printing a detached component issues
 and falls back to natural units for display. The error is intentional — a per-unit value is
 meaningless without a known base.
 
+Verbose displays spell the per-unit markers out — `active_power: 1.25 p.u. in system base`,
+`rating: 1.0 p.u. in device base` — since `SU`/`DU` are this package's shorthand rather than
+standard terminology. A compound field whose elements share one base states it once, after
+the tuple: `active_power_limits: (min = 0.0 p.u., max = 2.5 p.u.) in system base`. Terse
+contexts (the one-line `show`, table cells) keep the short tags.
+Dynamic models are not wired into the units engine; their parameters are per-unitized on the
+device base, and both `show_component` on a `DynamicInjection` and the display of a single
+parameter block (a machine, AVR, shaft, ...) say so in a footer.
+
 ## The system base is immutable
 
 `System.base_power` is set once at construction (from the `base_power` argument) and
@@ -119,7 +153,7 @@ claiming a relative base as `from` contradicts them:
 
 ```julia
 # gen.base_power = 50 MVA, system base = 100 MVA
-convert_units(gen, 30.0MW, POWER, SU, DU)
+convert_units(gen, 30.0MW, ACTIVE_POWER, SU, DU)
 # ArgumentError: value 30.0 MW carries physical units but `from = SU` claims a relative
 # base; pass the value's own units (or NU) as `from`
 ```
@@ -127,7 +161,7 @@ convert_units(gen, 30.0MW, POWER, SU, DU)
 Pass `NU` (or the Unitful unit directly) as `from` instead:
 
 ```julia
-convert_units(gen, 30.0MW, POWER, NU, DU)   # → 0.6 DU
+convert_units(gen, 30.0MW, ACTIVE_POWER, NU, DU)   # → 0.6 DU
 ```
 
 **`RelativeQuantity` tag disagrees with `from`.** A `RelativeQuantity` encodes its base in
@@ -135,7 +169,7 @@ its type; `from` must match:
 
 ```julia
 val = 0.3 * SU                               # RelativeQuantity{Float64, SystemBaseUnit}
-convert_units(gen, val, POWER, DU, SU)
+convert_units(gen, val, ACTIVE_POWER, DU, SU)
 # ArgumentError: value is tagged SU but `from = DU`; the tag and the `from` marker must agree
 ```
 
@@ -143,7 +177,7 @@ convert_units(gen, val, POWER, DU, SU)
 a catch-all:
 
 ```julia
-convert_units(gen, "0.5", POWER, SU, DU)
+convert_units(gen, "0.5", ACTIVE_POWER, SU, DU)
 # ArgumentError: unsupported unit conversion for String from SU to DU
 ```
 
