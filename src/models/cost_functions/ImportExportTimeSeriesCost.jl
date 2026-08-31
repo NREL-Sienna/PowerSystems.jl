@@ -12,9 +12,9 @@ For static (non-time-varying) bids, use [`ImportExportCost`](@ref).
 """
 mutable struct ImportExportTimeSeriesCost{U <: IS.AbstractUnitSystem} <: OfferCurveCost
     "Import price curves (time series)"
-    import_offer_curves::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}
+    import_offer_curves::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U}
     "Export price curves (time series)"
-    export_offer_curves::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}
+    export_offer_curves::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U}
     "Weekly limit on the amount of energy that can be imported, defined in MWh."
     energy_import_weekly_limit::Float64
     "Weekly limit on the amount of energy that can be exported, defined in MWh."
@@ -77,7 +77,7 @@ set_energy_export_weekly_limit!(value::ImportExportTimeSeriesCost, val) =
     value.energy_export_weekly_limit = val
 
 """
-Make a time-series-backed `CostCurve{TimeSeriesPiecewiseIncrementalCurve}` from a
+Make a time-series-backed `CostCurve{<:TimeSeriesPiecewiseIncrementalCurve}` from a
 `TimeSeriesKey`, suitable for the `import_offer_curves` or `export_offer_curves` field of
 an [`ImportExportTimeSeriesCost`](@ref).
 """

@@ -13,14 +13,16 @@ mutable struct MarketBidTimeSeriesCost{U <: IS.AbstractUnitSystem} <: OfferCurve
     "Minimum-energy offer: cost to operate at minimum stable level, in \$/MWh at the curve's minimum power, stored as submitted. \$/h sources convert at parse (MEO = no-load cost / P_min)."
     minimum_energy_offer::TimeSeriesLinearCurve
     "Key of a time series of `NTuple{3, Float64}` start-up cost stages, resolved to a
-    `StartUpStages` at a chosen timestep by `get_start_up(device, cost; start_time)`"
-    start_up::IS.ConcreteTimeSeriesKey
+    `StartUpStages` at a chosen timestep by `get_start_up(device, cost; start_time)`.
+    The element type is in the key's parameter, so a key naming a series of anything but
+    3-stage tuples is rejected here rather than at the read."
+    start_up::StartUpStagesKey
     "Shut-down cost (time series)"
     shut_down::TimeSeriesLinearCurve
     "Sell Offer Curves data (time series)"
-    incremental_offer_curves::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}
+    incremental_offer_curves::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U}
     "Buy Offer Curves data (time series)"
-    decremental_offer_curves::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}
+    decremental_offer_curves::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U}
     "Bids for the ancillary services"
     ancillary_service_offers::Vector{Service}
     "Linear-interpolation flag for the corresponding offer curve; false (default) is the step interpretation. Mutually exclusive with block groups on the same curve."
@@ -107,7 +109,7 @@ set_curve_style!(value::MarketBidTimeSeriesCost, val) =
     value.curve_style = val
 
 """
-Make a time-series-backed `CostCurve{TimeSeriesPiecewiseIncrementalCurve}` from
+Make a time-series-backed `CostCurve{<:TimeSeriesPiecewiseIncrementalCurve}` from
 `TimeSeriesKey` references, suitable for the `incremental_offer_curves` or
 `decremental_offer_curves` field of a [`MarketBidTimeSeriesCost`](@ref).
 """

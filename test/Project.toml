@@ -30,7 +30,14 @@ TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
+[extras]
+# Present only so the `[sources]` pin below is legal: Pkg requires a sourced package to
+# appear in `deps` or `extras`.
+InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
+
 [sources]
+# IS4 carries the association-id time series keys (dt/key-by-association-id merged
+# 2026-08-31); InfraStore 0.11 is registered, so no source pin is needed for it.
 InfrastructureSystems = {rev = "IS4", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
 PowerCoreOpenAPIModels = {rev = "jd/market_components", subdir = "PowerCoreOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
 PowerDynamicsOpenAPIModels = {rev = "jd/market_components", subdir = "PowerDynamicsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}

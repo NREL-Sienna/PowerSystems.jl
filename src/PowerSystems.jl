@@ -417,8 +417,7 @@ export ReservoirLocation
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesKey
-export StaticTimeSeriesKey
-export ForecastKey
+export TimeSeriesMetadata
 export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
@@ -556,7 +555,10 @@ export get_next_time
 export reset!
 export get_horizon
 export get_forecast_initial_times
-export get_time_series_keys
+export list_metadata
+export get_time_series_metadata
+export get_time_series_key
+export get_association_id
 export show_time_series
 export get_resolution
 export get_data
@@ -771,9 +773,7 @@ import InfrastructureSystems:
     Probabilistic,
     SingleTimeSeries,
     NonSequentialTimeSeries,
-    StaticTimeSeriesKey,
     DeterministicSingleTimeSeries,
-    ForecastKey,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
@@ -782,6 +782,7 @@ import InfrastructureSystems:
     StaticTimeSeriesReader,
     StaticTimeSeriesReaderEntry,
     TimeSeriesKey,
+    TimeSeriesMetadata,
     TimeSeriesCounts,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
@@ -832,7 +833,10 @@ import InfrastructureSystems:
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    get_time_series_keys,
+    list_metadata,
+    get_time_series_metadata,
+    get_time_series_key,
+    get_association_id,
     get_time_series_hash,
     read_forecast_window!,
     get_forecast_window,

@@ -21,9 +21,11 @@ convert_cost(w::OpenAPI.OneOfAPIModel, store) = convert_cost(w.value, store)
 # that already receives `refs` (e.g. `Source`) should call the explicit-`store` form
 # instead — see `_convert_source_operation_cost`.
 #
-# The binding itself is IS's `with_deserialization_store`: a document naming a series by
-# its association id is deserialization, and that scope is what `IS.deserialize` on a
-# `TimeSeriesKey` reads. These two wrappers exist only to keep the error domain-specific.
+# The scope is PSY's own. IS used to keep one for `TimeSeriesKey` deserialization, but a
+# serialized key now carries its time series and element types alongside the id and
+# rebuilds itself without a catalog. Only this wire format still names a series by a bare
+# `association_id`, so only this import still needs a store to resolve one against.
+const _IMPORT_STORE = Base.ScopedValues.ScopedValue{IS.Store}()
 
 """No sidecar was adopted, so there is nothing to bind; a document that then names a
 time-series-backed cost fails in `_current_import_store`."""
@@ -31,15 +33,17 @@ _with_import_store(f, ::Nothing) = f()
 
 """Bind `store` for the duration of `f()`. `ScopedValue`-based, so a nested import and a
 task spawned inside one both see the innermost binding."""
-_with_import_store(f, store::IS.Store) = IS.with_deserialization_store(f, store)
+_with_import_store(f, store::IS.Store) =
+    Base.ScopedValues.with(f, _IMPORT_STORE => store)
 
 function _current_import_store()
-    IS.has_deserialization_store() || error(
+    store = Base.ScopedValues.get(_IMPORT_STORE)
+    isnothing(store) && error(
         "convert_cost: the document names a time-series-backed cost, but no time series " *
         "store is bound — either this ran outside an active from_openapi(System, doc) " *
         "import, or no time_series_storage_path sidecar was adopted for it",
     )
-    return IS.get_deserialization_store()
+    return something(store)
 end
 
 """Fallback: a PO type that carries no association id converts identically whether or not a
@@ -392,7 +396,7 @@ end
 """
 Time-varying market bid. Mirrors `convert_cost(::PC.MarketBidCost)`: `ancillary_service_offers`
 is left empty here too. Needs `store` for `start_up` (a wire association id resolving to the
-`ConcreteTimeSeriesKey` `MarketBidTimeSeriesCost.start_up` carries) and for the time-series-backed
+`TimeSeriesKey` `MarketBidTimeSeriesCost.start_up` carries) and for the time-series-backed
 offer curves.
 """
 function convert_cost(po::PC.MarketBidTimeSeriesCost, store)

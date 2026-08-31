@@ -228,7 +228,9 @@ end
         sys, gen,
         IS.NonSequentialTimeSeries("irregular", TimeSeries.TimeArray(stamps, values)),
     )
-    @test first(IS.get_time_series_keys(gen)) isa IS.NonSequentialTimeSeriesKey
+    # The kind is in the key's type parameter now, not in a separate key type.
+    @test IS.get_time_series_type(first(IS.list_metadata(gen))) <:
+          IS.NonSequentialTimeSeries
 
     mktempdir() do dir
         bundle = joinpath(dir, "irregular")
@@ -266,8 +268,8 @@ end
         # from the adopted sidecar exactly.
         sys2 = from_file(System, bundle)
         gen2 = get_component(ThermalStandard, sys2, "g1")
-        key2 = only(IS.get_time_series_keys(gen2))
-        @test key2 isa IS.NonSequentialTimeSeriesKey
+        key2 = IS.get_time_series_key(only(IS.list_metadata(gen2)))
+        @test key2 isa IS.TimeSeriesKey{<:IS.NonSequentialTimeSeries}
         @test IS.get_timestamps(IS.get_time_series(gen2, key2)) == stamps
         @test IS.get_time_series_values(gen2, key2) == values
     end

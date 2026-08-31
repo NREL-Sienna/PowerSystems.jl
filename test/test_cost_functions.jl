@@ -429,7 +429,9 @@ end
         decremental_offer_curves = make_market_bid_ts_curve(dec_key),
     )
 
-    @test get_start_up(mbtc) isa IS.ConcreteTimeSeriesKey
+    # The field is typed by element, so the key that lands in it is one naming a
+    # 3-tuple-valued series and nothing else.
+    @test get_start_up(mbtc) isa PSY.StartUpStagesKey
     @test get_start_up(mbtc) === su_key
 
     resolved_first =
@@ -471,23 +473,62 @@ end
     @test_throws ArgumentError get_export_variable_cost(generator, iec)
 end
 
+@testset "get_fuel_cost resolves a time-series-backed FuelCurve at start_time" begin
+    # `FuelCurve` keeps the fixed value and the time series key in separate fields, so
+    # `get_fuel_cost(::StaticInjection)` has to read whichever one is set. A fixed cost
+    # ignores `start_time`; a keyed one reads the series through it.
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+
+    timestamps = range(_TS_RESOLVE_INITIAL_TIME; step = _TS_RESOLVE_RESOLUTION, length = 24)
+    prices = collect(1.0:24.0)
+    fuel_key = add_time_series!(
+        sys,
+        generator,
+        IS.SingleTimeSeries(;
+            name = "fuel_price",
+            data = TimeSeries.TimeArray(collect(timestamps), prices),
+        ),
+    )
+
+    old_cost = get_operation_cost(generator)
+    old_variable = get_variable(old_cost)
+    set_operation_cost!(
+        generator,
+        ThermalGenerationCost(;
+            fixed = get_fixed(old_cost),
+            shut_down = get_shut_down(old_cost),
+            start_up = get_start_up(old_cost),
+            variable = FuelCurve(;
+                value_curve = get_value_curve(old_variable),
+                power_units = get_power_units(old_variable),
+                fuel_cost_time_series = fuel_key,
+            ),
+        ),
+    )
+
+    resolved = get_fuel_cost(generator; start_time = _TS_RESOLVE_INITIAL_TIME, len = 3)
+    @test TimeSeries.values(resolved) == prices[1:3]
+    @test TimeSeries.timestamp(resolved) == collect(timestamps)[1:3]
+end
+
 @testset "Time-series ORDC resolves variable cost at start_time" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    # `ForecastKey` identifies a time series by name/type/timing — it does not
-    # bind to a specific component, so we can bootstrap a key from a throwaway
-    # generator and reuse it after attaching the same forecast to the reserve.
-    bootstrap = get_component(ThermalStandard, sys, "322_CT_6")
-    ts_key = _attach_pwl_forecast(sys, bootstrap, "ordc")
-
-    curve = CostCurve(TimeSeriesPiecewiseIncrementalCurve(ts_key, nothing, nothing))
+    # A key names one stored association, which belongs to one owner — so the reserve's
+    # curve has to be built from the key for the forecast attached to the reserve itself.
+    # (It used to be legal to bootstrap a key off another component and reuse it, back when
+    # a key was name/type/timing and bound to no owner.)
     reserve = OnlineReserve{ReserveUp}(;
-        variable = curve,
         name = "TestOrdc",
         available = true,
         time_frame = 10.0,
     )
     add_component!(sys, reserve)
-    _attach_pwl_forecast(sys, reserve, "ordc")
+    ts_key = _attach_pwl_forecast(sys, reserve, "ordc")
+    set_variable!(
+        reserve,
+        CostCurve(TimeSeriesPiecewiseIncrementalCurve(ts_key, nothing, nothing)),
+    )
 
     resolved = get_variable_cost(reserve; start_time = _TS_RESOLVE_INITIAL_TIME)
     @test get_function_data(get_value_curve(resolved)) == _TS_RESOLVE_PWL_DATA[1]

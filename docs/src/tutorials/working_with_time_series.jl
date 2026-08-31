@@ -351,14 +351,16 @@ show_time_series(wind1)
 # time series in MW instead of scaling factors, let's make sure none of our forecasts exceeds
 # the `max_active_power` parameter.
 # Instead of using `get_time_series_array` where we need to remember some details of
-# the time series we're looking up, let's use [`get_time_series_keys`](@ref) to refresh our
-# memories:
+# the time series we're looking up, let's use [`list_metadata`](@ref) to refresh our
+# memories. Each row describes one attached time series — its name, resolution, timing —
+# and carries the key that addresses it:
 
-keys = get_time_series_keys(wind1)
+metadata = list_metadata(wind1)
 
-# See the forecast key is first, so let's retrieve it using [`get_time_series`](@ref):
+# See the forecast row is first. Take its key with [`get_time_series_key`](@ref) and
+# retrieve the series using [`get_time_series`](@ref):
 
-forecast = get_time_series(wind1, keys[1])
+forecast = get_time_series(wind1, get_time_series_key(metadata[1]))
 
 # See that unlike when we used `get_time_series_array`, this returns an object we can
 # manipulate.

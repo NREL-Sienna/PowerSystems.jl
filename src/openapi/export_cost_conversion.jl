@@ -138,7 +138,7 @@ end
 
 """`nothing` stays `nothing`; a present key emits its `association_id`."""
 _key_association_id(::Nothing) = nothing
-_key_association_id(key::IS.ConcreteTimeSeriesKey) =
+_key_association_id(key::IS.TimeSeriesKey) =
     _record_emitted_association_id(IS.get_association_id(key))
 
 """Wire representation of [`CurveStyles`](@ref): a plain integer (0/1/2) — see
