@@ -356,7 +356,7 @@ end
 
 function from_openapi(po::PO.GeometricDistributionForcedOutage, refs::OpenAPIRefs)
     return GeometricDistributionForcedOutage(;
-        mean_time_to_recovery = Float64(po.mean_time_to_recovery),
+        mean_time_to_recovery = po.mean_time_to_recovery,
         outage_transition_probability = po.outage_transition_probability,
         monitored_components = _monitored_component_uuids(refs, po.monitored_components),
     )
@@ -546,27 +546,42 @@ function from_openapi(
     sys = _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
     _apply_document_metadata!(sys, doc)
 
-    refs = OpenAPIRefs(unit_system, base_power)
-
-    for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
-        for po in PD.get_components(doc, key)
-            component = from_openapi(po, refs, unit_val)
-            extras = get(doc.ext, Int(po.id), nothing)
-            isnothing(extras) || _merge_doc_ext!(component, extras)
-            if addable
-                # Before adding, not after: `IS.assign_id!` keeps an id that is already set
-                # and only draws from the counter for an unassigned one. This is what makes
-                # the adopted sidecar's owner ids resolve — they are these same document ids.
-                IS.set_id!(component, Int(po.id))
-                add_component!(sys, component)
-            end
-            refs[Int(po.id)] = component
-        end
+    store = if isnothing(time_series_storage_path)
+        nothing
+    else
+        sys.data.time_series_manager.data_store
     end
+    refs = OpenAPIRefs(unit_system, base_power; store = store)
 
-    resolve_deferred_refs!(refs)
+    # Bound for the whole component pass: a `MarketBidTimeSeriesCost`/time-series-backed
+    # `FuelCurve` reaches `convert_cost` several frames below a GENERATED per-device
+    # `from_openapi` method (`src/generate_structs.jl`'s `expr = "convert_cost(po.$po_name)::$bare"`),
+    # whose call site is fixed at one positional argument — regenerating every device
+    # converter to thread a store through is out of scope here. `_with_import_store` makes
+    # the adopted store reachable from there via `_current_import_store()` instead. Hand-written
+    # converters that DO receive `refs` (e.g. `Source`) resolve the store from `get_store(refs)`
+    # directly and never need this ambient path.
+    _with_import_store(store) do
+        for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
+            for po in PD.get_components(doc, key)
+                component = from_openapi(po, refs, unit_val)
+                extras = get(doc.ext, Int(po.id), nothing)
+                isnothing(extras) || _merge_doc_ext!(component, extras)
+                if addable
+                    # Before adding, not after: `IS.assign_id!` keeps an id that is already set
+                    # and only draws from the counter for an unassigned one. This is what makes
+                    # the adopted sidecar's owner ids resolve — they are these same document ids.
+                    IS.set_id!(component, Int(po.id))
+                    add_component!(sys, component)
+                end
+                refs[Int(po.id)] = component
+            end
+        end
 
-    _load_market_bid_service_offers!(refs, doc)
+        resolve_deferred_refs!(refs)
+
+        _load_market_bid_service_offers!(refs, doc)
+    end
 
     load_supplemental_attribute_associations!(sys, refs, doc)
 
@@ -661,6 +676,29 @@ function _validate_time_series_associations!(
             )
         end
         push!(referenced, identity)
+        # Checked explicitly, ahead of the generic field-drift comparison below: a mismatched
+        # `association_id` means every key built from it during this import points at the
+        # wrong association altogether, not just a stale metadata field, so it gets its own
+        # named error carrying both values rather than surfacing as one entry in a
+        # `drifted on: ...` list. A `nothing` document value is not treated as "unset and
+        # therefore skip" — the schema marks `association_id` required, so a document row
+        # missing it is malformed and must error loudly rather than compare vacuously equal
+        # to another `nothing`.
+        isnothing(row.association_id) && throw(
+            IS.DataFormatError(
+                "from_openapi(System, doc): time series association " *
+                "$(_ts_row_label(identity)) has no association_id in the document, but " *
+                "the schema marks it required",
+            ),
+        )
+        row.association_id == store_row.association_id || throw(
+            IS.DataFormatError(
+                "from_openapi(System, doc): time series association " *
+                "$(_ts_row_label(identity)) has association_id=$(row.association_id) in " *
+                "the document but association_id=$(store_row.association_id) in the " *
+                "adopted sidecar's catalog",
+            ),
+        )
         drift = _ts_row_drift(row, store_row)
         isempty(drift) || throw(
             IS.DataFormatError(
@@ -720,18 +758,32 @@ function _ts_row_wire_dict(row)
     return dict
 end
 
+"""`ancillary_service_offers` ids off an ALREADY-UNWRAPPED wire operation cost that
+carries them (`MarketBidCost`, `MarketBidTimeSeriesCost`), or `nothing` for any other cost —
+dispatch rather than an `isa` chain, so a cost type this document names but that carries no
+such field (everything else) is a one-line no-op instead of a branch to maintain."""
+_ancillary_service_offer_ids(po_cost::PC.MarketBidCost) = po_cost.ancillary_service_offers
+_ancillary_service_offer_ids(po_cost::PC.MarketBidTimeSeriesCost) =
+    po_cost.ancillary_service_offers
+_ancillary_service_offer_ids(po_cost) = nothing
+
 """
-Resolve each imported `MarketBidCost`'s `ancillary_service_offers` ids to the now-imported
-`Service` objects. `convert_cost(::PC.MarketBidCost)` leaves the vector empty because
+Resolve each imported `MarketBidCost`/`MarketBidTimeSeriesCost`'s `ancillary_service_offers`
+ids to the now-imported `Service` objects. `convert_cost(::PC.MarketBidCost)` and
+`convert_cost(::PC.MarketBidTimeSeriesCost, store)` both leave the vector empty because
 services may not exist yet when the carrying device converts; this runs after the full
 component pass. Errors on an unresolved id rather than dropping the offer.
+
+`po.operation_cost` is `_unwrap_oneof`'d first: a document read straight off JSON (any real
+`from_file` call) carries the oneOf WRAPPER (e.g. `PO.ThermalStandardOperationCost`) here,
+not the bare concrete cost `to_openapi`'s own in-memory construction path hands back — the
+same reason every other oneOf field in this file is unwrapped before use.
 """
 function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PD.SystemDocument)
     for po_components in values(doc.components), po in po_components
         hasproperty(po, :operation_cost) || continue
-        po_cost = po.operation_cost
-        po_cost isa PC.MarketBidCost || continue
-        ids = po_cost.ancillary_service_offers
+        po_cost = _unwrap_oneof(po.operation_cost)
+        ids = _ancillary_service_offer_ids(po_cost)
         (isnothing(ids) || isempty(ids)) && continue
         component = refs.by_id[Int(po.id)]
         offers = get_ancillary_service_offers(get_operation_cost(component))
@@ -739,8 +791,8 @@ function _load_market_bid_service_offers!(refs::OpenAPIRefs, doc::PD.SystemDocum
             service = get(refs.by_id, Int(id), nothing)
             isnothing(service) && throw(
                 IS.DataFormatError(
-                    "MarketBidCost on component id=$(po.id) offers into unresolved " *
-                    "component id=$id",
+                    "$(nameof(typeof(po_cost))) on component id=$(po.id) " *
+                    "offers into unresolved component id=$id",
                 ),
             )
             push!(offers, service)

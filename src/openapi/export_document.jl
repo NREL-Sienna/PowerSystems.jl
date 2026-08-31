@@ -48,7 +48,7 @@ end
 function to_openapi(outage::GeometricDistributionForcedOutage, refs::OpenAPIRefs)
     return PO.GeometricDistributionForcedOutage(;
         id = component_id(refs, outage),
-        mean_time_to_recovery = Int(round(get_mean_time_to_recovery(outage))),
+        mean_time_to_recovery = get_mean_time_to_recovery(outage),
         outage_transition_probability = get_outage_transition_probability(outage),
         monitored_components = _monitored_component_ids(
             refs, get_monitored_components(outage),
@@ -151,10 +151,10 @@ systems that carry dynamics, and dynamics is not going to production on this lin
 converter is added to [`DOCUMENT_PLAN`](@ref), its type drops out of this warning automatically.
 """
 function warn_unexportable_components(sys::System)
-    counts = Dict{String, Int}()
+    counts = Dict{Symbol, Int}()
     for component in get_components(Component, sys)
         if !is_document_exportable(component)
-            name = string(nameof(typeof(component)))
+            name = nameof(typeof(component))
             counts[name] = get(counts, name, 0) + 1
         end
     end
@@ -472,7 +472,7 @@ before `to_openapi(attr, refs)` reads that id back. The store's rows already arr
 `(component_id, attribute_id)`, so document order tracks component order with no local sort.
 """
 function _export_supplemental_attributes(refs::OpenAPIRefs, sys::System)
-    attribute_rows = Any[]
+    attribute_rows = OpenAPI.APIModel[]
     association_rows = PC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
@@ -483,6 +483,11 @@ function _export_supplemental_attributes(refs::OpenAPIRefs, sys::System)
         entity_id = Int(row.component_id)
         has_ref(refs, entity_id) || continue
         attr_id = Int(row.attribute_id)
+        haskey(attributes_by_id, attr_id) || error(
+            "to_openapi: supplemental attribute association (attribute id $attr_id, " *
+            "entity id $entity_id) references an attribute absent from the attribute " *
+            "manager — the store and the attribute manager disagree about what exists",
+        )
         attr = attributes_by_id[attr_id]
         if !has_ref(refs, attr_id)
             refs[attr_id] = attr
@@ -525,6 +530,40 @@ function _absent_owner_is_tolerated(row)
     error(
         "to_openapi: time series \"$(row.name)\" (owner id $(row.owner_id)) has " *
         "unrecognized owner_category $(row.owner_category)",
+    )
+end
+
+"""
+Refuse to emit a document whose costs reference series it does not describe.
+
+A cost may reference a series owned by another component, and `_export_all_time_series`
+skips the association rows of owners the document cannot describe (see
+[`_absent_owner_is_tolerated`](@ref)). The two together produce a document carrying a bare
+`association_id` with no declared identity beside it, and an import has then nothing to
+check that id against: resolved against a different sidecar it binds the cost to whichever
+series happens to hold that id there, silently.
+
+A dataset in that state has a broken relationship -- a cost pointing at something the
+document does not contain -- so this errors rather than dropping the reference. Dropping it
+would change the model on the way out, and quietly.
+"""
+function _check_costs_reference_declared_series!(doc::PD.SystemDocument, emitted::Set{Int})
+    isempty(emitted) && return nothing
+    declared = Set{Int}(
+        _unwrap_oneof(row).association_id for row in doc.time_series_associations
+    )
+    dangling = sort!(collect(setdiff(emitted, declared)))
+    isempty(dangling) && return nothing
+    throw(
+        IS.DataFormatError(
+            "to_openapi: $(length(dangling)) time-series-backed cost(s) reference " *
+            "association id(s) $(join(dangling, ", ")) that the document does not " *
+            "describe. A cost may reference a series owned by another component, and a " *
+            "series whose owner has no OpenAPI converter is omitted from the document " *
+            "(see the omission warnings above) -- so the reference cannot survive a " *
+            "round trip and would resolve against an unrelated series in another " *
+            "sidecar. Give the owning component a converter, or remove the reference.",
+        ),
     )
 end
 
@@ -627,24 +666,31 @@ function to_openapi(
         frequency = sys.frequency,
         time_series_storage_file = _sidecar_basename(time_series_storage_path),
     )
-    _export_components!(doc, refs, sys, val)
-    _export_market_bid_service_offers!(doc, refs)
-    supplemental_attributes,
-    supplemental_attribute_associations,
-    plant_associations,
-    combined_cycle_associations =
-        _export_supplemental_attributes(refs, sys)
-    append!(doc.supplemental_attributes, supplemental_attributes)
-    append!(doc.supplemental_attribute_associations, supplemental_attribute_associations)
-    append!(doc.plant_associations, plant_associations)
-    append!(doc.combined_cycle_associations, combined_cycle_associations)
-    append!(doc.service_associations, _export_service_associations(refs, sys))
-    append!(
-        doc.time_series_associations,
-        _export_all_time_series(sys, refs, time_series_storage_path),
-    )
-    _reserve_ids!(doc, refs)
+    emitted = Set{Int}()
+    task_local_storage(_EMITTED_ASSOCIATION_IDS_KEY, emitted) do
+        _export_components!(doc, refs, sys, val)
+        _export_market_bid_service_offers!(doc, refs)
+        supplemental_attributes,
+        supplemental_attribute_associations,
+        plant_associations,
+        combined_cycle_associations =
+            _export_supplemental_attributes(refs, sys)
+        append!(doc.supplemental_attributes, supplemental_attributes)
+        append!(
+            doc.supplemental_attribute_associations,
+            supplemental_attribute_associations,
+        )
+        append!(doc.plant_associations, plant_associations)
+        append!(doc.combined_cycle_associations, combined_cycle_associations)
+        append!(doc.service_associations, _export_service_associations(refs, sys))
+        append!(
+            doc.time_series_associations,
+            _export_all_time_series(sys, refs, time_series_storage_path),
+        )
+        _reserve_ids!(doc, refs)
+    end
 
+    _check_costs_reference_declared_series!(doc, emitted)
     PD.validate_document(doc)
     return doc
 end
@@ -661,14 +707,18 @@ converter has no id registry.
 function _export_market_bid_service_offers!(doc::PD.SystemDocument, refs::OpenAPIRefs)
     for po_components in values(doc.components), po in po_components
         hasproperty(po, :operation_cost) || continue
-        po_cost = po.operation_cost
-        po_cost isa PC.MarketBidCost || continue
-        component = refs.by_id[Int(po.id)]
-        offers = get_ancillary_service_offers(get_operation_cost(component))
-        isempty(offers) && continue
-        po_cost.ancillary_service_offers =
-            Int64[refs.id_by_component[service] for service in offers]
+        _fill_service_offers!(po.operation_cost, po, refs)
     end
+    return nothing
+end
+
+_fill_service_offers!(::Any, ::Any, ::OpenAPIRefs) = nothing
+function _fill_service_offers!(po_cost::PC.MarketBidCost, po, refs::OpenAPIRefs)
+    component = refs[Int(po.id)]
+    offers = get_ancillary_service_offers(get_operation_cost(component))
+    isempty(offers) && return nothing
+    po_cost.ancillary_service_offers =
+        Int64[component_id(refs, service) for service in offers]
     return nothing
 end
 

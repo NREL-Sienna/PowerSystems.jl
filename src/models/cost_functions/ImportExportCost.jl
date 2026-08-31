@@ -17,9 +17,9 @@ mutable struct ImportExportCost{U <: IS.AbstractUnitSystem} <: OfferCurveCost
     import_offer_curves::CostCurve{PiecewiseIncrementalCurve, U}
     "Sell Price Curves data to export power"
     export_offer_curves::CostCurve{PiecewiseIncrementalCurve, U}
-    "Weekly limit on the amount of energy that can be imported, defined in system base p.u-hours."
+    "Weekly limit on the amount of energy that can be imported, defined in MWh."
     energy_import_weekly_limit::Float64
-    "Weekly limit on the amount of energy that can be exported, defined in system base p.u-hours."
+    "Weekly limit on the amount of energy that can be exported, defined in MWh."
     energy_export_weekly_limit::Float64
     "Bids to buy or sell ancillary services in the interconnection"
     ancillary_service_offers::Vector{Service}

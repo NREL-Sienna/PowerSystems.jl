@@ -120,7 +120,7 @@ export OperationalCost,
     ImportExportCost, ImportExportTimeSeriesCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export HydroReservoirCost
-export get_fuel_cost, set_fuel_cost!, get_vom_cost
+export get_fuel_cost, get_fuel_cost_time_series, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve, make_market_bid_ts_curve
 export make_import_curve, make_export_curve, make_import_export_ts_curve
 export TimeSeriesLinearCurve, TimeSeriesQuadraticCurve, TimeSeriesPiecewisePointCurve
@@ -411,8 +411,7 @@ export ReservoirLocation
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesKey
-export StaticTimeSeriesKey
-export ForecastKey
+export TimeSeriesMetadata
 export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
@@ -545,7 +544,10 @@ export get_next_time
 export reset!
 export get_horizon
 export get_forecast_initial_times
-export get_time_series_keys
+export list_metadata
+export get_time_series_metadata
+export get_time_series_key
+export get_association_id
 export show_time_series
 export get_resolution
 export get_data
@@ -758,9 +760,7 @@ import InfrastructureSystems:
     Probabilistic,
     SingleTimeSeries,
     NonSequentialTimeSeries,
-    StaticTimeSeriesKey,
     DeterministicSingleTimeSeries,
-    ForecastKey,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
@@ -769,6 +769,7 @@ import InfrastructureSystems:
     StaticTimeSeriesReader,
     StaticTimeSeriesReaderEntry,
     TimeSeriesKey,
+    TimeSeriesMetadata,
     TimeSeriesCounts,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
@@ -819,7 +820,10 @@ import InfrastructureSystems:
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    get_time_series_keys,
+    list_metadata,
+    get_time_series_metadata,
+    get_time_series_key,
+    get_association_id,
     get_time_series_hash,
     read_forecast_window!,
     get_forecast_window,
@@ -925,7 +929,8 @@ import InfrastructureSystems:
     get_vom_cost,
     get_startup_fuel_offtake,
     get_power_units,
-    get_fuel_cost
+    get_fuel_cost,
+    get_fuel_cost_time_series
 
 #################################################################################
 

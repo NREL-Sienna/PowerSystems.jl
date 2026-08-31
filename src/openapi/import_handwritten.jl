@@ -1415,7 +1415,9 @@ function from_openapi(po::PO.Source, refs::OpenAPIRefs, ::DeviceBaseUnit)
         internal_angle = po.internal_angle,
         base_power = po.base_power,
         base_voltage = po.base_voltage,
-        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        operation_cost = _convert_source_operation_cost(
+            po.operation_cost, get_store(refs), get_base_power(refs),
+        )::OperationalCost,
     )
 end
 
@@ -1436,7 +1438,9 @@ function from_openapi(po::PO.Source, refs::OpenAPIRefs, ::NaturalUnit)
         internal_angle = po.internal_angle,
         base_power = dbp,
         base_voltage = po.base_voltage,
-        operation_cost = convert_cost(po.operation_cost)::OperationalCost,
+        operation_cost = _convert_source_operation_cost(
+            po.operation_cost, get_store(refs), get_base_power(refs),
+        )::OperationalCost,
     )
 end
 

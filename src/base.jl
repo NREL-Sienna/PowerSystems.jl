@@ -1523,8 +1523,8 @@ ts3 = SingleTimeSeries(
     data = time_array_2,
 )
 key1 = add_time_series!(system, component, ts1)
-key2 = add_time_series!(system, component, ts2, scenario = "high")
-key3 = add_time_series!(system, component, ts3, scenario = "low")
+key2 = add_time_series!(system, component, ts2; features = Dict("scenario" => "high"))
+key3 = add_time_series!(system, component, ts3; features = Dict("scenario" => "low"))
 ts1_b = get_time_series(component, key1)
 ts2_b = get_time_series(component, key2)
 ts3_b = get_time_series(component, key3)
@@ -1534,9 +1534,9 @@ function add_time_series!(
     sys::System,
     component::Component,
     time_series::TimeSeriesData;
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 )
-    return IS.add_time_series!(sys.data, component, time_series; features...)
+    return IS.add_time_series!(sys.data, component, time_series; features = features)
 end
 
 """
@@ -1551,9 +1551,9 @@ function add_time_series!(
     sys::System,
     attribute::SupplementalAttribute,
     time_series::TimeSeriesData;
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 )
-    return IS.add_time_series!(sys.data, attribute, time_series; features...)
+    return IS.add_time_series!(sys.data, attribute, time_series; features = features)
 end
 
 """
@@ -1570,9 +1570,9 @@ function add_time_series!(
     sys::System,
     components,
     time_series::TimeSeriesData;
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 )
-    return IS.add_time_series!(sys.data, components, time_series; features...)
+    return IS.add_time_series!(sys.data, components, time_series; features = features)
 end
 
 #=
@@ -1669,9 +1669,15 @@ build_forecast_reader(
     ::Type{T};
     resolution::Dates.Period,
     name::Union{Nothing, AbstractString} = nothing,
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 ) where {T <: Forecast} =
-    IS.build_forecast_reader(sys.data, T; resolution = resolution, name = name, features...)
+    IS.build_forecast_reader(
+        sys.data,
+        T;
+        resolution = resolution,
+        name = name,
+        features = features,
+    )
 
 """
 Build a `StaticTimeSeriesReader` over every `SingleTimeSeries` in the system.
@@ -1686,13 +1692,13 @@ build_static_time_series_reader(
     sys::System;
     resolution::Dates.Period,
     name::Union{Nothing, AbstractString} = nothing,
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 ) =
     IS.build_static_time_series_reader(
         sys.data;
         resolution = resolution,
         name = name,
-        features...,
+        features = features,
     )
 
 """
@@ -1737,9 +1743,14 @@ function IS.get_time_series_multiple(
     resolution = nothing,
     interval = nothing,
 )
+    # Resolve the owners before opening the Channel: a Channel wraps whatever its body
+    # throws in a TaskFailedException, which would bury the orphaned-owner ArgumentError
+    # IS raises for a component removed with `remove_time_series = false`.
+    owners = collect(
+        IS.iterate_components_with_time_series(sys.data; time_series_type = type),
+    )
     Channel{TimeSeriesData}() do channel
-        for component in
-            IS.iterate_components_with_time_series(sys.data; time_series_type = type)
+        for component in owners
             for time_series in get_time_series_multiple(
                 component,
                 filter_func;
@@ -1790,7 +1801,7 @@ function remove_time_series!(
     name::String;
     resolution::Union{Nothing, Dates.Period} = nothing,
     interval::Union{Nothing, Dates.Period} = nothing,
-    features...,
+    features::Union{Nothing, Dict} = nothing,
 ) where {T <: TimeSeriesData}
     return IS.remove_time_series!(
         sys.data,
@@ -1799,7 +1810,7 @@ function remove_time_series!(
         name;
         resolution = resolution,
         interval = interval,
-        features...,
+        features = features,
     )
 end
 

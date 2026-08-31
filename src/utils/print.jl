@@ -73,8 +73,13 @@ function Base.summary(io::IO, data::OperationalCost)
         # Only the most important fields
         (val isa ProductionVariableCostCurve) &&
             push!(field_msgs, "$(field_name): $(typeof(val))")
+        # A key carries only its association id; the name is a catalog column, and a
+        # summary must not query the store to print one.
         (val isa TimeSeriesKey) &&
-            push!(field_msgs, "$(field_name): time series \"$(get_name(val))\"")
+            push!(
+                field_msgs,
+                "$(field_name): time series association_id=$(get_association_id(val))",
+            )
     end
     isempty(field_msgs) && return
     print(io, "$(typeof(data)) composed of ")

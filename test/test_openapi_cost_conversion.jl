@@ -324,12 +324,279 @@ end
     @test_throws ErrorException PSY.convert_reserve_variable(_po_cost_curve())
 end
 
-@testset "convert_cost: fuel_cost time-series reference not implemented" begin
+@testset "convert_cost: FuelCurve fuel_cost/fuel_cost_time_series are mutually exclusive" begin
+    # Neither set.
     @test_throws ErrorException PSY.convert_cost(
         PSY.PC.FuelCurve(;
             power_units = "NATURAL_UNITS",
             value_curve = PSY.PC.ValueCurve(_po_linear_io(1.0, 0.0)),
-            fuel_cost = "some_time_series_ref",
         ),
+    )
+    # Both set — a document naming both is malformed regardless of whether either id
+    # resolves, so this errors before ever touching a store.
+    @test_throws ErrorException PSY.convert_cost(
+        PSY.PC.FuelCurve(;
+            power_units = "NATURAL_UNITS",
+            value_curve = PSY.PC.ValueCurve(_po_linear_io(1.0, 0.0)),
+            fuel_cost = 3.5,
+            fuel_cost_time_series = 7,
+        ),
+    )
+end
+
+@testset "convert_cost: FuelCurve with a time-series value curve and a fixed fuel_cost" begin
+    # A doubly-TS-backed shape only in the sense that the store binding is exercised twice
+    # over: `value_curve` is a TIME_SERIES_INCREMENTAL curve (needs the store) while
+    # `fuel_cost` is a plain scalar (does not). The 1-arg ambient form must resolve the
+    # store for the value curve regardless of which form `fuel_cost` takes.
+    store = IS.Store(; in_memory = true)
+    try
+        # `LinearFunctionData` values, not bare floats: the wire type below is a
+        # `TimeSeriesLinearFunctionData`, and a key naming a `Float64`-valued series
+        # cannot back one — the element type is part of the key's type now.
+        series = SingleTimeSeries(;
+            name = "heat_rate",
+            data = TimeSeries.TimeArray(
+                [
+                    Dates.DateTime(2024, 1, 1, 0),
+                    Dates.DateTime(2024, 1, 1, 1),
+                    Dates.DateTime(2024, 1, 1, 2),
+                ],
+                [
+                    IS.LinearFunctionData(8.0, 0.0),
+                    IS.LinearFunctionData(8.5, 0.0),
+                    IS.LinearFunctionData(9.0, 0.0),
+                ],
+            ),
+        )
+        batch = IS.make_add_batch()
+        IS.serialize_single!(
+            batch,
+            1,
+            "ThermalStandard",
+            IS.get_owner_category(IS.InfrastructureSystemsComponent),
+            IS.get_name(series),
+            series,
+        )
+        IS.commit_batch!(store, batch)
+        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
+
+        fc = PSY._with_import_store(store) do
+            PSY.convert_cost(
+                PSY.PC.FuelCurve(;
+                    power_units = "NATURAL_UNITS",
+                    value_curve = PSY.PC.ValueCurve(
+                        PSY.PC.TimeSeriesIncrementalCurve(;
+                            function_data = PSY.PC.FunctionData(
+                                PSY.PC.TimeSeriesLinearFunctionData(;
+                                    association_id = assoc_id,
+                                ),
+                            ),
+                            initial_input_association_id = nothing,
+                        ),
+                    ),
+                    fuel_cost = 3.5,
+                ),
+            )
+        end
+        @test fc isa FuelCurve
+        @test get_fuel_cost(fc) == 3.5
+        @test get_fuel_cost_time_series(fc) === nothing
+        @test get_function_data(get_value_curve(fc)) isa PSY.TimeSeriesFunctionData
+    finally
+        IS.close!(store)
+    end
+end
+
+@testset "convert_cost: FuelCurve/MarketBidTimeSeriesCost need a bound import store" begin
+    # `fuel_cost_time_series` present but no active `from_openapi(System, doc)` import bound:
+    # the 1-arg ambient form errors rather than silently treating it as absent.
+    @test_throws ErrorException PSY.convert_cost(
+        PSY.PC.FuelCurve(;
+            power_units = "NATURAL_UNITS",
+            value_curve = PSY.PC.ValueCurve(_po_linear_io(1.0, 0.0)),
+            fuel_cost_time_series = 7,
+        ),
+    )
+    @test_throws ErrorException PSY.convert_cost(
+        PSY.PC.MarketBidTimeSeriesCost(;
+            no_load_cost = PSY.PC.TimeSeriesInputOutputCurve(;
+                function_data = PSY.PC.FunctionData(
+                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 1),
+                ),
+            ),
+            start_up_association_id = 2,
+            shut_down = PSY.PC.TimeSeriesInputOutputCurve(;
+                function_data = PSY.PC.FunctionData(
+                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 3),
+                ),
+            ),
+            incremental_offer_curves = PSY.PC.CostCurve(;
+                power_units = "NATURAL_UNITS",
+                value_curve = PSY.PC.ValueCurve(
+                    PSY.PC.TimeSeriesIncrementalCurve(;
+                        function_data = PSY.PC.FunctionData(
+                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 4),
+                        ),
+                    ),
+                ),
+            ),
+            decremental_offer_curves = PSY.PC.CostCurve(;
+                power_units = "NATURAL_UNITS",
+                value_curve = PSY.PC.ValueCurve(
+                    PSY.PC.TimeSeriesIncrementalCurve(;
+                        function_data = PSY.PC.FunctionData(
+                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 5),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+end
+
+@testset "weekly limits are MWh, unscaled, in both directions" begin
+    # `INFINITE_BOUND` is a real value on the wire now, not a sentinel a scaling step has
+    # to dodge — it rides across every conversion identically to any other MWh value.
+    cost = ImportExportCost(;
+        import_offer_curves = make_import_curve([0.0, 100.0], [10.0]),
+        export_offer_curves = make_export_curve([0.0, 50.0], [8.0]),
+        energy_import_weekly_limit = PSY.INFINITE_BOUND,
+        energy_export_weekly_limit = 4321.0,
+    )
+    wire = PSY.convert_cost_to_openapi(cost)
+    @test wire.energy_import_weekly_limit == PSY.INFINITE_BOUND
+    @test wire.energy_export_weekly_limit == 4321.0
+    round_tripped = PSY.convert_cost(wire)
+    @test get_energy_import_weekly_limit(round_tripped) == PSY.INFINITE_BOUND
+    @test get_energy_export_weekly_limit(round_tripped) == 4321.0
+end
+
+@testset "convert_cost_to_openapi(ImportExportTimeSeriesCost): no base_power argument" begin
+    # The 2-arg fallback and base_power threading this converter used to need for scaling
+    # are gone now that the field is MWh; it takes the cost alone.
+    @test !hasmethod(
+        PSY.convert_cost_to_openapi, Tuple{ImportExportTimeSeriesCost, Real},
+    )
+    @test !hasmethod(PSY.convert_cost_to_openapi, Tuple{OperationalCost, Real})
+end
+
+@testset "convert_cost: ImportExportCost and ImportExportTimeSeriesCost weekly limits round trip identically" begin
+    # Regression test for the fixed asymmetry: a static `ImportExportCost` and a
+    # time-series-backed `ImportExportTimeSeriesCost` carrying the same weekly limit value
+    # must produce the same wire value and round-trip back to the same PSY value —
+    # previously the time-series cost alone divided/multiplied by `base_power`, so a
+    # non-1.0 base_power made the two diverge.
+    store = IS.Store(; in_memory = true)
+    try
+        # An import/export offer curve is backed by `PiecewiseStepData` values; a
+        # `Float64`-valued series' key no longer types as one.
+        series = SingleTimeSeries(;
+            name = "import_price",
+            data = TimeSeries.TimeArray(
+                [Dates.DateTime(2024, 1, 1, 0), Dates.DateTime(2024, 1, 1, 1)],
+                [
+                    PiecewiseStepData([0.0, 100.0], [10.0]),
+                    PiecewiseStepData([0.0, 100.0], [12.0]),
+                ],
+            ),
+        )
+        batch = IS.make_add_batch()
+        IS.serialize_single!(
+            batch,
+            1,
+            "Source",
+            IS.get_owner_category(IS.InfrastructureSystemsComponent),
+            IS.get_name(series),
+            series,
+        )
+        IS.commit_batch!(store, batch)
+        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
+        ts_key = IS.get_time_series_key(store, Int(assoc_id))
+
+        static_cost = ImportExportCost(;
+            import_offer_curves = make_import_curve([0.0, 100.0], [10.0]),
+            export_offer_curves = make_export_curve([0.0, 50.0], [8.0]),
+            energy_import_weekly_limit = 1000.0,
+            energy_export_weekly_limit = 2000.0,
+        )
+        ts_cost = ImportExportTimeSeriesCost(;
+            import_offer_curves = make_import_export_ts_curve(ts_key),
+            export_offer_curves = make_import_export_ts_curve(ts_key),
+            energy_import_weekly_limit = 1000.0,
+            energy_export_weekly_limit = 2000.0,
+        )
+
+        static_wire = PSY.convert_cost_to_openapi(static_cost)
+        ts_wire = PSY.convert_cost_to_openapi(ts_cost)
+        @test static_wire.energy_import_weekly_limit == ts_wire.energy_import_weekly_limit
+        @test static_wire.energy_export_weekly_limit == ts_wire.energy_export_weekly_limit
+
+        # A wildly non-1.0 base_power must not perturb the round trip.
+        ts_round_tripped = PSY.convert_cost(ts_wire, store, 250.0)
+        @test get_energy_import_weekly_limit(ts_round_tripped) ==
+              get_energy_import_weekly_limit(ts_cost)
+        @test get_energy_export_weekly_limit(ts_round_tripped) ==
+              get_energy_export_weekly_limit(ts_cost)
+    finally
+        IS.close!(store)
+    end
+end
+
+@testset "to_openapi refuses a cost referencing a series the document omits" begin
+    # A cost may reference a series owned by a *different* component, and a component with
+    # no OpenAPI converter is omitted from the document along with its association rows.
+    # The document would then carry a bare association id with no declared identity beside
+    # it, and importing that against another sidecar binds the cost to whichever series
+    # holds that id there — silently, since the identity cross-check has nothing to match.
+    sys = System(100.0)
+    bus = ACBus(;
+        number = 1, name = "b", available = true, bustype = ACBusTypes.REF,
+        angle = 0.0, magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+    add_component!(sys, bus)
+
+    gen = ThermalStandard(;
+        name = "A", available = true, status = true, bus = bus,
+        active_power = 1.0, reactive_power = 0.0, rating = 2.0,
+        active_power_limits = (min = 0.0, max = 2.0), reactive_power_limits = nothing,
+        ramp_limits = nothing, operation_cost = ThermalGenerationCost(nothing),
+        base_power = 100.0, time_limits = nothing, must_run = false,
+        prime_mover_type = PrimeMovers.OT, fuel = ThermalFuels.OTHER,
+    )
+    add_component!(sys, gen)
+
+    src = Source(;
+        name = "S", available = true, bus = bus, active_power = 0.0,
+        reactive_power = 0.0, R_th = 0.0, X_th = 1.0, internal_voltage = 1.0,
+        internal_angle = 0.0,
+    )
+    add_component!(sys, src)
+
+    # No dynamic type has a converter yet, so this owner cannot be described.
+    dyn = PeriodicVariableSource(; name = "S", R_th = 0.0, X_th = 1.0)
+    add_component!(sys, dyn, src)
+    @test !PowerSystems.is_document_exportable(dyn)
+
+    series = SingleTimeSeries(;
+        name = "fuel_price",
+        data = TimeSeries.TimeArray(
+            [Dates.DateTime(2030, 1, 1, 0), Dates.DateTime(2030, 1, 1, 1)],
+            [10.0, 12.0],
+        ),
+    )
+    key = add_time_series!(sys, dyn, series)
+    set_operation_cost!(
+        gen,
+        ThermalGenerationCost(;
+            variable = FuelCurve(LinearCurve(1.0), key),
+            fixed = 0.0, start_up = 0.0, shut_down = 0.0,
+        ),
+    )
+
+    dir = mktempdir()
+    @test_throws IS.DataFormatError to_openapi(
+        sys; time_series_storage_path = joinpath(dir, "sidecar.h5"),
     )
 end

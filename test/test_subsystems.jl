@@ -723,10 +723,10 @@ end
     # array between each area-1/area-2 pair: 6 forecast associations over 3 arrays.
     @test ts_counts.forecast_count == 3
     @test count(
-        k -> IS.get_time_series_type(k) <: IS.Forecast,
+        md -> IS.get_time_series_type(md) <: IS.Forecast,
         (
-            k for c in get_components(Component, base_sys) for
-            k in IS.get_time_series_keys(c)
+            md for c in get_components(Component, base_sys) for
+            md in IS.list_metadata(c)
         ),
     ) == 6
     subsystem1_ids = get_component_ids(base_sys, "subsystem_1")
