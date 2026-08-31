@@ -2404,8 +2404,6 @@ function from_dict(
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
     try
-        # Keys serialize as self-contained dicts (association id + element type) under
-        # the association-id world, so no scoped store is needed to resolve them back.
         deserialize_components!(sys, raw["data"])
     finally
         pop!(ext, "deserialization_in_progress")
