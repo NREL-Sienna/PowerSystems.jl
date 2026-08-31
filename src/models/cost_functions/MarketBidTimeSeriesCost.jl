@@ -13,14 +13,16 @@ mutable struct MarketBidTimeSeriesCost{U <: IS.AbstractUnitSystem} <: OfferCurve
     "No load cost (time series)"
     no_load_cost::TimeSeriesLinearCurve
     "Key of a time series of `NTuple{3, Float64}` start-up cost stages, resolved to a
-    `StartUpStages` at a chosen timestep by `get_start_up(device, cost; start_time)`"
-    start_up::IS.ConcreteTimeSeriesKey
+    `StartUpStages` at a chosen timestep by `get_start_up(device, cost; start_time)`.
+    The element type is in the key's parameter, so a key naming a series of anything but
+    3-stage tuples is rejected here rather than at the read."
+    start_up::StartUpStagesKey
     "Shut-down cost (time series)"
     shut_down::TimeSeriesLinearCurve
     "Sell Offer Curves data (time series)"
-    incremental_offer_curves::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}
+    incremental_offer_curves::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U}
     "Buy Offer Curves data (time series)"
-    decremental_offer_curves::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U}
+    decremental_offer_curves::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U}
     "Bids for the ancillary services"
     ancillary_service_offers::Vector{Service}
 end
@@ -80,7 +82,7 @@ set_ancillary_service_offers!(value::MarketBidTimeSeriesCost, val) =
     value.ancillary_service_offers = val
 
 """
-Make a time-series-backed `CostCurve{TimeSeriesPiecewiseIncrementalCurve}` from
+Make a time-series-backed `CostCurve{<:TimeSeriesPiecewiseIncrementalCurve}` from
 `TimeSeriesKey` references, suitable for the `incremental_offer_curves` or
 `decremental_offer_curves` field of a [`MarketBidTimeSeriesCost`](@ref).
 """

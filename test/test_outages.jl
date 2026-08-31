@@ -83,12 +83,14 @@
     planned_outages = collect(get_supplemental_attributes(PlannedOutage, gen2))
     @test !isempty(planned_outages)
     for outage in planned_outages
-        ts_keys = get_time_series_keys(outage)
-        @test !isempty(ts_keys)
-        for key in ts_keys
-            remove_time_series!(sys, key.time_series_type, outage, key.name)
+        rows = list_metadata(outage)
+        @test !isempty(rows)
+        for md in rows
+            remove_time_series!(
+                sys, IS.get_time_series_type(md), outage, IS.get_name(md),
+            )
         end
-        @test isempty(get_time_series_keys(outage))
+        @test isempty(list_metadata(outage))
     end
 end
 
@@ -297,7 +299,10 @@ end
         IS.get_id(outage) =>
             TimeSeries.values(
                 PSY.get_data(
-                    IS.get_time_series(outage, only(IS.get_time_series_keys(outage))),
+                    IS.get_time_series(
+                        outage,
+                        IS.get_time_series_key(only(IS.list_metadata(outage))),
+                    ),
                 ),
             ) for outage in get_supplemental_attributes(Outage, sys)
     )
@@ -326,7 +331,7 @@ end
     # The attribute-owned series survive value-for-value, keyed by the id that stays stable
     # across the round trip.
     for outage in outages2
-        key = only(IS.get_time_series_keys(outage))
+        key = IS.get_time_series_key(only(IS.list_metadata(outage)))
         values = TimeSeries.values(PSY.get_data(IS.get_time_series(outage, key)))
         @test values == original_series[IS.get_id(outage)]
     end

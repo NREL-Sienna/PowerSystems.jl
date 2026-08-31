@@ -81,7 +81,7 @@ a single timestep and return one static `CostCurve`.
 """
 function _resolve_ts_cost_curve(
     component::Component,
-    curve::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
+    curve::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve, U},
     start_time::Dates.DateTime,
     len::Int,
 ) where {U <: IS.AbstractUnitSystem}
@@ -233,7 +233,7 @@ _get_reserve_variable_cost(
 
 function _get_reserve_variable_cost(
     service::AbstractReserve,
-    variable::CostCurve{TimeSeriesPiecewiseIncrementalCurve},
+    variable::CostCurve{<:TimeSeriesPiecewiseIncrementalCurve},
     start_time::Union{Nothing, Dates.DateTime},
     len::Union{Nothing, Int},
 )
@@ -340,10 +340,15 @@ function get_fuel_cost(component::StaticInjection;
     len::Union{Nothing, Int} = nothing,
 )
     var_cost = _validate_fuel_curve(component)
+    # The fixed value and the time series key are separate fields on `FuelCurve`, and
+    # exactly one of them is set. Whichever it is goes to `_process_get_cost`, which
+    # dispatches on the scalar/key distinction to read or pass through.
+    fixed = get_fuel_cost(var_cost)
+    fuel_cost = isnothing(fixed) ? get_fuel_cost_time_series(var_cost) : fixed
     return _process_get_cost(
         Float64,
         component,
-        get_fuel_cost(var_cost),
+        fuel_cost,
         nothing,
         start_time,
         len,

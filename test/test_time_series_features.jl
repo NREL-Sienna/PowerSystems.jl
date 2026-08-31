@@ -20,6 +20,17 @@ function _features_test_system(count::Int = 2)
     return sys, gens
 end
 
+"""
+The features stored for `key`, read from `owner`'s catalog rows.
+
+A `TimeSeriesKey` carries only its association id; `features` is a catalog column, so it
+comes from the [`TimeSeriesMetadata`](@ref) row the key addresses.
+"""
+function _features_for(owner, key)
+    md = only(filter(m -> IS.get_time_series_key(m) == key, list_metadata(owner)))
+    return IS.get_features(md)
+end
+
 const _FEATURES_INITIAL_TIME = Dates.DateTime("2020-01-01T00:00:00")
 const _FEATURES_RESOLUTION = Dates.Hour(1)
 const _FEATURES_LENGTH = 24
@@ -57,15 +68,15 @@ end
         features = low)
 
     # Same type and name; only the features separate them.
-    @test IS.get_features(key_high) == Dict{String, Any}("scenario" => "high")
-    @test IS.get_features(key_low) == Dict{String, Any}("scenario" => "low")
+    @test _features_for(gen, key_high) == Dict{String, Any}("scenario" => "high")
+    @test _features_for(gen, key_low) == Dict{String, Any}("scenario" => "low")
     @test key_high != key_low
-    @test length(get_time_series_keys(gen)) == 2
+    @test length(list_metadata(gen)) == 2
 
     @test get_time_series_values(SingleTimeSeries, gen, name; features = high)[1] == 1.0
     @test get_time_series_values(SingleTimeSeries, gen, name; features = low)[1] == 25.0
     @test has_time_series(gen, SingleTimeSeries, name; features = high)
-    @test only(get_time_series_keys(gen; features = high)) == key_high
+    @test IS.get_time_series_key(only(list_metadata(gen; features = high))) == key_high
 
     # Without features the lookup is ambiguous.
     @test_throws ArgumentError get_time_series(SingleTimeSeries, gen, name)
@@ -89,7 +100,7 @@ end
     # The default is `nothing`, and passing it explicitly is the same as omitting it.
     key_plain = add_time_series!(sys, gen, _features_sts("plain", collect(1.0:24.0));
         features = nothing)
-    @test isempty(IS.get_features(key_plain))
+    @test isempty(_features_for(gen, key_plain))
     @test get_time_series_values(SingleTimeSeries, gen, "plain")[1] == 1.0
 end
 
@@ -100,12 +111,14 @@ end
 
     keys = add_time_series!(sys, gens, _features_sts(name, collect(1.0:24.0));
         features = high)
-    @test all(k -> IS.get_features(k) == Dict{String, Any}("scenario" => "high"), keys)
+    @test all(((g, k),) -> _features_for(g, k) == Dict{String, Any}("scenario" => "high"),
+        zip(gens, keys))
 
     # Every component gets the features, and the array itself is still stored once.
-    keys_by_gen = [only(get_time_series_keys(g; name = name)) for g in gens]
-    @test all(k -> IS.get_features(k) == Dict{String, Any}("scenario" => "high"),
-        keys_by_gen)
+    keys_by_gen =
+        [IS.get_time_series_key(only(list_metadata(g; name = name))) for g in gens]
+    @test all(((g, k),) -> _features_for(g, k) == Dict{String, Any}("scenario" => "high"),
+        zip(gens, keys_by_gen))
     hashes = [get_time_series_hash(g, k) for (g, k) in zip(gens, keys_by_gen)]
     @test hashes[1] == hashes[2]
 
@@ -130,8 +143,8 @@ end
     key_2040 = add_time_series!(sys, outage, _features_sts(name, collect(25.0:48.0));
         features = Dict("year" => 2040))
 
-    @test IS.get_features(key_2030) == Dict{String, Any}("year" => 2030)
-    @test IS.get_features(key_2040) == Dict{String, Any}("year" => 2040)
+    @test _features_for(outage, key_2030) == Dict{String, Any}("year" => 2030)
+    @test _features_for(outage, key_2040) == Dict{String, Any}("year" => 2040)
     @test get_time_series_values(SingleTimeSeries, outage, name;
         features = Dict("year" => 2030))[1] == 1.0
     @test get_time_series_values(SingleTimeSeries, outage, name;
@@ -241,19 +254,19 @@ end
         features = high)
     add_time_series!(sys, gens[1], _features_forecast(name, collect(101.0:124.0));
         features = low)
-    @test length(get_time_series_keys(gens[1])) == 2
+    @test length(list_metadata(gens[1])) == 2
 
     remove_time_series!(sys, Deterministic, gens[1], name; features = low)
     @test !has_time_series(gens[1], Deterministic, name; features = low)
     @test has_time_series(gens[1], Deterministic, name; features = high)
     # The other owner of the shared array is untouched.
-    @test length(get_time_series_keys(gens[2])) == 1
+    @test length(list_metadata(gens[2])) == 1
 
     # Omitting `features` removes every variant matching the type and name.
     add_time_series!(sys, gens[1], _features_forecast(name, collect(201.0:224.0));
         features = low)
-    @test length(get_time_series_keys(gens[1])) == 2
+    @test length(list_metadata(gens[1])) == 2
     remove_time_series!(sys, Deterministic, gens[1], name)
-    @test isempty(get_time_series_keys(gens[1]))
-    @test length(get_time_series_keys(gens[2])) == 1
+    @test isempty(list_metadata(gens[1]))
+    @test length(list_metadata(gens[2])) == 1
 end
