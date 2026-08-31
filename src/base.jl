@@ -1743,9 +1743,14 @@ function IS.get_time_series_multiple(
     resolution = nothing,
     interval = nothing,
 )
+    # Resolve the owners before opening the Channel: a Channel wraps whatever its body
+    # throws in a TaskFailedException, which would bury the orphaned-owner ArgumentError
+    # IS raises for a component removed with `remove_time_series = false`.
+    owners = collect(
+        IS.iterate_components_with_time_series(sys.data; time_series_type = type),
+    )
     Channel{TimeSeriesData}() do channel
-        for component in
-            IS.iterate_components_with_time_series(sys.data; time_series_type = type)
+        for component in owners
             for time_series in get_time_series_multiple(
                 component,
                 filter_func;
