@@ -140,25 +140,20 @@ get_internal(value::GenericArcImpedance) = value.internal
 set_available!(value::GenericArcImpedance, val) = value.available = val
 """Set [`GenericArcImpedance`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::GenericArcImpedance, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::GenericArcImpedance, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::GenericArcImpedance, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::GenericArcImpedance, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`GenericArcImpedance`](@ref) `reactive_power_flow`."""
 set_reactive_power_flow!(value::GenericArcImpedance, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
-set_reactive_power_flow!(value::GenericArcImpedance, val::Real) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
-set_reactive_power_flow!(value::GenericArcImpedance, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
+set_reactive_power_flow!(value::GenericArcImpedance, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
 """Set [`GenericArcImpedance`](@ref) `max_flow`."""
 set_max_flow!(value::GenericArcImpedance, val) = value.max_flow = set_value(value, Val(:max_flow), val, Val(:mw))
-set_max_flow!(value::GenericArcImpedance, val::Real) = _units_tag_required(set_max_flow!, value, :max_flow, Val(:mw), val)
-set_max_flow!(value::GenericArcImpedance, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_flow!, value, :max_flow, Val(:mw), val)
+set_max_flow!(value::GenericArcImpedance, val::_UntaggedNumber) = _units_tag_required(set_max_flow!, value, :max_flow, Val(:mw), val)
 """Set [`GenericArcImpedance`](@ref) `arc`."""
 set_arc!(value::GenericArcImpedance, val) = value.arc = val
 """Set [`GenericArcImpedance`](@ref) `r`."""
 set_r!(value::GenericArcImpedance, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-set_r!(value::GenericArcImpedance, val::Real) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
-set_r!(value::GenericArcImpedance, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
+set_r!(value::GenericArcImpedance, val::_UntaggedNumber) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
 """Set [`GenericArcImpedance`](@ref) `x`."""
 set_x!(value::GenericArcImpedance, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-set_x!(value::GenericArcImpedance, val::Real) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
-set_x!(value::GenericArcImpedance, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
+set_x!(value::GenericArcImpedance, val::_UntaggedNumber) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
 """Set [`GenericArcImpedance`](@ref) `ext`."""
 set_ext!(value::GenericArcImpedance, val) = value.ext = val

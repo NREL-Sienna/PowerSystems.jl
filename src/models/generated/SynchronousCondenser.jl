@@ -143,20 +143,17 @@ set_available!(value::SynchronousCondenser, val) = value.available = val
 set_bus!(value::SynchronousCondenser, val) = value.bus = val
 """Set [`SynchronousCondenser`](@ref) `reactive_power`."""
 set_reactive_power!(value::SynchronousCondenser, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::SynchronousCondenser, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::SynchronousCondenser, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::SynchronousCondenser, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`SynchronousCondenser`](@ref) `rating`."""
 set_rating!(value::SynchronousCondenser, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::SynchronousCondenser, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::SynchronousCondenser, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::SynchronousCondenser, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`SynchronousCondenser`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::SynchronousCondenser, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
-set_reactive_power_limits!(value::SynchronousCondenser, val::Real) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
-set_reactive_power_limits!(value::SynchronousCondenser, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::SynchronousCondenser, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::SynchronousCondenser, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
 """Set [`SynchronousCondenser`](@ref) `active_power_losses`."""
 set_active_power_losses!(value::SynchronousCondenser, val) = value.active_power_losses = set_value(value, Val(:active_power_losses), val, Val(:mw))
-set_active_power_losses!(value::SynchronousCondenser, val::Real) = _units_tag_required(set_active_power_losses!, value, :active_power_losses, Val(:mw), val)
-set_active_power_losses!(value::SynchronousCondenser, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_losses!, value, :active_power_losses, Val(:mw), val)
+set_active_power_losses!(value::SynchronousCondenser, val::_UntaggedNumber) = _units_tag_required(set_active_power_losses!, value, :active_power_losses, Val(:mw), val)
 """Set [`SynchronousCondenser`](@ref) `services`."""
 set_services!(value::SynchronousCondenser, val) = value.services = val
 """Set [`SynchronousCondenser`](@ref) `ext`."""

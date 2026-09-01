@@ -269,52 +269,40 @@ set_operation_cost!(value::InterruptibleStandardLoad, val) = value.operation_cos
 set_conformity!(value::InterruptibleStandardLoad, val) = value.conformity = val
 """Set [`InterruptibleStandardLoad`](@ref) `constant_active_power`."""
 set_constant_active_power!(value::InterruptibleStandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mw))
-set_constant_active_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_constant_active_power!, value, :constant_active_power, Val(:mw), val)
-set_constant_active_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_constant_active_power!, value, :constant_active_power, Val(:mw), val)
+set_constant_active_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_constant_active_power!, value, :constant_active_power, Val(:mw), val)
 """Set [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`."""
 set_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), val, Val(:mvar))
-set_constant_reactive_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_constant_reactive_power!, value, :constant_reactive_power, Val(:mvar), val)
-set_constant_reactive_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_constant_reactive_power!, value, :constant_reactive_power, Val(:mvar), val)
+set_constant_reactive_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_constant_reactive_power!, value, :constant_reactive_power, Val(:mvar), val)
 """Set [`InterruptibleStandardLoad`](@ref) `impedance_active_power`."""
 set_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), val, Val(:mw))
-set_impedance_active_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_impedance_active_power!, value, :impedance_active_power, Val(:mw), val)
-set_impedance_active_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_impedance_active_power!, value, :impedance_active_power, Val(:mw), val)
+set_impedance_active_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_impedance_active_power!, value, :impedance_active_power, Val(:mw), val)
 """Set [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power`."""
 set_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), val, Val(:mvar))
-set_impedance_reactive_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_impedance_reactive_power!, value, :impedance_reactive_power, Val(:mvar), val)
-set_impedance_reactive_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_impedance_reactive_power!, value, :impedance_reactive_power, Val(:mvar), val)
+set_impedance_reactive_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_impedance_reactive_power!, value, :impedance_reactive_power, Val(:mvar), val)
 """Set [`InterruptibleStandardLoad`](@ref) `current_active_power`."""
 set_current_active_power!(value::InterruptibleStandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), val, Val(:mw))
-set_current_active_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_current_active_power!, value, :current_active_power, Val(:mw), val)
-set_current_active_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_current_active_power!, value, :current_active_power, Val(:mw), val)
+set_current_active_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_current_active_power!, value, :current_active_power, Val(:mw), val)
 """Set [`InterruptibleStandardLoad`](@ref) `current_reactive_power`."""
 set_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), val, Val(:mvar))
-set_current_reactive_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_current_reactive_power!, value, :current_reactive_power, Val(:mvar), val)
-set_current_reactive_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_current_reactive_power!, value, :current_reactive_power, Val(:mvar), val)
+set_current_reactive_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_current_reactive_power!, value, :current_reactive_power, Val(:mvar), val)
 """Set [`InterruptibleStandardLoad`](@ref) `max_constant_active_power`."""
 set_max_constant_active_power!(value::InterruptibleStandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), val, Val(:mw))
-set_max_constant_active_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_max_constant_active_power!, value, :max_constant_active_power, Val(:mw), val)
-set_max_constant_active_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_constant_active_power!, value, :max_constant_active_power, Val(:mw), val)
+set_max_constant_active_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_max_constant_active_power!, value, :max_constant_active_power, Val(:mw), val)
 """Set [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power`."""
 set_max_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), val, Val(:mvar))
-set_max_constant_reactive_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_max_constant_reactive_power!, value, :max_constant_reactive_power, Val(:mvar), val)
-set_max_constant_reactive_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_constant_reactive_power!, value, :max_constant_reactive_power, Val(:mvar), val)
+set_max_constant_reactive_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_max_constant_reactive_power!, value, :max_constant_reactive_power, Val(:mvar), val)
 """Set [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power`."""
 set_max_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), val, Val(:mw))
-set_max_impedance_active_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_max_impedance_active_power!, value, :max_impedance_active_power, Val(:mw), val)
-set_max_impedance_active_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_impedance_active_power!, value, :max_impedance_active_power, Val(:mw), val)
+set_max_impedance_active_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_max_impedance_active_power!, value, :max_impedance_active_power, Val(:mw), val)
 """Set [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power`."""
 set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), val, Val(:mvar))
-set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_max_impedance_reactive_power!, value, :max_impedance_reactive_power, Val(:mvar), val)
-set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_impedance_reactive_power!, value, :max_impedance_reactive_power, Val(:mvar), val)
+set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_max_impedance_reactive_power!, value, :max_impedance_reactive_power, Val(:mvar), val)
 """Set [`InterruptibleStandardLoad`](@ref) `max_current_active_power`."""
 set_max_current_active_power!(value::InterruptibleStandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mw))
-set_max_current_active_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_max_current_active_power!, value, :max_current_active_power, Val(:mw), val)
-set_max_current_active_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_current_active_power!, value, :max_current_active_power, Val(:mw), val)
+set_max_current_active_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_max_current_active_power!, value, :max_current_active_power, Val(:mw), val)
 """Set [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`."""
 set_max_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mvar))
-set_max_current_reactive_power!(value::InterruptibleStandardLoad, val::Real) = _units_tag_required(set_max_current_reactive_power!, value, :max_current_reactive_power, Val(:mvar), val)
-set_max_current_reactive_power!(value::InterruptibleStandardLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_current_reactive_power!, value, :max_current_reactive_power, Val(:mvar), val)
+set_max_current_reactive_power!(value::InterruptibleStandardLoad, val::_UntaggedNumber) = _units_tag_required(set_max_current_reactive_power!, value, :max_current_reactive_power, Val(:mvar), val)
 """Set [`InterruptibleStandardLoad`](@ref) `services`."""
 set_services!(value::InterruptibleStandardLoad, val) = value.services = val
 """Set [`InterruptibleStandardLoad`](@ref) `ext`."""

@@ -405,28 +405,25 @@ set_available!(value::TwoTerminalVSCLine, val) = value.available = val
 set_arc!(value::TwoTerminalVSCLine, val) = value.arc = val
 """Set [`TwoTerminalVSCLine`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::TwoTerminalVSCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`TwoTerminalVSCLine`](@ref) `rating`."""
 set_rating!(value::TwoTerminalVSCLine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`TwoTerminalVSCLine`](@ref) `active_power_limits_from`."""
 set_active_power_limits_from!(value::TwoTerminalVSCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mw))
-set_active_power_limits_from!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
-set_active_power_limits_from!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TwoTerminalVSCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
 """Set [`TwoTerminalVSCLine`](@ref) `active_power_limits_to`."""
 set_active_power_limits_to!(value::TwoTerminalVSCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mw))
-set_active_power_limits_to!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
-set_active_power_limits_to!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TwoTerminalVSCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
 """Set [`TwoTerminalVSCLine`](@ref) `g`."""
 set_g!(value::TwoTerminalVSCLine, val) = value.g = val
 """Set [`TwoTerminalVSCLine`](@ref) `dc_current`."""
 set_dc_current!(value::TwoTerminalVSCLine, val) = value.dc_current = val
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_from`."""
 set_reactive_power_from!(value::TwoTerminalVSCLine, val) = value.reactive_power_from = set_value(value, Val(:reactive_power_from), val, Val(:mvar))
-set_reactive_power_from!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_reactive_power_from!, value, :reactive_power_from, Val(:mvar), val)
-set_reactive_power_from!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_from!, value, :reactive_power_from, Val(:mvar), val)
+set_reactive_power_from!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_from!, value, :reactive_power_from, Val(:mvar), val)
 """Set [`TwoTerminalVSCLine`](@ref) `dc_control_from`."""
 set_dc_control_from!(value::TwoTerminalVSCLine, val) = value.dc_control_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `ac_control_from`."""
@@ -443,12 +440,11 @@ set_converter_loss_from!(value::TwoTerminalVSCLine, val) = value.converter_loss_
 set_max_dc_current_from!(value::TwoTerminalVSCLine, val) = value.max_dc_current_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `rating_from`."""
 set_rating_from!(value::TwoTerminalVSCLine, val) = value.rating_from = set_value(value, Val(:rating_from), val, Val(:mva))
-set_rating_from!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_rating_from!, value, :rating_from, Val(:mva), val)
-set_rating_from!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_from!, value, :rating_from, Val(:mva), val)
+set_rating_from!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_rating_from!, value, :rating_from, Val(:mva), val)
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_from`."""
 set_reactive_power_limits_from!(value::TwoTerminalVSCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), val, Val(:mvar))
-set_reactive_power_limits_from!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
-set_reactive_power_limits_from!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
+set_reactive_power_limits_from!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
+set_reactive_power_limits_from!(value::TwoTerminalVSCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
 """Set [`TwoTerminalVSCLine`](@ref) `power_factor_weighting_fraction_from`."""
 set_power_factor_weighting_fraction_from!(value::TwoTerminalVSCLine, val) = value.power_factor_weighting_fraction_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `voltage_limits_from`."""
@@ -457,8 +453,7 @@ set_voltage_limits_from!(value::TwoTerminalVSCLine, val) = value.voltage_limits_
 set_dc_voltage_droop_from!(value::TwoTerminalVSCLine, val) = value.dc_voltage_droop_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_to`."""
 set_reactive_power_to!(value::TwoTerminalVSCLine, val) = value.reactive_power_to = set_value(value, Val(:reactive_power_to), val, Val(:mvar))
-set_reactive_power_to!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_reactive_power_to!, value, :reactive_power_to, Val(:mvar), val)
-set_reactive_power_to!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_to!, value, :reactive_power_to, Val(:mvar), val)
+set_reactive_power_to!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_to!, value, :reactive_power_to, Val(:mvar), val)
 """Set [`TwoTerminalVSCLine`](@ref) `dc_control_to`."""
 set_dc_control_to!(value::TwoTerminalVSCLine, val) = value.dc_control_to = val
 """Set [`TwoTerminalVSCLine`](@ref) `ac_control_to`."""
@@ -475,12 +470,11 @@ set_converter_loss_to!(value::TwoTerminalVSCLine, val) = value.converter_loss_to
 set_max_dc_current_to!(value::TwoTerminalVSCLine, val) = value.max_dc_current_to = val
 """Set [`TwoTerminalVSCLine`](@ref) `rating_to`."""
 set_rating_to!(value::TwoTerminalVSCLine, val) = value.rating_to = set_value(value, Val(:rating_to), val, Val(:mva))
-set_rating_to!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_rating_to!, value, :rating_to, Val(:mva), val)
-set_rating_to!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_to!, value, :rating_to, Val(:mva), val)
+set_rating_to!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_rating_to!, value, :rating_to, Val(:mva), val)
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_to`."""
 set_reactive_power_limits_to!(value::TwoTerminalVSCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), val, Val(:mvar))
-set_reactive_power_limits_to!(value::TwoTerminalVSCLine, val::Real) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
-set_reactive_power_limits_to!(value::TwoTerminalVSCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
+set_reactive_power_limits_to!(value::TwoTerminalVSCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
+set_reactive_power_limits_to!(value::TwoTerminalVSCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
 """Set [`TwoTerminalVSCLine`](@ref) `power_factor_weighting_fraction_to`."""
 set_power_factor_weighting_fraction_to!(value::TwoTerminalVSCLine, val) = value.power_factor_weighting_fraction_to = val
 """Set [`TwoTerminalVSCLine`](@ref) `voltage_limits_to`."""

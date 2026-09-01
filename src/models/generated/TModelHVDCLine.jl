@@ -144,8 +144,7 @@ get_internal(value::TModelHVDCLine) = value.internal
 set_available!(value::TModelHVDCLine, val) = value.available = val
 """Set [`TModelHVDCLine`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::TModelHVDCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::TModelHVDCLine, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::TModelHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::TModelHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`TModelHVDCLine`](@ref) `arc`."""
 set_arc!(value::TModelHVDCLine, val) = value.arc = val
 """Set [`TModelHVDCLine`](@ref) `r`."""
@@ -156,12 +155,12 @@ set_l!(value::TModelHVDCLine, val) = value.l = val
 set_c!(value::TModelHVDCLine, val) = value.c = val
 """Set [`TModelHVDCLine`](@ref) `active_power_limits_from`."""
 set_active_power_limits_from!(value::TModelHVDCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mw))
-set_active_power_limits_from!(value::TModelHVDCLine, val::Real) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
-set_active_power_limits_from!(value::TModelHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TModelHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TModelHVDCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
 """Set [`TModelHVDCLine`](@ref) `active_power_limits_to`."""
 set_active_power_limits_to!(value::TModelHVDCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mw))
-set_active_power_limits_to!(value::TModelHVDCLine, val::Real) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
-set_active_power_limits_to!(value::TModelHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TModelHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TModelHVDCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
 """Set [`TModelHVDCLine`](@ref) `base_current`."""
 set_base_current!(value::TModelHVDCLine, val) = value.base_current = val
 """Set [`TModelHVDCLine`](@ref) `services`."""

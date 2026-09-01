@@ -248,36 +248,33 @@ set_status!(value::ThermalMultiStart, val) = value.status = val
 set_bus!(value::ThermalMultiStart, val) = value.bus = val
 """Set [`ThermalMultiStart`](@ref) `active_power`."""
 set_active_power!(value::ThermalMultiStart, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::ThermalMultiStart, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::ThermalMultiStart, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::ThermalMultiStart, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`ThermalMultiStart`](@ref) `reactive_power`."""
 set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::ThermalMultiStart, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::ThermalMultiStart, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::ThermalMultiStart, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`ThermalMultiStart`](@ref) `rating`."""
 set_rating!(value::ThermalMultiStart, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::ThermalMultiStart, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::ThermalMultiStart, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::ThermalMultiStart, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`ThermalMultiStart`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::ThermalMultiStart, val) = value.prime_mover_type = val
 """Set [`ThermalMultiStart`](@ref) `fuel`."""
 set_fuel!(value::ThermalMultiStart, val) = value.fuel = val
 """Set [`ThermalMultiStart`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mw))
-set_active_power_limits!(value::ThermalMultiStart, val::Real) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
-set_active_power_limits!(value::ThermalMultiStart, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::ThermalMultiStart, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::ThermalMultiStart, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
 """Set [`ThermalMultiStart`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
-set_reactive_power_limits!(value::ThermalMultiStart, val::Real) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
-set_reactive_power_limits!(value::ThermalMultiStart, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::ThermalMultiStart, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::ThermalMultiStart, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
 """Set [`ThermalMultiStart`](@ref) `ramp_limits`."""
 set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mw))
-set_ramp_limits!(value::ThermalMultiStart, val::Real) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
-set_ramp_limits!(value::ThermalMultiStart, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
+set_ramp_limits!(value::ThermalMultiStart, val::_UntaggedNumber) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
+set_ramp_limits!(value::ThermalMultiStart, val::NamedTuple{(:up, :down), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
 """Set [`ThermalMultiStart`](@ref) `power_trajectory`."""
 set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = set_value(value, Val(:power_trajectory), val, Val(:mw))
-set_power_trajectory!(value::ThermalMultiStart, val::Real) = _units_tag_required(set_power_trajectory!, value, :power_trajectory, Val(:mw), val)
-set_power_trajectory!(value::ThermalMultiStart, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_power_trajectory!, value, :power_trajectory, Val(:mw), val)
+set_power_trajectory!(value::ThermalMultiStart, val::_UntaggedNumber) = _units_tag_required(set_power_trajectory!, value, :power_trajectory, Val(:mw), val)
+set_power_trajectory!(value::ThermalMultiStart, val::NamedTuple{(:startup, :shutdown), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_power_trajectory!, value, :power_trajectory, Val(:mw), val)
 """Set [`ThermalMultiStart`](@ref) `time_limits`."""
 set_time_limits!(value::ThermalMultiStart, val) = value.time_limits = val
 """Set [`ThermalMultiStart`](@ref) `start_time_limits`."""

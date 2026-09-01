@@ -166,24 +166,20 @@ set_available!(value::ExponentialLoad, val) = value.available = val
 set_bus!(value::ExponentialLoad, val) = value.bus = val
 """Set [`ExponentialLoad`](@ref) `active_power`."""
 set_active_power!(value::ExponentialLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::ExponentialLoad, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::ExponentialLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::ExponentialLoad, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`ExponentialLoad`](@ref) `reactive_power`."""
 set_reactive_power!(value::ExponentialLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::ExponentialLoad, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::ExponentialLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::ExponentialLoad, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`ExponentialLoad`](@ref) `α`."""
 set_α!(value::ExponentialLoad, val) = value.α = val
 """Set [`ExponentialLoad`](@ref) `β`."""
 set_β!(value::ExponentialLoad, val) = value.β = val
 """Set [`ExponentialLoad`](@ref) `max_active_power`."""
 set_max_active_power!(value::ExponentialLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mw))
-set_max_active_power!(value::ExponentialLoad, val::Real) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
-set_max_active_power!(value::ExponentialLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
+set_max_active_power!(value::ExponentialLoad, val::_UntaggedNumber) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
 """Set [`ExponentialLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::ExponentialLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mvar))
-set_max_reactive_power!(value::ExponentialLoad, val::Real) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
-set_max_reactive_power!(value::ExponentialLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
+set_max_reactive_power!(value::ExponentialLoad, val::_UntaggedNumber) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
 """Set [`ExponentialLoad`](@ref) `conformity`."""
 set_conformity!(value::ExponentialLoad, val) = value.conformity = val
 """Set [`ExponentialLoad`](@ref) `services`."""

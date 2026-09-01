@@ -172,24 +172,20 @@ set_available!(value::ShiftablePowerLoad, val) = value.available = val
 set_bus!(value::ShiftablePowerLoad, val) = value.bus = val
 """Set [`ShiftablePowerLoad`](@ref) `active_power`."""
 set_active_power!(value::ShiftablePowerLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::ShiftablePowerLoad, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::ShiftablePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::ShiftablePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`ShiftablePowerLoad`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::ShiftablePowerLoad, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mw))
-set_active_power_limits!(value::ShiftablePowerLoad, val::Real) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
-set_active_power_limits!(value::ShiftablePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::ShiftablePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::ShiftablePowerLoad, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
 """Set [`ShiftablePowerLoad`](@ref) `reactive_power`."""
 set_reactive_power!(value::ShiftablePowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::ShiftablePowerLoad, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::ShiftablePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::ShiftablePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`ShiftablePowerLoad`](@ref) `max_active_power`."""
 set_max_active_power!(value::ShiftablePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mw))
-set_max_active_power!(value::ShiftablePowerLoad, val::Real) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
-set_max_active_power!(value::ShiftablePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
+set_max_active_power!(value::ShiftablePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
 """Set [`ShiftablePowerLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::ShiftablePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mvar))
-set_max_reactive_power!(value::ShiftablePowerLoad, val::Real) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
-set_max_reactive_power!(value::ShiftablePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
+set_max_reactive_power!(value::ShiftablePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
 """Set [`ShiftablePowerLoad`](@ref) `load_balance_time_horizon`."""
 set_load_balance_time_horizon!(value::ShiftablePowerLoad, val) = value.load_balance_time_horizon = val
 """Set [`ShiftablePowerLoad`](@ref) `operation_cost`."""

@@ -223,12 +223,10 @@ set_tap!(value::TransformerCircuit, val) = value.tap = val
 set_α!(value::TransformerCircuit, val) = value.α = val
 """Set [`TransformerCircuit`](@ref) `r`."""
 set_r!(value::TransformerCircuit, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-set_r!(value::TransformerCircuit, val::Real) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
-set_r!(value::TransformerCircuit, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
+set_r!(value::TransformerCircuit, val::_UntaggedNumber) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
 """Set [`TransformerCircuit`](@ref) `x`."""
 set_x!(value::TransformerCircuit, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-set_x!(value::TransformerCircuit, val::Real) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
-set_x!(value::TransformerCircuit, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
+set_x!(value::TransformerCircuit, val::_UntaggedNumber) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
 """Set [`TransformerCircuit`](@ref) `control_objective`."""
 set_control_objective!(value::TransformerCircuit, val) = value.control_objective = val
 """Set [`TransformerCircuit`](@ref) `regulated_bus_number`."""
@@ -241,24 +239,19 @@ set_controlled_quantity_limits!(value::TransformerCircuit, val) = value.controll
 set_number_of_tap_positions!(value::TransformerCircuit, val) = value.number_of_tap_positions = val
 """Set [`TransformerCircuit`](@ref) `rating`."""
 set_rating!(value::TransformerCircuit, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::TransformerCircuit, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::TransformerCircuit, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::TransformerCircuit, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`TransformerCircuit`](@ref) `rating_b`."""
 set_rating_b!(value::TransformerCircuit, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-set_rating_b!(value::TransformerCircuit, val::Real) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
-set_rating_b!(value::TransformerCircuit, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
+set_rating_b!(value::TransformerCircuit, val::_UntaggedNumber) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
 """Set [`TransformerCircuit`](@ref) `rating_c`."""
 set_rating_c!(value::TransformerCircuit, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
-set_rating_c!(value::TransformerCircuit, val::Real) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
-set_rating_c!(value::TransformerCircuit, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
+set_rating_c!(value::TransformerCircuit, val::_UntaggedNumber) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
 """Set [`TransformerCircuit`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::TransformerCircuit, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::TransformerCircuit, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::TransformerCircuit, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::TransformerCircuit, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`TransformerCircuit`](@ref) `reactive_power_flow`."""
 set_reactive_power_flow!(value::TransformerCircuit, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
-set_reactive_power_flow!(value::TransformerCircuit, val::Real) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
-set_reactive_power_flow!(value::TransformerCircuit, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
+set_reactive_power_flow!(value::TransformerCircuit, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
 """Set [`TransformerCircuit`](@ref) `base_power`."""
 set_base_power!(value::TransformerCircuit, val) = value.base_power = val
 """Set [`TransformerCircuit`](@ref) `base_voltage_primary`."""

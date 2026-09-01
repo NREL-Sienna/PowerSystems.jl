@@ -284,38 +284,34 @@ set_prime_mover_type!(value::EnergyReservoirStorage, val) = value.prime_mover_ty
 set_storage_technology_type!(value::EnergyReservoirStorage, val) = value.storage_technology_type = val
 """Set [`EnergyReservoirStorage`](@ref) `storage_capacity`."""
 set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capacity = set_value(value, Val(:storage_capacity), val, Val(:mw))
-set_storage_capacity!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_storage_capacity!, value, :storage_capacity, Val(:mw), val)
-set_storage_capacity!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_storage_capacity!, value, :storage_capacity, Val(:mw), val)
+set_storage_capacity!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_storage_capacity!, value, :storage_capacity, Val(:mw), val)
 """Set [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 set_storage_level_limits!(value::EnergyReservoirStorage, val) = value.storage_level_limits = val
 """Set [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
 set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = val
 """Set [`EnergyReservoirStorage`](@ref) `rating`."""
 set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`EnergyReservoirStorage`](@ref) `active_power`."""
 set_active_power!(value::EnergyReservoirStorage, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`EnergyReservoirStorage`](@ref) `input_active_power_limits`."""
 set_input_active_power_limits!(value::EnergyReservoirStorage, val) = value.input_active_power_limits = set_value(value, Val(:input_active_power_limits), val, Val(:mw))
-set_input_active_power_limits!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
-set_input_active_power_limits!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
+set_input_active_power_limits!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
+set_input_active_power_limits!(value::EnergyReservoirStorage, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
 """Set [`EnergyReservoirStorage`](@ref) `output_active_power_limits`."""
 set_output_active_power_limits!(value::EnergyReservoirStorage, val) = value.output_active_power_limits = set_value(value, Val(:output_active_power_limits), val, Val(:mw))
-set_output_active_power_limits!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
-set_output_active_power_limits!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
+set_output_active_power_limits!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
+set_output_active_power_limits!(value::EnergyReservoirStorage, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
 """Set [`EnergyReservoirStorage`](@ref) `efficiency`."""
 set_efficiency!(value::EnergyReservoirStorage, val) = value.efficiency = val
 """Set [`EnergyReservoirStorage`](@ref) `reactive_power`."""
 set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`EnergyReservoirStorage`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
-set_reactive_power_limits!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
-set_reactive_power_limits!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::EnergyReservoirStorage, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
 """Set [`EnergyReservoirStorage`](@ref) `operation_cost`."""
 set_operation_cost!(value::EnergyReservoirStorage, val) = value.operation_cost = val
 """Set [`EnergyReservoirStorage`](@ref) `conversion_factor`."""
@@ -326,14 +322,13 @@ set_storage_target!(value::EnergyReservoirStorage, val) = value.storage_target =
 set_cycle_limits!(value::EnergyReservoirStorage, val) = value.cycle_limits = val
 """Set [`EnergyReservoirStorage`](@ref) `ramp_limits`."""
 set_ramp_limits!(value::EnergyReservoirStorage, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mw))
-set_ramp_limits!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
-set_ramp_limits!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
+set_ramp_limits!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
+set_ramp_limits!(value::EnergyReservoirStorage, val::NamedTuple{(:up, :down), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
 """Set [`EnergyReservoirStorage`](@ref) `self_discharge`."""
 set_self_discharge!(value::EnergyReservoirStorage, val) = value.self_discharge = val
 """Set [`EnergyReservoirStorage`](@ref) `standing_loss`."""
 set_standing_loss!(value::EnergyReservoirStorage, val) = value.standing_loss = set_value(value, Val(:standing_loss), val, Val(:mw))
-set_standing_loss!(value::EnergyReservoirStorage, val::Real) = _units_tag_required(set_standing_loss!, value, :standing_loss, Val(:mw), val)
-set_standing_loss!(value::EnergyReservoirStorage, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_standing_loss!, value, :standing_loss, Val(:mw), val)
+set_standing_loss!(value::EnergyReservoirStorage, val::_UntaggedNumber) = _units_tag_required(set_standing_loss!, value, :standing_loss, Val(:mw), val)
 """Set [`EnergyReservoirStorage`](@ref) `services`."""
 set_services!(value::EnergyReservoirStorage, val) = value.services = val
 """Set [`EnergyReservoirStorage`](@ref) `ext`."""

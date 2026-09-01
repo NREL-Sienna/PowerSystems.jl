@@ -159,20 +159,16 @@ set_available!(value::InterruptiblePowerLoad, val) = value.available = val
 set_bus!(value::InterruptiblePowerLoad, val) = value.bus = val
 """Set [`InterruptiblePowerLoad`](@ref) `active_power`."""
 set_active_power!(value::InterruptiblePowerLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::InterruptiblePowerLoad, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::InterruptiblePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::InterruptiblePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`InterruptiblePowerLoad`](@ref) `reactive_power`."""
 set_reactive_power!(value::InterruptiblePowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::InterruptiblePowerLoad, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::InterruptiblePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::InterruptiblePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`InterruptiblePowerLoad`](@ref) `max_active_power`."""
 set_max_active_power!(value::InterruptiblePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mw))
-set_max_active_power!(value::InterruptiblePowerLoad, val::Real) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
-set_max_active_power!(value::InterruptiblePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
+set_max_active_power!(value::InterruptiblePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
 """Set [`InterruptiblePowerLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::InterruptiblePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mvar))
-set_max_reactive_power!(value::InterruptiblePowerLoad, val::Real) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
-set_max_reactive_power!(value::InterruptiblePowerLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
+set_max_reactive_power!(value::InterruptiblePowerLoad, val::_UntaggedNumber) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
 """Set [`InterruptiblePowerLoad`](@ref) `operation_cost`."""
 set_operation_cost!(value::InterruptiblePowerLoad, val) = value.operation_cost = val
 """Set [`InterruptiblePowerLoad`](@ref) `conformity`."""

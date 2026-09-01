@@ -266,9 +266,10 @@ set_value(c::UnitsBearer, field, val::RelativeQuantity{<:Any, SystemBaseUnit}, c
 # ---- Bare numbers are rejected: callers must attach units explicitly ----
 # Generated setters intercept this one level up (`_units_tag_required`) so the
 # message can name the setter; this method catches the same mistake inside a
-# compound field's elements, where only the field is known. `Real` rather than
-# `Float64` so an integer literal gets the message instead of a `MethodError`.
-set_value(c::UnitsBearer, field, ::Real, cu::Val) = throw(
+# compound field's elements, where only the field is known. `_UntaggedNumber`
+# rather than `Float64` so an integer literal (or a bare complex, on the two
+# `Complex` fields) gets the message instead of a `MethodError`.
+set_value(c::UnitsBearer, field, ::_UntaggedNumber, cu::Val) = throw(
     ArgumentError(
         "Setting $(_field_description(c, field)) requires a units-tagged value: " *
         "$(_tag_menu(cu)).",
@@ -433,8 +434,8 @@ end
 
 Throw the explanatory error for a unit-bearing setter called with an untagged
 number. The getter counterpart is [`_units_arg_required`](@ref); both are reached
-from generated fallback methods, here one matching a bare `Real` (or a compound
-value whose elements are all bare) where a tagged value is required.
+from generated fallback methods, here one matching an untagged number — or, on a
+compound field only, a `NamedTuple` whose elements are all untagged.
 """
 function _units_tag_required(setter, value, field::Symbol, conversion_unit::Val, val)
     compound_hint = if val isa NamedTuple

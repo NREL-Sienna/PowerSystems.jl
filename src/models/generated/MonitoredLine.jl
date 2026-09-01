@@ -221,48 +221,41 @@ get_internal(value::MonitoredLine) = value.internal
 set_available!(value::MonitoredLine, val) = value.available = val
 """Set [`MonitoredLine`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::MonitoredLine, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`MonitoredLine`](@ref) `reactive_power_flow`."""
 set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
-set_reactive_power_flow!(value::MonitoredLine, val::Real) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
-set_reactive_power_flow!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
+set_reactive_power_flow!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
 """Set [`MonitoredLine`](@ref) `arc`."""
 set_arc!(value::MonitoredLine, val) = value.arc = val
 """Set [`MonitoredLine`](@ref) `r`."""
 set_r!(value::MonitoredLine, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-set_r!(value::MonitoredLine, val::Real) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
-set_r!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
+set_r!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
 """Set [`MonitoredLine`](@ref) `x`."""
 set_x!(value::MonitoredLine, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-set_x!(value::MonitoredLine, val::Real) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
-set_x!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
+set_x!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
 """Set [`MonitoredLine`](@ref) `b`."""
 set_b!(value::MonitoredLine, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
-set_b!(value::MonitoredLine, val::Real) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
-set_b!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
+set_b!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
+set_b!(value::MonitoredLine, val::NamedTuple{(:from, :to), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
 """Set [`MonitoredLine`](@ref) `flow_limits`."""
 set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mw))
-set_flow_limits!(value::MonitoredLine, val::Real) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
-set_flow_limits!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
+set_flow_limits!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
+set_flow_limits!(value::MonitoredLine, val::NamedTuple{(:from_to, :to_from), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
 """Set [`MonitoredLine`](@ref) `rating`."""
 set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::MonitoredLine, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`MonitoredLine`](@ref) `angle_limits`."""
 set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
 """Set [`MonitoredLine`](@ref) `rating_b`."""
 set_rating_b!(value::MonitoredLine, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-set_rating_b!(value::MonitoredLine, val::Real) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
-set_rating_b!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
+set_rating_b!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
 """Set [`MonitoredLine`](@ref) `rating_c`."""
 set_rating_c!(value::MonitoredLine, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
-set_rating_c!(value::MonitoredLine, val::Real) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
-set_rating_c!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
+set_rating_c!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
 """Set [`MonitoredLine`](@ref) `g`."""
 set_g!(value::MonitoredLine, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
-set_g!(value::MonitoredLine, val::Real) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
-set_g!(value::MonitoredLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
+set_g!(value::MonitoredLine, val::_UntaggedNumber) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
+set_g!(value::MonitoredLine, val::NamedTuple{(:from, :to), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
 """Set [`MonitoredLine`](@ref) `services`."""
 set_services!(value::MonitoredLine, val) = value.services = val
 """Set [`MonitoredLine`](@ref) `ext`."""

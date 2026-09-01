@@ -248,28 +248,24 @@ set_bus!(value::InterconnectingConverter, val) = value.bus = val
 set_dc_bus!(value::InterconnectingConverter, val) = value.dc_bus = val
 """Set [`InterconnectingConverter`](@ref) `active_power`."""
 set_active_power!(value::InterconnectingConverter, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::InterconnectingConverter, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::InterconnectingConverter, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::InterconnectingConverter, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`InterconnectingConverter`](@ref) `rating`."""
 set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::InterconnectingConverter, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::InterconnectingConverter, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::InterconnectingConverter, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`InterconnectingConverter`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::InterconnectingConverter, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mw))
-set_active_power_limits!(value::InterconnectingConverter, val::Real) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
-set_active_power_limits!(value::InterconnectingConverter, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::InterconnectingConverter, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::InterconnectingConverter, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
 """Set [`InterconnectingConverter`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::InterconnectingConverter, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
-set_reactive_power_limits!(value::InterconnectingConverter, val::Real) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
-set_reactive_power_limits!(value::InterconnectingConverter, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::InterconnectingConverter, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::InterconnectingConverter, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
 """Set [`InterconnectingConverter`](@ref) `dc_current`."""
 set_dc_current!(value::InterconnectingConverter, val) = value.dc_current = set_value(value, Val(:dc_current), val, Val(:mva))
-set_dc_current!(value::InterconnectingConverter, val::Real) = _units_tag_required(set_dc_current!, value, :dc_current, Val(:mva), val)
-set_dc_current!(value::InterconnectingConverter, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_dc_current!, value, :dc_current, Val(:mva), val)
+set_dc_current!(value::InterconnectingConverter, val::_UntaggedNumber) = _units_tag_required(set_dc_current!, value, :dc_current, Val(:mva), val)
 """Set [`InterconnectingConverter`](@ref) `max_dc_current`."""
 set_max_dc_current!(value::InterconnectingConverter, val) = value.max_dc_current = set_value(value, Val(:max_dc_current), val, Val(:mva))
-set_max_dc_current!(value::InterconnectingConverter, val::Real) = _units_tag_required(set_max_dc_current!, value, :max_dc_current, Val(:mva), val)
-set_max_dc_current!(value::InterconnectingConverter, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_dc_current!, value, :max_dc_current, Val(:mva), val)
+set_max_dc_current!(value::InterconnectingConverter, val::_UntaggedNumber) = _units_tag_required(set_max_dc_current!, value, :max_dc_current, Val(:mva), val)
 """Set [`InterconnectingConverter`](@ref) `loss_function`."""
 set_loss_function!(value::InterconnectingConverter, val) = value.loss_function = val
 """Set [`InterconnectingConverter`](@ref) `dc_control`."""

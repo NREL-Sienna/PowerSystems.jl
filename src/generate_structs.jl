@@ -104,8 +104,10 @@ InfrastructureSystems.display_units_arg(::typeof({{accessor}}_unitful), ::{{unit
 {{#needs_conversion}}
 {{#create_docstring}}\"\"\"Set [`{{struct_name}}`](@ref) `{{name}}`.\"\"\"{{/create_docstring}}
 {{setter}}(value::{{struct_name}}, val) = value.{{name}} = set_value(value, Val(:{{name}}), val, Val({{conversion_unit}}))
-{{setter}}(value::{{struct_name}}, val::Real) = _units_tag_required({{setter}}, value, :{{name}}, Val({{conversion_unit}}), val)
-{{setter}}(value::{{struct_name}}, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required({{setter}}, value, :{{name}}, Val({{conversion_unit}}), val)
+{{setter}}(value::{{struct_name}}, val::_UntaggedNumber) = _units_tag_required({{setter}}, value, :{{name}}, Val({{conversion_unit}}), val)
+{{#compound_untagged}}
+{{setter}}(value::{{struct_name}}, val::{{{compound_untagged}}}) = _units_tag_required({{setter}}, value, :{{name}}, Val({{conversion_unit}}), val)
+{{/compound_untagged}}
 {{/needs_conversion}}
 {{^needs_conversion}}
 {{#create_docstring}}\"\"\"Set [`{{struct_name}}`](@ref) `{{name}}`.\"\"\"{{/create_docstring}}
@@ -953,6 +955,27 @@ function compute_openapi_export_converter!(item, struct_names)
     return nothing
 end
 
+"""The element names of each compound field type, matching the `set_value` methods in
+`src/models/components.jl`. A convertible field of one of these types accepts a
+`NamedTuple` value; every other convertible field is scalar and does not."""
+const COMPOUND_FIELD_KEYS = Dict(
+    "MinMax" => "(:min, :max)",
+    "UpDown" => "(:up, :down)",
+    "FromTo" => "(:from, :to)",
+    "FromTo_ToFrom" => "(:from_to, :to_from)",
+    "StartUpShutDown" => "(:startup, :shutdown)",
+)
+
+"""The `NamedTuple` signature whose elements are all untagged numbers, for a convertible
+field of a compound type — the setter fallback that reports the missing units. Returns an
+empty string for a scalar field, so no `NamedTuple` method is emitted for one."""
+function compound_untagged_signature(data_type::AbstractString)
+    base_type = replace(data_type, r"^Union\{Nothing, *(.*)\}$" => s"\1")
+    keys = get(COMPOUND_FIELD_KEYS, base_type, nothing)
+    isnothing(keys) && return ""
+    return "NamedTuple{$keys, <:Tuple{Vararg{_UntaggedNumber}}}"
+end
+
 function read_json_data(filename::String)
     return open(filename) do io
         data = JSON.parse(io; dicttype = Dict{String, Any})
@@ -1070,6 +1093,9 @@ function generate_structs(directory, data::Vector; print_results = true)
                         "create_docstring" => create_docstring,
                         "needs_conversion" => get(param, "needs_conversion", false),
                         "conversion_unit" => conversion_unit,
+                        "compound_untagged" => compound_untagged_signature(
+                            param["data_type"],
+                        ),
                     ),
                 )
             end

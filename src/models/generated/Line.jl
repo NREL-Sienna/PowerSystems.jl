@@ -206,44 +206,37 @@ get_internal(value::Line) = value.internal
 set_available!(value::Line, val) = value.available = val
 """Set [`Line`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::Line, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`Line`](@ref) `reactive_power_flow`."""
 set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
-set_reactive_power_flow!(value::Line, val::Real) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
-set_reactive_power_flow!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
+set_reactive_power_flow!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
 """Set [`Line`](@ref) `arc`."""
 set_arc!(value::Line, val) = value.arc = val
 """Set [`Line`](@ref) `r`."""
 set_r!(value::Line, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-set_r!(value::Line, val::Real) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
-set_r!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
+set_r!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
 """Set [`Line`](@ref) `x`."""
 set_x!(value::Line, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-set_x!(value::Line, val::Real) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
-set_x!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
+set_x!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
 """Set [`Line`](@ref) `b`."""
 set_b!(value::Line, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
-set_b!(value::Line, val::Real) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
-set_b!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
+set_b!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
+set_b!(value::Line, val::NamedTuple{(:from, :to), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_b!, value, :b, Val(:siemens), val)
 """Set [`Line`](@ref) `rating`."""
 set_rating!(value::Line, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::Line, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
 """Set [`Line`](@ref) `rating_b`."""
 set_rating_b!(value::Line, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-set_rating_b!(value::Line, val::Real) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
-set_rating_b!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
+set_rating_b!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_rating_b!, value, :rating_b, Val(:mva), val)
 """Set [`Line`](@ref) `rating_c`."""
 set_rating_c!(value::Line, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
-set_rating_c!(value::Line, val::Real) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
-set_rating_c!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
+set_rating_c!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_rating_c!, value, :rating_c, Val(:mva), val)
 """Set [`Line`](@ref) `g`."""
 set_g!(value::Line, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
-set_g!(value::Line, val::Real) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
-set_g!(value::Line, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
+set_g!(value::Line, val::_UntaggedNumber) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
+set_g!(value::Line, val::NamedTuple{(:from, :to), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_g!, value, :g, Val(:siemens), val)
 """Set [`Line`](@ref) `services`."""
 set_services!(value::Line, val) = value.services = val
 """Set [`Line`](@ref) `ext`."""

@@ -229,32 +229,29 @@ set_status!(value::HybridSystem, val) = value.status = val
 set_bus!(value::HybridSystem, val) = value.bus = val
 """Set [`HybridSystem`](@ref) `active_power`."""
 set_active_power!(value::HybridSystem, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::HybridSystem, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::HybridSystem, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::HybridSystem, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`HybridSystem`](@ref) `reactive_power`."""
 set_reactive_power!(value::HybridSystem, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::HybridSystem, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::HybridSystem, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::HybridSystem, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`HybridSystem`](@ref) `operation_cost`."""
 set_operation_cost!(value::HybridSystem, val) = value.operation_cost = val
 """Set [`HybridSystem`](@ref) `interconnection_impedance`."""
 set_interconnection_impedance!(value::HybridSystem, val) = value.interconnection_impedance = val
 """Set [`HybridSystem`](@ref) `interconnection_rating`."""
 set_interconnection_rating!(value::HybridSystem, val) = value.interconnection_rating = set_value(value, Val(:interconnection_rating), val, Val(:mva))
-set_interconnection_rating!(value::HybridSystem, val::Real) = _units_tag_required(set_interconnection_rating!, value, :interconnection_rating, Val(:mva), val)
-set_interconnection_rating!(value::HybridSystem, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_interconnection_rating!, value, :interconnection_rating, Val(:mva), val)
+set_interconnection_rating!(value::HybridSystem, val::_UntaggedNumber) = _units_tag_required(set_interconnection_rating!, value, :interconnection_rating, Val(:mva), val)
 """Set [`HybridSystem`](@ref) `input_active_power_limits`."""
 set_input_active_power_limits!(value::HybridSystem, val) = value.input_active_power_limits = set_value(value, Val(:input_active_power_limits), val, Val(:mw))
-set_input_active_power_limits!(value::HybridSystem, val::Real) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
-set_input_active_power_limits!(value::HybridSystem, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
+set_input_active_power_limits!(value::HybridSystem, val::_UntaggedNumber) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
+set_input_active_power_limits!(value::HybridSystem, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_input_active_power_limits!, value, :input_active_power_limits, Val(:mw), val)
 """Set [`HybridSystem`](@ref) `output_active_power_limits`."""
 set_output_active_power_limits!(value::HybridSystem, val) = value.output_active_power_limits = set_value(value, Val(:output_active_power_limits), val, Val(:mw))
-set_output_active_power_limits!(value::HybridSystem, val::Real) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
-set_output_active_power_limits!(value::HybridSystem, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
+set_output_active_power_limits!(value::HybridSystem, val::_UntaggedNumber) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
+set_output_active_power_limits!(value::HybridSystem, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_output_active_power_limits!, value, :output_active_power_limits, Val(:mw), val)
 """Set [`HybridSystem`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HybridSystem, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
-set_reactive_power_limits!(value::HybridSystem, val::Real) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
-set_reactive_power_limits!(value::HybridSystem, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::HybridSystem, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::HybridSystem, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
 """Set [`HybridSystem`](@ref) `interconnection_efficiency`."""
 set_interconnection_efficiency!(value::HybridSystem, val) = value.interconnection_efficiency = val
 """Set [`HybridSystem`](@ref) `services`."""

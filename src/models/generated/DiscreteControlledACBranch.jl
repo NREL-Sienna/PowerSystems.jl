@@ -161,26 +161,21 @@ get_internal(value::DiscreteControlledACBranch) = value.internal
 set_available!(value::DiscreteControlledACBranch, val) = value.available = val
 """Set [`DiscreteControlledACBranch`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::DiscreteControlledACBranch, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::DiscreteControlledACBranch, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::DiscreteControlledACBranch, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::DiscreteControlledACBranch, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`DiscreteControlledACBranch`](@ref) `reactive_power_flow`."""
 set_reactive_power_flow!(value::DiscreteControlledACBranch, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mvar))
-set_reactive_power_flow!(value::DiscreteControlledACBranch, val::Real) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
-set_reactive_power_flow!(value::DiscreteControlledACBranch, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
+set_reactive_power_flow!(value::DiscreteControlledACBranch, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_flow!, value, :reactive_power_flow, Val(:mvar), val)
 """Set [`DiscreteControlledACBranch`](@ref) `arc`."""
 set_arc!(value::DiscreteControlledACBranch, val) = value.arc = val
 """Set [`DiscreteControlledACBranch`](@ref) `r`."""
 set_r!(value::DiscreteControlledACBranch, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-set_r!(value::DiscreteControlledACBranch, val::Real) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
-set_r!(value::DiscreteControlledACBranch, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
+set_r!(value::DiscreteControlledACBranch, val::_UntaggedNumber) = _units_tag_required(set_r!, value, :r, Val(:ohm), val)
 """Set [`DiscreteControlledACBranch`](@ref) `x`."""
 set_x!(value::DiscreteControlledACBranch, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-set_x!(value::DiscreteControlledACBranch, val::Real) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
-set_x!(value::DiscreteControlledACBranch, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
+set_x!(value::DiscreteControlledACBranch, val::_UntaggedNumber) = _units_tag_required(set_x!, value, :x, Val(:ohm), val)
 """Set [`DiscreteControlledACBranch`](@ref) `rating`."""
 set_rating!(value::DiscreteControlledACBranch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::DiscreteControlledACBranch, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::DiscreteControlledACBranch, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::DiscreteControlledACBranch, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`DiscreteControlledACBranch`](@ref) `discrete_branch_type`."""
 set_discrete_branch_type!(value::DiscreteControlledACBranch, val) = value.discrete_branch_type = val
 """Set [`DiscreteControlledACBranch`](@ref) `branch_status`."""

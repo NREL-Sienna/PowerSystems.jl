@@ -158,12 +158,10 @@ set_control_mode!(value::FACTSControlDevice, val) = value.control_mode = val
 set_voltage_setpoint!(value::FACTSControlDevice, val) = value.voltage_setpoint = val
 """Set [`FACTSControlDevice`](@ref) `max_shunt_current`."""
 set_max_shunt_current!(value::FACTSControlDevice, val) = value.max_shunt_current = set_value(value, Val(:max_shunt_current), val, Val(:mva))
-set_max_shunt_current!(value::FACTSControlDevice, val::Real) = _units_tag_required(set_max_shunt_current!, value, :max_shunt_current, Val(:mva), val)
-set_max_shunt_current!(value::FACTSControlDevice, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_shunt_current!, value, :max_shunt_current, Val(:mva), val)
+set_max_shunt_current!(value::FACTSControlDevice, val::_UntaggedNumber) = _units_tag_required(set_max_shunt_current!, value, :max_shunt_current, Val(:mva), val)
 """Set [`FACTSControlDevice`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::FACTSControlDevice, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mvar))
-set_max_reactive_power!(value::FACTSControlDevice, val::Real) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
-set_max_reactive_power!(value::FACTSControlDevice, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
+set_max_reactive_power!(value::FACTSControlDevice, val::_UntaggedNumber) = _units_tag_required(set_max_reactive_power!, value, :max_reactive_power, Val(:mvar), val)
 """Set [`FACTSControlDevice`](@ref) `shunt_control_type`."""
 set_shunt_control_type!(value::FACTSControlDevice, val) = value.shunt_control_type = val
 """Set [`FACTSControlDevice`](@ref) `regulated_bus_number`."""

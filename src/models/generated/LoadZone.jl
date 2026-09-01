@@ -87,11 +87,9 @@ get_internal(value::LoadZone) = value.internal
 
 """Set [`LoadZone`](@ref) `peak_active_power`."""
 set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = set_value(value, Val(:peak_active_power), val, Val(:mw))
-set_peak_active_power!(value::LoadZone, val::Real) = _units_tag_required(set_peak_active_power!, value, :peak_active_power, Val(:mw), val)
-set_peak_active_power!(value::LoadZone, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_peak_active_power!, value, :peak_active_power, Val(:mw), val)
+set_peak_active_power!(value::LoadZone, val::_UntaggedNumber) = _units_tag_required(set_peak_active_power!, value, :peak_active_power, Val(:mw), val)
 """Set [`LoadZone`](@ref) `peak_reactive_power`."""
 set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = set_value(value, Val(:peak_reactive_power), val, Val(:mvar))
-set_peak_reactive_power!(value::LoadZone, val::Real) = _units_tag_required(set_peak_reactive_power!, value, :peak_reactive_power, Val(:mvar), val)
-set_peak_reactive_power!(value::LoadZone, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_peak_reactive_power!, value, :peak_reactive_power, Val(:mvar), val)
+set_peak_reactive_power!(value::LoadZone, val::_UntaggedNumber) = _units_tag_required(set_peak_reactive_power!, value, :peak_reactive_power, Val(:mvar), val)
 """Set [`LoadZone`](@ref) `ext`."""
 set_ext!(value::LoadZone, val) = value.ext = val

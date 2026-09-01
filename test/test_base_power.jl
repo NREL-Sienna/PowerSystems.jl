@@ -210,6 +210,27 @@ end
     end
     @test occursin("`val * OHMS`", msg_x)
 
+    # The compound fallback exists only where a NamedTuple is a valid value: a
+    # scalar field must not advertise one, or the error would tell the caller to
+    # tag the elements of a value the field can never hold.
+    minmax_t = NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    updown_t = NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+    # `hasmethod` would be true either way -- the generic `set_X!(value, val)`
+    # takes anything -- so ask which method a NamedTuple actually selects.
+    selected(f, t) = which(f, Tuple{ThermalStandard, t}).sig.parameters[3]
+    @test selected(set_active_power!, minmax_t) === Any
+    @test selected(set_rating!, minmax_t) === Any
+    @test selected(set_active_power_limits!, minmax_t) <: NamedTuple
+    @test selected(set_ramp_limits!, updown_t) <: NamedTuple
+    # ...and it is keyed to that field's own element names.
+    @test selected(set_active_power_limits!, updown_t) === Any
+
+    # A `Complex` field is untagged in the same way a real one is.
+    @test_throws ArgumentError set_magnetizing_shunt!(
+        TwoWindingTransformer(nothing),
+        0.1 + 0.2im,
+    )
+
     # Tagged values still round-trip through every accepted form.
     set_active_power!(gen, 0.6 * DU)
     @test get_active_power(gen, DU) ≈ 0.6

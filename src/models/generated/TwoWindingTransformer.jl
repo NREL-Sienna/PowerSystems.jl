@@ -88,8 +88,7 @@ get_internal(value::TwoWindingTransformer) = value.internal
 
 """Set [`TwoWindingTransformer`](@ref) `magnetizing_shunt`."""
 set_magnetizing_shunt!(value::TwoWindingTransformer, val) = value.magnetizing_shunt = set_value(value, Val(:magnetizing_shunt), val, Val(:siemens))
-set_magnetizing_shunt!(value::TwoWindingTransformer, val::Real) = _units_tag_required(set_magnetizing_shunt!, value, :magnetizing_shunt, Val(:siemens), val)
-set_magnetizing_shunt!(value::TwoWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_magnetizing_shunt!, value, :magnetizing_shunt, Val(:siemens), val)
+set_magnetizing_shunt!(value::TwoWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_magnetizing_shunt!, value, :magnetizing_shunt, Val(:siemens), val)
 """Set [`TwoWindingTransformer`](@ref) `shunt_location`."""
 set_shunt_location!(value::TwoWindingTransformer, val) = value.shunt_location = val
 """Set [`TwoWindingTransformer`](@ref) `services`."""

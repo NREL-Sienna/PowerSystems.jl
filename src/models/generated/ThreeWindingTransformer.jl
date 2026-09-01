@@ -210,32 +210,25 @@ get_internal(value::ThreeWindingTransformer) = value.internal
 set_star_bus!(value::ThreeWindingTransformer, val) = value.star_bus = val
 """Set [`ThreeWindingTransformer`](@ref) `r_12`."""
 set_r_12!(value::ThreeWindingTransformer, val) = value.r_12 = set_value(value, Val(:r_12), val, Val(:ohm))
-set_r_12!(value::ThreeWindingTransformer, val::Real) = _units_tag_required(set_r_12!, value, :r_12, Val(:ohm), val)
-set_r_12!(value::ThreeWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r_12!, value, :r_12, Val(:ohm), val)
+set_r_12!(value::ThreeWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_r_12!, value, :r_12, Val(:ohm), val)
 """Set [`ThreeWindingTransformer`](@ref) `x_12`."""
 set_x_12!(value::ThreeWindingTransformer, val) = value.x_12 = set_value(value, Val(:x_12), val, Val(:ohm))
-set_x_12!(value::ThreeWindingTransformer, val::Real) = _units_tag_required(set_x_12!, value, :x_12, Val(:ohm), val)
-set_x_12!(value::ThreeWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x_12!, value, :x_12, Val(:ohm), val)
+set_x_12!(value::ThreeWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_x_12!, value, :x_12, Val(:ohm), val)
 """Set [`ThreeWindingTransformer`](@ref) `r_23`."""
 set_r_23!(value::ThreeWindingTransformer, val) = value.r_23 = set_value(value, Val(:r_23), val, Val(:ohm))
-set_r_23!(value::ThreeWindingTransformer, val::Real) = _units_tag_required(set_r_23!, value, :r_23, Val(:ohm), val)
-set_r_23!(value::ThreeWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r_23!, value, :r_23, Val(:ohm), val)
+set_r_23!(value::ThreeWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_r_23!, value, :r_23, Val(:ohm), val)
 """Set [`ThreeWindingTransformer`](@ref) `x_23`."""
 set_x_23!(value::ThreeWindingTransformer, val) = value.x_23 = set_value(value, Val(:x_23), val, Val(:ohm))
-set_x_23!(value::ThreeWindingTransformer, val::Real) = _units_tag_required(set_x_23!, value, :x_23, Val(:ohm), val)
-set_x_23!(value::ThreeWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x_23!, value, :x_23, Val(:ohm), val)
+set_x_23!(value::ThreeWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_x_23!, value, :x_23, Val(:ohm), val)
 """Set [`ThreeWindingTransformer`](@ref) `r_31`."""
 set_r_31!(value::ThreeWindingTransformer, val) = value.r_31 = set_value(value, Val(:r_31), val, Val(:ohm))
-set_r_31!(value::ThreeWindingTransformer, val::Real) = _units_tag_required(set_r_31!, value, :r_31, Val(:ohm), val)
-set_r_31!(value::ThreeWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_r_31!, value, :r_31, Val(:ohm), val)
+set_r_31!(value::ThreeWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_r_31!, value, :r_31, Val(:ohm), val)
 """Set [`ThreeWindingTransformer`](@ref) `x_31`."""
 set_x_31!(value::ThreeWindingTransformer, val) = value.x_31 = set_value(value, Val(:x_31), val, Val(:ohm))
-set_x_31!(value::ThreeWindingTransformer, val::Real) = _units_tag_required(set_x_31!, value, :x_31, Val(:ohm), val)
-set_x_31!(value::ThreeWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_x_31!, value, :x_31, Val(:ohm), val)
+set_x_31!(value::ThreeWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_x_31!, value, :x_31, Val(:ohm), val)
 """Set [`ThreeWindingTransformer`](@ref) `magnetizing_shunt`."""
 set_magnetizing_shunt!(value::ThreeWindingTransformer, val) = value.magnetizing_shunt = set_value(value, Val(:magnetizing_shunt), val, Val(:siemens))
-set_magnetizing_shunt!(value::ThreeWindingTransformer, val::Real) = _units_tag_required(set_magnetizing_shunt!, value, :magnetizing_shunt, Val(:siemens), val)
-set_magnetizing_shunt!(value::ThreeWindingTransformer, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_magnetizing_shunt!, value, :magnetizing_shunt, Val(:siemens), val)
+set_magnetizing_shunt!(value::ThreeWindingTransformer, val::_UntaggedNumber) = _units_tag_required(set_magnetizing_shunt!, value, :magnetizing_shunt, Val(:siemens), val)
 """Set [`ThreeWindingTransformer`](@ref) `shunt_location`."""
 set_shunt_location!(value::ThreeWindingTransformer, val) = value.shunt_location = val
 """Set [`ThreeWindingTransformer`](@ref) `services`."""

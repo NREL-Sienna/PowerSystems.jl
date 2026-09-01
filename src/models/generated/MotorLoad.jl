@@ -165,24 +165,20 @@ set_available!(value::MotorLoad, val) = value.available = val
 set_bus!(value::MotorLoad, val) = value.bus = val
 """Set [`MotorLoad`](@ref) `active_power`."""
 set_active_power!(value::MotorLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::MotorLoad, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::MotorLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::MotorLoad, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`MotorLoad`](@ref) `reactive_power`."""
 set_reactive_power!(value::MotorLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::MotorLoad, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::MotorLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::MotorLoad, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`MotorLoad`](@ref) `rating`."""
 set_rating!(value::MotorLoad, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::MotorLoad, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::MotorLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::MotorLoad, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`MotorLoad`](@ref) `max_active_power`."""
 set_max_active_power!(value::MotorLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mw))
-set_max_active_power!(value::MotorLoad, val::Real) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
-set_max_active_power!(value::MotorLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
+set_max_active_power!(value::MotorLoad, val::_UntaggedNumber) = _units_tag_required(set_max_active_power!, value, :max_active_power, Val(:mw), val)
 """Set [`MotorLoad`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::MotorLoad, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
-set_reactive_power_limits!(value::MotorLoad, val::Real) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
-set_reactive_power_limits!(value::MotorLoad, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::MotorLoad, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::MotorLoad, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
 """Set [`MotorLoad`](@ref) `motor_technology`."""
 set_motor_technology!(value::MotorLoad, val) = value.motor_technology = val
 """Set [`MotorLoad`](@ref) `services`."""

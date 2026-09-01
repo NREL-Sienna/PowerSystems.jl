@@ -361,8 +361,7 @@ set_available!(value::TwoTerminalLCCLine, val) = value.available = val
 set_arc!(value::TwoTerminalLCCLine, val) = value.arc = val
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::TwoTerminalLCCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::TwoTerminalLCCLine, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::TwoTerminalLCCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::TwoTerminalLCCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`TwoTerminalLCCLine`](@ref) `r`."""
 set_r!(value::TwoTerminalLCCLine, val) = value.r = val
 """Set [`TwoTerminalLCCLine`](@ref) `transfer_setpoint`."""
@@ -423,20 +422,20 @@ set_inverter_extinction_angle!(value::TwoTerminalLCCLine, val) = value.inverter_
 set_inverter_capacitor_reactance!(value::TwoTerminalLCCLine, val) = value.inverter_capacitor_reactance = val
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`."""
 set_active_power_limits_from!(value::TwoTerminalLCCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mw))
-set_active_power_limits_from!(value::TwoTerminalLCCLine, val::Real) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
-set_active_power_limits_from!(value::TwoTerminalLCCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TwoTerminalLCCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TwoTerminalLCCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`."""
 set_active_power_limits_to!(value::TwoTerminalLCCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mw))
-set_active_power_limits_to!(value::TwoTerminalLCCLine, val::Real) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
-set_active_power_limits_to!(value::TwoTerminalLCCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TwoTerminalLCCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TwoTerminalLCCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
 """Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_from`."""
 set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), val, Val(:mvar))
-set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val::Real) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
-set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
+set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
+set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
 """Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_to`."""
 set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), val, Val(:mvar))
-set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val::Real) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
-set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
+set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
+set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
 """Set [`TwoTerminalLCCLine`](@ref) `loss`."""
 set_loss!(value::TwoTerminalLCCLine, val) = value.loss = val
 """Set [`TwoTerminalLCCLine`](@ref) `services`."""

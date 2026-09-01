@@ -286,36 +286,33 @@ set_available!(value::HydroPumpTurbine, val) = value.available = val
 set_bus!(value::HydroPumpTurbine, val) = value.bus = val
 """Set [`HydroPumpTurbine`](@ref) `active_power`."""
 set_active_power!(value::HydroPumpTurbine, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mw))
-set_active_power!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
-set_active_power!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
+set_active_power!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_active_power!, value, :active_power, Val(:mw), val)
 """Set [`HydroPumpTurbine`](@ref) `reactive_power`."""
 set_reactive_power!(value::HydroPumpTurbine, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mvar))
-set_reactive_power!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
-set_reactive_power!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
+set_reactive_power!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power!, value, :reactive_power, Val(:mvar), val)
 """Set [`HydroPumpTurbine`](@ref) `rating`."""
 set_rating!(value::HydroPumpTurbine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-set_rating!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
-set_rating!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
+set_rating!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`HydroPumpTurbine`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::HydroPumpTurbine, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mw))
-set_active_power_limits!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
-set_active_power_limits!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
+set_active_power_limits!(value::HydroPumpTurbine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
 """Set [`HydroPumpTurbine`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HydroPumpTurbine, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mvar))
-set_reactive_power_limits!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
-set_reactive_power_limits!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
+set_reactive_power_limits!(value::HydroPumpTurbine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits!, value, :reactive_power_limits, Val(:mvar), val)
 """Set [`HydroPumpTurbine`](@ref) `active_power_limits_pump`."""
 set_active_power_limits_pump!(value::HydroPumpTurbine, val) = value.active_power_limits_pump = set_value(value, Val(:active_power_limits_pump), val, Val(:mw))
-set_active_power_limits_pump!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_active_power_limits_pump!, value, :active_power_limits_pump, Val(:mw), val)
-set_active_power_limits_pump!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_pump!, value, :active_power_limits_pump, Val(:mw), val)
+set_active_power_limits_pump!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_pump!, value, :active_power_limits_pump, Val(:mw), val)
+set_active_power_limits_pump!(value::HydroPumpTurbine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_pump!, value, :active_power_limits_pump, Val(:mw), val)
 """Set [`HydroPumpTurbine`](@ref) `outflow_limits`."""
 set_outflow_limits!(value::HydroPumpTurbine, val) = value.outflow_limits = val
 """Set [`HydroPumpTurbine`](@ref) `powerhouse_elevation`."""
 set_powerhouse_elevation!(value::HydroPumpTurbine, val) = value.powerhouse_elevation = val
 """Set [`HydroPumpTurbine`](@ref) `ramp_limits`."""
 set_ramp_limits!(value::HydroPumpTurbine, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mw))
-set_ramp_limits!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
-set_ramp_limits!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
+set_ramp_limits!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
+set_ramp_limits!(value::HydroPumpTurbine, val::NamedTuple{(:up, :down), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_ramp_limits!, value, :ramp_limits, Val(:mw), val)
 """Set [`HydroPumpTurbine`](@ref) `time_limits`."""
 set_time_limits!(value::HydroPumpTurbine, val) = value.time_limits = val
 """Set [`HydroPumpTurbine`](@ref) `status`."""
@@ -326,8 +323,7 @@ set_time_at_status!(value::HydroPumpTurbine, val) = value.time_at_status = val
 set_operation_cost!(value::HydroPumpTurbine, val) = value.operation_cost = val
 """Set [`HydroPumpTurbine`](@ref) `active_power_pump`."""
 set_active_power_pump!(value::HydroPumpTurbine, val) = value.active_power_pump = set_value(value, Val(:active_power_pump), val, Val(:mw))
-set_active_power_pump!(value::HydroPumpTurbine, val::Real) = _units_tag_required(set_active_power_pump!, value, :active_power_pump, Val(:mw), val)
-set_active_power_pump!(value::HydroPumpTurbine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_pump!, value, :active_power_pump, Val(:mw), val)
+set_active_power_pump!(value::HydroPumpTurbine, val::_UntaggedNumber) = _units_tag_required(set_active_power_pump!, value, :active_power_pump, Val(:mw), val)
 """Set [`HydroPumpTurbine`](@ref) `efficiency`."""
 set_efficiency!(value::HydroPumpTurbine, val) = value.efficiency = val
 """Set [`HydroPumpTurbine`](@ref) `transition_time`."""

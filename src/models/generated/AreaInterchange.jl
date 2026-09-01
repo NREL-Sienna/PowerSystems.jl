@@ -115,16 +115,15 @@ get_internal(value::AreaInterchange) = value.internal
 set_available!(value::AreaInterchange, val) = value.available = val
 """Set [`AreaInterchange`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::AreaInterchange, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::AreaInterchange, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::AreaInterchange, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::AreaInterchange, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`AreaInterchange`](@ref) `from_area`."""
 set_from_area!(value::AreaInterchange, val) = value.from_area = val
 """Set [`AreaInterchange`](@ref) `to_area`."""
 set_to_area!(value::AreaInterchange, val) = value.to_area = val
 """Set [`AreaInterchange`](@ref) `flow_limits`."""
 set_flow_limits!(value::AreaInterchange, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mw))
-set_flow_limits!(value::AreaInterchange, val::Real) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
-set_flow_limits!(value::AreaInterchange, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
+set_flow_limits!(value::AreaInterchange, val::_UntaggedNumber) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
+set_flow_limits!(value::AreaInterchange, val::NamedTuple{(:from_to, :to_from), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_flow_limits!, value, :flow_limits, Val(:mw), val)
 """Set [`AreaInterchange`](@ref) `services`."""
 set_services!(value::AreaInterchange, val) = value.services = val
 """Set [`AreaInterchange`](@ref) `ext`."""

@@ -156,26 +156,25 @@ get_internal(value::TwoTerminalGenericHVDCLine) = value.internal
 set_available!(value::TwoTerminalGenericHVDCLine, val) = value.available = val
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mw))
-set_active_power_flow!(value::TwoTerminalGenericHVDCLine, val::Real) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
-set_active_power_flow!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
+set_active_power_flow!(value::TwoTerminalGenericHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_flow!, value, :active_power_flow, Val(:mw), val)
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `arc`."""
 set_arc!(value::TwoTerminalGenericHVDCLine, val) = value.arc = val
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_from`."""
 set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mw))
-set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::Real) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
-set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
+set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_from!, value, :active_power_limits_from, Val(:mw), val)
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_to`."""
 set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mw))
-set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::Real) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
-set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
+set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_active_power_limits_to!, value, :active_power_limits_to, Val(:mw), val)
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_from`."""
 set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), val, Val(:mvar))
-set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::Real) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
-set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
+set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
+set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits_from!, value, :reactive_power_limits_from, Val(:mvar), val)
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_to`."""
 set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), val, Val(:mvar))
-set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::Real) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
-set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
+set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::_UntaggedNumber) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
+set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val::NamedTuple{(:min, :max), <:Tuple{Vararg{_UntaggedNumber}}}) = _units_tag_required(set_reactive_power_limits_to!, value, :reactive_power_limits_to, Val(:mvar), val)
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `loss`."""
 set_loss!(value::TwoTerminalGenericHVDCLine, val) = value.loss = val
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `services`."""
