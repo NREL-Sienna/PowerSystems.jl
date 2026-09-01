@@ -22,7 +22,7 @@ for T in (
     :Area, :LoadZone, :TransmissionInterface, :Line, :MonitoredLine, :GenericArcImpedance,
     :DiscreteControlledACBranch, :TransformerCircuit, :EnergyReservoirStorage,
     :TwoTerminalGenericHVDCLine, :TwoTerminalLCCLine, :TwoTerminalVSCLine, :Source,
-    :InterconnectingConverter, :HybridSystem, :FACTSControlDevice, :TModelHVDCLine,
+    :InterconnectingConverter, :HybridSystem, :FACTSControlDevice,
 )
     @eval function from_openapi(po::PO.$T, refs::OpenAPIRefs)
         return from_openapi(
@@ -35,7 +35,7 @@ end
 
 for T in (
     :Arc, :TwoWindingTransformer, :ThreeWindingTransformer, :FixedAdmittance,
-    :SwitchedAdmittance, :HydroReservoir, :OnlineReserve, :OfflineReserve,
+    :SwitchedAdmittance, :HydroReservoir, :TModelHVDCLine, :OnlineReserve, :OfflineReserve,
     :GroupReserve,
 )
     @eval from_openapi(po::PO.$T, refs::OpenAPIRefs) = from_openapi(po, refs, DU)
@@ -1499,12 +1499,12 @@ end
 
 # ── TModelHVDCLine ──────────────────────────────────────────────────────────────
 # The cable exception. This type carries no `base_power` at all — its anchor is
-# `base_current` (A), which per-unitizes `l`/`c` and, under "COMPONENT_BASE", `r`. It therefore
-# falls through `base_power_kind`'s `DeviceBasePower()` default to `_get_base_power(c::
-# Component) = _get_system_base_power(c)`, so the MW fields per-unitize on the *system* base
-# exactly like `Line`'s do — `base_current` never enters that arithmetic. Getting this
-# backwards (dividing MW by `base_current`) would be dimensionally meaningless, which is why
-# it is spelled out here.
+# `base_current` (A), which per-unitizes `l`/`c` and, under "COMPONENT_BASE", `r`. The MW
+# fields have no `power_units` discriminator either (see the schema): they declare x-unit
+# "MW" outright, fixed natural units, same posture as reserves' `requirement` field (see
+# that header). So they always divide by `get_base_power(refs)` (the System's own
+# computational base — this type has no base of its own for power fields) in both marker
+# methods; both are therefore identical, hence the trivial `DU` delegate below.
 
 const TMODEL_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
@@ -1516,22 +1516,6 @@ _check_tmodel_param_units(po) = _check_unit_basis(
 )
 
 function from_openapi(po::PO.TModelHVDCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
-    _check_tmodel_param_units(po)
-    return TModelHVDCLine(;
-        name = po.name,
-        available = po.available,
-        active_power_flow = po.active_power_flow,
-        arc = resolve_ref(refs, po.arc, Arc),
-        r = po.r,
-        l = po.l,
-        c = po.c,
-        active_power_limits_from = _minmax(po.active_power_limits_from),
-        active_power_limits_to = _minmax(po.active_power_limits_to),
-        base_current = po.base_current,
-    )
-end
-
-function from_openapi(po::PO.TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
     _check_tmodel_param_units(po)
     sbp = get_base_power(refs)
     return TModelHVDCLine(;
@@ -1546,6 +1530,10 @@ function from_openapi(po::PO.TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
         active_power_limits_to = _minmax_du(po.active_power_limits_to, sbp),
         base_current = po.base_current,
     )
+end
+
+function from_openapi(po::PO.TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
+    return from_openapi(po, refs, DU)
 end
 
 # ── InterconnectingConverter ────────────────────────────────────────────────────

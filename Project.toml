@@ -33,8 +33,9 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 
 [sources]
+# IS4 carries the association-id keys, and InfraStore 0.11 is registered with its own native
+# library - the co-dev pins are retired.
 InfrastructureSystems = {rev = "IS4", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
-InfraStore = {rev = "main", url = "https://github.com/NatLabRockies/infrastore", subdir = "julia/InfraStore.jl"}
 # Branch revs, not a tagged release: the x-unit accessors these packages expose are generated
 # and not yet released. Switch to a tagged rev at release.
 # PowerDynamics-/PowerInvestmentsOpenAPIModels are not imported here — they are deps of the
@@ -48,7 +49,7 @@ PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerO
 PowerTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerTimeSeriesOpenAPIModels.jl"}
 
 [compat]
-# For the `[extras]`/`[sources]` co-dev pin above; Aqua requires every extra to carry one.
+# For the `[extras]` entry; Aqua requires every extra to carry a compat bound.
 InfraStore = "0.11"
 DataStructures = "^0.19"
 Dates = "1"

@@ -2,16 +2,16 @@
 $(TYPEDEF)
 $(TYPEDFIELDS)
 
-    MarketBidCost(no_load_cost, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers)
-    MarketBidCost(; no_load_cost, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers)
-    MarketBidCost(no_load_cost, start_up::Real, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers)
+    MarketBidCost(minimum_energy_offer, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style)
+    MarketBidCost(; minimum_energy_offer, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style)
+    MarketBidCost(minimum_energy_offer, start_up::Real, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style)
 
 An operating cost for static (non-time-varying) market bids of energy and ancillary
 services. For time-varying bids, use [`MarketBidTimeSeriesCost`](@ref).
 """
 mutable struct MarketBidCost{U <: IS.AbstractUnitSystem} <: OfferCurveCost
-    "No load cost"
-    no_load_cost::LinearCurve
+    "Minimum-energy offer: cost to operate at minimum stable level, in \$/MWh at the curve's minimum power, stored as submitted. \$/h sources convert at parse (MEO = no-load cost / P_min)."
+    minimum_energy_offer::LinearCurve
     "Start-up cost at different stages of the thermal cycle (hot, warm, cold)"
     start_up::StartUpStages
     "Shut-down cost"
@@ -22,17 +22,26 @@ mutable struct MarketBidCost{U <: IS.AbstractUnitSystem} <: OfferCurveCost
     decremental_offer_curves::CostCurve{PiecewiseIncrementalCurve, U}
     "Bids for the ancillary services"
     ancillary_service_offers::Vector{Service}
+    "Linear-interpolation flag for the corresponding offer curve; false (default) is the step interpretation. Mutually exclusive with block groups on the same curve."
+    incremental_slope::Bool
+    "Linear-interpolation flag for the corresponding offer curve; false (default) is the step interpretation. Mutually exclusive with block groups on the same curve."
+    decremental_slope::Bool
+    "Curve-clearing style for the bid ([`CurveStyles`](@ref)); CURVE (default) is ordinary divisible price-setting. A non-CURVE value is mutually exclusive with linear interpolation (`incremental_slope`/`decremental_slope`) on either offer curve."
+    curve_style::CurveStyles
 end
 
 const ZERO_OFFER_CURVE = CostCurve(PiecewiseIncrementalCurve(0.0, [0.0, 0.0], [0.0]))
 
 function MarketBidCost(;
-    no_load_cost = LinearCurve(0.0),
+    minimum_energy_offer = LinearCurve(0.0),
     start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
     shut_down = LinearCurve(0.0),
     incremental_offer_curves = ZERO_OFFER_CURVE,
     decremental_offer_curves = ZERO_OFFER_CURVE,
     ancillary_service_offers = Vector{Service}(),
+    incremental_slope = false,
+    decremental_slope = false,
+    curve_style = CurveStyles.CURVE,
 )
     U_inc = typeof(get_power_units(incremental_offer_curves))
     U_dec = typeof(get_power_units(decremental_offer_curves))
@@ -41,10 +50,12 @@ function MarketBidCost(;
             "incremental_offer_curves and decremental_offer_curves must share a unit system (got $(U_inc()) vs $(U_dec()))",
         ),
     )
+    check_curve_style_exclusivity(curve_style, incremental_slope, decremental_slope)
     return MarketBidCost{U_inc}(
-        no_load_cost, start_up, shut_down,
+        minimum_energy_offer, start_up, shut_down,
         incremental_offer_curves, decremental_offer_curves,
         ancillary_service_offers,
+        incremental_slope, decremental_slope, curve_style,
     )
 end
 
@@ -60,26 +71,32 @@ Accepts a single `start_up` value to use as the `hot` value, with `warm` and `co
 `0.0`.
 """
 function MarketBidCost(
-    no_load_cost,
+    minimum_energy_offer,
     start_up::Real,
     shut_down;
     incremental_offer_curves = ZERO_OFFER_CURVE,
     decremental_offer_curves = ZERO_OFFER_CURVE,
     ancillary_service_offers = Vector{Service}(),
+    incremental_slope = false,
+    decremental_slope = false,
+    curve_style = CurveStyles.CURVE,
 )
     start_up_multi = single_start_up_to_stages(start_up)
     return MarketBidCost(;
-        no_load_cost = no_load_cost,
+        minimum_energy_offer = minimum_energy_offer,
         start_up = start_up_multi,
         shut_down = shut_down,
         incremental_offer_curves = incremental_offer_curves,
         decremental_offer_curves = decremental_offer_curves,
         ancillary_service_offers = ancillary_service_offers,
+        incremental_slope = incremental_slope,
+        decremental_slope = decremental_slope,
+        curve_style = curve_style,
     )
 end
 
-"""Get [`MarketBidCost`](@ref) `no_load_cost`."""
-get_no_load_cost(value::MarketBidCost) = value.no_load_cost
+"""Get [`MarketBidCost`](@ref) `minimum_energy_offer`."""
+get_minimum_energy_offer(value::MarketBidCost) = value.minimum_energy_offer
 """Get [`MarketBidCost`](@ref) `start_up`."""
 get_start_up(value::MarketBidCost) = value.start_up
 """Get [`MarketBidCost`](@ref) `shut_down`."""
@@ -90,9 +107,15 @@ get_incremental_offer_curves(value::MarketBidCost) = value.incremental_offer_cur
 get_decremental_offer_curves(value::MarketBidCost) = value.decremental_offer_curves
 """Get [`MarketBidCost`](@ref) `ancillary_service_offers`."""
 get_ancillary_service_offers(value::MarketBidCost) = value.ancillary_service_offers
+"""Get [`MarketBidCost`](@ref) `incremental_slope`."""
+get_incremental_slope(value::MarketBidCost) = value.incremental_slope
+"""Get [`MarketBidCost`](@ref) `decremental_slope`."""
+get_decremental_slope(value::MarketBidCost) = value.decremental_slope
+"""Get [`MarketBidCost`](@ref) `curve_style`."""
+get_curve_style(value::MarketBidCost) = value.curve_style
 
-"""Set [`MarketBidCost`](@ref) `no_load_cost`."""
-set_no_load_cost!(value::MarketBidCost, val) = value.no_load_cost = val
+"""Set [`MarketBidCost`](@ref) `minimum_energy_offer`."""
+set_minimum_energy_offer!(value::MarketBidCost, val) = value.minimum_energy_offer = val
 """Set [`MarketBidCost`](@ref) `start_up`."""
 set_start_up!(value::MarketBidCost, val) = value.start_up = val
 """Set [`MarketBidCost`](@ref) `shut_down`."""
@@ -106,6 +129,12 @@ set_decremental_offer_curves!(value::MarketBidCost, val) =
 """Set [`MarketBidCost`](@ref) `ancillary_service_offers`."""
 set_ancillary_service_offers!(value::MarketBidCost, val) =
     value.ancillary_service_offers = val
+"""Set [`MarketBidCost`](@ref) `incremental_slope`."""
+set_incremental_slope!(value::MarketBidCost, val) = value.incremental_slope = val
+"""Set [`MarketBidCost`](@ref) `decremental_slope`."""
+set_decremental_slope!(value::MarketBidCost, val) = value.decremental_slope = val
+"""Set [`MarketBidCost`](@ref) `curve_style`."""
+set_curve_style!(value::MarketBidCost, val) = value.curve_style = val
 
 """Auxiliary Method for setting up start up that are not multi-start"""
 function set_start_up!(value::MarketBidCost, val::Real)

@@ -285,29 +285,14 @@ function to_openapi(src::Source, refs::OpenAPIRefs, ::NaturalUnit)
 end
 
 # ── TModelHVDCLine ──────────────────────────────────────────────────────────────
-# The MW fields are pu on the *system* base (this type has no `base_power` field, so the
-# units engine resolves them there); `base_current` is written back untouched, being the
-# anchor for `r`/`l`/`c` rather than for power.
+# `active_power_flow`/`active_power_limits_from`/`active_power_limits_to` declare x-unit "MW"
+# outright — fixed natural units, no `power_units` discriminator on this PO struct (see the
+# schema and import_handwritten.jl's header on this exact point) — so they multiply by
+# `get_base_power(refs)` in both methods, same posture as reserves' `requirement`. Both
+# methods are therefore identical, hence the trivial `DU` delegate below. `base_current` is
+# written back untouched, being the anchor for `r`/`l`/`c` rather than for power.
 
 function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
-    return PO.TModelHVDCLine(;
-        id = component_id(refs, line),
-        name = get_name(line),
-        available = get_available(line),
-        active_power_flow = get_active_power_flow(line, SU),
-        arc = component_id(refs, get_arc(line)),
-        parameter_units = "COMPONENT_BASE",
-        base_current = get_base_current(line),
-        r = get_r(line),
-        l = get_l(line),
-        c = get_c(line),
-        active_power_limits_from = _minmax_po(get_active_power_limits_from(line, SU)),
-        active_power_limits_to = _minmax_po(get_active_power_limits_to(line, SU)),
-        power_units = _power_units_string(DU),
-    )
-end
-
-function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
     sbp = get_base_power(refs)
     return PO.TModelHVDCLine(;
         id = component_id(refs, line),
@@ -326,8 +311,11 @@ function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
         active_power_limits_to = _minmax_po_scaled(
             get_active_power_limits_to(line, SU), sbp,
         ),
-        power_units = _power_units_string(NU),
     )
+end
+
+function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(line, refs, DU)
 end
 
 # ── InterconnectingConverter ────────────────────────────────────────────────────

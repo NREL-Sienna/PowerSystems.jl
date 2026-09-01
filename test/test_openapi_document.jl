@@ -328,12 +328,13 @@ end
     add_service!(sys, svc, [gen])
 
     mbc = MarketBidCost(;
-        no_load_cost = LinearCurve(5.0),
+        minimum_energy_offer = LinearCurve(5.0),
         start_up = (hot = 100.0, warm = 200.0, cold = 300.0),
         shut_down = LinearCurve(2.0),
         incremental_offer_curves = make_market_bid_curve(
             [0.0, 50.0, 100.0], [10.0, 20.0], 0.0; power_units = IS.NaturalUnit(),
         ),
+        incremental_slope = true,
     )
     push!(get_ancillary_service_offers(mbc), svc)
     set_operation_cost!(gen, mbc)
@@ -344,15 +345,89 @@ end
     gen2 = get_component(ThermalStandard, sys2, "gen1")
     mbc2 = get_operation_cost(gen2)
     @test mbc2 isa MarketBidCost
-    @test get_no_load_cost(mbc2) == LinearCurve(5.0)
+    @test get_minimum_energy_offer(mbc2) == LinearCurve(5.0)
     @test get_start_up(mbc2) == (hot = 100.0, warm = 200.0, cold = 300.0)
     @test get_shut_down(mbc2) == LinearCurve(2.0)
     @test get_incremental_offer_curves(mbc2) == get_incremental_offer_curves(mbc)
     @test get_decremental_offer_curves(mbc2) == get_decremental_offer_curves(mbc)
+    @test get_incremental_slope(mbc2)
+    @test !get_decremental_slope(mbc2)
+    @test get_curve_style(mbc2) == CurveStyles.CURVE
     offers = get_ancillary_service_offers(mbc2)
     @test length(offers) == 1
     @test get_name(only(offers)) == "RESERVE"
     @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
+end
+
+"""Build a `System` with one `ThermalStandard` (`gen1`) carrying a plain `MarketBidCost`.
+Returns `(sys, gen)`. Used to reach the wire-level `curve_style`/`incremental_slope` fields
+by patching the raw JSON text: patching the parsed `PO.MarketBidCost` in place instead would
+go through `OpenAPI.jl`'s own `setproperty!` validation (rejects an out-of-range enum value
+immediately) or would drop a `nothing` field entirely on write (turning "explicit null" back
+into "key omitted, use the struct default")."""
+function _market_bid_cost_fixture()
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+    mbc = MarketBidCost(;
+        minimum_energy_offer = LinearCurve(5.0),
+        start_up = (hot = 100.0, warm = 200.0, cold = 300.0),
+        shut_down = LinearCurve(2.0),
+        incremental_offer_curves = make_market_bid_curve(
+            [0.0, 50.0, 100.0], [10.0, 20.0], 0.0; power_units = IS.NaturalUnit(),
+        ),
+    )
+    set_operation_cost!(gen, mbc)
+    return (sys, gen)
+end
+
+@testset "convert_cost(MarketBidCost): explicit null curve_style errors loudly, not MethodError" begin
+    sys, gen = _market_bid_cost_fixture()
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        document_path = joinpath(dir, "system.json")
+        txt = read(document_path, String)
+        @test occursin("\"curve_style\":0", txt)
+        write(document_path, replace(txt, "\"curve_style\":0" => "\"curve_style\":null"))
+        @test_throws "MarketBidCost.curve_style is required and missing" from_file(
+            System, dir,
+        )
+    end
+end
+
+@testset "convert_cost(MarketBidCost): explicit null incremental_slope errors loudly" begin
+    sys, gen = _market_bid_cost_fixture()
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        document_path = joinpath(dir, "system.json")
+        txt = read(document_path, String)
+        @test occursin("\"incremental_slope\":false", txt)
+        write(
+            document_path,
+            replace(txt, "\"incremental_slope\":false" => "\"incremental_slope\":null"),
+        )
+        @test_throws "MarketBidCost.incremental_slope is required and missing" from_file(
+            System, dir,
+        )
+    end
+end
+
+@testset "_curve_style_from_wire rejects an out-of-range integer" begin
+    sys, gen = _market_bid_cost_fixture()
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        document_path = joinpath(dir, "system.json")
+        txt = read(document_path, String)
+        write(document_path, replace(txt, "\"curve_style\":0" => "\"curve_style\":7"))
+        @test_throws "curve_style 7 is not a valid CurveStyles value" from_file(System, dir)
+    end
 end
 
 """Build a `System` with one `ThermalStandard` (`gen1`) carrying a
@@ -392,7 +467,7 @@ function _mbtc_service_offer_fixture()
         sys, gen, _mbtc_sts("start_up", fill((100.0, 200.0, 300.0), 24)),
     )
     mbtc = MarketBidTimeSeriesCost(;
-        no_load_cost = TimeSeriesLinearCurve(no_load_key),
+        minimum_energy_offer = TimeSeriesLinearCurve(no_load_key),
         start_up = start_up_key,
         shut_down = TimeSeriesLinearCurve(shut_down_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -441,6 +516,80 @@ end
         @test length(offers) == 1
         @test get_name(only(offers)) == "RESERVE"
         @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
+    end
+end
+
+"""Build a system whose one `ThermalStandard` carries a fully time-series-backed
+`MarketBidTimeSeriesCost`, with `slope_kwargs` forwarded to its constructor."""
+function _mbtc_extension_fixture(; slope_kwargs...)
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+
+    timestamps =
+        collect(Dates.DateTime(2024, 1, 1):Dates.Hour(1):Dates.DateTime(2024, 1, 1, 23))
+    pwl_values = fill(PiecewiseStepData([0.0, 100.0], [10.0]), 24)
+    linear_values = fill(LinearFunctionData(1.0, 0.0), 24)
+    _mbtc_ext_sts(name, values) =
+        IS.SingleTimeSeries(; name = name, data = TimeSeries.TimeArray(timestamps, values))
+
+    inc_key = add_time_series!(sys, gen, _mbtc_ext_sts("inc_offer_ext", pwl_values))
+    dec_key = add_time_series!(sys, gen, _mbtc_ext_sts("dec_offer_ext", pwl_values))
+    no_load_key = add_time_series!(sys, gen, _mbtc_ext_sts("no_load_ext", linear_values))
+    shut_down_key =
+        add_time_series!(sys, gen, _mbtc_ext_sts("shut_down_ext", linear_values))
+    start_up_key = add_time_series!(
+        sys, gen, _mbtc_ext_sts("start_up_ext", fill((100.0, 200.0, 300.0), 24)),
+    )
+    mbtc = MarketBidTimeSeriesCost(;
+        minimum_energy_offer = TimeSeriesLinearCurve(no_load_key),
+        start_up = start_up_key,
+        shut_down = TimeSeriesLinearCurve(shut_down_key),
+        incremental_offer_curves = make_market_bid_ts_curve(inc_key),
+        decremental_offer_curves = make_market_bid_ts_curve(dec_key),
+        slope_kwargs...,
+    )
+    set_operation_cost!(gen, mbtc)
+    return (sys, gen)
+end
+
+@testset "MarketBidTimeSeriesCost round trip: slope flags" begin
+    sys, gen = _mbtc_extension_fixture(; incremental_slope = true)
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+        gen2 = get_component(ThermalStandard, sys2, "gen1")
+        mbtc2 = get_operation_cost(gen2)
+        @test mbtc2 isa MarketBidTimeSeriesCost
+        @test get_incremental_slope(mbtc2)
+        @test !get_decremental_slope(mbtc2)
+        @test get_curve_style(mbtc2) == CurveStyles.CURVE
+    end
+end
+
+@testset "MarketBidTimeSeriesCost round trip: curve_style" begin
+    sys, gen = _mbtc_extension_fixture(; curve_style = CurveStyles.FIXED)
+
+    # The wire representation is a plain integer (0/1/2), not a string enum.
+    wire = PSY.convert_cost_to_openapi(get_operation_cost(gen))
+    @test wire.curve_style == 1
+
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+        gen2 = get_component(ThermalStandard, sys2, "gen1")
+        mbtc2 = get_operation_cost(gen2)
+        @test mbtc2 isa MarketBidTimeSeriesCost
+        @test !get_incremental_slope(mbtc2)
+        @test !get_decremental_slope(mbtc2)
+        @test get_curve_style(mbtc2) == CurveStyles.FIXED
     end
 end
 

@@ -375,9 +375,11 @@ end
 end
 
 @testset "OpenAPI export converters: TModelHVDCLine" begin
-    # No device `base_power`: the active-power fields per-unitize on the *system* base
-    # (`get_base_power(refs)`), same fallback as `Line`'s; `base_current` — not a power
-    # base — is `r`/`l`/`c`'s own anchor and rides through untouched in both bases.
+    # Exception among the branches: `active_power_flow`/`active_power_limits_from/to`
+    # declare x-unit "MW" outright, fixed natural units with no `power_units` discriminator
+    # and no `base_power` field — same posture as reserves' `requirement`. Both export
+    # methods multiply by `get_base_power(refs)` and are identical; `base_current` (not a
+    # power base) is `r`/`l`/`c`'s own anchor and rides through untouched.
     dcbus1 = DCBus(;
         number = 1, name = "dcbus1", available = true,
         magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1), base_voltage = 500.0,
@@ -394,30 +396,29 @@ end
         active_power_limits_to = (min = -1.0, max = 1.0),
         base_current = 200.0,
     )
-    sys = System(100.0)
+    sys = System(250.0)
     add_component!(sys, dcbus1)
     add_component!(sys, dcbus2)
     add_component!(sys, arc)
     add_component!(sys, tmodel)
 
-    refs = PSY.OpenAPIRefs(100.0)
+    refs = PSY.OpenAPIRefs(250.0)
     refs[1] = dcbus1
     refs[2] = dcbus2
     refs[3] = arc
     refs[4] = tmodel
 
     natural_po = PSY.to_openapi(tmodel, refs, NU)
-    @test natural_po.power_units == "NATURAL_UNITS"
-    @test natural_po.active_power_flow == 50.0
-    @test natural_po.active_power_limits_from.min == -100.0
-    @test natural_po.active_power_limits_to.max == 100.0
-    @test natural_po.base_current == 200.0
+    @test !hasfield(typeof(natural_po), :power_units)
     @test !hasfield(typeof(natural_po), :base_power)
+    @test natural_po.active_power_flow == 125.0
+    @test natural_po.active_power_limits_from.min == -250.0
+    @test natural_po.active_power_limits_to.max == 250.0
+    @test natural_po.base_current == 200.0
 
     device_po = PSY.to_openapi(tmodel, refs, DU)
-    @test device_po.power_units == "COMPONENT_BASE"
-    @test device_po.active_power_flow == 0.5
-    @test device_po.active_power_limits_from.min == -1.0
+    @test device_po.active_power_flow == 125.0
+    @test device_po.active_power_limits_from.min == -250.0
     @test device_po.base_current == 200.0
 end
 
@@ -847,6 +848,86 @@ end
     @test get_name.(get_contributing_services(group2)) == ["spin_up_member"]
 end
 
+@testset "OpenAPI export: TradingHub membership round-trip" begin
+    sys, b1, b2, hub = _market_hub_fixture()
+
+    out = PSY.to_openapi(sys; unit_system = :device_base)
+    sys2 = PSY.from_openapi(System, out)
+    hub2 = only(get_components(TradingHub, sys2))
+    @test get_name.(get_associated_buses(hub2)) == ["b1", "b2"]
+end
+
+@testset "OpenAPI import: duplicate trading hub bus association errors loudly" begin
+    sys, b1, b2, hub = _market_hub_fixture()
+    out = PSY.to_openapi(sys; unit_system = :device_base)
+    duplicate_row = deepcopy(first(out.trading_hub_associations))
+    push!(out.trading_hub_associations, duplicate_row)
+    @test_throws ArgumentError PSY.from_openapi(System, out)
+end
+
+@testset "OpenAPI document round trip: VirtualParticipant settlement point, hub association, hub bid" begin
+    sys, b1, b2, hub = _market_hub_fixture()
+
+    vp_hub = VirtualParticipant(; name = "vp_hub", available = true,
+        max_supply = 100.0, max_demand = 50.0, operation_cost = MarketBidCost(nothing))
+    add_component!(sys, vp_hub)
+    add_trading_hub!(sys, vp_hub, hub)
+
+    dates = collect(DateTime("2026-01-01T00:00:00"):Hour(1):DateTime("2026-01-01T01:00:00"))
+    data = PiecewiseStepData.(
+        [[0.0, 50.0, 100.0], [0.0, 50.0, 100.0]],
+        [[25.0, 30.0], [26.0, 31.0]],
+    )
+    ta = TimeSeries.TimeArray(dates, data)
+    hub_ts = SingleTimeSeries(; name = get_name(hub), data = ta)
+    set_hub_bid!(sys, vp_hub, hub, hub_ts, IS.NaturalUnit())
+
+    vp_nodal = VirtualParticipant(; name = "vp_nodal", available = true,
+        settlement_point = b2, max_supply = 10.0, max_demand = 10.0,
+        operation_cost = MarketBidCost(nothing))
+    add_component!(sys, vp_nodal)
+
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+
+        hub2 = only(get_components(TradingHub, sys2))
+        vp_hub2 = get_component(VirtualParticipant, sys2, "vp_hub")
+        @test get_name.(get_trading_hubs(vp_hub2)) == ["western_hub"]
+        @test has_trading_hub(vp_hub2, hub2)
+        hub_ts2 = get_time_series(SingleTimeSeries, vp_hub2, get_name(hub2))
+        @test hub_ts2 isa SingleTimeSeries
+        @test TimeSeries.values(get_data(hub_ts2)) == TimeSeries.values(ta)
+
+        vp_nodal2 = get_component(VirtualParticipant, sys2, "vp_nodal")
+        @test get_name(get_settlement_point(vp_nodal2)) == "b2"
+        @test isempty(get_trading_hubs(vp_nodal2))
+    end
+end
+
+@testset "OpenAPI document round trip: PointToPointBid bus-to-hub terminals, FIXED curve style" begin
+    sys, b1, b2, hub = _market_hub_fixture()
+
+    ptp = PointToPointBid(; name = "utc1", available = true, from = b1, to = hub,
+        max_active_power = 50.0,
+        spread_bid = MarketBidCost(; curve_style = CurveStyles.FIXED),
+        price_limits = (min = -50.0, max = 50.0), linked_crr = "crr1")
+    add_component!(sys, ptp)
+
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+
+        ptp2 = get_component(PointToPointBid, sys2, "utc1")
+        @test get_name(get_from(ptp2)) == "b1"
+        @test get_name(get_to(ptp2)) == "western_hub"
+        @test get_max_active_power(ptp2) == 50.0
+        @test get_price_limits(ptp2) == (min = -50.0, max = 50.0)
+        @test get_curve_style(get_spread_bid(ptp2)) == CurveStyles.FIXED
+        @test get_linked_crr(ptp2) == "crr1"
+    end
+end
+
 @testset "OpenAPI export: supplemental attribute converters" begin
     # The exporters read their own id back from `refs` via `component_id`, exactly like
     # the generated component exporters, so each attribute registers first.
@@ -1080,6 +1161,7 @@ end
             "service_associations" => [
                 Dict{String, Any}("service_id" => 8, "entity_id" => 7),
             ],
+            "trading_hub_associations" => [],
             "time_series_associations" => [],
             "ext" => Dict{String, Any}(),
             "time_series_storage_file" => nothing,
@@ -1556,4 +1638,28 @@ end
     duplicate_row = deepcopy(first(ct_rows))
     push!(doc.combined_cycle_associations, duplicate_row)
     @test_throws ErrorException PSY.from_openapi(System, doc)
+end
+
+@testset "OpenAPI document round trip: feature-keyed time series" begin
+    sys = System(100.0)
+    bus = _export_bus(; number = 1)
+    add_component!(sys, bus)
+    zone = LoadZone(; name = "lz1", peak_active_power = 1.0, peak_reactive_power = 0.0)
+    add_component!(sys, zone)
+    stamps = collect(range(DateTime(2026, 1, 1); step = Hour(1), length = 3))
+    for (number, value) in ((1, 0.25), (2, 0.75))
+        ts = SingleTimeSeries(; name = "factor", data = TimeSeries.TimeArray(stamps, fill(value, 3)))
+        add_time_series!(sys, zone, ts; features = Dict("bus" => number))
+    end
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+        zone2 = get_component(LoadZone, sys2, "lz1")
+        @test get_time_series_values(
+            SingleTimeSeries, zone2, "factor"; features = Dict("bus" => 1),
+        ) == fill(0.25, 3)
+        @test get_time_series_values(
+            SingleTimeSeries, zone2, "factor"; features = Dict("bus" => 2),
+        ) == fill(0.75, 3)
+    end
 end

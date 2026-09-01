@@ -179,6 +179,21 @@ const DOCUMENT_PLAN = [
     ),
     # After the reserves it regulates; membership arrives as service_associations rows.
     (po_type = PO.AGC, psy_type = AGC, key = "AGC", addable = true),
+    # Hub membership (member buses) arrives as trading_hub_associations rows, the same
+    # shape as service membership above.
+    (po_type = PO.TradingHub, psy_type = TradingHub, key = "TradingHub", addable = true),
+    # After every settlement-point candidate (Area, LoadZone, ACBus) and TradingHub: a
+    # VirtualParticipant's `settlement_point` and hub membership both resolve by reference.
+    (
+        po_type = PO.VirtualParticipant, psy_type = VirtualParticipant,
+        key = "VirtualParticipant", addable = true,
+    ),
+    # After every Topology candidate (Area, LoadZone, ACBus, DCBus, Arc) and TradingHub: a
+    # PointToPointBid's `from`/`to` terminals resolve by reference to either.
+    (
+        po_type = PO.PointToPointBid, psy_type = PointToPointBid,
+        key = "PointToPointBid", addable = true,
+    ),
 ]
 
 """
@@ -299,6 +314,35 @@ function _attach_service_membership!(entity, service, ::System)
     error(
         "from_openapi(System, doc): unmapped service membership pair — entity=" *
         "$(typeof(entity)) service=$(typeof(service))",
+    )
+end
+
+# ── trading hub membership dispatch ─────────────────────────────────────────────
+# Hub membership arrives as rows in the document's own `trading_hub_associations` table
+# rather than an inline array on `TradingHub`, so each `entity_id` is attached by type here.
+
+"""Attach a member bus to `hub`."""
+function _attach_trading_hub_membership!(entity::ACBus, hub::TradingHub, sys::System)
+    throw_if_not_attached(entity, sys)
+    throw_if_not_attached(hub, sys)
+    add_hub_bus_internal!(hub, entity)
+    return nothing
+end
+
+"""Record `entity` as settling at `hub`."""
+function _attach_trading_hub_membership!(
+    entity::VirtualParticipant,
+    hub::TradingHub,
+    ::System,
+)
+    add_trading_hub_internal!(entity, hub)
+    return nothing
+end
+
+function _attach_trading_hub_membership!(entity, hub, ::System)
+    error(
+        "from_openapi(System, doc): unmapped trading hub membership pair — entity=" *
+        "$(typeof(entity)) hub=$(typeof(hub))",
     )
 end
 
@@ -720,13 +764,23 @@ end
 
 """The `(owner_id, owner_category, time_series_type, name, resolution, interval, features)`
 named tuple a time series association row is matched by — the same identity the store's own
-uniqueness index keys on. See [`_validate_time_series_associations!`](@ref)."""
+uniqueness index keys on. See [`_validate_time_series_associations!`](@ref).
+
+Features are compared by value: the wire type wraps each value in a mutable
+`TimeSeriesFeatureValue`, which compares by object identity, so a document row and its store
+counterpart would never match on the wrappers themselves."""
 _ts_row_identity(row) = (
     owner_id = row.owner_id, owner_category = row.owner_category,
     time_series_type = row.time_series_type, name = row.name,
     resolution = _ts_field(row, :resolution), interval = _ts_field(row, :interval),
-    features = row.features,
+    features = _ts_feature_values(row.features),
 )
+
+_ts_feature_values(::Nothing) = nothing
+_ts_feature_values(features::AbstractDict) =
+    Dict{String, Any}(String(k) => _ts_feature_value(v) for (k, v) in features)
+_ts_feature_value(v::PowerTimeSeriesOpenAPIModels.TimeSeriesFeatureValue) = v.value
+_ts_feature_value(v) = v
 
 """Human-readable label for a time series association identity, for error messages."""
 function _ts_row_label(identity)

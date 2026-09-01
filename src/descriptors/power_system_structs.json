@@ -19443,6 +19443,201 @@
                 }
             ],
             "supertype": "DynamicInjection"
+        },
+        {
+            "struct_name": "TradingHub",
+            "openapi_type": "TradingHub",
+            "supertype": "MarketComponent",
+            "docstring": "A market trading hub: a named set of member buses at which hub-settled bids are priced. Member buses are unweighted.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "name": "buses",
+                    "data_type": "Vector{ACBus}",
+                    "comment": "Member buses of the hub",
+                    "null_value": "ACBus[]",
+                    "default": "ACBus[]"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ]
+        },
+        {
+            "struct_name": "VirtualParticipant",
+            "openapi_type": "VirtualParticipant",
+            "supertype": "MarketTransaction",
+            "docstring": "A virtual (convergence) market participant. Supply offers map to the operating cost's incremental_offer_curves; demand bids to decremental_offer_curves. Settles either at a settlement point or at associated trading hubs (per-hub bids attach as hub-named time series). All MW values are natural units.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is available for market clearing (`true`) or not (`false`)",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "max_supply",
+                    "data_type": "Float64",
+                    "comment": "MW envelope for the incremental (supply) side (MW)",
+                    "null_value": "0.0",
+                    "valid_range": {
+                        "min": 0.0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_demand",
+                    "data_type": "Float64",
+                    "comment": "MW envelope for the decremental (demand) side (MW)",
+                    "null_value": "0.0",
+                    "valid_range": {
+                        "min": 0.0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "settlement_point",
+                    "openapi_name": "settlement_point_id",
+                    "data_type": "Union{Nothing, Topology}",
+                    "comment": "Settlement location (a bus, area, or load zone); `nothing` when the participant settles at trading hubs instead",
+                    "null_value": "nothing",
+                    "default": "nothing"
+                },
+                {
+                    "name": "trading_hubs",
+                    "data_type": "Vector{TradingHub}",
+                    "comment": "Trading hubs this participant settles at; mutually exclusive with `settlement_point`",
+                    "null_value": "TradingHub[]",
+                    "default": "TradingHub[]"
+                },
+                {
+                    "name": "operation_cost",
+                    "data_type": "Union{MarketBidCost, MarketBidTimeSeriesCost}",
+                    "comment": "Bid curves as an offer-curve operating cost",
+                    "null_value": "MarketBidCost(nothing)",
+                    "default": "MarketBidCost(nothing)"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ]
+        },
+        {
+            "struct_name": "PointToPointBid",
+            "openapi_type": "PointToPointBid",
+            "supertype": "MarketTransaction",
+            "docstring": "A priced point-to-point spread bid (e.g. an up-to-congestion or PTP obligation bid): a willingness-to-pay curve on the price spread between two locations. Clears as a withdrawal at `from` and an injection at `to`. Terminals are validated to be a Topology or a TradingHub. All MW values are natural units.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is available for market clearing (`true`) or not (`false`)",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "from",
+                    "openapi_name": "from_id",
+                    "data_type": "Component",
+                    "comment": "Source terminal (withdrawal side): a Topology or a TradingHub",
+                    "null_value": "ACBus(nothing)"
+                },
+                {
+                    "name": "to",
+                    "openapi_name": "to_id",
+                    "data_type": "Component",
+                    "comment": "Sink terminal (injection side): a Topology or a TradingHub; must differ from `from`",
+                    "null_value": "ACBus(nothing)"
+                },
+                {
+                    "name": "max_active_power",
+                    "data_type": "Float64",
+                    "comment": "MW envelope for the bid (MW)",
+                    "null_value": "0.0",
+                    "valid_range": {
+                        "min": 0.0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "price_limits",
+                    "data_type": "MinMax",
+                    "comment": "Tariff bid-price bounds on the spread (\\$/MWh)",
+                    "null_value": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "spread_bid",
+                    "data_type": "Union{MarketBidCost, MarketBidTimeSeriesCost}",
+                    "comment": "Willingness-to-pay curve on the to-minus-from price spread, as an offer-curve operating cost (incremental side only)",
+                    "null_value": "MarketBidCost(nothing)",
+                    "default": "MarketBidCost(nothing)"
+                },
+                {
+                    "name": "linked_crr",
+                    "data_type": "Union{Nothing, String}",
+                    "comment": "Identifier of a linked congestion-right instrument, when the market couples the bid to one",
+                    "null_value": "nothing",
+                    "default": "nothing"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ]
         }
     ],
     "struct_validation_descriptors": [
