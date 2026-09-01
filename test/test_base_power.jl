@@ -122,6 +122,105 @@ end
     @test get_ramp_limits_unitful(gen, NU) === nothing
 end
 
+@testset "Generated getters: omitting the units argument explains what to pass" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+
+    for f in (get_active_power, get_active_power_unitful, get_rating, get_rating_unitful)
+        @test_throws ArgumentError f(gen)
+    end
+
+    msg = try
+        get_active_power(gen)
+    catch e
+        sprint(showerror, e)
+    end
+    # The message must name the getter, the field, the relative markers and the
+    # field's natural unit; a bare MethodError names none of them.
+    @test occursin("get_active_power", msg)
+    @test occursin("active_power", msg)
+    @test occursin("ThermalStandard", msg)
+    for u in ("`DU`", "`SU`", "`NU`", "`MW`")
+        @test occursin(u, msg)
+    end
+    @test occursin("get_active_power_unitful(component, units)", msg)
+
+    # The `_unitful` companion points back at the bare getter, not at itself.
+    msg_u = try
+        get_active_power_unitful(gen)
+    catch e
+        sprint(showerror, e)
+    end
+    @test occursin("get_active_power(component, units)", msg_u)
+    @test !occursin("_unitful_unitful", msg_u)
+
+    # Impedance fields advertise their own natural unit.
+    msg_x = try
+        get_x(Line(nothing))
+    catch e
+        sprint(showerror, e)
+    end
+    @test occursin("`OHMS`", msg_x)
+end
+
+@testset "Generated setters: untagged values explain what to pass" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+
+    # A bare float, a bare integer and an all-untagged compound are all rejected.
+    @test_throws ArgumentError set_active_power!(gen, 0.5)
+    @test_throws ArgumentError set_active_power!(gen, 1)
+    @test_throws ArgumentError set_active_power_limits!(gen, (min = 0.0, max = 1.0))
+
+    msg = try
+        set_active_power!(gen, 0.5)
+    catch e
+        sprint(showerror, e)
+    end
+    @test occursin("set_active_power!", msg)
+    @test occursin("active_power", msg)
+    @test occursin("ThermalStandard", msg)
+    for tag in ("`val * DU`", "`val * SU`", "`val * MW`")
+        @test occursin(tag, msg)
+    end
+    # `NU` is a getter target only; there is no `val * NU`.
+    @test !occursin("val * NU", msg)
+
+    # A compound field spells out the per-element form.
+    msg_c = try
+        set_active_power_limits!(gen, (min = 0.0, max = 1.0))
+    catch e
+        sprint(showerror, e)
+    end
+    @test occursin("set_active_power_limits!", msg_c)
+    @test occursin("min = 0.0 * DU", msg_c)
+
+    # A partially tagged compound is caught one level down and still names the field.
+    msg_p = try
+        set_active_power_limits!(gen, (min = 0.0 * DU, max = 1.0))
+    catch e
+        sprint(showerror, e)
+    end
+    @test occursin("active_power_limits", msg_p)
+    @test occursin("`val * DU`", msg_p)
+
+    # Impedance setters advertise their own natural unit.
+    msg_x = try
+        set_x!(Line(nothing), 0.1)
+    catch e
+        sprint(showerror, e)
+    end
+    @test occursin("`val * OHMS`", msg_x)
+
+    # Tagged values still round-trip through every accepted form.
+    set_active_power!(gen, 0.6 * DU)
+    @test get_active_power(gen, DU) ≈ 0.6
+    set_active_power!(gen, 0.3 * SU)
+    @test get_active_power(gen, SU) ≈ 0.3
+    set_active_power!(gen, 60.0 * MW)
+    @test get_active_power(gen, MW) ≈ 60.0
+    set_active_power_limits!(gen, (min = 0.0 * DU, max = 1.0 * DU))
+    @test get_active_power_limits(gen, DU) == (min = 0.0, max = 1.0)
+end
+
 # Regression guard for the explicit-units performance contract (PR #1695):
 # the internal per-unit conversions must compile away so that a literal unit
 # argument yields a type-stable, allocation-free `Float64`, and `ustrip` of the

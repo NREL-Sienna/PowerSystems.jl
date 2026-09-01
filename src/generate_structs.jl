@@ -15,6 +15,13 @@ const IS = InfrastructureSystems
 const MU = IS.Mustache
 import InfrastructureSystems: DataFormatError
 
+# Convertible fields also get fallback accessor methods for the calls that omit the
+# units — a one-argument getter, and setters taking an untagged number or an
+# all-untagged compound. They route to `_units_arg_required`/`_units_tag_required`
+# (hand-written, `src/models/components.jl`), which name the accessor, the field and
+# the units that would have worked. Without them, `get_active_power(gen)` and
+# `set_active_power!(gen, 1)` raise bare `MethodError`s that list signatures but never
+# say what a valid unit is.
 const STRUCT_TEMPLATE = """
 #=
 This file is auto-generated. Do not edit.
@@ -82,6 +89,8 @@ end
 {{accessor}}(value::{{struct_name}}, units) = InfrastructureSystems._strip_units(get_value(value, Val(:{{name}}), Val({{conversion_unit}}), units))
 {{#create_docstring}}\"\"\"Get [`{{struct_name}}`](@ref) `{{name}}` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`{{accessor}}`](@ref).\"\"\"{{/create_docstring}}
 {{accessor}}_unitful(value::{{struct_name}}, units) = get_value(value, Val(:{{name}}), Val({{conversion_unit}}), units)
+{{accessor}}(value::{{struct_name}}) = _units_arg_required({{accessor}}, value, :{{name}}, Val({{conversion_unit}}))
+{{accessor}}_unitful(value::{{struct_name}}) = _units_arg_required({{accessor}}_unitful, value, :{{name}}, Val({{conversion_unit}}))
 InfrastructureSystems.display_units_arg(::typeof({{accessor}}), ::{{units_type_sig}}){{#units_bound}} where {T <: {{units_bound}}}{{/units_bound}} = InfrastructureSystems.{{display_units}}
 InfrastructureSystems.display_units_arg(::typeof({{accessor}}_unitful), ::{{units_type_sig}}){{#units_bound}} where {T <: {{units_bound}}}{{/units_bound}} = InfrastructureSystems.{{display_units}}
 {{/needs_conversion}}
@@ -95,6 +104,8 @@ InfrastructureSystems.display_units_arg(::typeof({{accessor}}_unitful), ::{{unit
 {{#needs_conversion}}
 {{#create_docstring}}\"\"\"Set [`{{struct_name}}`](@ref) `{{name}}`.\"\"\"{{/create_docstring}}
 {{setter}}(value::{{struct_name}}, val) = value.{{name}} = set_value(value, Val(:{{name}}), val, Val({{conversion_unit}}))
+{{setter}}(value::{{struct_name}}, val::Real) = _units_tag_required({{setter}}, value, :{{name}}, Val({{conversion_unit}}), val)
+{{setter}}(value::{{struct_name}}, val::NamedTuple{<:Any, <:Tuple{Vararg{Real}}}) = _units_tag_required({{setter}}, value, :{{name}}, Val({{conversion_unit}}), val)
 {{/needs_conversion}}
 {{^needs_conversion}}
 {{#create_docstring}}\"\"\"Set [`{{struct_name}}`](@ref) `{{name}}`.\"\"\"{{/create_docstring}}
