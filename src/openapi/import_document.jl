@@ -179,6 +179,21 @@ const DOCUMENT_PLAN = [
     ),
     # After the reserves it regulates; membership arrives as service_associations rows.
     (po_type = PO.AGC, psy_type = AGC, key = "AGC", addable = true),
+    # Hub membership (member buses) arrives as trading_hub_associations rows, the same
+    # shape as service membership above.
+    (po_type = PO.TradingHub, psy_type = TradingHub, key = "TradingHub", addable = true),
+    # After every settlement-point candidate (Area, LoadZone, ACBus) and TradingHub: a
+    # VirtualParticipant's `settlement_point` and hub membership both resolve by reference.
+    (
+        po_type = PO.VirtualParticipant, psy_type = VirtualParticipant,
+        key = "VirtualParticipant", addable = true,
+    ),
+    # After every Topology candidate (Area, LoadZone, ACBus, DCBus, Arc) and TradingHub: a
+    # PointToPointBid's `from`/`to` terminals resolve by reference to either.
+    (
+        po_type = PO.PointToPointBid, psy_type = PointToPointBid,
+        key = "PointToPointBid", addable = true,
+    ),
 ]
 
 """
@@ -232,15 +247,6 @@ is_document_exportable(::Component) = false
 
 for (_po_type, psy_type, _key, _addable) in DOCUMENT_PLAN
     @eval is_document_exportable(::$psy_type) = true
-end
-
-function _unit_val(unit_system::AbstractString)
-    unit_system == "NATURAL_UNITS" && return NU
-    unit_system == "COMPONENT_BASE" && return DU
-    error(
-        "from_openapi(System, doc): unmapped unit_system \"$unit_system\" — expected " *
-        "NATURAL_UNITS or COMPONENT_BASE",
-    )
 end
 
 """Error, naming every offending type, when the document declares a component type with
@@ -311,6 +317,35 @@ function _attach_service_membership!(entity, service, ::System)
     )
 end
 
+# ── trading hub membership dispatch ─────────────────────────────────────────────
+# Hub membership arrives as rows in the document's own `trading_hub_associations` table
+# rather than an inline array on `TradingHub`, so each `entity_id` is attached by type here.
+
+"""Attach a member bus to `hub`."""
+function _attach_trading_hub_membership!(entity::ACBus, hub::TradingHub, sys::System)
+    throw_if_not_attached(entity, sys)
+    throw_if_not_attached(hub, sys)
+    add_hub_bus_internal!(hub, entity)
+    return nothing
+end
+
+"""Record `entity` as settling at `hub`."""
+function _attach_trading_hub_membership!(
+    entity::VirtualParticipant,
+    hub::TradingHub,
+    ::System,
+)
+    add_trading_hub_internal!(entity, hub)
+    return nothing
+end
+
+function _attach_trading_hub_membership!(entity, hub, ::System)
+    error(
+        "from_openapi(System, doc): unmapped trading hub membership pair — entity=" *
+        "$(typeof(entity)) hub=$(typeof(hub))",
+    )
+end
+
 # ── Supplemental attributes ─────────────────────────────────────────────────────
 # Per-type converters below exist for every attribute PSY hand-writes a constructor for
 # AND that has a PO analogue: EmissionsData, GeometricDistributionForcedOutage,
@@ -325,8 +360,9 @@ end
 # through `SupplementalAttributeAssociation.attribute_type` and its type registry, so the
 # type is known here and Julia's dispatch replaces what used to be a parallel string table
 # in this file. None of these embed unit-converted fields, so unlike the per-component
-# converters they take no `Val{unit_system}`. Every method takes `refs` so the attribute
-# walk (`load_supplemental_attribute_associations!` in sqlite_load.jl) can call one
+# converters they take no `::DeviceBaseUnit`/`::NaturalUnit` marker argument. Every method
+# takes `refs` so the attribute walk (`load_supplemental_attribute_associations!` in
+# sqlite_load.jl) can call one
 # signature uniformly; only the three `Outage` types read it, to resolve document-id
 # `monitored_components` into the UUIDs PSY stores.
 
@@ -399,11 +435,11 @@ function from_openapi(po::PO.CombinedCycleFractional, ::OpenAPIRefs)
 end
 
 # `GeographicInfo` and `DataSource` are InfrastructureSystems types and their converters live
-# there, taking no `OpenAPIRefs` — that registry carries the document's `unit_system` and
+# there, taking no `OpenAPIRefs` — that registry carries the System's computational
 # `base_power`, which IS has no notion of. These two methods only reconcile the arity the
 # attribute walk calls with, so IS stays the single owner of the field mapping.
-from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) = from_openapi(po)
-from_openapi(po::PC.DataSource, ::OpenAPIRefs) = from_openapi(po)
+from_openapi(po::IC.GeographicInfo, ::OpenAPIRefs) = from_openapi(po)
+from_openapi(po::IC.DataSource, ::OpenAPIRefs) = from_openapi(po)
 
 """`table_number`/`transformer_winding`/`transformer_control_mode` carry no unit-bearing
 fields — a row number and two enum discriminators. `impedance_correction_curve` reuses
@@ -487,9 +523,9 @@ _apply_metadata_field!(setter, sys::System, value) = setter(sys, value)
 """
 Carry the document's system-level metadata onto `sys`.
 
-`base_power` and `unit_system` are consumed by the caller when constructing the `System`, so
-only `name` and `description` are applied here. `frequency` is deliberately not applied:
-`System`'s own default stands, and a document that omits it must not silently reset it.
+Only `name` and `description` are applied here (`base_power` is a `from_openapi` kwarg, not a
+document field). `frequency` is deliberately not applied: `System`'s own default stands, and a
+document that omits it must not silently reset it.
 """
 function _apply_document_metadata!(sys::System, doc::PD.SystemDocument)
     _apply_metadata_field!(set_name!, sys, PD.get_name(doc))
@@ -526,6 +562,10 @@ type, scaling-factor multiplier, or supplemental `attribute_type` (see
 [`load_supplemental_attribute_associations!`](@ref)), a document that declares time series
 but supplies no `time_series_storage_path`, and any drift this validation catches.
 
+`base_power` is the `System`'s own computational base (MVA); every component blob is
+self-interpretable via its own `power_units`/`base_power`. It defaults to the same `100.0`
+`System`'s own constructor defaults to.
+
 `system_kwargs` pass straight through to the fresh `System(base_power; system_kwargs...)`
 this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series_read_only`,
 `runchecks` — `System`'s own `SYSTEM_KWARGS`); an unsupported key still errors, from
@@ -534,13 +574,10 @@ this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series
 function from_openapi(
     ::Type{System},
     doc::PD.SystemDocument;
+    base_power::Float64 = 100.0,
     time_series_storage_path = nothing,
     system_kwargs...,
 )
-    base_power = PD.get_base_power(doc)
-    unit_system = PD.get_unit_system(doc)
-    unit_val = _unit_val(unit_system)
-
     _check_no_unconverted_component_types(doc.components)
 
     sys = _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
@@ -551,7 +588,7 @@ function from_openapi(
     else
         sys.data.time_series_manager.data_store
     end
-    refs = OpenAPIRefs(unit_system, base_power; store = store)
+    refs = OpenAPIRefs(base_power; store = store)
 
     # Bound for the whole component pass: a `MarketBidTimeSeriesCost`/time-series-backed
     # `FuelCurve` reaches `convert_cost` several frames below a GENERATED per-device
@@ -564,7 +601,7 @@ function from_openapi(
     _with_import_store(store) do
         for (_po_type, psy_type, key, addable) in DOCUMENT_PLAN
             for po in PD.get_components(doc, key)
-                component = from_openapi(po, refs, unit_val)
+                component = from_openapi(po, refs)
                 extras = get(doc.ext, Int(po.id), nothing)
                 isnothing(extras) || _merge_doc_ext!(component, extras)
                 if addable
@@ -727,13 +764,23 @@ end
 
 """The `(owner_id, owner_category, time_series_type, name, resolution, interval, features)`
 named tuple a time series association row is matched by — the same identity the store's own
-uniqueness index keys on. See [`_validate_time_series_associations!`](@ref)."""
+uniqueness index keys on. See [`_validate_time_series_associations!`](@ref).
+
+Features are compared by value: the wire type wraps each value in a mutable
+`TimeSeriesFeatureValue`, which compares by object identity, so a document row and its store
+counterpart would never match on the wrappers themselves."""
 _ts_row_identity(row) = (
     owner_id = row.owner_id, owner_category = row.owner_category,
     time_series_type = row.time_series_type, name = row.name,
     resolution = _ts_field(row, :resolution), interval = _ts_field(row, :interval),
-    features = row.features,
+    features = _ts_feature_values(row.features),
 )
+
+_ts_feature_values(::Nothing) = nothing
+_ts_feature_values(features::AbstractDict) =
+    Dict{String, Any}(String(k) => _ts_feature_value(v) for (k, v) in features)
+_ts_feature_value(v::InfrastructureTimeSeriesOpenAPIModels.TimeSeriesFeatureValue) = v.value
+_ts_feature_value(v) = v
 
 """Human-readable label for a time series association identity, for error messages."""
 function _ts_row_label(identity)

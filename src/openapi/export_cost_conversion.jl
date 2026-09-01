@@ -5,7 +5,7 @@
 # Dispatch mirrors the PSY type hierarchy directly (abstract `ValueCurve`/`FunctionData`
 # supertypes, `AbstractReserve`) rather than an enumerated `isa`/`Union` chain — the same style
 # already used throughout this package. PO structs are built with kwargs; oneOf wrappers
-# (`PC.ValueCurve`, `PC.FunctionData`, `PC.ProductionVariableCostCurve`, ...) take their concrete
+# (`PC.ValueCurve`, `IC.FunctionData`, `PC.ProductionVariableCostCurve`, ...) take their concrete
 # value positionally, matching how `PowerOperationsOpenAPIModels`/`PowerCoreOpenAPIModels`
 # generate them.
 
@@ -31,14 +31,14 @@ end
 # ── FunctionData ────────────────────────────────────────────────────────────────
 
 function convert_cost_to_openapi(fd::LinearFunctionData)
-    return PC.LinearFunctionData(;
+    return IC.LinearFunctionData(;
         proportional_term = get_proportional_term(fd),
         constant_term = get_constant_term(fd),
     )
 end
 
 function convert_cost_to_openapi(fd::QuadraticFunctionData)
-    return PC.QuadraticFunctionData(;
+    return IC.QuadraticFunctionData(;
         quadratic_term = get_quadratic_term(fd),
         proportional_term = get_proportional_term(fd),
         constant_term = get_constant_term(fd),
@@ -46,13 +46,13 @@ function convert_cost_to_openapi(fd::QuadraticFunctionData)
 end
 
 function convert_cost_to_openapi(fd::PiecewiseLinearData)
-    return PC.PiecewiseLinearData(;
-        points = [PC.XYCoords(; x = p.x, y = p.y) for p in get_points(fd)],
+    return IC.PiecewiseLinearData(;
+        points = [IC.XYCoords(; x = p.x, y = p.y) for p in get_points(fd)],
     )
 end
 
 function convert_cost_to_openapi(fd::PiecewiseStepData)
-    return PC.PiecewiseStepData(; x_coords = get_x_coords(fd), y_coords = get_y_coords(fd))
+    return IC.PiecewiseStepData(; x_coords = get_x_coords(fd), y_coords = get_y_coords(fd))
 end
 
 # ── ValueCurve ──────────────────────────────────────────────────────────────────
@@ -103,11 +103,11 @@ end
 # ── Time-series FunctionData/ValueCurve — export reads association ids straight off the
 # PSY key, needs no store ──────────────────────────────────────────────────────
 
-_ts_function_data_wire_type(::Type{LinearFunctionData}) = PC.TimeSeriesLinearFunctionData
+_ts_function_data_wire_type(::Type{LinearFunctionData}) = IC.TimeSeriesLinearFunctionData
 _ts_function_data_wire_type(::Type{QuadraticFunctionData}) =
-    PC.TimeSeriesQuadraticFunctionData
-_ts_function_data_wire_type(::Type{PiecewiseLinearData}) = PC.TimeSeriesPiecewiseLinearData
-_ts_function_data_wire_type(::Type{PiecewiseStepData}) = PC.TimeSeriesPiecewiseStepData
+    IC.TimeSeriesQuadraticFunctionData
+_ts_function_data_wire_type(::Type{PiecewiseLinearData}) = IC.TimeSeriesPiecewiseLinearData
+_ts_function_data_wire_type(::Type{PiecewiseStepData}) = IC.TimeSeriesPiecewiseStepData
 
 function convert_cost_to_openapi(fd::TimeSeriesFunctionData{T}) where {T}
     WireType = _ts_function_data_wire_type(T)
@@ -141,16 +141,20 @@ _key_association_id(::Nothing) = nothing
 _key_association_id(key::IS.TimeSeriesKey) =
     _record_emitted_association_id(IS.get_association_id(key))
 
+"""Wire representation of [`CurveStyles`](@ref): a plain integer (0/1/2) — see
+`cost_conversion.jl`'s `_curve_style_from_wire` for the import-direction counterpart."""
+_curve_style_to_wire(style::CurveStyles) = style.value
+
 function convert_cost_to_openapi(curve::TimeSeriesInputOutputCurve)
     return PC.TimeSeriesInputOutputCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = IC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         input_at_zero = get_input_at_zero(curve),
     )
 end
 
 function convert_cost_to_openapi(curve::TimeSeriesIncrementalCurve)
     return PC.TimeSeriesIncrementalCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = IC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         initial_input_association_id = _key_association_id(get_initial_input(curve)),
         input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
     )
@@ -158,7 +162,7 @@ end
 
 function convert_cost_to_openapi(curve::TimeSeriesAverageRateCurve)
     return PC.TimeSeriesAverageRateCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = IC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         initial_input_association_id = _key_association_id(get_initial_input(curve)),
         input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
     )
@@ -222,15 +226,17 @@ function convert_cost_to_openapi(cost::ThermalGenerationCost)
         fixed = get_fixed(cost),
         shut_down = get_shut_down(cost),
         start_up = _thermal_start_up_to_openapi(get_start_up(cost)),
-        variable = PC.ProductionVariableCostCurve(
-            convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = PC.ProductionVariableCostCurve(
+            convert_cost_to_openapi(get_variable_operation_cost(cost)),
         ),
     )
 end
 
 function convert_cost_to_openapi(cost::RenewableGenerationCost)
     return PC.RenewableGenerationCost(;
-        variable = convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = convert_cost_to_openapi(
+            get_variable_operation_cost(cost),
+        ),
         curtailment_cost = _optional_cost_curve_to_openapi(get_curtailment_cost(cost)),
         fixed = get_fixed(cost),
     )
@@ -239,15 +245,17 @@ end
 function convert_cost_to_openapi(cost::HydroGenerationCost)
     return PC.HydroGenerationCost(;
         fixed = get_fixed(cost),
-        variable = PC.ProductionVariableCostCurve(
-            convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = PC.ProductionVariableCostCurve(
+            convert_cost_to_openapi(get_variable_operation_cost(cost)),
         ),
     )
 end
 
 function convert_cost_to_openapi(cost::LoadCost)
     return PC.LoadCost(;
-        variable = convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = convert_cost_to_openapi(
+            get_variable_operation_cost(cost),
+        ),
         fixed = get_fixed(cost),
     )
 end
@@ -260,7 +268,7 @@ stores component ids, and this converter has no id registry, so it exports the l
 function convert_cost_to_openapi(cost::MarketBidCost)
     start_up = get_start_up(cost)
     return PC.MarketBidCost(;
-        no_load_cost = convert_cost_to_openapi(get_no_load_cost(cost)),
+        minimum_energy_offer = convert_cost_to_openapi(get_minimum_energy_offer(cost)),
         start_up = PC.StartUpStages(;
             hot = start_up.hot,
             warm = start_up.warm,
@@ -274,6 +282,9 @@ function convert_cost_to_openapi(cost::MarketBidCost)
             get_decremental_offer_curves(cost),
         ),
         ancillary_service_offers = Int64[],
+        incremental_slope = get_incremental_slope(cost),
+        decremental_slope = get_decremental_slope(cost),
+        curve_style = _curve_style_to_wire(get_curve_style(cost)),
     )
 end
 
@@ -334,7 +345,7 @@ function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
         )
     end
     return PC.MarketBidTimeSeriesCost(;
-        no_load_cost = convert_cost_to_openapi(get_no_load_cost(cost)),
+        minimum_energy_offer = convert_cost_to_openapi(get_minimum_energy_offer(cost)),
         start_up_association_id = _key_association_id(get_start_up(cost)),
         shut_down = convert_cost_to_openapi(get_shut_down(cost)),
         incremental_offer_curves = convert_cost_to_openapi(
@@ -344,6 +355,9 @@ function convert_cost_to_openapi(cost::MarketBidTimeSeriesCost)
             get_decremental_offer_curves(cost),
         ),
         ancillary_service_offers = Int64[],
+        incremental_slope = get_incremental_slope(cost),
+        decremental_slope = get_decremental_slope(cost),
+        curve_style = _curve_style_to_wire(get_curve_style(cost)),
     )
 end
 

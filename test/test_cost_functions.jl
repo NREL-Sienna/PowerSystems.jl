@@ -118,7 +118,7 @@ test_costs = Dict(
 
 @testset "Test MarketBidCost defaults and nothing constructor" begin
     mbc = MarketBidCost(nothing)
-    @test get_no_load_cost(mbc) == LinearCurve(0.0)
+    @test get_minimum_energy_offer(mbc) == LinearCurve(0.0)
     @test get_start_up(mbc) ==
           (hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)
     @test get_shut_down(mbc) == LinearCurve(0.0)
@@ -378,7 +378,7 @@ end
     )
 
     mbtc = MarketBidTimeSeriesCost(;
-        no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
+        minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
         start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -422,7 +422,7 @@ end
     su_key = add_time_series!(sys, generator, su_sts)
 
     mbtc = MarketBidTimeSeriesCost(;
-        no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
+        minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
         start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -512,6 +512,43 @@ end
     @test TimeSeries.timestamp(resolved) == collect(timestamps)[1:3]
 end
 
+@testset "set_fuel_cost! round-trips a fixed value and a time-series key" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+
+    old_cost = get_operation_cost(generator)
+    old_variable = get_variable(old_cost)
+    set_operation_cost!(
+        generator,
+        ThermalGenerationCost(;
+            fixed = get_fixed(old_cost),
+            shut_down = get_shut_down(old_cost),
+            start_up = get_start_up(old_cost),
+            variable = FuelCurve(;
+                value_curve = get_value_curve(old_variable),
+                power_units = get_power_units(old_variable),
+                fuel_cost = 2.0,
+            ),
+        ),
+    )
+
+    set_fuel_cost!(sys, generator, 9.5)
+    updated_variable = get_variable_operation_cost(get_operation_cost(generator))
+    @test get_fuel_cost(updated_variable) == 9.5
+    @test isnothing(get_fuel_cost_time_series(updated_variable))
+
+    timestamps = range(_TS_RESOLVE_INITIAL_TIME; step = _TS_RESOLVE_RESOLUTION, length = 24)
+    prices = collect(1.0:24.0)
+    ts = IS.SingleTimeSeries(;
+        name = "fuel_price",
+        data = TimeSeries.TimeArray(collect(timestamps), prices),
+    )
+    set_fuel_cost!(sys, generator, ts)
+    resolved = get_fuel_cost(generator; start_time = _TS_RESOLVE_INITIAL_TIME, len = 3)
+    @test TimeSeries.values(resolved) == prices[1:3]
+    @test TimeSeries.timestamp(resolved) == collect(timestamps)[1:3]
+end
+
 @testset "Time-series ORDC resolves variable cost at start_time" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     # A key names one stored association, which belongs to one owner — so the reserve's
@@ -571,7 +608,7 @@ function _build_min_mbtc(sys, component)
         IS.SingleTimeSeries(; name = "start_up_stages_len", data = su_ta),
     )
     return MarketBidTimeSeriesCost(;
-        no_load_cost = IS.TimeSeriesLinearCurve(nl_key),
+        minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
         start_up = su_key,
         shut_down = IS.TimeSeriesLinearCurve(sd_key),
         incremental_offer_curves = make_market_bid_ts_curve(inc_key),
@@ -597,7 +634,7 @@ end
     @test get_function_data(get_value_curve(window[2])) == _TS_RESOLVE_PWL_DATA[2]
     @test only(get_variable_cost(gen, mbtc; start_time = t0, len = 1)) == resolved
 
-    nl_window = get_no_load_cost(gen, mbtc; start_time = t0, len = 24)
+    nl_window = get_minimum_energy_offer(gen, mbtc; start_time = t0, len = 24)
     @test nl_window isa Vector
     @test length(nl_window) == 24
 

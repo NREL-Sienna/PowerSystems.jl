@@ -173,6 +173,10 @@ function from_openapi(po::PO.SynchronousCondenser, refs::OpenAPIRefs, ::NaturalU
     )
 end
 
+function from_openapi(po::PO.SynchronousCondenser, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("SynchronousCondenser", po.id, po.power_units))
+end
+
 function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.SynchronousCondenser(;
         id = component_id(refs, value),
@@ -184,6 +188,7 @@ function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::DeviceBase
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
         base_power = _get_base_power(value),
         active_power_losses = get_active_power_losses(value, DU),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -198,5 +203,6 @@ function to_openapi(value::SynchronousCondenser, refs::OpenAPIRefs, ::NaturalUni
         reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
         base_power = _get_base_power(value),
         active_power_losses = get_active_power_losses(value, DU) * _get_base_power(value),
+        power_units = _power_units_string(NU),
     )
 end

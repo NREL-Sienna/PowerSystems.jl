@@ -76,16 +76,16 @@ end
 
 # ── FunctionData ────────────────────────────────────────────────────────────────
 
-convert_cost(fd::PC.LinearFunctionData) =
+convert_cost(fd::IC.LinearFunctionData) =
     LinearFunctionData(fd.proportional_term, fd.constant_term)
-convert_cost(fd::PC.QuadraticFunctionData) =
+convert_cost(fd::IC.QuadraticFunctionData) =
     QuadraticFunctionData(fd.quadratic_term, fd.proportional_term, fd.constant_term)
 # `points` is generated as a bare `Vector`, so converting once restores inference for the loop.
-function convert_cost(fd::PC.PiecewiseLinearData)
-    points = convert(Vector{PC.XYCoords}, fd.points)
+function convert_cost(fd::IC.PiecewiseLinearData)
+    points = convert(Vector{IC.XYCoords}, fd.points)
     return PiecewiseLinearData([(x = p.x, y = p.y) for p in points])
 end
-convert_cost(fd::PC.PiecewiseStepData) = PiecewiseStepData(fd.x_coords, fd.y_coords)
+convert_cost(fd::IC.PiecewiseStepData) = PiecewiseStepData(fd.x_coords, fd.y_coords)
 # Catch-all for every PO type, not just FunctionData: a PO cost type with no converter
 # lands here, so the message must not claim to know what kind of variant it got.
 convert_cost(fd) = error("convert_cost: unmapped variant $(typeof(fd))")
@@ -122,36 +122,51 @@ wire type for the error a missing id raises."""
 _function_data_key(fd, store, what::AbstractString) =
     IS.get_time_series_key(store, _require(fd.association_id, "$what.association_id"))
 
-convert_cost(fd::PC.TimeSeriesLinearFunctionData, store) =
+convert_cost(fd::IC.TimeSeriesLinearFunctionData, store) =
     TimeSeriesFunctionData{LinearFunctionData}(
         _function_data_key(fd, store, "TimeSeriesLinearFunctionData"),
     )
-convert_cost(fd::PC.TimeSeriesLinearFunctionData) =
+convert_cost(fd::IC.TimeSeriesLinearFunctionData) =
     convert_cost(fd, _current_import_store())
 
-convert_cost(fd::PC.TimeSeriesQuadraticFunctionData, store) =
+convert_cost(fd::IC.TimeSeriesQuadraticFunctionData, store) =
     TimeSeriesFunctionData{QuadraticFunctionData}(
         _function_data_key(fd, store, "TimeSeriesQuadraticFunctionData"),
     )
-convert_cost(fd::PC.TimeSeriesQuadraticFunctionData) =
+convert_cost(fd::IC.TimeSeriesQuadraticFunctionData) =
     convert_cost(fd, _current_import_store())
 
-convert_cost(fd::PC.TimeSeriesPiecewiseLinearData, store) =
+convert_cost(fd::IC.TimeSeriesPiecewiseLinearData, store) =
     TimeSeriesFunctionData{PiecewiseLinearData}(
         _function_data_key(fd, store, "TimeSeriesPiecewiseLinearData"),
     )
-convert_cost(fd::PC.TimeSeriesPiecewiseLinearData) =
+convert_cost(fd::IC.TimeSeriesPiecewiseLinearData) =
     convert_cost(fd, _current_import_store())
 
-convert_cost(fd::PC.TimeSeriesPiecewiseStepData, store) =
+convert_cost(fd::IC.TimeSeriesPiecewiseStepData, store) =
     TimeSeriesFunctionData{PiecewiseStepData}(
         _function_data_key(fd, store, "TimeSeriesPiecewiseStepData"),
     )
-convert_cost(fd::PC.TimeSeriesPiecewiseStepData) = convert_cost(fd, _current_import_store())
+convert_cost(fd::IC.TimeSeriesPiecewiseStepData) = convert_cost(fd, _current_import_store())
 
 """`nothing` stays `nothing`; a wire association id resolves against `store`."""
 _resolve_optional_key(::Any, ::Nothing) = nothing
 _resolve_optional_key(store, id::Integer) = IS.get_time_series_key(store, id)
+
+"""Wire representation of [`CurveStyles`](@ref): a plain integer (0/1/2), deliberately not
+the string-enum convention used elsewhere in the schemas — see `curve_style` on
+`MarketBidCost`/`MarketBidTimeSeriesCost`."""
+function _curve_style_from_wire(id::Integer)
+    if id ∉ (0, 1, 2)
+        throw(
+            ArgumentError(
+                "convert_cost: curve_style $id is not a valid CurveStyles value; " *
+                "expected 0 (CURVE), 1 (FIXED), or 2 (VARIABLE)",
+            ),
+        )
+    end
+    return CurveStyles(Int(id))
+end
 
 convert_cost(vc::PC.TimeSeriesInputOutputCurve, store) =
     TimeSeriesInputOutputCurve(convert_cost(vc.function_data, store), vc.input_at_zero)
@@ -290,7 +305,12 @@ convert_cost(s::PC.StorageCostStartUpOneOf) = (charge = s.charge, discharge = s.
 
 function convert_cost(po::PC.ThermalGenerationCost)
     return ThermalGenerationCost(;
-        variable = convert_cost(_require(po.variable, "ThermalGenerationCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(
+                po.variable_operation_cost,
+                "ThermalGenerationCost.variable_operation_cost",
+            ),
+        ),
         fixed = po.fixed,
         start_up = convert_cost(_require(po.start_up, "ThermalGenerationCost.start_up")),
         shut_down = po.shut_down,
@@ -299,7 +319,12 @@ end
 
 function convert_cost(po::PC.RenewableGenerationCost)
     return RenewableGenerationCost(;
-        variable = convert_cost(_require(po.variable, "RenewableGenerationCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(
+                po.variable_operation_cost,
+                "RenewableGenerationCost.variable_operation_cost",
+            ),
+        ),
         curtailment_cost = _optional_cost_curve(po.curtailment_cost),
         fixed = po.fixed,
     )
@@ -307,14 +332,21 @@ end
 
 function convert_cost(po::PC.HydroGenerationCost)
     return HydroGenerationCost(;
-        variable = convert_cost(_require(po.variable, "HydroGenerationCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(
+                po.variable_operation_cost,
+                "HydroGenerationCost.variable_operation_cost",
+            ),
+        ),
         fixed = po.fixed,
     )
 end
 
 function convert_cost(po::PC.LoadCost)
     return LoadCost(;
-        variable = convert_cost(_require(po.variable, "LoadCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(po.variable_operation_cost, "LoadCost.variable_operation_cost"),
+        ),
         fixed = po.fixed,
     )
 end
@@ -326,8 +358,8 @@ objects only after every service is imported, so this conversion leaves the vect
 """
 function convert_cost(po::PC.MarketBidCost)
     return MarketBidCost(;
-        no_load_cost = convert_cost(
-            _require(po.no_load_cost, "MarketBidCost.no_load_cost"),
+        minimum_energy_offer = convert_cost(
+            _require(po.minimum_energy_offer, "MarketBidCost.minimum_energy_offer"),
         ),
         start_up = convert_cost(_require(po.start_up, "MarketBidCost.start_up")),
         shut_down = convert_cost(_require(po.shut_down, "MarketBidCost.shut_down")),
@@ -336,6 +368,17 @@ function convert_cost(po::PC.MarketBidCost)
         ),
         decremental_offer_curves = convert_cost(
             _require(po.decremental_offer_curves, "MarketBidCost.decremental_offer_curves"),
+        ),
+        incremental_slope = _require(
+            po.incremental_slope,
+            "MarketBidCost.incremental_slope",
+        ),
+        decremental_slope = _require(
+            po.decremental_slope,
+            "MarketBidCost.decremental_slope",
+        ),
+        curve_style = _curve_style_from_wire(
+            _require(po.curve_style, "MarketBidCost.curve_style"),
         ),
     )
 end
@@ -375,8 +418,11 @@ offer curves.
 """
 function convert_cost(po::PC.MarketBidTimeSeriesCost, store)
     return MarketBidTimeSeriesCost(;
-        no_load_cost = convert_cost(
-            _require(po.no_load_cost, "MarketBidTimeSeriesCost.no_load_cost"), store,
+        minimum_energy_offer = convert_cost(
+            _require(
+                po.minimum_energy_offer,
+                "MarketBidTimeSeriesCost.minimum_energy_offer",
+            ), store,
         ),
         start_up = IS.get_time_series_key(
             store,
@@ -403,6 +449,15 @@ function convert_cost(po::PC.MarketBidTimeSeriesCost, store)
                 "MarketBidTimeSeriesCost.decremental_offer_curves",
             ),
             store,
+        ),
+        incremental_slope = _require(
+            po.incremental_slope, "MarketBidTimeSeriesCost.incremental_slope",
+        ),
+        decremental_slope = _require(
+            po.decremental_slope, "MarketBidTimeSeriesCost.decremental_slope",
+        ),
+        curve_style = _curve_style_from_wire(
+            _require(po.curve_style, "MarketBidTimeSeriesCost.curve_style"),
         ),
     )
 end

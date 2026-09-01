@@ -208,6 +208,10 @@ function from_openapi(po::PO.ExponentialLoad, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.ExponentialLoad, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("ExponentialLoad", po.id, po.power_units))
+end
+
 function to_openapi(value::ExponentialLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.ExponentialLoad(;
         id = component_id(refs, value),
@@ -222,6 +226,7 @@ function to_openapi(value::ExponentialLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         max_active_power = get_max_active_power(value, DU),
         max_reactive_power = get_max_reactive_power(value, DU),
         conformity = string(get_conformity(value)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -239,5 +244,6 @@ function to_openapi(value::ExponentialLoad, refs::OpenAPIRefs, ::NaturalUnit)
         max_active_power = get_max_active_power(value, DU) * _get_base_power(value),
         max_reactive_power = get_max_reactive_power(value, DU) * _get_base_power(value),
         conformity = string(get_conformity(value)),
+        power_units = _power_units_string(NU),
     )
 end

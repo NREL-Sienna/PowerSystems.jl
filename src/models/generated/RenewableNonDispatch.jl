@@ -184,6 +184,10 @@ function from_openapi(po::PO.RenewableNonDispatch, refs::OpenAPIRefs, ::NaturalU
     )
 end
 
+function from_openapi(po::PO.RenewableNonDispatch, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("RenewableNonDispatch", po.id, po.power_units))
+end
+
 function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.RenewableNonDispatch(;
         id = component_id(refs, value),
@@ -196,6 +200,7 @@ function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::DeviceBase
         prime_mover_type = string(get_prime_mover_type(value)),
         power_factor = get_power_factor(value),
         base_power = _get_base_power(value),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -211,5 +216,6 @@ function to_openapi(value::RenewableNonDispatch, refs::OpenAPIRefs, ::NaturalUni
         prime_mover_type = string(get_prime_mover_type(value)),
         power_factor = get_power_factor(value),
         base_power = _get_base_power(value),
+        power_units = _power_units_string(NU),
     )
 end

@@ -143,6 +143,10 @@ function from_openapi(po::PO.DCBus, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.DCBus, refs::OpenAPIRefs)
+    return from_openapi(po, refs, DU)
+end
+
 function to_openapi(value::DCBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.DCBus(;
         id = component_id(refs, value),

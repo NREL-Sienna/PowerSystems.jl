@@ -282,6 +282,10 @@ function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.ThermalStandard, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("ThermalStandard", po.id, po.power_units))
+end
+
 function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.ThermalStandard(;
         id = component_id(refs, value),
@@ -302,6 +306,7 @@ function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::DeviceBaseUnit)
         prime_mover_type = string(get_prime_mover_type(value)),
         fuel = string(get_fuel(value)),
         time_at_status = get_time_at_status(value),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -325,5 +330,6 @@ function to_openapi(value::ThermalStandard, refs::OpenAPIRefs, ::NaturalUnit)
         prime_mover_type = string(get_prime_mover_type(value)),
         fuel = string(get_fuel(value)),
         time_at_status = get_time_at_status(value),
+        power_units = _power_units_string(NU),
     )
 end

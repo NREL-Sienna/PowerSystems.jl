@@ -123,6 +123,17 @@ function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs, ::NaturalUni
     )
 end
 
+{{#has_power_units}}
+function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("{{struct_name}}", po.id, po.power_units))
+end
+{{/has_power_units}}
+{{^has_power_units}}
+function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs)
+    return from_openapi(po, refs, DU)
+end
+{{/has_power_units}}
+
 function to_openapi(value::{{struct_name}}, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.{{struct_name}}(;
         {{#openapi_export_kwargs_device}}
@@ -171,9 +182,21 @@ end
 
 # `reserves` is AGC's regulated-reserve list: like `services`, it is membership, carried by
 # the document's `service_associations` rows and filled in by the association loader — never
-# an inline field on one side.
-const OPENAPI_SKIP_FIELDS =
-    Set(["ext", "internal", "services", "dynamic_injector", "reserves"])
+# an inline field on one side. `buses` and `trading_hubs` are TradingHub's and
+# VirtualParticipant's analogous membership lists, carried by `trading_hub_associations`
+# instead.
+const OPENAPI_SKIP_FIELDS = Set([
+    "ext",
+    "internal",
+    "services",
+    "dynamic_injector",
+    "reserves",
+    "buses",
+    "trading_hubs",
+])
+# Abstract reference types that are not themselves generated structs: `bare in struct_names`
+# misses them, so without this the classifier falls through to `:enum`.
+const OPENAPI_REFERENCE_TYPES = Set(["Topology", "Component"])
 const OPENAPI_SCALAR_TYPES = Set(["Float64", "Int", "Int32", "Int64", "String", "Bool"])
 const OPENAPI_COMPOUND_MEMBERS = Dict(
     "MinMax" => ("min", "max"),
@@ -258,7 +281,7 @@ function openapi_classify_field(struct_name, field, struct_names)
     if name in OPENAPI_SKIP_FIELDS
         return (:skip, field["data_type"], false)
     end
-    if name == "operation_cost"
+    if name in ("operation_cost", "spread_bid")
         return (:cost, field["data_type"], false)
     end
     bare, nullable = openapi_strip_nullable(field["data_type"])
@@ -268,7 +291,7 @@ function openapi_classify_field(struct_name, field, struct_names)
     if haskey(OPENAPI_COMPOUND_MEMBERS, bare)
         return (:compound, bare, nullable)
     end
-    if bare in struct_names
+    if bare in struct_names || bare in OPENAPI_REFERENCE_TYPES
         return (:reference, bare, nullable)
     end
     if !occursin(r"^[A-Za-z_][A-Za-z0-9_]*$", bare)
@@ -367,6 +390,22 @@ function openapi_natural_conversion(struct_name, field)
         )
     end
     return kind
+end
+
+"""
+Whether an annotated struct has at least one field in the `:power` conversion family
+(`needs_conversion=true` with `conversion_unit` one of `:mw`/`:mvar`/`:mva` — the wire's
+`power_units` discriminator only ever governs that family, never `:ohm`/`:siemens`
+impedance/admittance fields). Determines whether the generated PO struct carries a
+`power_units` member: mechanically derived from the descriptor rather than a maintained
+list, so it can never drift from the fields that are actually emitted.
+"""
+function openapi_has_power_units(item)
+    for field in item["fields"]
+        get(field, "needs_conversion", false) || continue
+        get(field, "conversion_unit", nothing) in (":mw", ":mvar", ":mva") && return true
+    end
+    return false
 end
 
 """
@@ -820,7 +859,8 @@ function compute_openapi_export_converter!(item, struct_names)
             continue
         end
         if kind == :cost
-            expr = "convert_cost_to_openapi(get_operation_cost(value))"
+            getter = "$(openapi_export_getter_name(field))(value)"
+            expr = "convert_cost_to_openapi($getter)"
             push!(kwargs_device, Dict("name" => name, "expr" => expr))
             push!(kwargs_natural, Dict("name" => name, "expr" => expr))
             continue
@@ -884,6 +924,17 @@ function compute_openapi_export_converter!(item, struct_names)
         end
         push!(kwargs_device, Dict("name" => name, "expr" => device))
         push!(kwargs_natural, Dict("name" => name, "expr" => natural))
+    end
+
+    if get(item, "has_power_units", false)
+        push!(
+            kwargs_device,
+            Dict("name" => "power_units", "expr" => "_power_units_string(DU)"),
+        )
+        push!(
+            kwargs_natural,
+            Dict("name" => "power_units", "expr" => "_power_units_string(NU)"),
+        )
     end
 
     item["openapi_export_kwargs_device"] = kwargs_device
@@ -1060,6 +1111,7 @@ function generate_structs(directory, data::Vector; print_results = true)
         item["needs_positional_constructor"] = has_internal && has_non_default_values
 
         if haskey(item, "openapi_type")
+            item["has_power_units"] = openapi_has_power_units(item)
             compute_openapi_converter!(item, openapi_struct_names)
             compute_openapi_export_converter!(item, openapi_struct_names)
         end

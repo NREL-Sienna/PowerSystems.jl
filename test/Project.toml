@@ -6,7 +6,9 @@ DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+InfrastructureCoreOpenAPIModels = "1f5e1c8d-e0cc-4dbf-8c6d-f2a3d2ae70a8"
 InfrastructureSystems = "2cd47ed4-ca9b-11e9-27f2-ab636a7671f1"
+InfrastructureTimeSeriesOpenAPIModels = "37a216c8-a490-47cf-89d7-db2cb9618199"
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -22,7 +24,6 @@ PowerOperationsOpenAPIModels = "a372b6d7-45a2-44c2-8199-6a724b72e8ff"
 PowerSystemCaseBuilder = "f00506e0-b84f-492a-93c2-c0a9afc4364e"
 PowerSystems = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
 PowerTableDataParser = "2b750c0e-0bff-11f1-9200-1befd75df6be"
-PowerTimeSeriesOpenAPIModels = "8c2f6a0d-6b0e-4d0a-9d8f-2b5e6a4f9c31"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
@@ -36,17 +37,35 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 
 [sources]
-InfrastructureSystems = {rev = "IS4", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
-InfraStore = {rev = "main", url = "https://github.com/NatLabRockies/infrastore", subdir = "julia/InfraStore.jl"}
-PowerCoreOpenAPIModels = {rev = "main", subdir = "PowerCoreOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
-PowerDynamicsOpenAPIModels = {rev = "main", subdir = "PowerDynamicsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
-PowerFlowFileParser = {rev = "psy6", url = "https://github.com/Sienna-Platform/PowerFlowFileParser.jl"}
-PowerInvestmentsOpenAPIModels = {rev = "main", subdir = "PowerInvestmentsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
-PowerOpenAPIModels = {rev = "main", subdir = "PowerOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
-PowerOperationsOpenAPIModels = {rev = "main", subdir = "PowerOperationsOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
-PowerSystemCaseBuilder = {rev = "psy6", url = "https://github.com/Sienna-Platform/PowerSystemCaseBuilder.jl"}
-PowerTableDataParser = {rev = "psy6", url = "https://github.com/NLR-Sienna/PowerTableDataParser.jl"}
-PowerTimeSeriesOpenAPIModels = {rev = "main", subdir = "PowerTimeSeriesOpenAPIModels.jl", url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git"}
+PowerSystems = {path = ".."}
+# IS4 carries the association-id time series keys; InfraStore 0.11 is registered, so it
+# needs no source pin.
+# LOCAL PATH CO-DEV PIN (temporary): see ../Project.toml — IS4's local checkout already
+# migrated off PowerCoreOpenAPIModels/PowerTimeSeriesOpenAPIModels, uncommitted; the pushed
+# IS4 branch fails to resolve. Revert to the git rev once IS4 is pushed.
+InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "jd/openapi-package-split"}
+# LOCAL PATH CO-DEV PINS (temporary): the InfrastructureCore/InfrastructureTimeSeries package
+# split exists only on local disk, not pushed to jd/schemas-0.1.0 yet. Revert to the git pins
+# once pushed/merged.
+InfrastructureCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "InfrastructureCoreOpenAPIModels.jl"}
+InfrastructureTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "InfrastructureTimeSeriesOpenAPIModels.jl"}
+PowerCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerCoreOpenAPIModels.jl"}
+PowerDynamicsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerDynamicsOpenAPIModels.jl"}
+# LOCAL PATH CO-DEV PIN (temporary): PFFP's own local checkout already migrated off
+# PowerCoreOpenAPIModels/PowerTimeSeriesOpenAPIModels, uncommitted; the pushed
+# jd/power-units-rename branch fails to resolve. Revert to the git rev once it is pushed.
+PowerFlowFileParser = {url = "https://github.com/Sienna-Platform/PowerFlowFileParser.jl", rev = "jd/power-units-rename"}
+PowerInvestmentsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerInvestmentsOpenAPIModels.jl"}
+PowerOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerOpenAPIModels.jl"}
+PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerOperationsOpenAPIModels.jl"}
+# LOCAL PATH CO-DEV PIN (temporary): PSB's own local checkout already migrated off
+# PowerCoreOpenAPIModels/PowerTimeSeriesOpenAPIModels, uncommitted; the pushed
+# jd/power-units-rename branch fails to resolve. Revert to the git rev once it is pushed.
+PowerSystemCaseBuilder = {url = "https://github.com/Sienna-Platform/PowerSystemCaseBuilder.jl", rev = "jd/power-units-rename"}
+# LOCAL PATH CO-DEV PIN (temporary): PowerTableDataParser's own local checkout already
+# migrated off PowerCoreOpenAPIModels/PowerTimeSeriesOpenAPIModels, uncommitted; the pushed
+# jd/power-units-rename branch fails to resolve. Revert to the git rev once it is pushed.
+PowerTableDataParser = {url = "https://github.com/NLR-Sienna/PowerTableDataParser.jl", rev = "jd/power-units-rename"}
 
 [compat]
 InfrastructureSystems = "3"

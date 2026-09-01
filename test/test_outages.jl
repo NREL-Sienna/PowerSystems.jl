@@ -355,7 +355,7 @@ end
     doc = PSY.PD.read_document(joinpath(dir, "system.json"))
 
     geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [0.0, 0.0])
-    geo = PSY.PC.GeographicInfo(; id = PSY.PD.next_id!(doc), geo_json = geo_json)
+    geo = PSY.IC.GeographicInfo(; id = PSY.PD.next_id!(doc), geo_json = geo_json)
     # A load carries none of the outage/GeographicInfo attributes the fixture attaches only
     # to the two generators and their buses, so it is unambiguously bare beforehand.
     load_id = Int(first(PSY.PD.get_components(doc, "PowerLoad")).id)

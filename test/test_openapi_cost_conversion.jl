@@ -2,7 +2,7 @@
 
 _po_linear_io(prop, const_) = PSY.PC.InputOutputCurve(;
     function_data = PSY.PC.InputOutputCurveFunctionData(
-        PSY.PC.LinearFunctionData(; proportional_term = prop, constant_term = const_),
+        PSY.IC.LinearFunctionData(; proportional_term = prop, constant_term = const_),
     ),
 )
 
@@ -14,11 +14,11 @@ _po_cost_curve(; power_units = "NATURAL_UNITS", vom_cost = nothing) = PSY.PC.Cos
 
 @testset "convert_cost: FunctionData variants" begin
     @test PSY.convert_cost(
-        PSY.PC.LinearFunctionData(; proportional_term = 2.0, constant_term = 3.0),
+        PSY.IC.LinearFunctionData(; proportional_term = 2.0, constant_term = 3.0),
     ) == LinearFunctionData(2.0, 3.0)
 
     @test PSY.convert_cost(
-        PSY.PC.QuadraticFunctionData(;
+        PSY.IC.QuadraticFunctionData(;
             quadratic_term = 1.0,
             proportional_term = 2.0,
             constant_term = 3.0,
@@ -26,16 +26,16 @@ _po_cost_curve(; power_units = "NATURAL_UNITS", vom_cost = nothing) = PSY.PC.Cos
     ) == QuadraticFunctionData(1.0, 2.0, 3.0)
 
     @test PSY.convert_cost(
-        PSY.PC.PiecewiseLinearData(;
+        PSY.IC.PiecewiseLinearData(;
             points = [
-                PSY.PC.XYCoords(; x = 0.0, y = 0.0),
-                PSY.PC.XYCoords(; x = 10.0, y = 100.0),
+                PSY.IC.XYCoords(; x = 0.0, y = 0.0),
+                PSY.IC.XYCoords(; x = 10.0, y = 100.0),
             ],
         ),
     ) == PiecewiseLinearData([(x = 0.0, y = 0.0), (x = 10.0, y = 100.0)])
 
     @test PSY.convert_cost(
-        PSY.PC.PiecewiseStepData(; x_coords = [0.0, 10.0, 20.0], y_coords = [5.0, 6.0]),
+        PSY.IC.PiecewiseStepData(; x_coords = [0.0, 10.0, 20.0], y_coords = [5.0, 6.0]),
     ) == PiecewiseStepData([0.0, 10.0, 20.0], [5.0, 6.0])
 
     @test_throws ErrorException PSY.convert_cost(nothing)
@@ -48,7 +48,7 @@ end
     inc = PSY.convert_cost(
         PSY.PC.IncrementalCurve(;
             function_data = PSY.PC.IncrementalCurveFunctionData(
-                PSY.PC.PiecewiseStepData(; x_coords = [0.0, 10.0], y_coords = [5.0]),
+                PSY.IC.PiecewiseStepData(; x_coords = [0.0, 10.0], y_coords = [5.0]),
             ),
             initial_input = 50.0,
         ),
@@ -58,7 +58,7 @@ end
     avg = PSY.convert_cost(
         PSY.PC.AverageRateCurve(;
             function_data = PSY.PC.IncrementalCurveFunctionData(
-                PSY.PC.LinearFunctionData(; proportional_term = 1.0, constant_term = 0.0),
+                PSY.IC.LinearFunctionData(; proportional_term = 1.0, constant_term = 0.0),
             ),
             initial_input = 20.0,
         ),
@@ -111,7 +111,7 @@ end
             value_curve = PSY.PC.ValueCurve(
                 PSY.PC.IncrementalCurve(;
                     function_data = PSY.PC.IncrementalCurveFunctionData(
-                        PSY.PC.PiecewiseStepData(;
+                        PSY.IC.PiecewiseStepData(;
                             x_coords = [0.0, 10.0, 20.0],
                             y_coords = [5.0, 6.0],
                         ),
@@ -131,7 +131,7 @@ end
     bad = _po_cost_curve(;
         vom_cost = PSY.PC.InputOutputCurve(;
             function_data = PSY.PC.InputOutputCurveFunctionData(
-                PSY.PC.QuadraticFunctionData(;
+                PSY.IC.QuadraticFunctionData(;
                     quadratic_term = 1.0,
                     proportional_term = 1.0,
                     constant_term = 1.0,
@@ -147,14 +147,14 @@ end
         fixed = 100.0,
         shut_down = 50.0,
         start_up = 200.0,
-        variable = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
     )
     cost = PSY.convert_cost(po)
     @test cost isa ThermalGenerationCost
     @test get_fixed(cost) == 100.0
     @test get_shut_down(cost) == 50.0
     @test get_start_up(cost) == 200.0
-    @test get_function_data(get_value_curve(get_variable(cost))) ==
+    @test get_function_data(get_value_curve(get_variable_operation_cost(cost))) ==
           LinearFunctionData(10.0, 5.0)
 
     po_stages = PSY.PC.ThermalGenerationCost(;
@@ -163,7 +163,7 @@ end
         start_up = PSY.PC.ThermalGenerationCostStartUp(
             PSY.PC.StartUpStages(; hot = 1.0, warm = 2.0, cold = 3.0),
         ),
-        variable = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
     )
     cost_stages = PSY.convert_cost(po_stages)
     @test get_start_up(cost_stages) == (hot = 1.0, warm = 2.0, cold = 3.0)
@@ -172,25 +172,27 @@ end
         fixed = 0.0,
         shut_down = 0.0,
         start_up = 0.0,
-        variable = nothing,
+        variable_operation_cost = nothing,
     )
     @test_throws ErrorException PSY.convert_cost(po_missing_variable)
 end
 
 @testset "convert_cost: RenewableGenerationCost" begin
-    po = PSY.PC.RenewableGenerationCost(; variable = _po_cost_curve(), fixed = 10.0)
+    po = PSY.PC.RenewableGenerationCost(;
+        variable_operation_cost = _po_cost_curve(), fixed = 10.0,
+    )
     cost = PSY.convert_cost(po)
     @test cost isa RenewableGenerationCost
     @test get_fixed(cost) == 10.0
     @test get_curtailment_cost(cost) == zero(CostCurve)
-    @test get_function_data(get_value_curve(get_variable(cost))) ==
+    @test get_function_data(get_value_curve(get_variable_operation_cost(cost))) ==
           LinearFunctionData(10.0, 5.0)
 end
 
 @testset "convert_cost: HydroGenerationCost" begin
     po = PSY.PC.HydroGenerationCost(;
         fixed = 1.0,
-        variable = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
     )
     cost = PSY.convert_cost(po)
     @test cost isa HydroGenerationCost
@@ -237,7 +239,7 @@ _po_offer_curve(x_coords, y_coords; power_units = "NATURAL_UNITS") = PSY.PC.Cost
     value_curve = PSY.PC.ValueCurve(
         PSY.PC.IncrementalCurve(;
             function_data = PSY.PC.IncrementalCurveFunctionData(
-                PSY.PC.PiecewiseStepData(; x_coords = x_coords, y_coords = y_coords),
+                PSY.IC.PiecewiseStepData(; x_coords = x_coords, y_coords = y_coords),
             ),
             initial_input = 0.0,
         ),
@@ -312,7 +314,7 @@ end
         value_curve = PSY.PC.ValueCurve(
             PSY.PC.IncrementalCurve(;
                 function_data = PSY.PC.IncrementalCurveFunctionData(
-                    PSY.PC.PiecewiseStepData(; x_coords = [0.0, 100.0], y_coords = [10.0]),
+                    PSY.IC.PiecewiseStepData(; x_coords = [0.0, 100.0], y_coords = [10.0]),
                 ),
                 initial_input = 0.0,
             ),
@@ -379,7 +381,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
+        assoc_id = IS.get_association_id(only(IS.list_time_series_metadata(store)))
 
         fc = PSY._with_import_store(store) do
             PSY.convert_cost(
@@ -387,8 +389,8 @@ end
                     power_units = "NATURAL_UNITS",
                     value_curve = PSY.PC.ValueCurve(
                         PSY.PC.TimeSeriesIncrementalCurve(;
-                            function_data = PSY.PC.FunctionData(
-                                PSY.PC.TimeSeriesLinearFunctionData(;
+                            function_data = PSY.IC.FunctionData(
+                                PSY.IC.TimeSeriesLinearFunctionData(;
                                     association_id = assoc_id,
                                 ),
                             ),
@@ -420,23 +422,23 @@ end
     )
     @test_throws ErrorException PSY.convert_cost(
         PSY.PC.MarketBidTimeSeriesCost(;
-            no_load_cost = PSY.PC.TimeSeriesInputOutputCurve(;
-                function_data = PSY.PC.FunctionData(
-                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 1),
+            minimum_energy_offer = PSY.PC.TimeSeriesInputOutputCurve(;
+                function_data = PSY.IC.FunctionData(
+                    PSY.IC.TimeSeriesLinearFunctionData(; association_id = 1),
                 ),
             ),
             start_up_association_id = 2,
             shut_down = PSY.PC.TimeSeriesInputOutputCurve(;
-                function_data = PSY.PC.FunctionData(
-                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 3),
+                function_data = PSY.IC.FunctionData(
+                    PSY.IC.TimeSeriesLinearFunctionData(; association_id = 3),
                 ),
             ),
             incremental_offer_curves = PSY.PC.CostCurve(;
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
                     PSY.PC.TimeSeriesIncrementalCurve(;
-                        function_data = PSY.PC.FunctionData(
-                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 4),
+                        function_data = PSY.IC.FunctionData(
+                            PSY.IC.TimeSeriesPiecewiseStepData(; association_id = 4),
                         ),
                     ),
                 ),
@@ -445,8 +447,8 @@ end
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
                     PSY.PC.TimeSeriesIncrementalCurve(;
-                        function_data = PSY.PC.FunctionData(
-                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 5),
+                        function_data = PSY.IC.FunctionData(
+                            PSY.IC.TimeSeriesPiecewiseStepData(; association_id = 5),
                         ),
                     ),
                 ),
@@ -511,7 +513,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
+        assoc_id = IS.get_association_id(only(IS.list_time_series_metadata(store)))
         ts_key = IS.get_time_series_key(store, Int(assoc_id))
 
         static_cost = ImportExportCost(;
@@ -590,7 +592,7 @@ end
     set_operation_cost!(
         gen,
         ThermalGenerationCost(;
-            variable = FuelCurve(LinearCurve(1.0), key),
+            variable_operation_cost = FuelCurve(LinearCurve(1.0), key),
             fixed = 0.0, start_up = 0.0, shut_down = 0.0,
         ),
     )

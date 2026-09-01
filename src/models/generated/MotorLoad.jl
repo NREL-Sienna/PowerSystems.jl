@@ -201,6 +201,10 @@ function from_openapi(po::PO.MotorLoad, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.MotorLoad, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("MotorLoad", po.id, po.power_units))
+end
+
 function to_openapi(value::MotorLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.MotorLoad(;
         id = component_id(refs, value),
@@ -214,6 +218,7 @@ function to_openapi(value::MotorLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         max_active_power = get_max_active_power(value, DU),
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, DU)),
         motor_technology = string(get_motor_technology(value)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -230,5 +235,6 @@ function to_openapi(value::MotorLoad, refs::OpenAPIRefs, ::NaturalUnit)
         max_active_power = get_max_active_power(value, DU) * _get_base_power(value),
         reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, DU), _get_base_power(value)),
         motor_technology = string(get_motor_technology(value)),
+        power_units = _power_units_string(NU),
     )
 end

@@ -23,12 +23,24 @@ function to_openapi(arc::Arc, refs::OpenAPIRefs, ::NaturalUnit)
 end
 
 # ── Area / LoadZone ─────────────────────────────────────────────────────────────
-# peak_active_power/peak_reactive_power are fixed-natural (x-unit MW/MVAr) regardless of
-# document unit_system (mirrors import — see import_handwritten.jl's header on this
-# exact point) — multiply by `get_base_power(refs)` in BOTH methods. `load_response` has no
-# `conversion_unit` and passes through unconverted in both.
+# peak_active_power/peak_reactive_power are discriminated by `power_units` like every other
+# power-family field: COMPONENT_BASE writes the pu value as-is, NATURAL_UNITS multiplies by
+# `get_base_power(refs)`. `load_response` has no `conversion_unit` and passes through
+# unconverted in both.
 
 function to_openapi(area::Area, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.Area(;
+        id = component_id(refs, area),
+        name = get_name(area),
+        peak_active_power = get_peak_active_power(area, SU),
+        peak_reactive_power = get_peak_reactive_power(area, SU),
+        load_response = get_load_response(area),
+        base_power = get_base_power(refs),
+        power_units = _power_units_string(DU),
+    )
+end
+
+function to_openapi(area::Area, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.Area(;
         id = component_id(refs, area),
         name = get_name(area),
@@ -36,34 +48,51 @@ function to_openapi(area::Area, refs::OpenAPIRefs, ::DeviceBaseUnit)
         peak_reactive_power = get_peak_reactive_power(area, SU) * get_base_power(refs),
         load_response = get_load_response(area),
         base_power = get_base_power(refs),
+        power_units = _power_units_string(NU),
     )
-end
-
-function to_openapi(area::Area, refs::OpenAPIRefs, ::NaturalUnit)
-    return to_openapi(area, refs, DU)
 end
 
 function to_openapi(lz::LoadZone, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.LoadZone(;
         id = component_id(refs, lz),
         name = get_name(lz),
-        peak_active_power = get_peak_active_power(lz, SU) * get_base_power(refs),
-        peak_reactive_power = get_peak_reactive_power(lz, SU) * get_base_power(refs),
+        peak_active_power = get_peak_active_power(lz, SU),
+        peak_reactive_power = get_peak_reactive_power(lz, SU),
         base_power = get_base_power(refs),
+        power_units = _power_units_string(DU),
     )
 end
 
 function to_openapi(lz::LoadZone, refs::OpenAPIRefs, ::NaturalUnit)
-    return to_openapi(lz, refs, DU)
+    return PO.LoadZone(;
+        id = component_id(refs, lz),
+        name = get_name(lz),
+        peak_active_power = get_peak_active_power(lz, SU) * get_base_power(refs),
+        peak_reactive_power = get_peak_reactive_power(lz, SU) * get_base_power(refs),
+        base_power = get_base_power(refs),
+        power_units = _power_units_string(NU),
+    )
 end
 
 # ── TransmissionInterface ───────────────────────────────────────────────────────
-# `active_power_flow_limits` is fixed-natural (x-unit MW) regardless of document
-# unit_system (mirrors import) — multiply by `get_base_power(refs)` in BOTH methods.
-# `violation_penalty`/`direction_mapping` have no `conversion_unit` and pass through
-# unconverted in both.
+# `active_power_flow_limits` is discriminated by `power_units` like every other power-family
+# field, mirroring Area/LoadZone above. `violation_penalty`/`direction_mapping` have no
+# `conversion_unit` and pass through unconverted in both.
 
 function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::DeviceBaseUnit)
+    return PO.TransmissionInterface(;
+        id = component_id(refs, tx),
+        name = get_name(tx),
+        available = get_available(tx),
+        active_power_flow_limits = _minmax_po(get_active_power_flow_limits(tx, SU)),
+        violation_penalty = get_violation_penalty(tx),
+        direction_mapping = get_direction_mapping(tx),
+        base_power = get_base_power(refs),
+        power_units = _power_units_string(DU),
+    )
+end
+
+function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::NaturalUnit)
     return PO.TransmissionInterface(;
         id = component_id(refs, tx),
         name = get_name(tx),
@@ -75,11 +104,8 @@ function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::DeviceBaseUn
         violation_penalty = get_violation_penalty(tx),
         direction_mapping = get_direction_mapping(tx),
         base_power = get_base_power(refs),
+        power_units = _power_units_string(NU),
     )
-end
-
-function to_openapi(tx::TransmissionInterface, refs::OpenAPIRefs, ::NaturalUnit)
-    return to_openapi(tx, refs, DU)
 end
 
 # ── Line ────────────────────────────────────────────────────────────────────────
@@ -105,6 +131,7 @@ function to_openapi(line::Line, refs::OpenAPIRefs, ::DeviceBaseUnit)
         rating_c = get_rating_c(line, SU),
         angle_limits = _minmax_po(get_angle_limits(line)),
         g = _fromto_po(get_g(line, SU)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -126,6 +153,7 @@ function to_openapi(line::Line, refs::OpenAPIRefs, ::NaturalUnit)
         rating_c = _scale_optional_po(get_rating_c(line, SU), sbp),
         angle_limits = _minmax_po(get_angle_limits(line)),
         g = _fromto_po(get_g(line, SU)),
+        power_units = _power_units_string(NU),
     )
 end
 
@@ -163,6 +191,7 @@ function to_openapi(hyb::HybridSystem, refs::OpenAPIRefs, ::DeviceBaseUnit)
         interconnection_efficiency = _inout_po_optional(
             get_interconnection_efficiency(hyb),
         ),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -200,6 +229,7 @@ function to_openapi(hyb::HybridSystem, refs::OpenAPIRefs, ::NaturalUnit)
         interconnection_efficiency = _inout_po_optional(
             get_interconnection_efficiency(hyb),
         ),
+        power_units = _power_units_string(NU),
     )
 end
 
@@ -225,6 +255,7 @@ function to_openapi(src::Source, refs::OpenAPIRefs, ::DeviceBaseUnit)
         base_voltage = get_base_voltage(src),
         base_power = _get_base_power(src),
         operation_cost = convert_cost_to_openapi(get_operation_cost(src)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -249,32 +280,19 @@ function to_openapi(src::Source, refs::OpenAPIRefs, ::NaturalUnit)
         base_voltage = get_base_voltage(src),
         base_power = dbp,
         operation_cost = convert_cost_to_openapi(get_operation_cost(src)),
+        power_units = _power_units_string(NU),
     )
 end
 
 # ── TModelHVDCLine ──────────────────────────────────────────────────────────────
-# The MW fields are pu on the *system* base (this type has no `base_power` field, so the
-# units engine resolves them there); `base_current` is written back untouched, being the
-# anchor for `r`/`l`/`c` rather than for power.
+# `active_power_flow`/`active_power_limits_from`/`active_power_limits_to` declare x-unit "MW"
+# outright — fixed natural units, no `power_units` discriminator on this PO struct (see the
+# schema and import_handwritten.jl's header on this exact point) — so they multiply by
+# `get_base_power(refs)` in both methods, same posture as reserves' `requirement`. Both
+# methods are therefore identical, hence the trivial `DU` delegate below. `base_current` is
+# written back untouched, being the anchor for `r`/`l`/`c` rather than for power.
 
 function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
-    return PO.TModelHVDCLine(;
-        id = component_id(refs, line),
-        name = get_name(line),
-        available = get_available(line),
-        active_power_flow = get_active_power_flow(line, SU),
-        arc = component_id(refs, get_arc(line)),
-        parameter_units = "COMPONENT_BASE",
-        base_current = get_base_current(line),
-        r = get_r(line),
-        l = get_l(line),
-        c = get_c(line),
-        active_power_limits_from = _minmax_po(get_active_power_limits_from(line, SU)),
-        active_power_limits_to = _minmax_po(get_active_power_limits_to(line, SU)),
-    )
-end
-
-function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
     sbp = get_base_power(refs)
     return PO.TModelHVDCLine(;
         id = component_id(refs, line),
@@ -294,6 +312,10 @@ function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
             get_active_power_limits_to(line, SU), sbp,
         ),
     )
+end
+
+function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
+    return to_openapi(line, refs, DU)
 end
 
 # ── InterconnectingConverter ────────────────────────────────────────────────────
@@ -325,6 +347,7 @@ function to_openapi(conv::InterconnectingConverter, refs::OpenAPIRefs, ::DeviceB
         rmpct = get_rmpct(conv),
         power_factor_weighting_fraction = get_power_factor_weighting_fraction(conv),
         voltage_limits = _minmax_po(get_voltage_limits(conv)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -356,6 +379,7 @@ function to_openapi(conv::InterconnectingConverter, refs::OpenAPIRefs, ::Natural
         rmpct = get_rmpct(conv),
         power_factor_weighting_fraction = get_power_factor_weighting_fraction(conv),
         voltage_limits = _minmax_po(get_voltage_limits(conv)),
+        power_units = _power_units_string(NU),
     )
 end
 
@@ -380,6 +404,7 @@ function to_openapi(line::MonitoredLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
         rating_c = get_rating_c(line, SU),
         angle_limits = _minmax_po(get_angle_limits(line)),
         g = _fromto_po(get_g(line, SU)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -402,6 +427,7 @@ function to_openapi(line::MonitoredLine, refs::OpenAPIRefs, ::NaturalUnit)
         rating_c = _scale_optional_po(get_rating_c(line, SU), sbp),
         angle_limits = _minmax_po(get_angle_limits(line)),
         g = _fromto_po(get_g(line, SU)),
+        power_units = _power_units_string(NU),
     )
 end
 
@@ -422,6 +448,7 @@ function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::DeviceBase
         parameter_units = "COMPONENT_BASE",
         r = get_r(branch, SU),
         x = get_x(branch, SU),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -439,14 +466,15 @@ function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::NaturalUni
         parameter_units = "COMPONENT_BASE",
         r = get_r(branch, SU),
         x = get_x(branch, SU),
+        power_units = _power_units_string(NU),
     )
 end
 
 # ── DiscreteControlledACBranch ───────────────────────────────────────────────────
 # `active_power_flow`/`reactive_power_flow`/`r`/`x` are declared `SU` (system base), `rating`
-# is declared `DU` — numerically identical for this type since its `base_power` always equals
-# the document system base (see the import-side comment), but the identity accessor for each
-# field must still match its own declared tier.
+# is declared `DU` — numerically identical for this type since `add_component!` keeps its
+# `base_power` synced to the System's, but the identity accessor for each field must still
+# match its own declared tier.
 
 function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.DiscreteControlledACBranch(;
@@ -467,6 +495,7 @@ function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::Dev
         normal_branch_status = string(get_normal_branch_status(
             branch,
         )),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -490,14 +519,15 @@ function to_openapi(branch::DiscreteControlledACBranch, refs::OpenAPIRefs, ::Nat
         normal_branch_status = string(get_normal_branch_status(
             branch,
         )),
+        power_units = _power_units_string(NU),
     )
 end
 
 # ── TransformerCircuit ──────────────────────────────────────────────────────────
-# `r`/`x` are pu on the circuit's own `base_power` and identity in BOTH document unit systems
-# (mirrors import — parameter_units is always emitted as "COMPONENT_BASE", the only basis this
-# pass implements on either side). `rating`/`rating_b`/`rating_c`/`active_power_flow`/
-# `reactive_power_flow` scale by the circuit's own `base_power` under NATURAL_UNITS only.
+# `r`/`x` are pu on the circuit's own `base_power` and identity in both marker methods
+# (`parameter_units` is always emitted as "COMPONENT_BASE", the only basis this pass implements
+# on either side). `rating`/`rating_b`/`rating_c`/`active_power_flow`/`reactive_power_flow`
+# scale by the circuit's own `base_power` under NATURAL_UNITS only.
 # Reached only via its owning `TwoWindingTransformer`'s `to_openapi` — never a standalone
 # System component (no `addable` entry of its own), so this method is called directly on the
 # `TransformerCircuit` object the document walk already resolved to an id.
@@ -527,6 +557,7 @@ function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::DeviceBase
         base_power = get_base_power(circuit),
         base_voltage_primary = get_base_voltage_primary(circuit),
         base_voltage_secondary = get_base_voltage_secondary(circuit),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -556,6 +587,7 @@ function to_openapi(circuit::TransformerCircuit, refs::OpenAPIRefs, ::NaturalUni
         base_power = dbp,
         base_voltage_primary = get_base_voltage_primary(circuit),
         base_voltage_secondary = get_base_voltage_secondary(circuit),
+        power_units = _power_units_string(NU),
     )
 end
 
@@ -625,9 +657,8 @@ end
 # `Y` is stored in PSY as pu on the system base, but the wire enum has no system-base
 # member: `ShuntAdmittanceUnitBasis` is `NATURAL_UNITS`/`COMPONENT_MVAR` only, because a shunt
 # has no device MVA rating of its own. Export therefore states `COMPONENT_MVAR` (MVAr at unity
-# voltage) and multiplies by the document-level system base, exactly inverting the
-# `COMPONENT_MVAR` division in `_fixed_admittance_pu`. Independent of what basis the document was
-# originally imported from, mirroring TwoWindingTransformer's always-"COMPONENT_BASE" export.
+# voltage) and multiplies by `get_base_power(refs)`, exactly inverting the `COMPONENT_MVAR`
+# division in `_fixed_admittance_pu`, in both methods.
 
 function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     y = get_Y(shunt) * get_base_power(refs)
@@ -638,10 +669,9 @@ function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
         bus = component_id(refs, get_bus(shunt)),
         admittance_units = "COMPONENT_MVAR",
         Y = _complex_number_po(y),
-        # FixedAdmittance's base_power_kind is SystemBasePower (components.jl): the field
-        # is kept in sync by add_component!, not authoritative on its own, so read the
-        # document-level anchor (per openapi_export_base_source in generate_structs.jl),
-        # same as `y` above.
+        # FixedAdmittance's base_power_kind is SystemBasePower (components.jl): the field is
+        # kept in sync by add_component!, not authoritative on its own, so read `refs`'s
+        # anchor (per `openapi_export_base_source` in generate_structs.jl), same as `y` above.
         base_power = get_base_power(refs),
     )
 end
@@ -651,8 +681,8 @@ function to_openapi(shunt::FixedAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
 end
 
 # ── SwitchedAdmittance ────────────────────────────────────────────────────────────
-# Mirrors `FixedAdmittance`: `Y`/`Y_increase` are fixed-natural COMPONENT_MVAR-on-system-base,
-# independent of the document's unit system, so `NaturalUnit` delegates to `DeviceBaseUnit`.
+# Mirrors `FixedAdmittance`: `Y`/`Y_increase` are fixed-natural COMPONENT_MVAR-on-system-base
+# in both methods, so `NaturalUnit` delegates to `DeviceBaseUnit`.
 
 function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::DeviceBaseUnit)
     base_power = get_base_power(refs)
@@ -680,13 +710,39 @@ function to_openapi(shunt::SwitchedAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
 end
 
 # ── FACTSControlDevice ────────────────────────────────────────────────────────────
-# Mirrors import: `max_shunt_current`/`max_reactive_power` are `SU`-identity, divided/
-# multiplied by the document system base; `voltage_setpoint` is always exported as
-# "COMPONENT_BASE" (the only basis import implements), matching TwoWindingTransformer's
-# always-"COMPONENT_BASE" export posture for a similarly fixed-representation field.
+# `max_shunt_current`/`max_reactive_power` are discriminated by `power_units` like every other
+# power-family field: COMPONENT_BASE writes the pu value as-is, NATURAL_UNITS multiplies by the
+# device's own `base_power`. `voltage_setpoint` is always exported as "COMPONENT_BASE" (the only
+# basis import implements).
 
 function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseUnit)
-    base_power = get_base_power(refs)
+    control_mode = get_control_mode(device)
+    return PO.FACTSControlDevice(;
+        id = component_id(refs, device),
+        name = get_name(device),
+        available = get_available(device),
+        bus = component_id(refs, get_bus(device)),
+        control_mode = if isnothing(control_mode)
+            nothing
+        else
+            string(control_mode)
+        end,
+        voltage_setpoint_units = "COMPONENT_BASE",
+        voltage_setpoint = get_voltage_setpoint(device),
+        max_shunt_current = get_max_shunt_current(device, SU),
+        reactive_power_required = get_reactive_power_required(device),
+        max_reactive_power = get_max_reactive_power(device, SU),
+        shunt_control_type = string(get_shunt_control_type(
+            device,
+        )),
+        regulated_bus_number = get_regulated_bus_number(device),
+        base_power = _get_base_power(device),
+        power_units = _power_units_string(DU),
+    )
+end
+
+function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::NaturalUnit)
+    base_power = _get_base_power(device)
     control_mode = get_control_mode(device)
     return PO.FACTSControlDevice(;
         id = component_id(refs, device),
@@ -707,11 +763,9 @@ function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::DeviceBaseU
             device,
         )),
         regulated_bus_number = get_regulated_bus_number(device),
+        base_power = base_power,
+        power_units = _power_units_string(NU),
     )
-end
-
-function to_openapi(device::FACTSControlDevice, refs::OpenAPIRefs, ::NaturalUnit)
-    return to_openapi(device, refs, DU)
 end
 
 # ── TwoTerminalGenericHVDCLine ──────────────────────────────────────────────────
@@ -742,6 +796,7 @@ function to_openapi(
         reactive_power_limits_to = _minmax_po(get_reactive_power_limits_to(hvdc, SU)),
         loss = _hvdc_loss_to_openapi(get_loss(hvdc)),
         base_power = get_base_power(refs),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -773,19 +828,20 @@ function to_openapi(
         ),
         loss = _hvdc_loss_to_openapi(get_loss(hvdc)),
         base_power = sbp,
+        power_units = _power_units_string(NU),
     )
 end
 
 # ── TwoTerminalLCCLine ────────────────────────────────────────────────────────────
-# Mirrors import: always exports "NATURAL_UNITS" for `parameter_units`/`dc_voltage_units` (the
-# only basis implemented), so `r`/`rectifier_rc`/`rectifier_xc`/`rectifier_capacitor_reactance`/
+# Always exports "NATURAL_UNITS" for `parameter_units`/`dc_voltage_units` (the only basis
+# implemented), so `r`/`rectifier_rc`/`rectifier_xc`/`rectifier_capacitor_reactance`/
 # `inverter_rc`/`inverter_xc`/`inverter_capacitor_reactance`/`compounding_resistance` convert
 # pu → ohms in BOTH methods identically — the PROVISIONAL `scheduled_dc_voltage`-based Zbase for
 # `r`/`compounding_resistance` (see import_handwritten.jl's header on this exact point) applies
 # here too. Only `active_power_flow`/`active_power_limits_*`/`reactive_power_limits_*`/
-# `transfer_setpoint` (when `power_mode`) differ, multiplying by the document system base under
-# `NaturalUnit`. Voltage/angle/ratio/tap/bridge fields have no unit-aware getter on the PSY
-# side (plain field access) and pass through unconverted.
+# `transfer_setpoint` (when `power_mode`) are discriminated by `power_units`, multiplying by
+# `base_power` under `NaturalUnit`. Voltage/angle/ratio/tap/bridge fields have no unit-aware
+# getter on the PSY side (plain field access) and pass through unconverted.
 
 _lcc_pu_to_ohm(pu, base_voltage, base_power) = pu * (base_voltage^2 / base_power)
 
@@ -852,6 +908,7 @@ function to_openapi(lcc::TwoTerminalLCCLine, refs::OpenAPIRefs, ::DeviceBaseUnit
         reactive_power_limits_to = _minmax_po(get_reactive_power_limits_to(lcc, SU)),
         loss = _hvdc_loss_to_openapi(get_loss(lcc)),
         base_power = base_power,
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -927,14 +984,15 @@ function to_openapi(lcc::TwoTerminalLCCLine, refs::OpenAPIRefs, ::NaturalUnit)
         ),
         loss = _hvdc_loss_to_openapi(get_loss(lcc)),
         base_power = base_power,
+        power_units = _power_units_string(NU),
     )
 end
 
 # ── TwoTerminalVSCLine ──────────────────────────────────────────────────────────
-# Mirrors import: always exports "NATURAL_UNITS" for `admittance_units`/`voltage_units` (the
-# only basis implemented), so `g` converts pu → siemens in BOTH methods. Only the
-# document-unit-system-governed power
-# fields and `dc_setpoint_*`'s `DC_POWER` branch multiply by the system base under `NaturalUnit`.
+# Always exports "NATURAL_UNITS" for `admittance_units`/`voltage_units` (the only basis
+# implemented), so `g` converts pu → siemens in BOTH methods. Only the power-family fields and
+# `dc_setpoint_*`'s `DC_POWER` branch are discriminated by `power_units`, multiplying by
+# `base_power` under `NaturalUnit`.
 # `voltage_limits_*`, `dc_voltage_droop_*`, the current fields, `rmpct_*`, the weighting
 # fractions, and `rated_dc_voltage`/`rated_ac_voltage_from`/`rated_ac_voltage_to` pass through —
 # see import_handwritten.jl's header for why each one is left alone. The voltage-regulating
@@ -1060,6 +1118,7 @@ function _two_terminal_vsc_line_to_openapi(vsc::TwoTerminalVSCLine, refs::OpenAP
         rmpct_from = get_rmpct_from(vsc),
         rmpct_to = get_rmpct_to(vsc),
         base_power = base_power,
+        power_units = _power_units_string(unit),
     )
 end
 
@@ -1111,7 +1170,7 @@ function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit)
         outflow = get_outflow(res),
         level_targets = _level_absolute(get_level_targets(res), limits.max),
         intake_elevation = get_intake_elevation(res),
-        head_to_volume_factor = PC.FunctionData(
+        head_to_volume_factor = IC.FunctionData(
             convert_cost_to_openapi(get_head_to_volume_factor(res)),
         ),
         upstream_turbines = _hydro_unit_ids(refs, get_upstream_turbines(res)),
@@ -1166,6 +1225,7 @@ function to_openapi(storage::EnergyReservoirStorage, refs::OpenAPIRefs, ::Device
         ramp_limits = _updown_po_optional(get_ramp_limits(storage, DU)),
         self_discharge = get_self_discharge(storage),
         standing_loss = get_standing_loss(storage, DU),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -1206,16 +1266,18 @@ function to_openapi(
         ramp_limits = _updown_po_scaled_optional(get_ramp_limits(storage, DU), base),
         self_discharge = get_self_discharge(storage),
         standing_loss = get_standing_loss(storage, DU) * base,
+        power_units = _power_units_string(NU),
     )
 end
 
 # ── Reserves: OnlineReserve, OfflineReserve, GroupReserve ───────────────────────
 # `reserve_direction` resolves from the `T` type parameter through a literal table (the
-# reverse of `RESERVE_DIRECTION`; direction is not a codegen case). `requirement` divides by /
-# multiplies by the document-level `get_base_power(refs)` — a reserve has no device base of its
-# own, same fallback `TwoTerminalGenericHVDCLine` uses. `variable` (the Operating Reserve
-# Demand Curve) goes through `convert_reserve_variable_to_openapi` (already handles the
-# `ZERO_OFFER_CURVE` → `nothing` default).
+# reverse of `RESERVE_DIRECTION`; direction is not a codegen case). `requirement`'s schema
+# declares x-unit "MW" outright (see import_handwritten.jl's header on this exact point), so it
+# multiplies by `get_base_power(refs)` in both methods — a reserve has no base of its own.
+# `variable` (the Operating Reserve Demand Curve) goes through
+# `convert_reserve_variable_to_openapi` (already handles the `ZERO_OFFER_CURVE` → `nothing`
+# default).
 
 const RESERVE_DIRECTION_TO_STRING = _invert(RESERVE_DIRECTION)
 
@@ -1229,7 +1291,7 @@ function to_openapi(
         name = get_name(reserve),
         available = get_available(reserve),
         time_frame = get_time_frame(reserve),
-        requirement = get_requirement(reserve, SU),
+        requirement = get_requirement(reserve, SU) * get_base_power(refs),
         variable = convert_reserve_variable_to_openapi(reserve),
         sustained_time = get_sustained_time(reserve),
         max_output_fraction = get_max_output_fraction(reserve),
@@ -1244,19 +1306,7 @@ function to_openapi(
     refs::OpenAPIRefs,
     ::NaturalUnit,
 ) where {T <: ReserveDirection, U}
-    return PO.OnlineReserve(;
-        id = component_id(refs, reserve),
-        name = get_name(reserve),
-        available = get_available(reserve),
-        time_frame = get_time_frame(reserve),
-        requirement = get_requirement(reserve, SU) * get_base_power(refs),
-        variable = convert_reserve_variable_to_openapi(reserve),
-        sustained_time = get_sustained_time(reserve),
-        max_output_fraction = get_max_output_fraction(reserve),
-        max_participation_factor = get_max_participation_factor(reserve),
-        deployed_fraction = get_deployed_fraction(reserve),
-        reserve_direction = RESERVE_DIRECTION_TO_STRING[T],
-    )
+    return to_openapi(reserve, refs, DU)
 end
 
 function to_openapi(
@@ -1269,7 +1319,7 @@ function to_openapi(
         name = get_name(reserve),
         available = get_available(reserve),
         time_frame = get_time_frame(reserve),
-        requirement = get_requirement(reserve, SU),
+        requirement = get_requirement(reserve, SU) * get_base_power(refs),
         variable = convert_reserve_variable_to_openapi(reserve),
         sustained_time = get_sustained_time(reserve),
         max_output_fraction = get_max_output_fraction(reserve),
@@ -1283,18 +1333,7 @@ function to_openapi(
     refs::OpenAPIRefs,
     ::NaturalUnit,
 ) where {U}
-    return PO.OfflineReserve(;
-        id = component_id(refs, reserve),
-        name = get_name(reserve),
-        available = get_available(reserve),
-        time_frame = get_time_frame(reserve),
-        requirement = get_requirement(reserve, SU) * get_base_power(refs),
-        variable = convert_reserve_variable_to_openapi(reserve),
-        sustained_time = get_sustained_time(reserve),
-        max_output_fraction = get_max_output_fraction(reserve),
-        max_participation_factor = get_max_participation_factor(reserve),
-        deployed_fraction = get_deployed_fraction(reserve),
-    )
+    return to_openapi(reserve, refs, DU)
 end
 
 function to_openapi(
@@ -1306,7 +1345,7 @@ function to_openapi(
         id = component_id(refs, reserve),
         name = get_name(reserve),
         available = get_available(reserve),
-        requirement = get_requirement(reserve, SU),
+        requirement = get_requirement(reserve, SU) * get_base_power(refs),
         reserve_direction = RESERVE_DIRECTION_TO_STRING[T],
     )
 end
@@ -1316,11 +1355,5 @@ function to_openapi(
     refs::OpenAPIRefs,
     ::NaturalUnit,
 ) where {T <: ReserveDirection}
-    return PO.GroupReserve(;
-        id = component_id(refs, reserve),
-        name = get_name(reserve),
-        available = get_available(reserve),
-        requirement = get_requirement(reserve, SU) * get_base_power(refs),
-        reserve_direction = RESERVE_DIRECTION_TO_STRING[T],
-    )
+    return to_openapi(reserve, refs, DU)
 end

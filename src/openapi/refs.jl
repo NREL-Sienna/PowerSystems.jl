@@ -18,10 +18,11 @@ struct OpenAPIRefs
     by_id::Dict{Int, IS.InfrastructureSystemsType}
     "Component → id, keyed by object identity."
     id_by_component::IdDict{IS.InfrastructureSystemsType, Int}
-    "The document's declared unit system (e.g. \"NATURAL_UNITS\"), fixed for the whole document."
-    unit_system::String
-    "The document's system base power (MVA), used by converters for types carrying no
-    device-level `base_power` of their own."
+    "The System's computational base power (MVA): the caller-supplied anchor for import
+    (`from_openapi(::Type{System}, doc; base_power)`) or `get_base_power(sys)` on export, used
+    by the handful of converters for types carrying no device-level per-unit basis of their
+    own (e.g. a reserve's `requirement`). Every power-bearing component blob is otherwise
+    self-interpretable via its own `base_power`/`power_units`."
     base_power::Float64
     "Component→component reference resolutions queued by [`defer_ref!`](@ref) because the
     referenced component had not converted yet — drained by [`resolve_deferred_refs!`](@ref).
@@ -34,11 +35,11 @@ struct OpenAPIRefs
     store::Union{Nothing, IS.Store}
 end
 
-function OpenAPIRefs(unit_system::AbstractString, base_power::Real = 100.0; store = nothing)
+function OpenAPIRefs(base_power::Real = 100.0; store = nothing)
     return OpenAPIRefs(
         Dict{Int, IS.InfrastructureSystemsType}(),
         IdDict{IS.InfrastructureSystemsType, Int}(),
-        String(unit_system), Float64(base_power), Function[], store,
+        Float64(base_power), Function[], store,
     )
 end
 
@@ -72,10 +73,7 @@ function resolve_deferred_refs!(refs::OpenAPIRefs)
     return nothing
 end
 
-"""Get the document-level unit system this [`OpenAPIRefs`](@ref) was built for."""
-get_unit_system(refs::OpenAPIRefs) = refs.unit_system
-
-"""Get the document-level system base power (MVA) this [`OpenAPIRefs`](@ref) was built for."""
+"""Get the System computational base power (MVA) this [`OpenAPIRefs`](@ref) was built for."""
 get_base_power(refs::OpenAPIRefs) = refs.base_power
 
 """Get the time series store bound for this import (see [`OpenAPIRefs`](@ref)'s `store`
@@ -140,3 +138,49 @@ end
 
 """Whether `component` has a registered id."""
 has_component_id(refs::OpenAPIRefs, component) = haskey(refs.id_by_component, component)
+
+# ── per-component power_units selection ─────────────────────────────────────────
+# Each of the 32 power-bearing component types carries its own `power_units` field.
+# `_power_units_marker` translates that wire string to the DU/NU singleton selecting which
+# converter method runs; the generated per-type 2-arg `from_openapi(po, refs)` selector calls
+# it, as do the hand-written converters for the types the generator cannot emit.
+
+"""
+The `DU`/`NU` marker `raw` (a component blob's `power_units` string) selects, for the type
+named `component_type` and document id `id` — both carried only for the error message.
+
+`OpenAPI.from_json` does not enforce the schema's `required`, so a blob whose `power_units`
+deserializes to `nothing` must still error here, naming the offending type and id, rather than
+silently defaulting to either basis.
+"""
+function _power_units_marker(component_type::AbstractString, id, raw)
+    isnothing(raw) && error(
+        "from_openapi: $component_type id=$id has no power_units — every power-bearing " *
+        "component blob must state \"COMPONENT_BASE\" or \"NATURAL_UNITS\"",
+    )
+    raw == "COMPONENT_BASE" && return DU
+    raw == "NATURAL_UNITS" && return NU
+    error(
+        "from_openapi: $component_type id=$id has unmapped power_units=\"$raw\" — expected " *
+        "\"COMPONENT_BASE\" or \"NATURAL_UNITS\"",
+    )
+end
+
+"""The wire `power_units` string a `DU`/`NU` marker stamps on export — the inverse of
+[`_power_units_marker`](@ref)."""
+_power_units_string(::DeviceBaseUnit) = "COMPONENT_BASE"
+_power_units_string(::NaturalUnit) = "NATURAL_UNITS"
+
+"""
+`po.base_power`, required: every power-bearing component blob must state its own.
+`OpenAPI.from_json` does not enforce the schema's `required`, so a blob whose `base_power`
+deserializes to `nothing` must still error here, naming the offending type and id, rather than
+silently defaulting.
+"""
+function _require_base_power(component_type::AbstractString, id, base_power)
+    isnothing(base_power) && error(
+        "from_openapi: $component_type id=$id has no base_power — every power-bearing " *
+        "component blob must state its own base_power",
+    )
+    return Float64(base_power)
+end

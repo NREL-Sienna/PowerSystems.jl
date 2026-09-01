@@ -139,5 +139,18 @@ function load_supplemental_attribute_associations!(
         )
         _attach_service_membership!(refs[entity_id], refs[service_id], sys)
     end
+    for assoc in doc.trading_hub_associations
+        trading_hub_id = Int(assoc.trading_hub_id)
+        entity_id = Int(assoc.entity_id)
+        has_ref(refs, trading_hub_id) || error(
+            "load_supplemental_attribute_associations!: trading_hub_associations row " *
+            "references unresolved trading_hub_id=$trading_hub_id (entity_id=$entity_id)",
+        )
+        has_ref(refs, entity_id) || error(
+            "load_supplemental_attribute_associations!: trading_hub_associations row " *
+            "references unresolved entity_id=$entity_id (trading_hub_id=$trading_hub_id)",
+        )
+        _attach_trading_hub_membership!(refs[entity_id], refs[trading_hub_id], sys)
+    end
     return nothing
 end

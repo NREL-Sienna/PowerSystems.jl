@@ -319,6 +319,10 @@ function from_openapi(po::PO.InterruptibleStandardLoad, refs::OpenAPIRefs, ::Nat
     )
 end
 
+function from_openapi(po::PO.InterruptibleStandardLoad, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("InterruptibleStandardLoad", po.id, po.power_units))
+end
+
 function to_openapi(value::InterruptibleStandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.InterruptibleStandardLoad(;
         id = component_id(refs, value),
@@ -340,6 +344,7 @@ function to_openapi(value::InterruptibleStandardLoad, refs::OpenAPIRefs, ::Devic
         max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU),
         max_current_active_power = get_max_current_active_power(value, DU),
         max_current_reactive_power = get_max_current_reactive_power(value, DU),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -364,5 +369,6 @@ function to_openapi(value::InterruptibleStandardLoad, refs::OpenAPIRefs, ::Natur
         max_impedance_reactive_power = get_max_impedance_reactive_power(value, DU) * _get_base_power(value),
         max_current_active_power = get_max_current_active_power(value, DU) * _get_base_power(value),
         max_current_reactive_power = get_max_current_reactive_power(value, DU) * _get_base_power(value),
+        power_units = _power_units_string(NU),
     )
 end

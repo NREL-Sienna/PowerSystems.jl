@@ -48,9 +48,26 @@ $(TYPEDSIGNATURES)
 
 Write `sys` to `dir` as a `system.json` + `time_series.h5` bundle.
 
-`unit_system` is passed through to [`to_openapi`](@ref): `:device_base` (default) writes each
-component's values on its own base, PSY's native convention, and `:natural_units` converts to
-physical units instead.
+# The `power_units` keyword
+
+`power_units` is passed through to [`to_openapi`](@ref) and chooses the basis every value in
+the document is written on:
+
+  - `:component_base` (default) writes each component's values on its own `base_power`, the
+    convention PSY stores natively. Nothing is converted, so the numbers on disk are the
+    numbers in memory and the round trip is exact.
+  - `:natural_units` converts on the way out to physical units — MW, MVAr, MVA — which is
+    what a reader outside Sienna generally wants.
+
+Both are complete: any `System` exports either way, whatever it was built from.
+
+Note the asymmetry between writing and reading. **A write is uniform**: PSY does not track a
+per-component basis, so the choice made here stamps every power-bearing blob in the document
+with the same value. **A read is per component**: each blob is converted according to the
+`power_units` it carries, so a document written by another client with a mixed basis is read
+back correctly, and a blob missing the field is an error rather than a guess (see
+`from_openapi`). Writing then reading therefore returns what you exported regardless of which
+basis you chose.
 
 The sidecar is written only when `sys` actually carries time series; otherwise the document's
 `time_series_storage_file` is null and no HDF5 file is created.
@@ -58,14 +75,14 @@ The sidecar is written only when `sys` actually carries time series; otherwise t
 function to_file(
     sys::System,
     dir::AbstractString;
-    unit_system::Symbol = :device_base,
+    power_units::Symbol = :component_base,
     force::Bool = false,
     pretty::Bool = false,
 )
     _prepare_bundle_dir(dir, force)
     storage_path = _sidecar_path_for_write(sys, dir)
     doc =
-        to_openapi(sys; unit_system = unit_system, time_series_storage_path = storage_path)
+        to_openapi(sys; power_units = power_units, time_series_storage_path = storage_path)
     PD.write_document(
         doc,
         joinpath(dir, SYSTEM_DOCUMENT_FILE);

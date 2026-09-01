@@ -1,5 +1,5 @@
 @testset "OpenAPIRefs: setindex!/getindex hit and miss" begin
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS")
+    refs = PSY.OpenAPIRefs()
     area = Area(; name = "area1", peak_active_power = 0.0, peak_reactive_power = 0.0)
     refs[1] = area
     @test refs[1] === area
@@ -9,7 +9,7 @@
 end
 
 @testset "OpenAPIRefs: duplicate id rejected" begin
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS")
+    refs = PSY.OpenAPIRefs()
     area1 = Area(; name = "a1", peak_active_power = 0.0, peak_reactive_power = 0.0)
     area2 = Area(; name = "a2", peak_active_power = 0.0, peak_reactive_power = 0.0)
     refs[1] = area1
@@ -18,7 +18,7 @@ end
 end
 
 @testset "OpenAPIRefs: component -> id reverse lookup" begin
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS")
+    refs = PSY.OpenAPIRefs()
     area = Area(; name = "a1", peak_active_power = 0.0, peak_reactive_power = 0.0)
     other = Area(; name = "a2", peak_active_power = 0.0, peak_reactive_power = 0.0)
     refs[7] = area
