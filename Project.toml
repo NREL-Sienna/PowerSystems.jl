@@ -41,17 +41,17 @@ InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 # InfrastructureTimeSeriesOpenAPIModels, uncommitted — the pushed IS4 branch still requires
 # the old (now-unregistered) PowerTimeSeriesOpenAPIModels and fails to resolve. Revert to the
 # git rev once IS4 is pushed.
-InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "jd/openapi-package-split"}
+InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "IS4"}
 # LOCAL PATH CO-DEV PINS (temporary): the InfrastructureCore/InfrastructureTimeSeries package
 # split exists only on local disk, not pushed to jd/schemas-0.1.0 yet. Revert to the git pins
 # once pushed/merged.
-InfrastructureCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "InfrastructureCoreOpenAPIModels.jl"}
-InfrastructureTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "InfrastructureTimeSeriesOpenAPIModels.jl"}
-PowerCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerCoreOpenAPIModels.jl"}
-PowerDynamicsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerDynamicsOpenAPIModels.jl"}
-PowerInvestmentsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerInvestmentsOpenAPIModels.jl"}
-PowerOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerOpenAPIModels.jl"}
-PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerOperationsOpenAPIModels.jl"}
+InfrastructureCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "InfrastructureCoreOpenAPIModels.jl"}
+InfrastructureTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "InfrastructureTimeSeriesOpenAPIModels.jl"}
+PowerCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerCoreOpenAPIModels.jl"}
+PowerDynamicsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerDynamicsOpenAPIModels.jl"}
+PowerInvestmentsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerInvestmentsOpenAPIModels.jl"}
+PowerOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerOpenAPIModels.jl"}
+PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "main", subdir = "PowerOperationsOpenAPIModels.jl"}
 
 [compat]
 # For the `[extras]` entry; Aqua requires every extra to carry a compat bound.

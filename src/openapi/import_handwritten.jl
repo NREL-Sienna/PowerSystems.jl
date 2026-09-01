@@ -17,6 +17,16 @@
 # A hand-written type with a `power_units` member joins the first loop below; every other
 # hand-written type joins the second. The generated types get the analogous 2-arg selector
 # from the generator itself (`compute_openapi_converter!` in generate_structs.jl).
+#
+# TradingHub, VirtualParticipant, PointToPointBid are different again: the generator DID emit
+# their 3-arg `from_openapi(po, refs, ::DeviceBaseUnit/::NaturalUnit)` pair (their MW fields
+# are all `needs_conversion=false`, so both branches read `po.max_supply`/`max_active_power`/…
+# unconverted — "All MW values are natural units" per their docstrings), but it emitted no
+# plain 2-arg selector alongside them, so nothing ever calls those pairs. They join a third
+# loop below rather than either existing one: `_power_units_marker` has no wire field to read
+# (no `power_units` member — see `openapi_has_power_units` in generate_structs.jl), and `NU`
+# rather than the second loop's `DU` names which branch actually runs, matching the
+# always-natural-units contract even though the two branches are behaviorally identical.
 
 for T in (
     :Area, :LoadZone, :TransmissionInterface, :Line, :MonitoredLine, :GenericArcImpedance,
@@ -39,6 +49,10 @@ for T in (
     :GroupReserve,
 )
     @eval from_openapi(po::PO.$T, refs::OpenAPIRefs) = from_openapi(po, refs, DU)
+end
+
+for T in (:TradingHub, :VirtualParticipant, :PointToPointBid)
+    @eval from_openapi(po::PO.$T, refs::OpenAPIRefs) = from_openapi(po, refs, NU)
 end
 
 """Named tuple of `(min, max)` from a PO `MinMax`-shaped struct."""

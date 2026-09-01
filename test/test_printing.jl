@@ -1,4 +1,17 @@
 
+"""
+The magnitudes a field's displayed value must contribute to the custom output.
+
+`_show_accessor_value` hands back relative quantities, whose `string` spells the unit marker
+(`"-0.15 SU"`), while the display spells the same number as `"-0.15 p.u. ... in system base"`.
+Asserting on magnitudes keeps the check on the values rather than on one spelling of the units,
+and covers `MinMax`-typed fields, whose value is a NamedTuple of them.
+"""
+_display_magnitudes(x::RelativeQuantity) = [string(ustrip(x))]
+_display_magnitudes(x::NamedTuple) =
+    collect(Iterators.flatten(_display_magnitudes(v) for v in values(x)))
+_display_magnitudes(x) = [string(x)]
+
 function are_type_and_fields_in_output(obj::T) where {T <: Component}
     match = true
     normal = repr(obj)
@@ -48,22 +61,22 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
 
         actual_type = typeof(display_val)
         if actual_type <: IS.InfrastructureSystemsType
-            expected = string(actual_type)
+            expected = [string(actual_type)]
         elseif actual_type <: Vector{<:Service}
-            expected = string(actual_type)
+            expected = [string(actual_type)]
         elseif actual_type <: Vector{<:IS.InfrastructureSystemsType}
-            expected = string(actual_type)
+            expected = [string(actual_type)]
         elseif display_val isa Unitful.Quantity
-            expected = string(Unitful.ustrip(display_val))
-        elseif display_val isa RelativeQuantity
-            expected = string(ustrip(display_val))
+            expected = [string(Unitful.ustrip(display_val))]
         else
-            expected = string(display_val)
+            expected = _display_magnitudes(display_val)
         end
 
-        if !occursin(expected, custom)
-            @error "field's value is not in custom output" name expected custom
-            match = false
+        for want in expected
+            if !occursin(want, custom)
+                @error "field's value is not in custom output" name want custom
+                match = false
+            end
         end
     end
 

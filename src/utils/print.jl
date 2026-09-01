@@ -185,7 +185,7 @@ function _device_base_note(d::DynamicInjection)
     # no `base_power` field of their own fall back to the system base, which errors
     # for a detached component — and display must never error.
     base = hasfield(typeof(d), :base_power) ? " of $(d.base_power) MVA" : ""
-    return "parameters of the dynamic components above are in p.u. on the device base$base"
+    return "parameters of the dynamic components above are in p.u. on the component base$base"
 end
 
 # The dynamic-model parameter blocks: machines, shafts, AVRs, turbine governors, PSSs,

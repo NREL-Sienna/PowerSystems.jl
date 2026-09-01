@@ -726,7 +726,7 @@ end
         md -> IS.get_time_series_type(md) <: IS.Forecast,
         (
             md for c in get_components(Component, base_sys) for
-            md in IS.list_metadata(c)
+            md in IS.list_time_series_metadata(c)
         ),
     ) == 6
     subsystem1_ids = get_component_ids(base_sys, "subsystem_1")

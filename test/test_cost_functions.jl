@@ -492,14 +492,14 @@ end
     )
 
     old_cost = get_operation_cost(generator)
-    old_variable = get_variable(old_cost)
+    old_variable = get_variable_operation_cost(old_cost)
     set_operation_cost!(
         generator,
         ThermalGenerationCost(;
             fixed = get_fixed(old_cost),
             shut_down = get_shut_down(old_cost),
             start_up = get_start_up(old_cost),
-            variable = FuelCurve(;
+            variable_operation_cost = FuelCurve(;
                 value_curve = get_value_curve(old_variable),
                 power_units = get_power_units(old_variable),
                 fuel_cost_time_series = fuel_key,
@@ -517,14 +517,14 @@ end
     generator = get_component(ThermalStandard, sys, "322_CT_6")
 
     old_cost = get_operation_cost(generator)
-    old_variable = get_variable(old_cost)
+    old_variable = get_variable_operation_cost(old_cost)
     set_operation_cost!(
         generator,
         ThermalGenerationCost(;
             fixed = get_fixed(old_cost),
             shut_down = get_shut_down(old_cost),
             start_up = get_start_up(old_cost),
-            variable = FuelCurve(;
+            variable_operation_cost = FuelCurve(;
                 value_curve = get_value_curve(old_variable),
                 power_units = get_power_units(old_variable),
                 fuel_cost = 2.0,

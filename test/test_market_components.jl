@@ -181,7 +181,7 @@ end
     path = joinpath(mktempdir(), "mbtc_round_trip.json")
     to_json(sys, path)
 
-    # The keys cross the wire as bare association ids, nothing else.
+    # The keys cross the wire as an association-id envelope, carrying no time series name.
     raw = open(path) do io
         return JSON.parse(io; dicttype = Dict{String, Any})
     end
@@ -192,13 +192,15 @@ end
         ),
     )
     op_json = gen_json["operation_cost"]
-    @test op_json["start_up"] isa Int
-    @test op_json["start_up"] == IS.get_association_id(su_key)
+    @test op_json["start_up"] isa Dict
+    @test Set(keys(op_json["start_up"])) ==
+          Set(["association_id", "element_type", "time_series_type"])
+    @test op_json["start_up"]["association_id"] == IS.get_association_id(su_key)
+    @test op_json["start_up"]["time_series_type"] == "SingleTimeSeries"
 
     # A regression to field-by-field key serialization would put these back in the JSON.
     json_text = read(path, String)
     @test !occursin("owner_category", json_text)
-    @test !occursin("association_id", json_text)
     @test !occursin("start_up_stages_rt", json_text)
     @test !occursin("inc_offer_rt", json_text)
 

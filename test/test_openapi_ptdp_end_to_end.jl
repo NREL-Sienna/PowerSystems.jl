@@ -216,7 +216,7 @@ function _ptdp_e2e_attach_ts_costs!(sys::System)
     )
     set_operation_cost!(market_bid_gen, market_bid_cost)
 
-    old_variable = get_variable(get_operation_cost(fuel_gen))
+    old_variable = get_variable_operation_cost(get_operation_cost(fuel_gen))
     new_variable = FuelCurve(;
         value_curve = get_value_curve(old_variable),
         power_units = get_power_units(old_variable),
@@ -231,7 +231,7 @@ function _ptdp_e2e_attach_ts_costs!(sys::System)
             fixed = get_fixed(old_cost),
             shut_down = get_shut_down(old_cost),
             start_up = get_start_up(old_cost),
-            variable = new_variable,
+            variable_operation_cost = new_variable,
         ),
     )
 
@@ -274,7 +274,7 @@ function _ptdp_e2e_check_ts_costs(
           keys.decremental_offer_curves
 
     fuel_gen = get_component(ThermalStandard, sys, fuel_gen_name)
-    variable = get_variable(get_operation_cost(fuel_gen))
+    variable = get_variable_operation_cost(get_operation_cost(fuel_gen))
     @test variable isa FuelCurve
     @test isnothing(get_fuel_cost(variable))
     @test IS.get_fuel_cost_time_series(variable) == fuel_key

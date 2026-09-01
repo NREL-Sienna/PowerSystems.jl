@@ -308,10 +308,13 @@ end
     add_time_series!(sys, gens[1], make_sts("solo", collect(25.0:48.0)))
 
     shared_keys = [
-        IS.get_time_series_key(only(list_metadata(g; name = "max_active_power")))
+        IS.get_time_series_key(
+            only(list_time_series_metadata(g; name = "max_active_power")),
+        )
         for g in gens
     ]
-    solo_key = IS.get_time_series_key(only(list_metadata(gens[1]; name = "solo")))
+    solo_key =
+        IS.get_time_series_key(only(list_time_series_metadata(gens[1]; name = "solo")))
     shared_hash = get_time_series_hash(gens[1], shared_keys[1])
     @test get_time_series_hash(gens[2], shared_keys[2]) == shared_hash
     @test get_time_series_hash(gens[1], solo_key) != shared_hash
@@ -493,7 +496,7 @@ end
         error("abort the transaction")
     end
     @test isempty(
-        IS.list_metadata(component; name = "rolled_back"),
+        IS.list_time_series_metadata(component; name = "rolled_back"),
     )
 end
 
