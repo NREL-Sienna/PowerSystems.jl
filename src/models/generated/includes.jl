@@ -529,6 +529,7 @@ export get_c
 export get_c_dc
 export get_cf
 export get_circuit
+export get_commitment_mode
 export get_compounding_resistance
 export get_conformity
 export get_constant_active_power
@@ -702,7 +703,6 @@ export get_max_supply
 export get_min_compounding_voltage
 export get_minimum_time
 export get_motor_technology
-export get_must_run
 export get_n_states
 export get_name
 export get_normal_branch_status
@@ -1268,6 +1268,7 @@ export set_c!
 export set_c_dc!
 export set_cf!
 export set_circuit!
+export set_commitment_mode!
 export set_compounding_resistance!
 export set_conformity!
 export set_constant_active_power!
@@ -1418,7 +1419,6 @@ export set_max_supply!
 export set_min_compounding_voltage!
 export set_minimum_time!
 export set_motor_technology!
-export set_must_run!
 export set_n_states!
 export set_name!
 export set_normal_branch_status!
