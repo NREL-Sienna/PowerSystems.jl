@@ -15,7 +15,7 @@ subset of `make_openapi_test_doc()`'s components these tests attach attributes/t
 to or use for service membership — registered under the SAME ids the document declares."""
 function _sqlite_load_fixture()
     sys = System(100.0)
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
 
     bus1 = ACBus(;
         number = 1, name = "bus1", available = true, bustype = ACBusTypes.REF,

@@ -302,6 +302,10 @@ function from_openapi(po::PO.HydroTurbine, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.HydroTurbine, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("HydroTurbine", po.id, po.power_units))
+end
+
 function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.HydroTurbine(;
         id = component_id(refs, value),
@@ -324,6 +328,7 @@ function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::DeviceBaseUnit)
         conversion_factor = get_conversion_factor(value),
         prime_mover_type = string(get_prime_mover_type(value)),
         travel_time = get_travel_time(value),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -349,5 +354,6 @@ function to_openapi(value::HydroTurbine, refs::OpenAPIRefs, ::NaturalUnit)
         conversion_factor = get_conversion_factor(value),
         prime_mover_type = string(get_prime_mover_type(value)),
         travel_time = get_travel_time(value),
+        power_units = _power_units_string(NU),
     )
 end

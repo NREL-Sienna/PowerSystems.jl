@@ -197,6 +197,10 @@ function from_openapi(po::PO.InterruptiblePowerLoad, refs::OpenAPIRefs, ::Natura
     )
 end
 
+function from_openapi(po::PO.InterruptiblePowerLoad, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("InterruptiblePowerLoad", po.id, po.power_units))
+end
+
 function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.InterruptiblePowerLoad(;
         id = component_id(refs, value),
@@ -210,6 +214,7 @@ function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::DeviceBa
         base_power = _get_base_power(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
         conformity = string(get_conformity(value)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -226,5 +231,6 @@ function to_openapi(value::InterruptiblePowerLoad, refs::OpenAPIRefs, ::NaturalU
         base_power = _get_base_power(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
         conformity = string(get_conformity(value)),
+        power_units = _power_units_string(NU),
     )
 end

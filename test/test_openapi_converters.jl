@@ -52,14 +52,15 @@ _vsc_po_minimal() = PSY.PO.TwoTerminalVSCLine(;
     rmpct_from = 100.0, rmpct_to = 100.0, base_power = 100.0,
 )
 
-function _refs_with_area_bus(unit_system = "NATURAL_UNITS"; base_power = 100.0)
-    refs = PSY.OpenAPIRefs(unit_system, base_power)
+function _refs_with_area_bus(; base_power = 100.0)
+    refs = PSY.OpenAPIRefs(base_power)
     area_po = PSY.PO.Area(;
         id = 1, name = "area1", peak_active_power = 100.0, peak_reactive_power = 20.0,
-        load_response = 0.0,
+        load_response = 0.0, base_power = base_power,
     )
     lz_po = PSY.PO.LoadZone(;
         id = 2, name = "lz1", peak_active_power = 100.0, peak_reactive_power = 20.0,
+        base_power = base_power,
     )
     refs[1] = PSY.from_openapi(area_po, refs, NU)
     refs[2] = PSY.from_openapi(lz_po, refs, NU)
@@ -108,85 +109,110 @@ end
     )
 end
 
-@testset "OpenAPI converters: Area / LoadZone (fixed-natural-unit peak conversion)" begin
-    # x-unit for peak_active_power/peak_reactive_power is fixed MW/MVAr (SiennaSchemas
-    # Operations/Topology/{Area,LoadZone}.json) — the document always carries these
-    # natural, so the conversion by the document base is the same in BOTH unit-system
-    # methods (mirrors reserve `requirement`, x-unit MW).
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
-    for (i, val) in enumerate((DU, NU))
-        area_po = PSY.PO.Area(;
-            id = 1, name = "area$i", peak_active_power = 250.0,
-            peak_reactive_power = 50.0, load_response = 12.5,
-        )
-        lz_po = PSY.PO.LoadZone(;
-            id = 2, name = "lz$i", peak_active_power = 250.0, peak_reactive_power = 50.0,
-        )
-        sys = System(100.0)
-        area = PSY.from_openapi(area_po, refs, val)
-        add_component!(sys, area)
-        @test get_peak_active_power(area, SU) == 2.5
-        @test get_peak_reactive_power(area, SU) == 0.5
-        @test get_load_response(area) == 12.5
+@testset "OpenAPI converters: Area / LoadZone (power_units-discriminated peak conversion)" begin
+    # x-unit for peak_active_power/peak_reactive_power is MW/MVAr (SiennaSchemas
+    # Operations/Topology/{Area,LoadZone}.json), discriminated per blob by `power_units`
+    # like every other power-family field: COMPONENT_BASE passes through pu, NATURAL_UNITS
+    # divides by the blob's own `base_power`.
+    refs = PSY.OpenAPIRefs(100.0)
 
-        lz = PSY.from_openapi(lz_po, refs, val)
-        add_component!(sys, lz)
-        @test get_peak_active_power(lz, SU) == 2.5
-        @test get_peak_reactive_power(lz, SU) == 0.5
+    area_po_du = PSY.PO.Area(;
+        id = 1, name = "area_du", peak_active_power = 2.5,
+        peak_reactive_power = 0.5, load_response = 12.5, base_power = 100.0,
+    )
+    lz_po_du = PSY.PO.LoadZone(;
+        id = 2, name = "lz_du", peak_active_power = 2.5, peak_reactive_power = 0.5,
+        base_power = 100.0,
+    )
+    sys_du = System(100.0)
+    area_du = PSY.from_openapi(area_po_du, refs, DU)
+    add_component!(sys_du, area_du)
+    lz_du = PSY.from_openapi(lz_po_du, refs, DU)
+    add_component!(sys_du, lz_du)
+    @test get_peak_active_power(area_du, SU) == 2.5
+    @test get_peak_reactive_power(area_du, SU) == 0.5
+    @test get_load_response(area_du) == 12.5
+    @test get_peak_active_power(lz_du, SU) == 2.5
+    @test get_peak_reactive_power(lz_du, SU) == 0.5
+    @test get_base_power(area_du) == 100.0
+    @test get_base_power(lz_du) == 100.0
 
-        # Both structs gained their own `base_power`. The
-        # document omits it above, so
-        # `_resolve_base_power` falls back to `get_base_power(refs)` — proving the
-        # backward-compat path, not just the happy path.
-        @test get_base_power(area) == 100.0
-        @test get_base_power(lz) == 100.0
-    end
-end
+    area_po_nu = PSY.PO.Area(;
+        id = 3, name = "area_nu", peak_active_power = 250.0,
+        peak_reactive_power = 50.0, load_response = 12.5, base_power = 100.0,
+    )
+    lz_po_nu = PSY.PO.LoadZone(;
+        id = 4, name = "lz_nu", peak_active_power = 250.0, peak_reactive_power = 50.0,
+        base_power = 100.0,
+    )
+    sys_nu = System(100.0)
+    area_nu = PSY.from_openapi(area_po_nu, refs, NU)
+    add_component!(sys_nu, area_nu)
+    lz_nu = PSY.from_openapi(lz_po_nu, refs, NU)
+    add_component!(sys_nu, lz_nu)
+    @test get_peak_active_power(area_nu, SU) == 2.5
+    @test get_peak_reactive_power(area_nu, SU) == 0.5
+    @test get_peak_active_power(lz_nu, SU) == 2.5
+    @test get_peak_reactive_power(lz_nu, SU) == 0.5
 
-@testset "OpenAPI converters: Area / LoadZone base_power stated explicitly" begin
-    # When a producer does state the component's own `base_power`, it is honored exactly
-    # (not silently overridden by the document-level system base), including when the two
-    # differ.
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
-    area_po = PSY.PO.Area(;
-        id = 1, name = "area_explicit", peak_active_power = 250.0,
+    # A blob whose own `base_power` differs from the System's is honored exactly.
+    area_po_explicit = PSY.PO.Area(;
+        id = 5, name = "area_explicit", peak_active_power = 250.0,
         peak_reactive_power = 50.0, load_response = 12.5, base_power = 250.0,
     )
-    lz_po = PSY.PO.LoadZone(;
-        id = 2, name = "lz_explicit", peak_active_power = 250.0,
-        peak_reactive_power = 50.0,
-        base_power = 250.0,
+    area_explicit = PSY.from_openapi(area_po_explicit, refs, NU)
+    @test get_base_power(area_explicit) == 250.0
+
+    # A blob omitting the now-required `base_power` errors loudly rather than falling back.
+    area_po_missing_base = PSY.PO.Area(;
+        id = 6, name = "area_missing_base", peak_active_power = 250.0,
+        peak_reactive_power = 50.0, load_response = 12.5,
     )
-    area = PSY.from_openapi(area_po, refs, NU)
-    lz = PSY.from_openapi(lz_po, refs, NU)
-    @test get_base_power(area) == 250.0
-    @test get_base_power(lz) == 250.0
+    @test isnothing(area_po_missing_base.base_power)
+    @test_throws ErrorException PSY.from_openapi(area_po_missing_base, refs, NU)
 end
 
-@testset "OpenAPI converters: TransmissionInterface (fixed-natural-unit conversion)" begin
-    # x-unit for active_power_flow_limits is fixed MW (SiennaSchemas
-    # Operations/Service/TransmissionInterface.json) — same disposition as Area/LoadZone's
-    # peak_active_power above, dividing by the document-level base in BOTH unit-system
-    # methods. The struct has its own `base_power` field, but
-    # `direction_mapping::Dict{String, Int}` still blocks codegen. The document below omits
-    # `base_power` is absent from the document, exercising the
-    # `_resolve_base_power` fallback to `get_base_power(refs)`.
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
-    for (i, val) in enumerate((DU, NU))
-        sys = System(100.0)
-        tx_po = PSY.PO.TransmissionInterface(;
-            id = 1, name = "iface$i", available = true,
-            active_power_flow_limits = PSY.PC.MinMax(; min = -1000.0, max = 1000.0),
-            violation_penalty = 5000.0,
-            direction_mapping = Dict{String, Int64}("line1" => 1, "line2" => -1),
-        )
-        tx = PSY.from_openapi(tx_po, refs, val)
-        add_component!(sys, tx)
-        @test get_active_power_flow_limits(tx, SU) == (min = -10.0, max = 10.0)
-        @test get_violation_penalty(tx) == 5000.0
-        @test get_direction_mapping(tx) == Dict("line1" => 1, "line2" => -1)
-        @test get_base_power(tx) == 100.0
-    end
+@testset "OpenAPI converters: TransmissionInterface (power_units-discriminated conversion)" begin
+    # x-unit for active_power_flow_limits is MW (SiennaSchemas
+    # Operations/Service/TransmissionInterface.json), discriminated by `power_units` like
+    # Area/LoadZone's peak fields above. `direction_mapping::Dict{String, Int}` still blocks
+    # codegen.
+    refs = PSY.OpenAPIRefs(100.0)
+
+    tx_po_du = PSY.PO.TransmissionInterface(;
+        id = 1, name = "iface_du", available = true,
+        active_power_flow_limits = PSY.PC.MinMax(; min = -10.0, max = 10.0),
+        violation_penalty = 5000.0,
+        direction_mapping = Dict{String, Int64}("line1" => 1, "line2" => -1),
+        base_power = 100.0,
+    )
+    tx_du = PSY.from_openapi(tx_po_du, refs, DU)
+    add_component!(System(100.0), tx_du)
+    @test get_active_power_flow_limits(tx_du, SU) == (min = -10.0, max = 10.0)
+    @test get_violation_penalty(tx_du) == 5000.0
+    @test get_direction_mapping(tx_du) == Dict("line1" => 1, "line2" => -1)
+    @test get_base_power(tx_du) == 100.0
+
+    tx_po_nu = PSY.PO.TransmissionInterface(;
+        id = 2, name = "iface_nu", available = true,
+        active_power_flow_limits = PSY.PC.MinMax(; min = -1000.0, max = 1000.0),
+        violation_penalty = 5000.0,
+        direction_mapping = Dict{String, Int64}("line1" => 1, "line2" => -1),
+        base_power = 100.0,
+    )
+    tx_nu = PSY.from_openapi(tx_po_nu, refs, NU)
+    add_component!(System(100.0), tx_nu)
+    @test get_active_power_flow_limits(tx_nu, SU) == (min = -10.0, max = 10.0)
+    @test get_base_power(tx_nu) == 100.0
+
+    # A blob omitting the now-required `base_power` errors loudly rather than falling back.
+    tx_po_missing_base = PSY.PO.TransmissionInterface(;
+        id = 3, name = "iface_missing_base", available = true,
+        active_power_flow_limits = PSY.PC.MinMax(; min = -1000.0, max = 1000.0),
+        violation_penalty = 5000.0,
+        direction_mapping = Dict{String, Int64}(),
+    )
+    @test_throws ErrorException PSY.from_openapi(tx_po_missing_base, refs, NU)
 end
 
 @testset "OpenAPI converters: Line" begin
@@ -244,8 +270,7 @@ end
     @test get_b(line_device, SU) == (from = 0.001, to = 0.002)
     @test get_base_power(line_device) == 100.0
 
-    # A producer that omits `base_power` (backward compat) falls back to the document's
-    # system base, via `_resolve_base_power` — same fallback as Area/LoadZone above.
+    # A blob omitting the now-required `base_power` errors loudly rather than falling back.
     line_po_omitted = PSY.PO.Line(;
         id = 22, name = "line3", available = true,
         active_power_flow = 10.0, reactive_power_flow = 2.0, arc = 10,
@@ -256,10 +281,7 @@ end
         g = PSY.PC.FromTo(; from = 0.0, to = 0.0),
     )
     @test isnothing(line_po_omitted.base_power)
-    line_omitted = PSY.from_openapi(line_po_omitted, refs, NU)
-    add_component!(sys, line_omitted)
-    @test get_base_power(line_omitted) == 100.0
-    @test get_rating(line_omitted, SU) == 1.75
+    @test_throws ErrorException PSY.from_openapi(line_po_omitted, refs, NU)
 end
 
 @testset "OpenAPI converters: TransformerCircuit / TwoWindingTransformer" begin
@@ -400,7 +422,7 @@ end
     refs = _refs_with_area_bus()
     cost_po = PSY.PC.ThermalGenerationCost(;
         fixed = 100.0, shut_down = 50.0, start_up = 200.0,
-        variable = PSY.PC.ProductionVariableCostCurve(
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(
             PSY.PC.CostCurve(;
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
@@ -469,7 +491,7 @@ end
     refs = _refs_with_area_bus()
     cost_po = PSY.PC.LoadCost(;
         fixed = 2400.0,
-        variable = PSY.PC.CostCurve(;
+        variable_operation_cost = PSY.PC.CostCurve(;
             power_units = "NATURAL_UNITS",
             value_curve = PSY.PC.ValueCurve(
                 PSY.PC.InputOutputCurve(;
@@ -562,7 +584,7 @@ end
     refs = _refs_with_area_bus()
     hydro_cost_po = PSY.PC.HydroGenerationCost(;
         fixed = 1.0,
-        variable = PSY.PC.ProductionVariableCostCurve(
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(
             PSY.PC.CostCurve(;
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
@@ -741,7 +763,7 @@ end
     refs = _refs_with_area_bus()
     ren_cost_po = PSY.PC.RenewableGenerationCost(;
         fixed = 0.0,
-        variable = PSY.PC.ProductionVariableCostCurve(
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(
             PSY.PC.CostCurve(;
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
@@ -875,6 +897,7 @@ end
                 ),
             ),
         ),
+        base_power = 100.0,
     )
     sys = System(100.0)
     add_component!(sys, refs[1])
@@ -889,10 +912,29 @@ end
     @test get_active_power_limits_from(hvdc_natural, SU) == (min = -1.0, max = 1.0)
     @test get_reactive_power_limits_to(hvdc_natural, SU) == (min = -0.5, max = 0.5)
     @test get_loss(hvdc_natural) == LinearCurve(0.01, 0.0)
-    # `hvdc_po` omits `base_power` (backward compat with
-    # `_resolve_base_power` falls back to `get_base_power(refs)`.
-    @test isnothing(hvdc_po.base_power)
     @test get_base_power(hvdc_natural) == 100.0
+
+    # A blob omitting the now-required `base_power` errors loudly rather than falling back.
+    hvdc_po_missing_base = PSY.PO.TwoTerminalGenericHVDCLine(;
+        id = 25, name = "hvdc_missing_base", available = true, active_power_flow = 50.0,
+        arc = 10,
+        active_power_limits_from = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+        active_power_limits_to = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+        reactive_power_limits_from = PSY.PC.MinMax(; min = -50.0, max = 50.0),
+        reactive_power_limits_to = PSY.PC.MinMax(; min = -50.0, max = 50.0),
+        loss = PSY.PC.TwoTerminalLoss(
+            PSY.PC.InputOutputCurve(;
+                function_data = PSY.PC.InputOutputCurveFunctionData(
+                    PSY.PC.LinearFunctionData(;
+                        proportional_term = 0.01,
+                        constant_term = 0.0,
+                    ),
+                ),
+            ),
+        ),
+    )
+    @test isnothing(hvdc_po_missing_base.base_power)
+    @test_throws ErrorException PSY.from_openapi(hvdc_po_missing_base, refs, NU)
 
     hvdc_po_device = PSY.PO.TwoTerminalGenericHVDCLine(;
         id = 21, name = "hvdc2", available = true, active_power_flow = 50.0, arc = 10,
@@ -910,6 +952,7 @@ end
                 ),
             ),
         ),
+        base_power = 100.0,
     )
     hvdc_device = PSY.from_openapi(hvdc_po_device,
         refs,
@@ -933,7 +976,7 @@ end
     # second `Area` is needed since AreaInterchange's `to_area` is typed `Area`, not `LoadZone`.
     area2_po = PSY.PO.Area(;
         id = 20, name = "area2", peak_active_power = 50.0, peak_reactive_power = 10.0,
-        load_response = 0.0,
+        load_response = 0.0, base_power = 100.0,
     )
     refs[20] = PSY.from_openapi(area2_po, refs, NU)
 
@@ -968,7 +1011,7 @@ end
 end
 
 @testset "OpenAPI converters: Substation (hand-written, no descriptor entry)" begin
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     po =
         PSY.PO.Substation(; id = 30, name = "SUB1", number = 7, grounding_resistance = 0.25)
     attr = PSY.from_openapi(po, refs)
@@ -982,7 +1025,7 @@ end
 end
 
 @testset "OpenAPI converters: reserves" begin
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     sys = System(100.0)
 
     online_po = PSY.PO.OnlineReserve(;
@@ -1006,7 +1049,7 @@ end
     online_device =
         PSY.from_openapi(online_po_device, refs, DU)
     add_component!(sys, online_device)
-    @test get_requirement(online_device, SU) == 100.0
+    @test get_requirement(online_device, SU) == 1.0
 
     down_po = PSY.PO.OnlineReserve(;
         id = 2, name = "spin_down", available = true, time_frame = 10.0,
@@ -1079,7 +1122,7 @@ end
     offline_device =
         PSY.from_openapi(offline_po_device, refs, DU)
     add_component!(sys, offline_device)
-    @test get_requirement(offline_device, SU) == 50.0
+    @test get_requirement(offline_device, SU) == 0.5
 
     group_po = PSY.PO.GroupReserve(;
         id = 7, name = "group_up", available = true, requirement = 150.0,
@@ -1096,7 +1139,7 @@ end
     )
     group_device = PSY.from_openapi(group_po_device, refs, DU)
     add_component!(sys, group_device)
-    @test get_requirement(group_device, SU) == 150.0
+    @test get_requirement(group_device, SU) == 1.5
 end
 
 @testset "OpenAPI converters: TwoTerminalVSCLine" begin
@@ -1315,7 +1358,7 @@ end
         id = 30, name = "load1", available = true, bus = 3, base_power = 100.0,
         operation_cost = PSY.PC.LoadCost(;
             fixed = 2400.0,
-            variable = PSY.PC.CostCurve(;
+            variable_operation_cost = PSY.PC.CostCurve(;
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(_io_curve(150.0, 0.0)),
             ),

@@ -512,6 +512,43 @@ end
     @test TimeSeries.timestamp(resolved) == collect(timestamps)[1:3]
 end
 
+@testset "set_fuel_cost! round-trips a fixed value and a time-series key" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+
+    old_cost = get_operation_cost(generator)
+    old_variable = get_variable(old_cost)
+    set_operation_cost!(
+        generator,
+        ThermalGenerationCost(;
+            fixed = get_fixed(old_cost),
+            shut_down = get_shut_down(old_cost),
+            start_up = get_start_up(old_cost),
+            variable = FuelCurve(;
+                value_curve = get_value_curve(old_variable),
+                power_units = get_power_units(old_variable),
+                fuel_cost = 2.0,
+            ),
+        ),
+    )
+
+    set_fuel_cost!(sys, generator, 9.5)
+    updated_variable = get_variable_operation_cost(get_operation_cost(generator))
+    @test get_fuel_cost(updated_variable) == 9.5
+    @test isnothing(get_fuel_cost_time_series(updated_variable))
+
+    timestamps = range(_TS_RESOLVE_INITIAL_TIME; step = _TS_RESOLVE_RESOLUTION, length = 24)
+    prices = collect(1.0:24.0)
+    ts = IS.SingleTimeSeries(;
+        name = "fuel_price",
+        data = TimeSeries.TimeArray(collect(timestamps), prices),
+    )
+    set_fuel_cost!(sys, generator, ts)
+    resolved = get_fuel_cost(generator; start_time = _TS_RESOLVE_INITIAL_TIME, len = 3)
+    @test TimeSeries.values(resolved) == prices[1:3]
+    @test TimeSeries.timestamp(resolved) == collect(timestamps)[1:3]
+end
+
 @testset "Time-series ORDC resolves variable cost at start_time" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     # A key names one stored association, which belongs to one owner — so the reserve's

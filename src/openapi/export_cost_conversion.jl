@@ -222,15 +222,17 @@ function convert_cost_to_openapi(cost::ThermalGenerationCost)
         fixed = get_fixed(cost),
         shut_down = get_shut_down(cost),
         start_up = _thermal_start_up_to_openapi(get_start_up(cost)),
-        variable = PC.ProductionVariableCostCurve(
-            convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = PC.ProductionVariableCostCurve(
+            convert_cost_to_openapi(get_variable_operation_cost(cost)),
         ),
     )
 end
 
 function convert_cost_to_openapi(cost::RenewableGenerationCost)
     return PC.RenewableGenerationCost(;
-        variable = convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = convert_cost_to_openapi(
+            get_variable_operation_cost(cost),
+        ),
         curtailment_cost = _optional_cost_curve_to_openapi(get_curtailment_cost(cost)),
         fixed = get_fixed(cost),
     )
@@ -239,15 +241,17 @@ end
 function convert_cost_to_openapi(cost::HydroGenerationCost)
     return PC.HydroGenerationCost(;
         fixed = get_fixed(cost),
-        variable = PC.ProductionVariableCostCurve(
-            convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = PC.ProductionVariableCostCurve(
+            convert_cost_to_openapi(get_variable_operation_cost(cost)),
         ),
     )
 end
 
 function convert_cost_to_openapi(cost::LoadCost)
     return PC.LoadCost(;
-        variable = convert_cost_to_openapi(get_variable(cost)),
+        variable_operation_cost = convert_cost_to_openapi(
+            get_variable_operation_cost(cost),
+        ),
         fixed = get_fixed(cost),
     )
 end

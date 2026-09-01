@@ -165,6 +165,10 @@ function from_openapi(po::PO.AGC, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.AGC, refs::OpenAPIRefs)
+    return from_openapi(po, refs, DU)
+end
+
 function to_openapi(value::AGC, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.AGC(;
         id = component_id(refs, value),

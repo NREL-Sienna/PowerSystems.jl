@@ -308,6 +308,10 @@ function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.StandardLoad, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("StandardLoad", po.id, po.power_units))
+end
+
 function to_openapi(value::StandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.StandardLoad(;
         id = component_id(refs, value),
@@ -328,6 +332,7 @@ function to_openapi(value::StandardLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
         max_current_active_power = get_max_current_active_power(value, DU),
         max_current_reactive_power = get_max_current_reactive_power(value, DU),
         conformity = string(get_conformity(value)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -351,5 +356,6 @@ function to_openapi(value::StandardLoad, refs::OpenAPIRefs, ::NaturalUnit)
         max_current_active_power = get_max_current_active_power(value, DU) * _get_base_power(value),
         max_current_reactive_power = get_max_current_reactive_power(value, DU) * _get_base_power(value),
         conformity = string(get_conformity(value)),
+        power_units = _power_units_string(NU),
     )
 end

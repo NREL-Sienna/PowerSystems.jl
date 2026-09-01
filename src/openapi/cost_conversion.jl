@@ -290,7 +290,12 @@ convert_cost(s::PC.StorageCostStartUpOneOf) = (charge = s.charge, discharge = s.
 
 function convert_cost(po::PC.ThermalGenerationCost)
     return ThermalGenerationCost(;
-        variable = convert_cost(_require(po.variable, "ThermalGenerationCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(
+                po.variable_operation_cost,
+                "ThermalGenerationCost.variable_operation_cost",
+            ),
+        ),
         fixed = po.fixed,
         start_up = convert_cost(_require(po.start_up, "ThermalGenerationCost.start_up")),
         shut_down = po.shut_down,
@@ -299,7 +304,12 @@ end
 
 function convert_cost(po::PC.RenewableGenerationCost)
     return RenewableGenerationCost(;
-        variable = convert_cost(_require(po.variable, "RenewableGenerationCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(
+                po.variable_operation_cost,
+                "RenewableGenerationCost.variable_operation_cost",
+            ),
+        ),
         curtailment_cost = _optional_cost_curve(po.curtailment_cost),
         fixed = po.fixed,
     )
@@ -307,14 +317,21 @@ end
 
 function convert_cost(po::PC.HydroGenerationCost)
     return HydroGenerationCost(;
-        variable = convert_cost(_require(po.variable, "HydroGenerationCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(
+                po.variable_operation_cost,
+                "HydroGenerationCost.variable_operation_cost",
+            ),
+        ),
         fixed = po.fixed,
     )
 end
 
 function convert_cost(po::PC.LoadCost)
     return LoadCost(;
-        variable = convert_cost(_require(po.variable, "LoadCost.variable")),
+        variable_operation_cost = convert_cost(
+            _require(po.variable_operation_cost, "LoadCost.variable_operation_cost"),
+        ),
         fixed = po.fixed,
     )
 end

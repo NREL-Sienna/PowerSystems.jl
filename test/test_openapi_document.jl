@@ -213,7 +213,7 @@ end
 end
 
 @testset "OpenAPI supplemental attribute converters" begin
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     bus = ACBus(;
         number = 1, name = "bus1", available = true, bustype = ACBusTypes.REF,
         angle = 0.0, magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1),
@@ -338,7 +338,7 @@ end
     push!(get_ancillary_service_offers(mbc), svc)
     set_operation_cost!(gen, mbc)
 
-    doc = to_openapi(sys; unit_system = :natural_units)
+    doc = to_openapi(sys; power_units = :natural_units)
     sys2 = from_openapi(System, doc)
 
     gen2 = get_component(ThermalStandard, sys2, "gen1")
@@ -407,7 +407,7 @@ end
     push!(get_ancillary_service_offers(get_operation_cost(gen)), svc)
     @test_throws ErrorException PSY.convert_cost_to_openapi(get_operation_cost(gen))
     # The document-level export path hits the same error rather than silently dropping it.
-    @test_throws ErrorException to_openapi(sys; unit_system = :natural_units)
+    @test_throws ErrorException to_openapi(sys; power_units = :natural_units)
 end
 
 @testset "MarketBidTimeSeriesCost: ancillary_service_offers resolve on import" begin
@@ -474,8 +474,8 @@ end
     push!(get_ancillary_service_offers(mbc), svc)
     set_operation_cost!(gen, mbc)
 
-    for unit_system in (:device_base, :natural_units)
-        doc = to_openapi(sys; unit_system = unit_system)
+    for power_units in (:component_base, :natural_units)
+        doc = to_openapi(sys; power_units = power_units)
         sys2 = from_openapi(System, doc)
         gen2 = get_component(ThermalMultiStart, sys2, "ms1")
         @test !isnothing(gen2)
@@ -539,8 +539,8 @@ end
     )
     add_component!(sys, tail)
 
-    for unit_system in (:device_base, :natural_units)
-        doc = to_openapi(sys; unit_system = unit_system)
+    for power_units in (:component_base, :natural_units)
+        doc = to_openapi(sys; power_units = power_units)
         sys2 = from_openapi(System, doc)
 
         pump2 = get_component(HydroPumpTurbine, sys2, "pump1")

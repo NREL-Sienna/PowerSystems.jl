@@ -62,6 +62,8 @@ export get_inverse_operation_exclusion_map
 export get_components_in_exclusion_group
 export get_variable
 export set_variable!
+export get_variable_operation_cost
+export set_variable_operation_cost!
 export Component
 export Device
 export get_max_active_power
@@ -544,7 +546,7 @@ export get_next_time
 export reset!
 export get_horizon
 export get_forecast_initial_times
-export list_metadata
+export list_time_series_metadata
 export get_time_series_metadata
 export get_time_series_key
 export get_association_id
@@ -820,7 +822,7 @@ import InfrastructureSystems:
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    list_metadata,
+    list_time_series_metadata,
     get_time_series_metadata,
     get_time_series_key,
     get_association_id,

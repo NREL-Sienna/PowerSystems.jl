@@ -48,7 +48,7 @@ $(TYPEDSIGNATURES)
 
 Write `sys` to `dir` as a `system.json` + `time_series.h5` bundle.
 
-`unit_system` is passed through to [`to_openapi`](@ref): `:device_base` (default) writes each
+`power_units` is passed through to [`to_openapi`](@ref): `:component_base` (default) writes each
 component's values on its own base, PSY's native convention, and `:natural_units` converts to
 physical units instead.
 
@@ -58,14 +58,14 @@ The sidecar is written only when `sys` actually carries time series; otherwise t
 function to_file(
     sys::System,
     dir::AbstractString;
-    unit_system::Symbol = :device_base,
+    power_units::Symbol = :component_base,
     force::Bool = false,
     pretty::Bool = false,
 )
     _prepare_bundle_dir(dir, force)
     storage_path = _sidecar_path_for_write(sys, dir)
     doc =
-        to_openapi(sys; unit_system = unit_system, time_series_storage_path = storage_path)
+        to_openapi(sys; power_units = power_units, time_series_storage_path = storage_path)
     PD.write_document(
         doc,
         joinpath(dir, SYSTEM_DOCUMENT_FILE);

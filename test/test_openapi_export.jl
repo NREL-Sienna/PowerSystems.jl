@@ -68,24 +68,29 @@ _export_vsc(
     arc = Arc(; from = bus1, to = bus2)
     add_component!(sys, arc)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = area
     refs[2] = lz
     refs[3] = bus1
     refs[4] = bus2
     refs[5] = arc
 
+    expected_peak(::DeviceBaseUnit, pu) = pu
+    expected_peak(::NaturalUnit, pu) = pu * 100.0
+
     for val in (DU, NU)
         area_po = PSY.to_openapi(area, refs, val)
         @test area_po.id == 1
         @test area_po.name == "area1"
-        @test area_po.peak_active_power == 250.0
-        @test area_po.peak_reactive_power == 50.0
+        @test area_po.peak_active_power == expected_peak(val, 2.5)
+        @test area_po.peak_reactive_power == expected_peak(val, 0.5)
         @test area_po.load_response == 0.0
+        @test area_po.power_units == PSY._power_units_string(val)
 
         lz_po = PSY.to_openapi(lz, refs, val)
-        @test lz_po.peak_active_power == 250.0
-        @test lz_po.peak_reactive_power == 50.0
+        @test lz_po.peak_active_power == expected_peak(val, 2.5)
+        @test lz_po.peak_reactive_power == expected_peak(val, 0.5)
+        @test lz_po.power_units == PSY._power_units_string(val)
 
         bus_po = PSY.to_openapi(bus1, refs, val)
         @test bus_po.id == 3
@@ -117,7 +122,7 @@ end
     add_component!(sys, arc)
     add_component!(sys, line)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = bus2
     refs[3] = arc
@@ -166,7 +171,7 @@ end
     add_component!(sys, arc)
     add_component!(sys, xfmr)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = bus2
     refs[3] = arc
@@ -214,19 +219,24 @@ end
     add_component!(sys, line)
     add_service!(sys, tx, [line])
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = get_arc(line)
     refs[3] = line
     refs[4] = tx
 
+    expected_limits(::DeviceBaseUnit) = (min = -10.0, max = 10.0)
+    expected_limits(::NaturalUnit) = (min = -1000.0, max = 1000.0)
+
     for val in (DU, NU)
         tx_po = PSY.to_openapi(tx, refs, val)
         @test tx_po.id == 4
-        @test tx_po.active_power_flow_limits.min == -1000.0
-        @test tx_po.active_power_flow_limits.max == 1000.0
+        limits = expected_limits(val)
+        @test tx_po.active_power_flow_limits.min == limits.min
+        @test tx_po.active_power_flow_limits.max == limits.max
         @test tx_po.violation_penalty == 5000.0
         @test tx_po.direction_mapping == Dict("line1" => 1)
+        @test tx_po.power_units == PSY._power_units_string(val)
 
         # Round-trip: import(export(x)) == x.
         round_tripped = PSY.from_openapi(tx_po, refs, val)
@@ -270,7 +280,7 @@ end
     foreach(a -> add_component!(sys, a), (arc1, arc2, arc3))
     add_component!(sys, t3w)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = bus2
     refs[3] = bus3
@@ -308,7 +318,7 @@ end
     add_component!(sys, bus1)
     add_component!(sys, shunt)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = shunt
 
@@ -347,7 +357,7 @@ end
     add_component!(sys, arc)
     add_component!(sys, hvdc)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = bus2
     refs[3] = arc
@@ -381,7 +391,7 @@ end
     add_component!(sys, area2)
     add_component!(sys, interchange)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = area1
     refs[2] = area2
     refs[3] = interchange
@@ -399,7 +409,7 @@ end
     @test natural_po.base_power == 100.0
 
     # Round trip through the generated `from_openapi` reproduces the original component.
-    import_refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    import_refs = PSY.OpenAPIRefs(100.0)
     import_refs[1] = area1
     import_refs[2] = area2
     reimported =
@@ -412,7 +422,7 @@ end
 @testset "OpenAPI export converters: ThermalStandard / PowerLoad" begin
     bus = _export_bus(; number = 1)
     cost = ThermalGenerationCost(;
-        variable = CostCurve(;
+        variable_operation_cost = CostCurve(;
             value_curve = InputOutputCurve(LinearFunctionData(10.0, 5.0)),
         ),
         fixed = 100.0, start_up = 200.0, shut_down = 50.0,
@@ -438,7 +448,7 @@ end
     add_component!(sys, gen)
     add_component!(sys, load)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus
     refs[2] = gen
     refs[3] = load
@@ -480,7 +490,7 @@ end
     add_component!(sys, iload)
     add_component!(sys, sload)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus
     refs[2] = iload
     refs[3] = sload
@@ -508,7 +518,7 @@ end
     bus = _export_bus(; number = 1)
     hydro_cost = HydroGenerationCost(;
         fixed = 1.0,
-        variable = CostCurve(;
+        variable_operation_cost = CostCurve(;
             value_curve = InputOutputCurve(LinearFunctionData(1.0, 0.0)),
         ),
     )
@@ -534,7 +544,7 @@ end
         operation_cost = hydro_cost,
     )
     ren_cost = RenewableGenerationCost(;
-        variable = CostCurve(;
+        variable_operation_cost = CostCurve(;
             value_curve = InputOutputCurve(LinearFunctionData(0.0, 0.0)),
         ),
     )
@@ -581,7 +591,7 @@ end
         add_component!(sys, c)
     end
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus
     refs[2] = turbine
     refs[3] = ror
@@ -635,7 +645,7 @@ end
     bus = _export_bus(; number = 1)
     hydro_cost = HydroGenerationCost(;
         fixed = 1.0,
-        variable = CostCurve(;
+        variable_operation_cost = CostCurve(;
             value_curve = InputOutputCurve(LinearFunctionData(1.0, 0.0)),
         ),
     )
@@ -675,7 +685,7 @@ end
     add_component!(sys, reservoir)
     add_component!(sys, reservoir_no_assoc)
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus
     refs[2] = turbine
     refs[3] = reservoir
@@ -738,7 +748,7 @@ end
         add_component!(sys, r)
     end
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = up_reserve
     refs[2] = down_reserve
     refs[3] = offline_reserve
@@ -751,7 +761,7 @@ end
     @test isnothing(up_natural.variable)
 
     up_device = PSY.to_openapi(up_reserve, refs, DU)
-    @test up_device.requirement == 1.0
+    @test up_device.requirement == 100.0
 
     down_natural = PSY.to_openapi(down_reserve, refs, NU)
     @test down_natural.reserve_direction == "DOWN"
@@ -784,7 +794,7 @@ end
 
     # to_openapi's output is from_openapi's input directly: both sides speak SystemDocument,
     # so the round-trip needs no re-serialization through JSON.
-    out = PSY.to_openapi(sys; unit_system = :device_base)
+    out = PSY.to_openapi(sys; power_units = :component_base)
     sys2 = PSY.from_openapi(System, out)
     group2 = only(get_components(GroupReserve, sys2))
     @test get_name.(get_contributing_services(group2)) == ["spin_up_member"]
@@ -793,7 +803,7 @@ end
 @testset "OpenAPI export: supplemental attribute converters" begin
     # The exporters read their own id back from `refs` via `component_id`, exactly like
     # the generated component exporters, so each attribute registers first.
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     emissions = EmissionsData(;
         name = "gen1_CO2", pollutant = PollutantType.CO2,
         emission_rate = IncrementalCurve(;
@@ -857,11 +867,11 @@ end
 
     @testset "COMPONENT_BASE -> PSY -> COMPONENT_BASE is exact" begin
         device_doc = deepcopy(doc)
-        device_doc["unit_system"] = "COMPONENT_BASE"
+        set_all_power_units!(device_doc, "COMPONENT_BASE")
         sys = PSY.from_openapi(System, to_test_document(device_doc))
-        out = PSY.to_openapi(sys; unit_system = :device_base)
-        @test PSY.PD.get_unit_system(out) == "COMPONENT_BASE"
+        out = PSY.to_openapi(sys; power_units = :component_base)
         gen_out = only(PSY.PD.get_components(out, "ThermalStandard"))
+        @test gen_out.power_units == "COMPONENT_BASE"
         @test gen_out.active_power == 50.0
         @test gen_out.rating == 100.0
         gen_in = only(device_doc["components"]["ThermalStandard"])
@@ -871,9 +881,9 @@ end
 
     @testset "NATURAL_UNITS -> PSY -> NATURAL_UNITS is approximate only" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
-        out = PSY.to_openapi(sys; unit_system = :natural_units)
-        @test PSY.PD.get_unit_system(out) == "NATURAL_UNITS"
+        out = PSY.to_openapi(sys; power_units = :natural_units)
         gen_out = only(PSY.PD.get_components(out, "ThermalStandard"))
+        @test gen_out.power_units == "NATURAL_UNITS"
         gen_in = only(doc["components"]["ThermalStandard"])
         @test gen_out.active_power ≈ gen_in["active_power"] rtol = 1e-15
         @test gen_out.rating ≈ gen_in["rating"] rtol = 1e-15
@@ -884,15 +894,15 @@ end
 
     @testset "bustype SLACK round-trips as SLACK" begin
         sys = PSY.from_openapi(System, to_test_document(doc))
-        out = PSY.to_openapi(sys; unit_system = :natural_units)
+        out = PSY.to_openapi(sys; power_units = :natural_units)
         bus1_out = first(b for b in PSY.PD.get_components(out, "ACBus") if b.number == 1)
         @test bus1_out.bustype == "SLACK"
     end
 
-    @testset "to_openapi with an unmapped unit_system errors" begin
+    @testset "to_openapi with an unmapped power_units errors" begin
         sys = System(100.0)
         add_component!(sys, ACBus(nothing))
-        @test_throws ErrorException PSY.to_openapi(sys; unit_system = :bogus_units)
+        @test_throws ErrorException PSY.to_openapi(sys; power_units = :bogus_units)
     end
 
     @testset "Line.base_power on export == get_base_power(sys) exactly" begin
@@ -910,7 +920,7 @@ end
             angle_limits = (min = -1.57, max = 1.57),
         )
         add_component!(sys, line)
-        out = PSY.to_openapi(sys; unit_system = :natural_units)
+        out = PSY.to_openapi(sys; power_units = :natural_units)
         line_out = only(PSY.PD.get_components(out, "Line"))
         @test line_out.base_power == PSY.get_base_power(sys)
     end
@@ -927,13 +937,14 @@ end
     )
     add_component!(sys, load)
 
-    out_device = PSY.to_openapi(sys; unit_system = :device_base)
-    @test PSY.PD.get_unit_system(out_device) == "COMPONENT_BASE"
+    out_device = PSY.to_openapi(sys; power_units = :component_base)
     load_out = only(PSY.PD.get_components(out_device, "PowerLoad"))
+    @test load_out.power_units == "COMPONENT_BASE"
     @test load_out.active_power == 0.3
 
-    out_natural = PSY.to_openapi(sys; unit_system = :natural_units)
+    out_natural = PSY.to_openapi(sys; power_units = :natural_units)
     load_out_nat = only(PSY.PD.get_components(out_natural, "PowerLoad"))
+    @test load_out_nat.power_units == "NATURAL_UNITS"
     @test load_out_nat.active_power == 30.0
 end
 
@@ -942,10 +953,11 @@ end
         area_po = PSY.PO.Area(;
             id = 1, name = "area1", peak_active_power = 100.0,
             peak_reactive_power = 20.0,
-            load_response = 0.0,
+            load_response = 0.0, base_power = 100.0, power_units = "NATURAL_UNITS",
         )
         lz_po = PSY.PO.LoadZone(;
             id = 2, name = "lz1", peak_active_power = 100.0, peak_reactive_power = 20.0,
+            base_power = 100.0, power_units = "NATURAL_UNITS",
         )
         bus1_po = PSY.PO.ACBus(;
             id = 3, number = 1, name = "bus1", available = true, bustype = "REF",
@@ -963,6 +975,7 @@ end
         line_po = PSY.PO.Line(;
             id = 6, name = "line1", available = true, active_power_flow = 10.0,
             reactive_power_flow = 2.0, arc = 5, r = 0.01, x = 0.1, base_power = 100.0,
+            power_units = "NATURAL_UNITS",
             b = PSY.PC.FromTo(; from = 0.0, to = 0.0), rating = 175.0,
             angle_limits = PSY.PC.MinMax(; min = -1.57, max = 1.57),
             g = PSY.PC.FromTo(; from = 0.0, to = 0.0),
@@ -970,6 +983,7 @@ end
         load_po = PSY.PO.PowerLoad(;
             id = 7, name = "load1", available = true, bus = 4,
             active_power = 30.0, reactive_power = 5.0, base_power = 100.0,
+            power_units = "NATURAL_UNITS",
             max_active_power = 50.0, max_reactive_power = 10.0,
             conformity = "CONFORMING",
         )
@@ -995,8 +1009,6 @@ end
             energy_unit = "MMBTU", gwp = 1.0, available = true,
         )
         doc = Dict{String, Any}(
-            "base_power" => 100.0,
-            "unit_system" => "NATURAL_UNITS",
             "components" => Dict{String, Any}(
                 "Area" => [openapi_raw(area_po)],
                 "LoadZone" => [openapi_raw(lz_po)],
@@ -1037,11 +1049,11 @@ end
         ts_out_path = joinpath(dir, "export_time_series_storage.h5")
         out = PSY.to_openapi(
             sys;
-            unit_system = :natural_units,
+            power_units = :natural_units,
             time_series_storage_path = ts_out_path,
         )
 
-        @test PSY.PD.get_unit_system(out) == "NATURAL_UNITS"
+        @test only(PSY.PD.get_components(out, "Line")).power_units == "NATURAL_UNITS"
         @test length(PSY.PD.get_components(out, "ACBus")) == 2
         @test length(only(PSY.PD.get_components(out, "Line")) |> x -> [x]) == 1
         @test length(PSY.PD.get_components(out, "OnlineReserve")) == 1
@@ -1114,7 +1126,7 @@ end
 
         ts_out_path = joinpath(dir, "forecast_time_series_storage.h5")
         doc = PSY.to_openapi(
-            sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+            sys; power_units = :component_base, time_series_storage_path = ts_out_path,
         )
         @test isfile(ts_out_path)
         # 3 rows: the "load_hist" SingleTimeSeries, the DeterministicSingleTimeSeries its
@@ -1170,7 +1182,7 @@ end
         add_component!(sys, component)
     end
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = bus2
     refs[3] = arc
@@ -1216,7 +1228,7 @@ end
         add_component!(sys, component)
     end
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = bus2
     refs[3] = arc
@@ -1236,7 +1248,7 @@ end
 end
 
 @testset "OpenAPI export: TwoTerminalVSCLine survives a document round trip" begin
-    for unit_system in (:natural_units, :device_base)
+    for power_units in (:natural_units, :component_base)
         bus1 = _export_bus(; number = 1)
         bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
         arc = Arc(; from = bus1, to = bus2)
@@ -1247,7 +1259,7 @@ end
         end
 
         dir = mktempdir()
-        PSY.to_file(sys, dir; unit_system = unit_system, force = true)
+        PSY.to_file(sys, dir; power_units = power_units, force = true)
         restored = get_component(TwoTerminalVSCLine, PSY.from_file(System, dir), "vsc1")
         for field in fieldnames(TwoTerminalVSCLine)
             field in (:internal, :arc, :services) && continue
@@ -1260,7 +1272,7 @@ end
     # `ac_control_*` on `AC_VOLTAGE` with a non-zero `rated_ac_voltage_from`/`_to`: the wire
     # row must carry both bases (not just convert the setpoints through them) for a
     # PSY→doc→PSY round trip to reproduce the same PSY values back.
-    for unit_system in (:natural_units, :device_base)
+    for power_units in (:natural_units, :component_base)
         bus1 = _export_bus(; number = 1)
         bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
         arc = Arc(; from = bus1, to = bus2)
@@ -1277,7 +1289,7 @@ end
         end
 
         dir = mktempdir()
-        PSY.to_file(sys, dir; unit_system = unit_system, force = true)
+        PSY.to_file(sys, dir; power_units = power_units, force = true)
         restored = get_component(TwoTerminalVSCLine, PSY.from_file(System, dir), "vsc1")
         for field in fieldnames(TwoTerminalVSCLine)
             field in (:internal, :arc, :services) && continue
@@ -1290,7 +1302,7 @@ end
     bus1 = _export_bus(; number = 1)
     bus2 = _export_bus(; number = 2, bustype = ACBusTypes.PQ)
     arc = Arc(; from = bus1, to = bus2)
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
 
     # A non-zero ac_setpoint_from with no AC voltage base (`rated_ac_voltage_from` unset,
     # the default) has nothing to be expressed against.
@@ -1313,7 +1325,7 @@ end
         add_component!(sys, component)
     end
 
-    refs = PSY.OpenAPIRefs("NATURAL_UNITS", 100.0)
+    refs = PSY.OpenAPIRefs(100.0)
     refs[1] = bus1
     refs[2] = bus2
     refs[3] = arc
@@ -1329,7 +1341,7 @@ end
     # fallbacks are symmetric only for the degenerate `g == 0.0` case, which never needed
     # tolerating in the first place.
     dir = mktempdir()
-    PSY.to_file(sys, dir; unit_system = :natural_units, force = true)
+    PSY.to_file(sys, dir; power_units = :natural_units, force = true)
     @test_throws ErrorException PSY.from_file(System, dir)
 end
 
@@ -1366,7 +1378,7 @@ _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
 
         ts_out_path = joinpath(dir, "attr_owned_series.h5")
         doc = PSY.to_openapi(
-            sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+            sys; power_units = :component_base, time_series_storage_path = ts_out_path,
         )
         @test isfile(ts_out_path)
         ts_row = only(doc.time_series_associations).value
@@ -1417,7 +1429,8 @@ end
             (:warn, r"omitting 1 time series row"),
             match_mode = :any,
             PSY.to_openapi(
-                sys; unit_system = :device_base, time_series_storage_path = ts_out_path,
+                sys; power_units = :component_base,
+                time_series_storage_path = ts_out_path,
             ),
         )
         # The sidecar still holds both series — only the document's description of the

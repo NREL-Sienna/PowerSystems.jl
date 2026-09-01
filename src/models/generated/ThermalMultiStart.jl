@@ -318,6 +318,10 @@ function from_openapi(po::PO.ThermalMultiStart, refs::OpenAPIRefs, ::NaturalUnit
     )
 end
 
+function from_openapi(po::PO.ThermalMultiStart, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("ThermalMultiStart", po.id, po.power_units))
+end
+
 function to_openapi(value::ThermalMultiStart, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.ThermalMultiStart(;
         id = component_id(refs, value),
@@ -341,6 +345,7 @@ function to_openapi(value::ThermalMultiStart, refs::OpenAPIRefs, ::DeviceBaseUni
         base_power = _get_base_power(value),
         time_at_status = get_time_at_status(value),
         must_run = get_must_run(value),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -367,5 +372,6 @@ function to_openapi(value::ThermalMultiStart, refs::OpenAPIRefs, ::NaturalUnit)
         base_power = _get_base_power(value),
         time_at_status = get_time_at_status(value),
         must_run = get_must_run(value),
+        power_units = _power_units_string(NU),
     )
 end

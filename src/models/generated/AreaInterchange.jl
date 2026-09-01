@@ -147,6 +147,10 @@ function from_openapi(po::PO.AreaInterchange, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.AreaInterchange, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("AreaInterchange", po.id, po.power_units))
+end
+
 function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.AreaInterchange(;
         id = component_id(refs, value),
@@ -157,6 +161,7 @@ function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::DeviceBaseUnit)
         to_area = component_id(refs, get_to_area(value)),
         flow_limits = _fromto_tofrom_po(get_flow_limits(value, SU)),
         base_power = get_base_power(refs),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -170,5 +175,6 @@ function to_openapi(value::AreaInterchange, refs::OpenAPIRefs, ::NaturalUnit)
         to_area = component_id(refs, get_to_area(value)),
         flow_limits = _fromto_tofrom_po_scaled(get_flow_limits(value, SU), get_base_power(refs)),
         base_power = get_base_power(refs),
+        power_units = _power_units_string(NU),
     )
 end

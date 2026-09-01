@@ -210,6 +210,10 @@ function from_openapi(po::PO.RenewableDispatch, refs::OpenAPIRefs, ::NaturalUnit
     )
 end
 
+function from_openapi(po::PO.RenewableDispatch, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("RenewableDispatch", po.id, po.power_units))
+end
+
 function to_openapi(value::RenewableDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.RenewableDispatch(;
         id = component_id(refs, value),
@@ -224,6 +228,7 @@ function to_openapi(value::RenewableDispatch, refs::OpenAPIRefs, ::DeviceBaseUni
         power_factor = get_power_factor(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
         base_power = _get_base_power(value),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -241,5 +246,6 @@ function to_openapi(value::RenewableDispatch, refs::OpenAPIRefs, ::NaturalUnit)
         power_factor = get_power_factor(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
         base_power = _get_base_power(value),
+        power_units = _power_units_string(NU),
     )
 end

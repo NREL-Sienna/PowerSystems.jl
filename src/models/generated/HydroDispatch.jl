@@ -260,6 +260,10 @@ function from_openapi(po::PO.HydroDispatch, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.HydroDispatch, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("HydroDispatch", po.id, po.power_units))
+end
+
 function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.HydroDispatch(;
         id = component_id(refs, value),
@@ -278,6 +282,7 @@ function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::DeviceBaseUnit)
         status = get_status(value),
         time_at_status = get_time_at_status(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -299,5 +304,6 @@ function to_openapi(value::HydroDispatch, refs::OpenAPIRefs, ::NaturalUnit)
         status = get_status(value),
         time_at_status = get_time_at_status(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        power_units = _power_units_string(NU),
     )
 end

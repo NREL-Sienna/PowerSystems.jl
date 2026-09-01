@@ -165,21 +165,20 @@ function warn_unexportable_components(sys::System)
     return nothing
 end
 
-# ── unit_system resolution ──────────────────────────────────────────────────────
+# ── power_units resolution ───────────────────────────────────────────────────────
 
-"""Resolve the `unit_system` kwarg to the document's `unit_system` string.
-
-The caller states the convention outright: a `System` records no unit system of its own — every
-getter takes one explicitly — so there is nothing to infer from `sys`."""
-function _resolve_export_unit_system(unit_system::Symbol)
-    if unit_system === :device_base
-        return "COMPONENT_BASE"
-    elseif unit_system === :natural_units
-        return "NATURAL_UNITS"
+"""Resolve the `power_units` kwarg to the `DU`/`NU` marker every exported component blob is
+stamped with — a uniform stamp per export, since PSY does not record a per-component creation
+basis."""
+function _resolve_export_power_units(power_units::Symbol)
+    if power_units === :component_base
+        return DU
+    elseif power_units === :natural_units
+        return NU
     else
         error(
-            "to_openapi(sys; unit_system=$unit_system): unmapped — expected " *
-            ":device_base or :natural_units",
+            "to_openapi(sys; power_units=$power_units): unmapped — expected " *
+            ":component_base or :natural_units",
         )
     end
 end
@@ -227,8 +226,8 @@ id — but it is still registered in [`OpenAPIRefs`](@ref), and must be skipped 
 _has_own_id(::Any) = true
 _has_own_id(::TransformerCircuit) = false
 
-function _build_export_refs(sys::System, unit_system_string::AbstractString)
-    refs = OpenAPIRefs(unit_system_string, get_base_power(sys))
+function _build_export_refs(sys::System)
+    refs = OpenAPIRefs(get_base_power(sys))
     # Components and supplemental attributes share one id stream, so a fresh
     # `TransformerCircuit` id must clear the highest of both kinds.
     highest = 0
@@ -636,9 +635,11 @@ Returns the typed container, not JSON: writing it to disk belongs to
 — components and supplemental attributes alike — comes from the document's single counter, since
 consumers key a row by id without its type.
 
-`unit_system`: `:device_base` (default) writes each component's values on its own base, the
-convention PSY stores natively, so no conversion happens; `:natural_units` converts to physical
-units on the way out. Any `System` is exportable either way, however it was built.
+`power_units`: `:component_base` (default) stamps every exported component blob "COMPONENT_BASE"
+and writes each component's values on its own base, the convention PSY stores natively, so no
+conversion happens; `:natural_units` stamps "NATURAL_UNITS" and converts to physical units on
+the way out. The stamp is uniform across the whole export — PSY does not record a
+per-component creation basis. Any `System` is exportable either way, however it was built.
 
 Walks components in [`DOCUMENT_PLAN`](@ref) order (symmetry with import, not a resolution
 requirement — every id already exists or is assigned fresh before it is ever read). Emits
@@ -650,17 +651,14 @@ dropping data: a time series with no `time_series_storage_path` given.
 """
 function to_openapi(
     sys::System;
-    unit_system::Symbol = :device_base,
+    power_units::Symbol = :component_base,
     time_series_storage_path = nothing,
 )
     warn_unexportable_components(sys)
-    unit_system_string = _resolve_export_unit_system(unit_system)
-    refs = _build_export_refs(sys, unit_system_string)
-    val = _unit_val(unit_system_string)
+    val = _resolve_export_power_units(power_units)
+    refs = _build_export_refs(sys)
 
-    doc = PD.SystemDocument(
-        get_base_power(sys);
-        unit_system = unit_system_string,
+    doc = PD.SystemDocument(;
         name = get_name(sys),
         description = get_description(sys),
         frequency = sys.frequency,

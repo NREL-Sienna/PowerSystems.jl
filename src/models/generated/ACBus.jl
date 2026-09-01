@@ -181,6 +181,10 @@ function from_openapi(po::PO.ACBus, refs::OpenAPIRefs, ::NaturalUnit)
     )
 end
 
+function from_openapi(po::PO.ACBus, refs::OpenAPIRefs)
+    return from_openapi(po, refs, DU)
+end
+
 function to_openapi(value::ACBus, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.ACBus(;
         id = component_id(refs, value),

@@ -8,7 +8,7 @@ _close_sidecar_store!(sys::System) =
     sys = _file_io_fixture()
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; unit_system = :device_base)
+        to_file(sys, bundle; power_units = :component_base)
 
         # All members present, and nothing else. The InfraStore sidecar is a pair: the
         # arrays in `.h5` and its catalog in the `.sqlite` sibling.
@@ -46,7 +46,7 @@ end
     sys = _file_io_fixture()
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; unit_system = :device_base)
+        to_file(sys, bundle; power_units = :component_base)
 
         sys2 = from_file(System, bundle; time_series_read_only = true)
 
@@ -70,7 +70,7 @@ end
     sys = _file_io_fixture(; with_time_series = false)
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; unit_system = :device_base)
+        to_file(sys, bundle; power_units = :component_base)
 
         @test readdir(bundle) == ["system.json"]
         # The document must say so rather than name a file that is not there.
@@ -88,10 +88,10 @@ end
     # Writing twice without force must not silently clobber the first bundle.
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; unit_system = :device_base)
-        @test_throws IS.DataFormatError to_file(sys, bundle; unit_system = :device_base)
+        to_file(sys, bundle; power_units = :component_base)
+        @test_throws IS.DataFormatError to_file(sys, bundle; power_units = :component_base)
         # ... and force makes it succeed.
-        @test isnothing(to_file(sys, bundle; unit_system = :device_base, force = true))
+        @test isnothing(to_file(sys, bundle; power_units = :component_base, force = true))
     end
 
     # A directory that is not a bundle.
@@ -103,7 +103,7 @@ end
     # quietly missing every time series the document declared.
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(_file_io_fixture(), bundle; unit_system = :device_base)
+        to_file(_file_io_fixture(), bundle; power_units = :component_base)
         rm(joinpath(bundle, "time_series.h5"))
         @test_throws IS.DataFormatError from_file(System, bundle)
     end
@@ -114,7 +114,7 @@ end
     # exactly one thing. A private attribute counter previously issued attribute id 1
     # alongside component id 1.
     sys = _file_io_fixture(; with_time_series = false)
-    doc = to_openapi(sys; unit_system = :device_base)
+    doc = to_openapi(sys; power_units = :component_base)
 
     component_ids = Int[]
     for type_name in PSY.PD.component_type_names(doc)
@@ -153,10 +153,15 @@ end
 
     # And back out again, unchanged. A component's document id is its IS component id, which
     # import set from the document, so bus1 is id 3 on the way out as well.
-    exported = to_openapi(sys; unit_system = :natural_units)
+    exported = to_openapi(sys; power_units = :natural_units)
     @test PSY.PD.get_ext(exported, 3) == extras
     @test isempty(PSY.PD.get_ext(exported, 4))
 end
+
+"""The `power_units` stamp on the sole exported `ThermalStandard` blob, the regression guard
+for [`to_openapi`](@ref)'s uniform per-export stamp (no document-level `unit_system` exists to
+assert against instead)."""
+_gen_power_units(doc) = only(PSY.PD.get_components(doc, "ThermalStandard")).power_units
 
 @testset "export needs no ledger: a hand-built System serializes" begin
     # The unit-system assertions use the time-series-free fixture so that `to_openapi` needs
@@ -168,19 +173,19 @@ end
     @test !haskey(get_ext(sys), "_openapi_ledger")
 
     # The default path works with no ledger present. This is the regression guard.
-    @test PSY.PD.get_unit_system(to_openapi(sys)) == "COMPONENT_BASE"
+    @test _gen_power_units(to_openapi(sys)) == "COMPONENT_BASE"
     @test isempty(get_ext(sys))
 
     # Both remaining conventions are reachable on the same ledger-free System, and they are
     # exactly the document schema's two legal values.
     for (sym, declared) in
-        ((:device_base, "COMPONENT_BASE"), (:natural_units, "NATURAL_UNITS"))
-        @test PSY.PD.get_unit_system(to_openapi(sys; unit_system = sym)) == declared
+        ((:component_base, "COMPONENT_BASE"), (:natural_units, "NATURAL_UNITS"))
+        @test _gen_power_units(to_openapi(sys; power_units = sym)) == declared
     end
 
     # `:original` is gone rather than quietly reinterpreted: a System records no unit system
     # of its own, so there is nothing left to reproduce it from.
-    @test_throws ErrorException to_openapi(sys; unit_system = :original)
+    @test_throws ErrorException to_openapi(sys; power_units = :original)
 
     # A hand-built System with time series writes a bundle, reads back, and re-exports.
     with_ts = _file_io_fixture()
@@ -204,9 +209,7 @@ end
         again = joinpath(dir, "handbuilt2")
         to_file(sys2, again)
         @test isfile(joinpath(again, "system.json"))
-        @test PSY.PD.get_unit_system(
-            PSY.PD.read_document(joinpath(again, "system.json")),
-        ) ==
+        @test _gen_power_units(PSY.PD.read_document(joinpath(again, "system.json"))) ==
               "COMPONENT_BASE"
     end
 end
@@ -229,7 +232,7 @@ end
         IS.NonSequentialTimeSeries("irregular", TimeSeries.TimeArray(stamps, values)),
     )
     # The kind is in the key's type parameter now, not in a separate key type.
-    @test IS.get_time_series_type(first(IS.list_metadata(gen))) <:
+    @test IS.get_time_series_type(first(IS.list_time_series_metadata(gen))) <:
           IS.NonSequentialTimeSeries
 
     mktempdir() do dir
@@ -268,7 +271,7 @@ end
         # from the adopted sidecar exactly.
         sys2 = from_file(System, bundle)
         gen2 = get_component(ThermalStandard, sys2, "g1")
-        key2 = IS.get_time_series_key(only(IS.list_metadata(gen2)))
+        key2 = IS.get_time_series_key(only(IS.list_time_series_metadata(gen2)))
         @test key2 isa IS.TimeSeriesKey{<:IS.NonSequentialTimeSeries}
         @test IS.get_timestamps(IS.get_time_series(gen2, key2)) == stamps
         @test IS.get_time_series_values(gen2, key2) == values

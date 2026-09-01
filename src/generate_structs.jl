@@ -123,6 +123,17 @@ function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs, ::NaturalUni
     )
 end
 
+{{#has_power_units}}
+function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("{{struct_name}}", po.id, po.power_units))
+end
+{{/has_power_units}}
+{{^has_power_units}}
+function from_openapi(po::{{{openapi_po_type}}}, refs::OpenAPIRefs)
+    return from_openapi(po, refs, DU)
+end
+{{/has_power_units}}
+
 function to_openapi(value::{{struct_name}}, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.{{struct_name}}(;
         {{#openapi_export_kwargs_device}}
@@ -367,6 +378,22 @@ function openapi_natural_conversion(struct_name, field)
         )
     end
     return kind
+end
+
+"""
+Whether an annotated struct has at least one field in the `:power` conversion family
+(`needs_conversion=true` with `conversion_unit` one of `:mw`/`:mvar`/`:mva` — the wire's
+`power_units` discriminator only ever governs that family, never `:ohm`/`:siemens`
+impedance/admittance fields). Determines whether the generated PO struct carries a
+`power_units` member: mechanically derived from the descriptor rather than a maintained
+list, so it can never drift from the fields that are actually emitted.
+"""
+function openapi_has_power_units(item)
+    for field in item["fields"]
+        get(field, "needs_conversion", false) || continue
+        get(field, "conversion_unit", nothing) in (":mw", ":mvar", ":mva") && return true
+    end
+    return false
 end
 
 """
@@ -886,6 +913,17 @@ function compute_openapi_export_converter!(item, struct_names)
         push!(kwargs_natural, Dict("name" => name, "expr" => natural))
     end
 
+    if get(item, "has_power_units", false)
+        push!(
+            kwargs_device,
+            Dict("name" => "power_units", "expr" => "_power_units_string(DU)"),
+        )
+        push!(
+            kwargs_natural,
+            Dict("name" => "power_units", "expr" => "_power_units_string(NU)"),
+        )
+    end
+
     item["openapi_export_kwargs_device"] = kwargs_device
     item["openapi_export_kwargs_natural"] = kwargs_natural
     return nothing
@@ -1060,6 +1098,7 @@ function generate_structs(directory, data::Vector; print_results = true)
         item["needs_positional_constructor"] = has_internal && has_non_default_values
 
         if haskey(item, "openapi_type")
+            item["has_power_units"] = openapi_has_power_units(item)
             compute_openapi_converter!(item, openapi_struct_names)
             compute_openapi_export_converter!(item, openapi_struct_names)
         end

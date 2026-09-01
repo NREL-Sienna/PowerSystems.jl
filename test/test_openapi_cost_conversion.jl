@@ -147,14 +147,14 @@ end
         fixed = 100.0,
         shut_down = 50.0,
         start_up = 200.0,
-        variable = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
     )
     cost = PSY.convert_cost(po)
     @test cost isa ThermalGenerationCost
     @test get_fixed(cost) == 100.0
     @test get_shut_down(cost) == 50.0
     @test get_start_up(cost) == 200.0
-    @test get_function_data(get_value_curve(get_variable(cost))) ==
+    @test get_function_data(get_value_curve(get_variable_operation_cost(cost))) ==
           LinearFunctionData(10.0, 5.0)
 
     po_stages = PSY.PC.ThermalGenerationCost(;
@@ -163,7 +163,7 @@ end
         start_up = PSY.PC.ThermalGenerationCostStartUp(
             PSY.PC.StartUpStages(; hot = 1.0, warm = 2.0, cold = 3.0),
         ),
-        variable = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
     )
     cost_stages = PSY.convert_cost(po_stages)
     @test get_start_up(cost_stages) == (hot = 1.0, warm = 2.0, cold = 3.0)
@@ -172,25 +172,27 @@ end
         fixed = 0.0,
         shut_down = 0.0,
         start_up = 0.0,
-        variable = nothing,
+        variable_operation_cost = nothing,
     )
     @test_throws ErrorException PSY.convert_cost(po_missing_variable)
 end
 
 @testset "convert_cost: RenewableGenerationCost" begin
-    po = PSY.PC.RenewableGenerationCost(; variable = _po_cost_curve(), fixed = 10.0)
+    po = PSY.PC.RenewableGenerationCost(;
+        variable_operation_cost = _po_cost_curve(), fixed = 10.0,
+    )
     cost = PSY.convert_cost(po)
     @test cost isa RenewableGenerationCost
     @test get_fixed(cost) == 10.0
     @test get_curtailment_cost(cost) == zero(CostCurve)
-    @test get_function_data(get_value_curve(get_variable(cost))) ==
+    @test get_function_data(get_value_curve(get_variable_operation_cost(cost))) ==
           LinearFunctionData(10.0, 5.0)
 end
 
 @testset "convert_cost: HydroGenerationCost" begin
     po = PSY.PC.HydroGenerationCost(;
         fixed = 1.0,
-        variable = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
+        variable_operation_cost = PSY.PC.ProductionVariableCostCurve(_po_cost_curve()),
     )
     cost = PSY.convert_cost(po)
     @test cost isa HydroGenerationCost
@@ -379,7 +381,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
+        assoc_id = IS.get_association_id(only(IS.list_time_series_metadata(store)))
 
         fc = PSY._with_import_store(store) do
             PSY.convert_cost(
@@ -511,7 +513,7 @@ end
             series,
         )
         IS.commit_batch!(store, batch)
-        assoc_id = IS.get_association_id(only(IS.list_metadata(store)))
+        assoc_id = IS.get_association_id(only(IS.list_time_series_metadata(store)))
         ts_key = IS.get_time_series_key(store, Int(assoc_id))
 
         static_cost = ImportExportCost(;
@@ -590,7 +592,7 @@ end
     set_operation_cost!(
         gen,
         ThermalGenerationCost(;
-            variable = FuelCurve(LinearCurve(1.0), key),
+            variable_operation_cost = FuelCurve(LinearCurve(1.0), key),
             fixed = 0.0, start_up = 0.0, shut_down = 0.0,
         ),
     )

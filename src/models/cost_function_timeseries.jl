@@ -31,7 +31,7 @@ end
 
 function _validate_fuel_curve(component::Component)
     op_cost = get_operation_cost(component)
-    var_cost = get_variable(op_cost)
+    var_cost = get_variable_operation_cost(op_cost)
     !(var_cost isa FuelCurve) && throw(
         ArgumentError(
             "Variable cost of type $(typeof(var_cost)) cannot represent a fuel cost, use FuelCurve instead",
@@ -641,7 +641,7 @@ function set_fuel_cost!(
             get_startup_fuel_offtake(var_cost),
             get_vom_cost(var_cost),
         )
-    set_variable!(op_cost, new_var_cost)
+    set_variable_operation_cost!(op_cost, new_var_cost)
 end
 
 # ── Service Bid Setter ──────────────────────────────────────────────────────

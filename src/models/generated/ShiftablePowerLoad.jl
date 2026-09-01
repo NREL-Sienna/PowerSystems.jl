@@ -212,6 +212,10 @@ function from_openapi(po::PO.ShiftablePowerLoad, refs::OpenAPIRefs, ::NaturalUni
     )
 end
 
+function from_openapi(po::PO.ShiftablePowerLoad, refs::OpenAPIRefs)
+    return from_openapi(po, refs, _power_units_marker("ShiftablePowerLoad", po.id, po.power_units))
+end
+
 function to_openapi(value::ShiftablePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUnit)
     return PO.ShiftablePowerLoad(;
         id = component_id(refs, value),
@@ -226,6 +230,7 @@ function to_openapi(value::ShiftablePowerLoad, refs::OpenAPIRefs, ::DeviceBaseUn
         base_power = _get_base_power(value),
         load_balance_time_horizon = get_load_balance_time_horizon(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -243,5 +248,6 @@ function to_openapi(value::ShiftablePowerLoad, refs::OpenAPIRefs, ::NaturalUnit)
         base_power = _get_base_power(value),
         load_balance_time_horizon = get_load_balance_time_horizon(value),
         operation_cost = convert_cost_to_openapi(get_operation_cost(value)),
+        power_units = _power_units_string(NU),
     )
 end
