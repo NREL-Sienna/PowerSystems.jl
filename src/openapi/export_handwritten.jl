@@ -1170,7 +1170,7 @@ function to_openapi(res::HydroReservoir, refs::OpenAPIRefs, ::DeviceBaseUnit)
         outflow = get_outflow(res),
         level_targets = _level_absolute(get_level_targets(res), limits.max),
         intake_elevation = get_intake_elevation(res),
-        head_to_volume_factor = PC.FunctionData(
+        head_to_volume_factor = IC.FunctionData(
             convert_cost_to_openapi(get_head_to_volume_factor(res)),
         ),
         upstream_turbines = _hydro_unit_ids(refs, get_upstream_turbines(res)),

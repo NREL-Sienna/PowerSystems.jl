@@ -19,39 +19,39 @@
 # last bits of every converted value.
 
 """Rebuild a `MinMax` from its PO struct; `nothing` in means `nothing` out."""
-@inline _minmax_from_po(x::PC.MinMax) = (min = x.min, max = x.max)
+@inline _minmax_from_po(x::IC.MinMax) = (min = x.min, max = x.max)
 @inline _minmax_from_po(::Nothing) = nothing
-@inline _minmax_from_po(x::PC.MinMax, op::F, base) where {F} =
+@inline _minmax_from_po(x::IC.MinMax, op::F, base) where {F} =
     (min = op(x.min, base), max = op(x.max, base))
 @inline _minmax_from_po(::Nothing, ::Any, ::Any) = nothing
 
 """Rebuild an `UpDown` from its PO struct; `nothing` in means `nothing` out."""
-@inline _updown_from_po(x::PC.UpDown) = (up = x.up, down = x.down)
+@inline _updown_from_po(x::IC.UpDown) = (up = x.up, down = x.down)
 @inline _updown_from_po(::Nothing) = nothing
-@inline _updown_from_po(x::PC.UpDown, op::F, base) where {F} =
+@inline _updown_from_po(x::IC.UpDown, op::F, base) where {F} =
     (up = op(x.up, base), down = op(x.down, base))
 @inline _updown_from_po(::Nothing, ::Any, ::Any) = nothing
 
 """Rebuild a `FromTo` from its PO struct; `nothing` in means `nothing` out."""
-@inline _fromto_from_po(x::PC.FromTo) = (from = x.from, to = x.to)
+@inline _fromto_from_po(x::IC.FromTo) = (from = x.from, to = x.to)
 @inline _fromto_from_po(::Nothing) = nothing
-@inline _fromto_from_po(x::PC.FromTo, op::F, base) where {F} =
+@inline _fromto_from_po(x::IC.FromTo, op::F, base) where {F} =
     (from = op(x.from, base), to = op(x.to, base))
 @inline _fromto_from_po(::Nothing, ::Any, ::Any) = nothing
 
 """Rebuild an `InOut` from its PO struct; `nothing` in means `nothing` out."""
-@inline _inout_from_po(x::PC.InOut) = (in = x.in, out = x.out)
+@inline _inout_from_po(x::IC.InOut) = (in = x.in, out = x.out)
 @inline _inout_from_po(::Nothing) = nothing
-@inline _inout_from_po(x::PC.InOut, op::F, base) where {F} =
+@inline _inout_from_po(x::IC.InOut, op::F, base) where {F} =
     (in = op(x.in, base), out = op(x.out, base))
 @inline _inout_from_po(::Nothing, ::Any, ::Any) = nothing
 
-"""Rebuild a `FromTo_ToFrom` from its PO struct (`PC.FromToToFrom` — the schema drops the
+"""Rebuild a `FromTo_ToFrom` from its PO struct (`IC.FromToToFrom` — the schema drops the
 underscore PSY's alias keeps); `nothing` in means `nothing` out."""
-@inline _fromto_tofrom_from_po(x::PC.FromToToFrom) =
+@inline _fromto_tofrom_from_po(x::IC.FromToToFrom) =
     (from_to = x.from_to, to_from = x.to_from)
 @inline _fromto_tofrom_from_po(::Nothing) = nothing
-@inline _fromto_tofrom_from_po(x::PC.FromToToFrom, op::F, base) where {F} =
+@inline _fromto_tofrom_from_po(x::IC.FromToToFrom, op::F, base) where {F} =
     (from_to = op(x.from_to, base), to_from = op(x.to_from, base))
 @inline _fromto_tofrom_from_po(::Nothing, ::Any, ::Any) = nothing
 

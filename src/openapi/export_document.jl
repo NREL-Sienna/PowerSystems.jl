@@ -501,7 +501,7 @@ before `to_openapi(attr, refs)` reads that id back. The store's rows already arr
 """
 function _export_supplemental_attributes(refs::OpenAPIRefs, sys::System)
     attribute_rows = OpenAPI.APIModel[]
-    association_rows = PC.SupplementalAttributeAssociation[]
+    association_rows = IC.SupplementalAttributeAssociation[]
     plant_association_rows = PO.PlantAssociation[]
     combined_cycle_association_rows = PO.CombinedCycleAssociation[]
     attributes_by_id = Dict{Int, SupplementalAttribute}(

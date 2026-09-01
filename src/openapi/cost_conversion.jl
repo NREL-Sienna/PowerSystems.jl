@@ -76,16 +76,16 @@ end
 
 # ── FunctionData ────────────────────────────────────────────────────────────────
 
-convert_cost(fd::PC.LinearFunctionData) =
+convert_cost(fd::IC.LinearFunctionData) =
     LinearFunctionData(fd.proportional_term, fd.constant_term)
-convert_cost(fd::PC.QuadraticFunctionData) =
+convert_cost(fd::IC.QuadraticFunctionData) =
     QuadraticFunctionData(fd.quadratic_term, fd.proportional_term, fd.constant_term)
 # `points` is generated as a bare `Vector`, so converting once restores inference for the loop.
-function convert_cost(fd::PC.PiecewiseLinearData)
-    points = convert(Vector{PC.XYCoords}, fd.points)
+function convert_cost(fd::IC.PiecewiseLinearData)
+    points = convert(Vector{IC.XYCoords}, fd.points)
     return PiecewiseLinearData([(x = p.x, y = p.y) for p in points])
 end
-convert_cost(fd::PC.PiecewiseStepData) = PiecewiseStepData(fd.x_coords, fd.y_coords)
+convert_cost(fd::IC.PiecewiseStepData) = PiecewiseStepData(fd.x_coords, fd.y_coords)
 # Catch-all for every PO type, not just FunctionData: a PO cost type with no converter
 # lands here, so the message must not claim to know what kind of variant it got.
 convert_cost(fd) = error("convert_cost: unmapped variant $(typeof(fd))")
@@ -122,32 +122,32 @@ wire type for the error a missing id raises."""
 _function_data_key(fd, store, what::AbstractString) =
     IS.get_time_series_key(store, _require(fd.association_id, "$what.association_id"))
 
-convert_cost(fd::PC.TimeSeriesLinearFunctionData, store) =
+convert_cost(fd::IC.TimeSeriesLinearFunctionData, store) =
     TimeSeriesFunctionData{LinearFunctionData}(
         _function_data_key(fd, store, "TimeSeriesLinearFunctionData"),
     )
-convert_cost(fd::PC.TimeSeriesLinearFunctionData) =
+convert_cost(fd::IC.TimeSeriesLinearFunctionData) =
     convert_cost(fd, _current_import_store())
 
-convert_cost(fd::PC.TimeSeriesQuadraticFunctionData, store) =
+convert_cost(fd::IC.TimeSeriesQuadraticFunctionData, store) =
     TimeSeriesFunctionData{QuadraticFunctionData}(
         _function_data_key(fd, store, "TimeSeriesQuadraticFunctionData"),
     )
-convert_cost(fd::PC.TimeSeriesQuadraticFunctionData) =
+convert_cost(fd::IC.TimeSeriesQuadraticFunctionData) =
     convert_cost(fd, _current_import_store())
 
-convert_cost(fd::PC.TimeSeriesPiecewiseLinearData, store) =
+convert_cost(fd::IC.TimeSeriesPiecewiseLinearData, store) =
     TimeSeriesFunctionData{PiecewiseLinearData}(
         _function_data_key(fd, store, "TimeSeriesPiecewiseLinearData"),
     )
-convert_cost(fd::PC.TimeSeriesPiecewiseLinearData) =
+convert_cost(fd::IC.TimeSeriesPiecewiseLinearData) =
     convert_cost(fd, _current_import_store())
 
-convert_cost(fd::PC.TimeSeriesPiecewiseStepData, store) =
+convert_cost(fd::IC.TimeSeriesPiecewiseStepData, store) =
     TimeSeriesFunctionData{PiecewiseStepData}(
         _function_data_key(fd, store, "TimeSeriesPiecewiseStepData"),
     )
-convert_cost(fd::PC.TimeSeriesPiecewiseStepData) = convert_cost(fd, _current_import_store())
+convert_cost(fd::IC.TimeSeriesPiecewiseStepData) = convert_cost(fd, _current_import_store())
 
 """`nothing` stays `nothing`; a wire association id resolves against `store`."""
 _resolve_optional_key(::Any, ::Nothing) = nothing

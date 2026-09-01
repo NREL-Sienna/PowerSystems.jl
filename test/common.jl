@@ -261,7 +261,7 @@ Which one fires depends on where the defect is caught: `PowerCoreOpenAPIModels` 
 an unresolved id, a duplicate id), while PowerSystems `error()`s for semantic ones only it can
 judge (a component type with no converter, an unmapped time series type or multiplier).
 """
-const DocumentError = Union{ErrorException, PSY.PC.DocumentFormatError}
+const DocumentError = Union{ErrorException, PSY.IC.DocumentFormatError}
 
 """A minimal, internally-consistent OpenAPI document: Area/LoadZone, two buses, an arc, a
 thermal generator with a real cost curve, a load, and an online reserve the generator
@@ -284,13 +284,13 @@ function make_openapi_test_doc(;
     bus1_po = PSY.PO.ACBus(;
         id = 3, number = 1, name = "bus1", available = true, bustype = bus1_bustype,
         angle = 0.0, magnitude = 1.0,
-        voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        voltage_limits = PSY.IC.MinMax(; min = 0.9, max = 1.1),
         base_voltage = 138.0, area = 1, load_zone = 2,
     )
     bus2_po = PSY.PO.ACBus(;
         id = 4, number = 2, name = "bus2", available = true, bustype = "PQ",
         angle = 0.0, magnitude = 1.0,
-        voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        voltage_limits = PSY.IC.MinMax(; min = 0.9, max = 1.1),
         base_voltage = 138.0, area = 1, load_zone = 2,
     )
     arc_po = PSY.PO.Arc(; id = 5, from_id = 3, to_id = 4)
@@ -303,7 +303,7 @@ function make_openapi_test_doc(;
                 value_curve = PSY.PC.ValueCurve(
                     PSY.PC.InputOutputCurve(;
                         function_data = PSY.PC.InputOutputCurveFunctionData(
-                            PSY.PC.LinearFunctionData(;
+                            PSY.IC.LinearFunctionData(;
                                 proportional_term = 10.0, constant_term = 5.0,
                             ),
                         ),
@@ -315,11 +315,11 @@ function make_openapi_test_doc(;
     thermal_po = PSY.PO.ThermalStandard(;
         id = 6, name = "gen1", available = true, status = true, bus = 4,
         active_power = 50.0, reactive_power = 10.0, rating = 100.0,
-        active_power_limits = PSY.PC.MinMax(; min = 10.0, max = 100.0),
-        reactive_power_limits = PSY.PC.MinMax(; min = -50.0, max = 50.0),
-        ramp_limits = PSY.PC.UpDown(; up = 20.0, down = 20.0),
+        active_power_limits = PSY.IC.MinMax(; min = 10.0, max = 100.0),
+        reactive_power_limits = PSY.IC.MinMax(; min = -50.0, max = 50.0),
+        ramp_limits = PSY.IC.UpDown(; up = 20.0, down = 20.0),
         operation_cost = cost_po, base_power = 100.0, power_units = "NATURAL_UNITS",
-        time_limits = PSY.PC.UpDown(; up = 2.0, down = 2.0),
+        time_limits = PSY.IC.UpDown(; up = 2.0, down = 2.0),
         must_run = false, prime_mover_type = "OT", fuel = "NATURAL_GAS",
         time_at_status = 100.0,
     )
@@ -349,7 +349,7 @@ function make_openapi_test_doc(;
         shunt_po = PSY.PO.FixedAdmittance(;
             id = 9, name = "shunt1", available = true, bus = 4,
             admittance_units = "COMPONENT_MVAR",
-            Y = PSY.PC.ComplexNumber(; real = 0.0, imag = -50.0),
+            Y = PSY.IC.ComplexNumber(; real = 0.0, imag = -50.0),
         )
         components["FixedAdmittance"] = [openapi_raw(shunt_po)]
     end

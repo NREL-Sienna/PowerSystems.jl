@@ -150,7 +150,7 @@ end
         # Association references an unresolved entity_id.
         doc = make_openapi_test_doc()
         doc["supplemental_attributes"] =
-            [openapi_raw(PSY.PC.GeographicInfo(; id = 1, geo_json = Dict{String, Any}()))]
+            [openapi_raw(PSY.IC.GeographicInfo(; id = 1, geo_json = Dict{String, Any}()))]
         doc["supplemental_attribute_associations"] = [
             Dict{String, Any}(
                 "attribute_id" => 1, "component_id" => 999, "component_type" => "ACBus",
@@ -163,7 +163,7 @@ end
 
 @testset "from_openapi(System, doc): supplemental attribute real dispatch" begin
     doc = make_openapi_test_doc()
-    geo_po = PSY.PC.GeographicInfo(;
+    geo_po = PSY.IC.GeographicInfo(;
         id = 100,
         geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
     )
@@ -172,7 +172,7 @@ end
         emission_rate = PSY.PC.ValueCurve(
             PSY.PC.IncrementalCurve(;
                 function_data = PSY.PC.IncrementalCurveFunctionData(
-                    PSY.PC.LinearFunctionData(;
+                    PSY.IC.LinearFunctionData(;
                         proportional_term = 0.0,
                         constant_term = 1.5,
                     ),
@@ -226,7 +226,7 @@ end
         emission_rate = PSY.PC.ValueCurve(
             PSY.PC.IncrementalCurve(;
                 function_data = PSY.PC.IncrementalCurveFunctionData(
-                    PSY.PC.LinearFunctionData(;
+                    PSY.IC.LinearFunctionData(;
                         proportional_term = 0.0,
                         constant_term = 1.5,
                     ),
@@ -292,7 +292,7 @@ end
     cc_frac = PSY.from_openapi(cc_frac_po, refs)
     @test get_configuration(cc_frac) == CombinedCycleConfiguration.Other
 
-    geo_po = PSY.PC.GeographicInfo(;
+    geo_po = PSY.IC.GeographicInfo(;
         id = 11,
         geo_json = Dict{String, Any}("type" => "Point", "coordinates" => [1.0, 2.0]),
     )

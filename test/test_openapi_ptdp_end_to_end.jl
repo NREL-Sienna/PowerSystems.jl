@@ -428,7 +428,7 @@ end
         attr_id = PSY.PD.next_id!(doc)
         PSY.PD.add_supplemental_attribute!(
             doc,
-            PSY.PC.GeographicInfo(; id = attr_id, geo_json = geo_json),
+            PSY.IC.GeographicInfo(; id = attr_id, geo_json = geo_json),
             target_id,
         )
 

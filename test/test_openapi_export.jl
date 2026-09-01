@@ -851,7 +851,7 @@ end
 @testset "OpenAPI export: TradingHub membership round-trip" begin
     sys, b1, b2, hub = _market_hub_fixture()
 
-    out = PSY.to_openapi(sys; unit_system = :device_base)
+    out = PSY.to_openapi(sys; power_units = :component_base)
     sys2 = PSY.from_openapi(System, out)
     hub2 = only(get_components(TradingHub, sys2))
     @test get_name.(get_associated_buses(hub2)) == ["b1", "b2"]
@@ -859,7 +859,7 @@ end
 
 @testset "OpenAPI import: duplicate trading hub bus association errors loudly" begin
     sys, b1, b2, hub = _market_hub_fixture()
-    out = PSY.to_openapi(sys; unit_system = :device_base)
+    out = PSY.to_openapi(sys; power_units = :component_base)
     duplicate_row = deepcopy(first(out.trading_hub_associations))
     push!(out.trading_hub_associations, duplicate_row)
     @test_throws ArgumentError PSY.from_openapi(System, out)
@@ -1090,13 +1090,13 @@ end
         bus1_po = PSY.PO.ACBus(;
             id = 3, number = 1, name = "bus1", available = true, bustype = "REF",
             angle = 0.0, magnitude = 1.0,
-            voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+            voltage_limits = PSY.IC.MinMax(; min = 0.9, max = 1.1),
             base_voltage = 138.0, area = 1, load_zone = 2,
         )
         bus2_po = PSY.PO.ACBus(;
             id = 4, number = 2, name = "bus2", available = true, bustype = "PQ",
             angle = 0.0, magnitude = 1.0,
-            voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+            voltage_limits = PSY.IC.MinMax(; min = 0.9, max = 1.1),
             base_voltage = 138.0, area = 1, load_zone = 2,
         )
         arc_po = PSY.PO.Arc(; id = 5, from_id = 3, to_id = 4)
@@ -1104,9 +1104,9 @@ end
             id = 6, name = "line1", available = true, active_power_flow = 10.0,
             reactive_power_flow = 2.0, arc = 5, r = 0.01, x = 0.1, base_power = 100.0,
             power_units = "NATURAL_UNITS",
-            b = PSY.PC.FromTo(; from = 0.0, to = 0.0), rating = 175.0,
-            angle_limits = PSY.PC.MinMax(; min = -1.57, max = 1.57),
-            g = PSY.PC.FromTo(; from = 0.0, to = 0.0),
+            b = PSY.IC.FromTo(; from = 0.0, to = 0.0), rating = 175.0,
+            angle_limits = PSY.IC.MinMax(; min = -1.57, max = 1.57),
+            g = PSY.IC.FromTo(; from = 0.0, to = 0.0),
         )
         load_po = PSY.PO.PowerLoad(;
             id = 7, name = "load1", available = true, bus = 4,
@@ -1126,7 +1126,7 @@ end
             emission_rate = PSY.PC.ValueCurve(
                 PSY.PC.IncrementalCurve(;
                     function_data = PSY.PC.IncrementalCurveFunctionData(
-                        PSY.PC.LinearFunctionData(;
+                        PSY.IC.LinearFunctionData(;
                             proportional_term = 0.0, constant_term = 1.5,
                         ),
                     ),
@@ -1648,7 +1648,10 @@ end
     add_component!(sys, zone)
     stamps = collect(range(DateTime(2026, 1, 1); step = Hour(1), length = 3))
     for (number, value) in ((1, 0.25), (2, 0.75))
-        ts = SingleTimeSeries(; name = "factor", data = TimeSeries.TimeArray(stamps, fill(value, 3)))
+        ts = SingleTimeSeries(;
+            name = "factor",
+            data = TimeSeries.TimeArray(stamps, fill(value, 3)),
+        )
         add_time_series!(sys, zone, ts; features = Dict("bus" => number))
     end
     mktempdir() do dir

@@ -7,7 +7,9 @@ authors = ["Jose Daniel Lara", "Daniel Thom", "Rodrigo Henriquez-Auba", "Gabriel
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+InfrastructureCoreOpenAPIModels = "1f5e1c8d-e0cc-4dbf-8c6d-f2a3d2ae70a8"
 InfrastructureSystems = "2cd47ed4-ca9b-11e9-27f2-ab636a7671f1"
+InfrastructureTimeSeriesOpenAPIModels = "37a216c8-a490-47cf-89d7-db2cb9618199"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -17,7 +19,6 @@ PowerDynamicsOpenAPIModels = "044a0b22-31f8-4ef6-8282-c9a61b3013f6"
 PowerInvestmentsOpenAPIModels = "33cb4396-f4d9-4f59-8585-787ebb56cb1b"
 PowerOpenAPIModels = "0730f07c-cff6-4c3b-a9df-c546153be50a"
 PowerOperationsOpenAPIModels = "a372b6d7-45a2-44c2-8199-6a724b72e8ff"
-PowerTimeSeriesOpenAPIModels = "8c2f6a0d-6b0e-4d0a-9d8f-2b5e6a4f9c31"
 PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
 PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
@@ -35,18 +36,22 @@ InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 [sources]
 # IS4 carries the association-id keys, and InfraStore 0.11 is registered with its own native
 # library - the co-dev pins are retired.
-InfrastructureSystems = {rev = "IS4", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl"}
-# Branch revs, not a tagged release: the x-unit accessors these packages expose are generated
-# and not yet released. Switch to a tagged rev at release.
-# PowerDynamics-/PowerInvestmentsOpenAPIModels are not imported here — they are deps of the
-# PowerOpenAPIModels umbrella, and [sources] are not inherited transitively, so this env must
-# pin them itself or a fresh resolve fails on "has no known versions".
+# LOCAL PATH CO-DEV PIN (temporary): IS4's own local checkout already migrated off
+# PowerCoreOpenAPIModels/PowerTimeSeriesOpenAPIModels onto InfrastructureCore-/
+# InfrastructureTimeSeriesOpenAPIModels, uncommitted — the pushed IS4 branch still requires
+# the old (now-unregistered) PowerTimeSeriesOpenAPIModels and fails to resolve. Revert to the
+# git rev once IS4 is pushed.
+InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "jd/openapi-package-split"}
+# LOCAL PATH CO-DEV PINS (temporary): the InfrastructureCore/InfrastructureTimeSeries package
+# split exists only on local disk, not pushed to jd/schemas-0.1.0 yet. Revert to the git pins
+# once pushed/merged.
+InfrastructureCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "InfrastructureCoreOpenAPIModels.jl"}
+InfrastructureTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "InfrastructureTimeSeriesOpenAPIModels.jl"}
 PowerCoreOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerCoreOpenAPIModels.jl"}
 PowerDynamicsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerDynamicsOpenAPIModels.jl"}
 PowerInvestmentsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerInvestmentsOpenAPIModels.jl"}
 PowerOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerOpenAPIModels.jl"}
 PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerOperationsOpenAPIModels.jl"}
-PowerTimeSeriesOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "jd/schemas-0.1.0", subdir = "PowerTimeSeriesOpenAPIModels.jl"}
 
 [compat]
 # For the `[extras]` entry; Aqua requires every extra to carry a compat bound.
@@ -54,7 +59,9 @@ InfraStore = "0.11"
 DataStructures = "^0.19"
 Dates = "1"
 DocStringExtensions = "^0.9.2"
+InfrastructureCoreOpenAPIModels = "0.1"
 InfrastructureSystems = "^3.4"
+InfrastructureTimeSeriesOpenAPIModels = "0.1"
 JSON = "^1.5"
 LinearAlgebra = "1"
 Logging = "1"
@@ -64,7 +71,6 @@ PowerDynamicsOpenAPIModels = "0.1"
 PowerInvestmentsOpenAPIModels = "0.1"
 PowerOpenAPIModels = "0.1"
 PowerOperationsOpenAPIModels = "0.1"
-PowerTimeSeriesOpenAPIModels = "0.1"
 PrecompileTools = "1"
 PrettyTables = "3.1"
 TimeSeries = "0.25"

@@ -438,8 +438,8 @@ end
 # there, taking no `OpenAPIRefs` — that registry carries the System's computational
 # `base_power`, which IS has no notion of. These two methods only reconcile the arity the
 # attribute walk calls with, so IS stays the single owner of the field mapping.
-from_openapi(po::PC.GeographicInfo, ::OpenAPIRefs) = from_openapi(po)
-from_openapi(po::PC.DataSource, ::OpenAPIRefs) = from_openapi(po)
+from_openapi(po::IC.GeographicInfo, ::OpenAPIRefs) = from_openapi(po)
+from_openapi(po::IC.DataSource, ::OpenAPIRefs) = from_openapi(po)
 
 """`table_number`/`transformer_winding`/`transformer_control_mode` carry no unit-bearing
 fields — a row number and two enum discriminators. `impedance_correction_curve` reuses
@@ -779,7 +779,7 @@ _ts_row_identity(row) = (
 _ts_feature_values(::Nothing) = nothing
 _ts_feature_values(features::AbstractDict) =
     Dict{String, Any}(String(k) => _ts_feature_value(v) for (k, v) in features)
-_ts_feature_value(v::PowerTimeSeriesOpenAPIModels.TimeSeriesFeatureValue) = v.value
+_ts_feature_value(v::InfrastructureTimeSeriesOpenAPIModels.TimeSeriesFeatureValue) = v.value
 _ts_feature_value(v) = v
 
 """Human-readable label for a time series association identity, for error messages."""

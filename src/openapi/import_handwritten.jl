@@ -928,7 +928,7 @@ end
 _unwrap_oneof(x::OpenAPI.OneOfAPIModel) = _unwrap_oneof(x.value)
 _unwrap_oneof(x) = x
 
-_linear_curve_from_function_data(fd::PC.LinearFunctionData) =
+_linear_curve_from_function_data(fd::IC.LinearFunctionData) =
     LinearCurve(fd.proportional_term, fd.constant_term)
 _linear_curve_from_function_data(fd) =
     error("unmapped TwoTerminalLoss FunctionData variant: $(typeof(fd))")

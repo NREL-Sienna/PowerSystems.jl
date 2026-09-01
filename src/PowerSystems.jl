@@ -736,15 +736,17 @@ import JSON
 import Base.to_index
 import PrettyTables
 import Unitful
+import InfrastructureCoreOpenAPIModels
 import PowerCoreOpenAPIModels
 import PowerOperationsOpenAPIModels
-import PowerTimeSeriesOpenAPIModels
+import InfrastructureTimeSeriesOpenAPIModels
 import PowerOpenAPIModels
 import OpenAPI
 import TimeZones
+const IC = InfrastructureCoreOpenAPIModels
 const PC = PowerCoreOpenAPIModels
 const PO = PowerOperationsOpenAPIModels
-const PTS = PowerTimeSeriesOpenAPIModels
+const PTS = InfrastructureTimeSeriesOpenAPIModels
 const PD = PowerOpenAPIModels
 using Unitful: @u_str, @unit, Quantity, Units, uconvert, ustrip
 

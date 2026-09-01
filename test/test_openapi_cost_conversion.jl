@@ -2,7 +2,7 @@
 
 _po_linear_io(prop, const_) = PSY.PC.InputOutputCurve(;
     function_data = PSY.PC.InputOutputCurveFunctionData(
-        PSY.PC.LinearFunctionData(; proportional_term = prop, constant_term = const_),
+        PSY.IC.LinearFunctionData(; proportional_term = prop, constant_term = const_),
     ),
 )
 
@@ -14,11 +14,11 @@ _po_cost_curve(; power_units = "NATURAL_UNITS", vom_cost = nothing) = PSY.PC.Cos
 
 @testset "convert_cost: FunctionData variants" begin
     @test PSY.convert_cost(
-        PSY.PC.LinearFunctionData(; proportional_term = 2.0, constant_term = 3.0),
+        PSY.IC.LinearFunctionData(; proportional_term = 2.0, constant_term = 3.0),
     ) == LinearFunctionData(2.0, 3.0)
 
     @test PSY.convert_cost(
-        PSY.PC.QuadraticFunctionData(;
+        PSY.IC.QuadraticFunctionData(;
             quadratic_term = 1.0,
             proportional_term = 2.0,
             constant_term = 3.0,
@@ -26,16 +26,16 @@ _po_cost_curve(; power_units = "NATURAL_UNITS", vom_cost = nothing) = PSY.PC.Cos
     ) == QuadraticFunctionData(1.0, 2.0, 3.0)
 
     @test PSY.convert_cost(
-        PSY.PC.PiecewiseLinearData(;
+        PSY.IC.PiecewiseLinearData(;
             points = [
-                PSY.PC.XYCoords(; x = 0.0, y = 0.0),
-                PSY.PC.XYCoords(; x = 10.0, y = 100.0),
+                PSY.IC.XYCoords(; x = 0.0, y = 0.0),
+                PSY.IC.XYCoords(; x = 10.0, y = 100.0),
             ],
         ),
     ) == PiecewiseLinearData([(x = 0.0, y = 0.0), (x = 10.0, y = 100.0)])
 
     @test PSY.convert_cost(
-        PSY.PC.PiecewiseStepData(; x_coords = [0.0, 10.0, 20.0], y_coords = [5.0, 6.0]),
+        PSY.IC.PiecewiseStepData(; x_coords = [0.0, 10.0, 20.0], y_coords = [5.0, 6.0]),
     ) == PiecewiseStepData([0.0, 10.0, 20.0], [5.0, 6.0])
 
     @test_throws ErrorException PSY.convert_cost(nothing)
@@ -48,7 +48,7 @@ end
     inc = PSY.convert_cost(
         PSY.PC.IncrementalCurve(;
             function_data = PSY.PC.IncrementalCurveFunctionData(
-                PSY.PC.PiecewiseStepData(; x_coords = [0.0, 10.0], y_coords = [5.0]),
+                PSY.IC.PiecewiseStepData(; x_coords = [0.0, 10.0], y_coords = [5.0]),
             ),
             initial_input = 50.0,
         ),
@@ -58,7 +58,7 @@ end
     avg = PSY.convert_cost(
         PSY.PC.AverageRateCurve(;
             function_data = PSY.PC.IncrementalCurveFunctionData(
-                PSY.PC.LinearFunctionData(; proportional_term = 1.0, constant_term = 0.0),
+                PSY.IC.LinearFunctionData(; proportional_term = 1.0, constant_term = 0.0),
             ),
             initial_input = 20.0,
         ),
@@ -111,7 +111,7 @@ end
             value_curve = PSY.PC.ValueCurve(
                 PSY.PC.IncrementalCurve(;
                     function_data = PSY.PC.IncrementalCurveFunctionData(
-                        PSY.PC.PiecewiseStepData(;
+                        PSY.IC.PiecewiseStepData(;
                             x_coords = [0.0, 10.0, 20.0],
                             y_coords = [5.0, 6.0],
                         ),
@@ -131,7 +131,7 @@ end
     bad = _po_cost_curve(;
         vom_cost = PSY.PC.InputOutputCurve(;
             function_data = PSY.PC.InputOutputCurveFunctionData(
-                PSY.PC.QuadraticFunctionData(;
+                PSY.IC.QuadraticFunctionData(;
                     quadratic_term = 1.0,
                     proportional_term = 1.0,
                     constant_term = 1.0,
@@ -239,7 +239,7 @@ _po_offer_curve(x_coords, y_coords; power_units = "NATURAL_UNITS") = PSY.PC.Cost
     value_curve = PSY.PC.ValueCurve(
         PSY.PC.IncrementalCurve(;
             function_data = PSY.PC.IncrementalCurveFunctionData(
-                PSY.PC.PiecewiseStepData(; x_coords = x_coords, y_coords = y_coords),
+                PSY.IC.PiecewiseStepData(; x_coords = x_coords, y_coords = y_coords),
             ),
             initial_input = 0.0,
         ),
@@ -314,7 +314,7 @@ end
         value_curve = PSY.PC.ValueCurve(
             PSY.PC.IncrementalCurve(;
                 function_data = PSY.PC.IncrementalCurveFunctionData(
-                    PSY.PC.PiecewiseStepData(; x_coords = [0.0, 100.0], y_coords = [10.0]),
+                    PSY.IC.PiecewiseStepData(; x_coords = [0.0, 100.0], y_coords = [10.0]),
                 ),
                 initial_input = 0.0,
             ),
@@ -389,8 +389,8 @@ end
                     power_units = "NATURAL_UNITS",
                     value_curve = PSY.PC.ValueCurve(
                         PSY.PC.TimeSeriesIncrementalCurve(;
-                            function_data = PSY.PC.FunctionData(
-                                PSY.PC.TimeSeriesLinearFunctionData(;
+                            function_data = PSY.IC.FunctionData(
+                                PSY.IC.TimeSeriesLinearFunctionData(;
                                     association_id = assoc_id,
                                 ),
                             ),
@@ -423,22 +423,22 @@ end
     @test_throws ErrorException PSY.convert_cost(
         PSY.PC.MarketBidTimeSeriesCost(;
             minimum_energy_offer = PSY.PC.TimeSeriesInputOutputCurve(;
-                function_data = PSY.PC.FunctionData(
-                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 1),
+                function_data = PSY.IC.FunctionData(
+                    PSY.IC.TimeSeriesLinearFunctionData(; association_id = 1),
                 ),
             ),
             start_up_association_id = 2,
             shut_down = PSY.PC.TimeSeriesInputOutputCurve(;
-                function_data = PSY.PC.FunctionData(
-                    PSY.PC.TimeSeriesLinearFunctionData(; association_id = 3),
+                function_data = PSY.IC.FunctionData(
+                    PSY.IC.TimeSeriesLinearFunctionData(; association_id = 3),
                 ),
             ),
             incremental_offer_curves = PSY.PC.CostCurve(;
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
                     PSY.PC.TimeSeriesIncrementalCurve(;
-                        function_data = PSY.PC.FunctionData(
-                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 4),
+                        function_data = PSY.IC.FunctionData(
+                            PSY.IC.TimeSeriesPiecewiseStepData(; association_id = 4),
                         ),
                     ),
                 ),
@@ -447,8 +447,8 @@ end
                 power_units = "NATURAL_UNITS",
                 value_curve = PSY.PC.ValueCurve(
                     PSY.PC.TimeSeriesIncrementalCurve(;
-                        function_data = PSY.PC.FunctionData(
-                            PSY.PC.TimeSeriesPiecewiseStepData(; association_id = 5),
+                        function_data = PSY.IC.FunctionData(
+                            PSY.IC.TimeSeriesPiecewiseStepData(; association_id = 5),
                         ),
                     ),
                 ),

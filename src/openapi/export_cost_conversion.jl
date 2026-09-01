@@ -5,7 +5,7 @@
 # Dispatch mirrors the PSY type hierarchy directly (abstract `ValueCurve`/`FunctionData`
 # supertypes, `AbstractReserve`) rather than an enumerated `isa`/`Union` chain — the same style
 # already used throughout this package. PO structs are built with kwargs; oneOf wrappers
-# (`PC.ValueCurve`, `PC.FunctionData`, `PC.ProductionVariableCostCurve`, ...) take their concrete
+# (`PC.ValueCurve`, `IC.FunctionData`, `PC.ProductionVariableCostCurve`, ...) take their concrete
 # value positionally, matching how `PowerOperationsOpenAPIModels`/`PowerCoreOpenAPIModels`
 # generate them.
 
@@ -31,14 +31,14 @@ end
 # ── FunctionData ────────────────────────────────────────────────────────────────
 
 function convert_cost_to_openapi(fd::LinearFunctionData)
-    return PC.LinearFunctionData(;
+    return IC.LinearFunctionData(;
         proportional_term = get_proportional_term(fd),
         constant_term = get_constant_term(fd),
     )
 end
 
 function convert_cost_to_openapi(fd::QuadraticFunctionData)
-    return PC.QuadraticFunctionData(;
+    return IC.QuadraticFunctionData(;
         quadratic_term = get_quadratic_term(fd),
         proportional_term = get_proportional_term(fd),
         constant_term = get_constant_term(fd),
@@ -46,13 +46,13 @@ function convert_cost_to_openapi(fd::QuadraticFunctionData)
 end
 
 function convert_cost_to_openapi(fd::PiecewiseLinearData)
-    return PC.PiecewiseLinearData(;
-        points = [PC.XYCoords(; x = p.x, y = p.y) for p in get_points(fd)],
+    return IC.PiecewiseLinearData(;
+        points = [IC.XYCoords(; x = p.x, y = p.y) for p in get_points(fd)],
     )
 end
 
 function convert_cost_to_openapi(fd::PiecewiseStepData)
-    return PC.PiecewiseStepData(; x_coords = get_x_coords(fd), y_coords = get_y_coords(fd))
+    return IC.PiecewiseStepData(; x_coords = get_x_coords(fd), y_coords = get_y_coords(fd))
 end
 
 # ── ValueCurve ──────────────────────────────────────────────────────────────────
@@ -103,11 +103,11 @@ end
 # ── Time-series FunctionData/ValueCurve — export reads association ids straight off the
 # PSY key, needs no store ──────────────────────────────────────────────────────
 
-_ts_function_data_wire_type(::Type{LinearFunctionData}) = PC.TimeSeriesLinearFunctionData
+_ts_function_data_wire_type(::Type{LinearFunctionData}) = IC.TimeSeriesLinearFunctionData
 _ts_function_data_wire_type(::Type{QuadraticFunctionData}) =
-    PC.TimeSeriesQuadraticFunctionData
-_ts_function_data_wire_type(::Type{PiecewiseLinearData}) = PC.TimeSeriesPiecewiseLinearData
-_ts_function_data_wire_type(::Type{PiecewiseStepData}) = PC.TimeSeriesPiecewiseStepData
+    IC.TimeSeriesQuadraticFunctionData
+_ts_function_data_wire_type(::Type{PiecewiseLinearData}) = IC.TimeSeriesPiecewiseLinearData
+_ts_function_data_wire_type(::Type{PiecewiseStepData}) = IC.TimeSeriesPiecewiseStepData
 
 function convert_cost_to_openapi(fd::TimeSeriesFunctionData{T}) where {T}
     WireType = _ts_function_data_wire_type(T)
@@ -147,14 +147,14 @@ _curve_style_to_wire(style::CurveStyles) = style.value
 
 function convert_cost_to_openapi(curve::TimeSeriesInputOutputCurve)
     return PC.TimeSeriesInputOutputCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = IC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         input_at_zero = get_input_at_zero(curve),
     )
 end
 
 function convert_cost_to_openapi(curve::TimeSeriesIncrementalCurve)
     return PC.TimeSeriesIncrementalCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = IC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         initial_input_association_id = _key_association_id(get_initial_input(curve)),
         input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
     )
@@ -162,7 +162,7 @@ end
 
 function convert_cost_to_openapi(curve::TimeSeriesAverageRateCurve)
     return PC.TimeSeriesAverageRateCurve(;
-        function_data = PC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
+        function_data = IC.FunctionData(convert_cost_to_openapi(get_function_data(curve))),
         initial_input_association_id = _key_association_id(get_initial_input(curve)),
         input_at_zero_association_id = _key_association_id(get_input_at_zero(curve)),
     )
