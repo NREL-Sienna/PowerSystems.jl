@@ -22,7 +22,7 @@ for T in (
     :Area, :LoadZone, :TransmissionInterface, :Line, :MonitoredLine, :GenericArcImpedance,
     :DiscreteControlledACBranch, :TransformerCircuit, :EnergyReservoirStorage,
     :TwoTerminalGenericHVDCLine, :TwoTerminalLCCLine, :TwoTerminalVSCLine, :Source,
-    :InterconnectingConverter, :HybridSystem, :FACTSControlDevice,
+    :InterconnectingConverter, :HybridSystem, :FACTSControlDevice, :TModelHVDCLine,
 )
     @eval function from_openapi(po::PO.$T, refs::OpenAPIRefs)
         return from_openapi(
@@ -35,7 +35,7 @@ end
 
 for T in (
     :Arc, :TwoWindingTransformer, :ThreeWindingTransformer, :FixedAdmittance,
-    :SwitchedAdmittance, :HydroReservoir, :TModelHVDCLine, :OnlineReserve, :OfflineReserve,
+    :SwitchedAdmittance, :HydroReservoir, :OnlineReserve, :OfflineReserve,
     :GroupReserve,
 )
     @eval from_openapi(po::PO.$T, refs::OpenAPIRefs) = from_openapi(po, refs, DU)

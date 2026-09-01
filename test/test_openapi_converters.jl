@@ -964,6 +964,61 @@ end
     @test get_base_power(hvdc_device) == 100.0
 end
 
+@testset "OpenAPI converters: TModelHVDCLine" begin
+    # No device `base_power` at all (unlike TwoTerminalGenericHVDCLine): the active-power
+    # fields per-unitize on the *system* base via `get_base_power(refs)`; `base_current`,
+    # not a power base, is `r`/`l`/`c`'s own anchor.
+    refs = PSY.OpenAPIRefs(100.0)
+    dcbus_from_po = PSY.PO.DCBus(;
+        id = 30, number = 30, name = "dcbus30", available = true,
+        magnitude = 1.0, voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        base_voltage = 500.0,
+    )
+    dcbus_to_po = PSY.PO.DCBus(;
+        id = 31, number = 31, name = "dcbus31", available = true,
+        magnitude = 1.0, voltage_limits = PSY.PC.MinMax(; min = 0.9, max = 1.1),
+        base_voltage = 500.0,
+    )
+    refs[30] = PSY.from_openapi(dcbus_from_po, refs)
+    refs[31] = PSY.from_openapi(dcbus_to_po, refs)
+    arc_po = PSY.PO.Arc(; id = 32, from_id = 30, to_id = 31)
+    refs[32] = PSY.from_openapi(arc_po, refs, NU)
+
+    sys = System(100.0)
+    add_component!(sys, refs[30])
+    add_component!(sys, refs[31])
+
+    tmodel_po = PSY.PO.TModelHVDCLine(;
+        id = 33, name = "tmodel1", available = true, active_power_flow = 50.0, arc = 32,
+        parameter_units = "COMPONENT_BASE", base_current = 200.0,
+        r = 0.01, l = 0.02, c = 0.03,
+        active_power_limits_from = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+        active_power_limits_to = PSY.PC.MinMax(; min = -100.0, max = 100.0),
+        power_units = "NATURAL_UNITS",
+    )
+
+    tmodel_natural = PSY.from_openapi(tmodel_po, refs, NU)
+    add_component!(sys, tmodel_natural)
+    @test get_active_power_flow(tmodel_natural, SU) == 0.5
+    @test get_active_power_limits_from(tmodel_natural, SU) == (min = -1.0, max = 1.0)
+    @test get_active_power_limits_to(tmodel_natural, SU) == (min = -1.0, max = 1.0)
+    @test get_base_current(tmodel_natural) == 200.0
+
+    tmodel_po_du = PSY.PO.TModelHVDCLine(;
+        id = 34, name = "tmodel2", available = true, active_power_flow = 0.5, arc = 32,
+        parameter_units = "COMPONENT_BASE", base_current = 200.0,
+        r = 0.01, l = 0.02, c = 0.03,
+        active_power_limits_from = PSY.PC.MinMax(; min = -1.0, max = 1.0),
+        active_power_limits_to = PSY.PC.MinMax(; min = -1.0, max = 1.0),
+        power_units = "COMPONENT_BASE",
+    )
+    tmodel_device = PSY.from_openapi(tmodel_po_du, refs, DU)
+    add_component!(sys, tmodel_device)
+    @test get_active_power_flow(tmodel_device, SU) == 0.5
+    @test get_active_power_limits_from(tmodel_device, SU) == (min = -1.0, max = 1.0)
+    @test !hasfield(PSY.PO.TModelHVDCLine, :base_power)
+end
+
 @testset "OpenAPI converters: AreaInterchange (generated)" begin
     # First type to carry `openapi_type` while sharing the "no device `base_power`"
     # shape that previously forced Area/LoadZone/TransmissionInterface/Line/

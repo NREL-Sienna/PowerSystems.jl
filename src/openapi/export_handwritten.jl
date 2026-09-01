@@ -303,6 +303,7 @@ function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::DeviceBaseUnit)
         c = get_c(line),
         active_power_limits_from = _minmax_po(get_active_power_limits_from(line, SU)),
         active_power_limits_to = _minmax_po(get_active_power_limits_to(line, SU)),
+        power_units = _power_units_string(DU),
     )
 end
 
@@ -325,6 +326,7 @@ function to_openapi(line::TModelHVDCLine, refs::OpenAPIRefs, ::NaturalUnit)
         active_power_limits_to = _minmax_po_scaled(
             get_active_power_limits_to(line, SU), sbp,
         ),
+        power_units = _power_units_string(NU),
     )
 end
 

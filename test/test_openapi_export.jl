@@ -374,6 +374,53 @@ end
     @test device_po.active_power_limits_from.min == -1.0
 end
 
+@testset "OpenAPI export converters: TModelHVDCLine" begin
+    # No device `base_power`: the active-power fields per-unitize on the *system* base
+    # (`get_base_power(refs)`), same fallback as `Line`'s; `base_current` — not a power
+    # base — is `r`/`l`/`c`'s own anchor and rides through untouched in both bases.
+    dcbus1 = DCBus(;
+        number = 1, name = "dcbus1", available = true,
+        magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1), base_voltage = 500.0,
+    )
+    dcbus2 = DCBus(;
+        number = 2, name = "dcbus2", available = true,
+        magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1), base_voltage = 500.0,
+    )
+    arc = Arc(; from = dcbus1, to = dcbus2)
+    tmodel = TModelHVDCLine(;
+        name = "tmodel1", available = true, active_power_flow = 0.5, arc = arc,
+        r = 0.01, l = 0.02, c = 0.03,
+        active_power_limits_from = (min = -1.0, max = 1.0),
+        active_power_limits_to = (min = -1.0, max = 1.0),
+        base_current = 200.0,
+    )
+    sys = System(100.0)
+    add_component!(sys, dcbus1)
+    add_component!(sys, dcbus2)
+    add_component!(sys, arc)
+    add_component!(sys, tmodel)
+
+    refs = PSY.OpenAPIRefs(100.0)
+    refs[1] = dcbus1
+    refs[2] = dcbus2
+    refs[3] = arc
+    refs[4] = tmodel
+
+    natural_po = PSY.to_openapi(tmodel, refs, NU)
+    @test natural_po.power_units == "NATURAL_UNITS"
+    @test natural_po.active_power_flow == 50.0
+    @test natural_po.active_power_limits_from.min == -100.0
+    @test natural_po.active_power_limits_to.max == 100.0
+    @test natural_po.base_current == 200.0
+    @test !hasfield(typeof(natural_po), :base_power)
+
+    device_po = PSY.to_openapi(tmodel, refs, DU)
+    @test device_po.power_units == "COMPONENT_BASE"
+    @test device_po.active_power_flow == 0.5
+    @test device_po.active_power_limits_from.min == -1.0
+    @test device_po.base_current == 200.0
+end
+
 @testset "OpenAPI export converters: AreaInterchange (generated import, hand-written export)" begin
     # Codegen emits only `from_openapi` (see export_generated_types.jl's header); `to_openapi`
     # for this newly openapi_type-annotated struct is hand-written here to match exactly

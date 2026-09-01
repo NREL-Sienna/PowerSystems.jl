@@ -635,11 +635,23 @@ Returns the typed container, not JSON: writing it to disk belongs to
 — components and supplemental attributes alike — comes from the document's single counter, since
 consumers key a row by id without its type.
 
-`power_units`: `:component_base` (default) stamps every exported component blob "COMPONENT_BASE"
-and writes each component's values on its own base, the convention PSY stores natively, so no
-conversion happens; `:natural_units` stamps "NATURAL_UNITS" and converts to physical units on
-the way out. The stamp is uniform across the whole export — PSY does not record a
-per-component creation basis. Any `System` is exportable either way, however it was built.
+`power_units` selects the basis every value is written on, and the stamp each blob carries:
+
+  - `:component_base` (default) stamps every power-bearing blob `"COMPONENT_BASE"` and writes
+    each component's values on its own `base_power` — what PSY stores natively, so no
+    conversion runs and the numbers on disk are the numbers in memory.
+  - `:natural_units` stamps `"NATURAL_UNITS"` and converts to physical units (MW, MVAr, MVA).
+
+Anything else errors: the mapping to the internal `DU`/`NU` markers is explicit, so an
+unrecognized symbol is refused rather than defaulted.
+
+The stamp is uniform across an export because PSY records no per-component creation basis.
+Reading is not uniform: `from_openapi` honors the `power_units` on each individual blob, so a
+document written elsewhere with a mixed basis loads correctly, and a blob that omits the field
+is an error — `OpenAPI.from_json` does not enforce the schema's `required`, so the check is
+made explicitly rather than defaulting to a basis and silently rescaling the value.
+
+Any `System` is exportable either way, however it was built.
 
 Walks components in [`DOCUMENT_PLAN`](@ref) order (symmetry with import, not a resolution
 requirement — every id already exists or is assigned fresh before it is ever read). Emits
