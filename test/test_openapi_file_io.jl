@@ -8,14 +8,14 @@ _close_sidecar_store!(sys::System) =
     sys = _file_io_fixture()
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; power_units = :component_base)
+        to_file(sys, bundle; unit_system = :component_base)
 
         # All members present, and nothing else. The InfraStore sidecar is a pair: the
         # arrays in `.h5` and its catalog in the `.sqlite` sibling.
         @test sort(readdir(bundle)) ==
               ["system.json", "time_series.h5", "time_series.h5.sqlite"]
 
-        sys2 = from_file(System, bundle)
+        sys2 = from_file(bundle)
 
         # System-level metadata, which the pre-OpenAPI path carried in a _metadata.json
         # sidecar and the first cut of to_openapi dropped entirely.
@@ -40,15 +40,113 @@ _close_sidecar_store!(sys::System) =
     end
 end
 
+@testset "to_file/from_file: .sn archive round trip" begin
+    sys = _file_io_fixture()
+    mktempdir() do dir
+        archive = joinpath(dir, "case.sn")
+        to_file(sys, archive; format = :sienna, unit_system = :component_base)
+        @test isfile(archive)
+
+        sys2 = from_file(archive)
+        @test get_name(sys2) == "bundle-fixture"
+        gen2 = get_component(ThermalStandard, sys2, "g1")
+        @test get_name(gen2) == "g1"
+        @test length(PSY.get_supplemental_attributes(gen2)) == 1
+        ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
+        @test TimeSeries.values(PSY.get_data(ts)) == [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+        _close_sidecar_store!(sys2)
+    end
+end
+
+@testset "to_file: .sn archive respects force" begin
+    sys = _file_io_fixture(; with_time_series = false)
+    mktempdir() do dir
+        archive = joinpath(dir, "case.sn")
+        to_file(sys, archive; format = :sienna)
+        @test_throws IS.DataFormatError to_file(sys, archive; format = :sienna)
+        @test isnothing(to_file(sys, archive; format = :sienna, force = true))
+    end
+end
+
+@testset "to_file: unsupported format errors" begin
+    sys = _file_io_fixture(; with_time_series = false)
+    mktempdir() do dir
+        @test_throws ErrorException to_file(sys, joinpath(dir, "case"); format = :bogus)
+    end
+end
+
+@testset "to_file: .sn refuses a non-default unit_system" begin
+    sys = _file_io_fixture(; with_time_series = false)
+    mktempdir() do dir
+        archive = joinpath(dir, "case.sn")
+        # The default is fine: it is what :sienna always writes anyway.
+        @test isnothing(
+            to_file(sys, archive; format = :sienna, unit_system = :component_base),
+        )
+        @test_throws ErrorException to_file(
+            sys,
+            archive;
+            format = :sienna,
+            unit_system = :natural_units,
+            force = true,
+        )
+    end
+end
+
+@testset "from_file: unrecognized path errors" begin
+    mktempdir() do dir
+        @test_throws IS.DataFormatError from_file(joinpath(dir, "not_a_bundle.txt"))
+    end
+end
+
+@testset "to_file: warns on subsystems and masked components" begin
+    # A user-defined subsystem is any component added to one via `IS.add_component_to_subsystem!`
+    # (the primitive `add_subsystem!`/`add_component_to_subsystem!` wrap) — no PSB fixture
+    # needed to exercise the warning, so build the smallest System that can hold one.
+    subsys_sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "b1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(subsys_sys, bus)
+    IS.add_subsystem!(subsys_sys.data, "sub1")
+    IS.add_component_to_subsystem!(subsys_sys.data, "sub1", bus)
+    mktempdir() do dir
+        # match_mode = :any: to_file also logs an @info on success, which a default :all
+        # match would otherwise have to enumerate too.
+        @test_logs(
+            (:warn, r"subsystem"),
+            match_mode = :any,
+            to_file(subsys_sys, joinpath(dir, "case")),
+        )
+    end
+
+    # A masked component is any component `add_component!`'d then removed via
+    # `IS.mask_component!` (the same primitive `add_component!(::StaticInjectionSubsystem)`
+    # uses for its subcomponents) — no `HybridSystem`/PSB fixture needed to exercise the
+    # warning, so build the smallest System that can hold one.
+    masked_sys = _file_io_fixture(; with_time_series = false)
+    gen = get_component(ThermalStandard, masked_sys, "g1")
+    IS.mask_component!(masked_sys.data, gen)
+    @test !isempty(IS.get_masked_components(Component, masked_sys.data))
+    mktempdir() do dir
+        @test_logs(
+            (:warn, r"masked component"),
+            match_mode = :any,
+            to_file(masked_sys, joinpath(dir, "case")),
+        )
+    end
+end
+
 @testset "from_file: time_series_read_only bundle with a supplemental attribute" begin
     # `_system_with_sidecar` cannot clear the adopted store's association rows when it is
     # opened read-only, so the import replay has to tolerate rows that are already there.
     sys = _file_io_fixture()
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; power_units = :component_base)
+        to_file(sys, bundle; unit_system = :component_base)
 
-        sys2 = from_file(System, bundle; time_series_read_only = true)
+        sys2 = from_file(bundle; time_series_read_only = true)
 
         gen2 = get_component(ThermalStandard, sys2, "g1")
         @test get_name(gen2) == "g1"
@@ -70,14 +168,14 @@ end
     sys = _file_io_fixture(; with_time_series = false)
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; power_units = :component_base)
+        to_file(sys, bundle; unit_system = :component_base)
 
         @test readdir(bundle) == ["system.json"]
         # The document must say so rather than name a file that is not there.
         doc = PSY.PD.read_document(joinpath(bundle, "system.json"))
         @test isnothing(PSY.PD.get_time_series_storage_file(doc))
 
-        sys2 = from_file(System, bundle)
+        sys2 = from_file(bundle)
         @test isempty(collect(get_components(ThermalStandard, sys2))) == false
     end
 end
@@ -88,24 +186,24 @@ end
     # Writing twice without force must not silently clobber the first bundle.
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(sys, bundle; power_units = :component_base)
-        @test_throws IS.DataFormatError to_file(sys, bundle; power_units = :component_base)
+        to_file(sys, bundle; unit_system = :component_base)
+        @test_throws IS.DataFormatError to_file(sys, bundle; unit_system = :component_base)
         # ... and force makes it succeed.
-        @test isnothing(to_file(sys, bundle; power_units = :component_base, force = true))
+        @test isnothing(to_file(sys, bundle; unit_system = :component_base, force = true))
     end
 
     # A directory that is not a bundle.
     mktempdir() do dir
-        @test_throws IS.DataFormatError from_file(System, dir)
+        @test_throws IS.DataFormatError from_file(dir)
     end
 
     # A document naming a sidecar that is absent: refuse rather than return a System that is
     # quietly missing every time series the document declared.
     mktempdir() do dir
         bundle = joinpath(dir, "case")
-        to_file(_file_io_fixture(), bundle; power_units = :component_base)
+        to_file(_file_io_fixture(), bundle; unit_system = :component_base)
         rm(joinpath(bundle, "time_series.h5"))
-        @test_throws IS.DataFormatError from_file(System, bundle)
+        @test_throws IS.DataFormatError from_file(bundle)
     end
 end
 
@@ -193,7 +291,7 @@ _gen_power_units(doc) = only(PSY.PD.get_components(doc, "ThermalStandard")).powe
         bundle = joinpath(dir, "handbuilt")
         to_file(with_ts, bundle)
 
-        sys2 = from_file(System, bundle)
+        sys2 = from_file(bundle)
 
         # Import writes no ledger either, so `ext` is clean on a document-built System too.
         @test isempty(get_ext(sys2))
@@ -269,7 +367,7 @@ end
 
         # The timestamp vector lives in the store, not the document, so it must come back
         # from the adopted sidecar exactly.
-        sys2 = from_file(System, bundle)
+        sys2 = from_file(bundle)
         gen2 = get_component(ThermalStandard, sys2, "g1")
         key2 = IS.get_time_series_key(only(IS.list_time_series_metadata(gen2)))
         @test key2 isa IS.TimeSeriesKey{<:IS.NonSequentialTimeSeries}
