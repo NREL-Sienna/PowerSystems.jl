@@ -666,7 +666,30 @@ end
 end
 
 @testset "Invalid constructor" begin
-    @test_throws IS.DataFormatError System("data.invalid")
+    # Unrecognized extension: generic error.
+    @test_throws DataFormatError System("data.invalid")
+
+    # .json: point at from_file.
+    err = try
+        System("sys.json")
+        nothing
+    catch e
+        e
+    end
+    @test err isa DataFormatError
+    @test occursin("from_file", err.msg)
+
+    # .raw / .m: point at PowerFlowFileParser.jl, not this package.
+    for ext in (".raw", ".m")
+        err = try
+            System("case$ext")
+            nothing
+        catch e
+            e
+        end
+        @test err isa DataFormatError
+        @test occursin("PowerFlowFileParser", err.msg)
+    end
 end
 
 @testset "Test deepcopy with runchecks" begin
