@@ -242,6 +242,77 @@ end
     @test get_active_power_limits(gen, DU) == (min = 0.0, max = 1.0)
 end
 
+# The error messages name a natural unit per conversion category. That name is only
+# useful if it is a symbol the caller actually has and the accessors actually take,
+# so each case here reads the unit out of the message itself and round-trips it.
+@testset "Suggested natural units are what the accessors accept" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    bus1 = get_component(ACBus, sys, "b1")
+    bus2 = ACBus(;
+        number = 2, name = "b2", available = true,
+        bustype = ACBusTypes.PV, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys, bus2)
+    line = Line(;
+        name = "l1", available = true, active_power_flow = 0.0,
+        reactive_power_flow = 0.0, arc = Arc(; from = bus1, to = bus2),
+        r = 0.01, x = 0.1, b = (from = 0.001, to = 0.001),
+        rating = 2.0, angle_limits = (min = -1.0, max = 1.0),
+    )
+    add_component!(sys, line)
+
+    # One field per conversion category: active, reactive and apparent power,
+    # impedance, admittance. Voltage and current have no convertible fields --
+    # `base_voltage` is stored natural and read with a plain one-argument getter --
+    # so no message ever suggests a unit for them.
+    cases = (
+        (:mw, get_active_power, set_active_power!, gen),
+        (:mvar, get_reactive_power, set_reactive_power!, gen),
+        (:mva, get_rating, set_rating!, gen),
+        (:ohm, get_x, set_x!, line),
+        (:siemens, get_b, set_b!, line),
+    )
+    for (token, getter, setter, comp) in cases
+        get_msg = try
+            getter(comp)
+        catch e
+            sprint(showerror, e)
+        end
+        suggested = match(r"the natural unit `([^`]+)`", get_msg)
+        @test suggested !== nothing
+        name = Symbol(suggested.captures[1])
+
+        # The suggestion must be a name the caller has from `using PowerSystems`.
+        @test name in names(PowerSystems)
+        units = getfield(PowerSystems, name)
+
+        # The getter takes exactly what its message suggested...
+        before = getter(comp, units)
+        @test _unwrap_units(before) == before
+
+        # ...and the setter takes `val * <that same unit>`, as its own message says.
+        set_msg = try
+            setter(comp, 1.0)
+        catch e
+            sprint(showerror, e)
+        end
+        @test occursin("`val * $name`", set_msg)
+        setter(comp, before isa NamedTuple ? map(x -> x * units, before) : before * units)
+        @test getter(comp, units) == before
+    end
+
+    # The suggested names are the `u"..."` literals, not separate constants, and a
+    # unit named as a string is not accepted by either form.
+    @test MW === Unitful.@u_str("MW")
+    @test MVAr === Unitful.@u_str("MVAr")
+    @test MVA === Unitful.@u_str("MVA")
+    @test OHMS === Unitful.@u_str("Ω")
+    @test SIEMENS === Unitful.@u_str("S")
+    @test get_active_power(gen, Unitful.@u_str("MW")) == get_active_power(gen, MW)
+    @test_throws MethodError get_active_power(gen, "MW")
+end
+
 # Regression guard for the explicit-units performance contract (PR #1695):
 # the internal per-unit conversions must compile away so that a literal unit
 # argument yields a type-stable, allocation-free `Float64`, and `ustrip` of the
