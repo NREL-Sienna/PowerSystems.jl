@@ -22,6 +22,7 @@ export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
 export DataSource
+export DataFormatError
 export get_geo_json
 export get_organization
 export get_retrieved_at
@@ -1111,7 +1112,6 @@ include("openapi/file_io.jl")
 include("substation.jl")
 include("subsystems.jl")
 include("component_selector.jl")
-include("data_format_conversions.jl")
 include("get_components_interface.jl")
 include("component_selector_interface.jl")
 
