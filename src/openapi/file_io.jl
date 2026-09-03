@@ -48,9 +48,6 @@ file it just replaced.
 """
 const TIME_SERIES_CATALOG_FILE = TIME_SERIES_FILE * ".sqlite"
 
-"""Extension for a single-file, compressed System archive."""
-const SIENNA_ARCHIVE_EXTENSION = ".sn"
-
 """
 Archive member holding the System state the OpenAPI document has no representation for.
 
@@ -125,7 +122,7 @@ function _load_sienna_extras!(sys::System, dir::AbstractString)
     if !isfile(path)
         throw(
             IS.DataFormatError(
-                "$SIENNA_ARCHIVE_EXTENSION archive is missing its $SIENNA_EXTRAS_FILE " *
+                "$(IS.SIENNA_ARCHIVE_EXTENSION) archive is missing its $SIENNA_EXTRAS_FILE " *
                 "member; it was not written by to_file(...; format = :sienna)",
             ),
         )
@@ -266,31 +263,9 @@ function _to_file_sienna(
     force::Bool,
     pretty::Bool,
 )
-    if lowercase(splitext(path)[2]) != SIENNA_ARCHIVE_EXTENSION
-        throw(
-            IS.DataFormatError(
-                "$path does not end in $SIENNA_ARCHIVE_EXTENSION; format = :sienna requires " *
-                "that extension so from_file can recognize the archive on read.",
-            ),
-        )
-    end
-    if isdir(path)
-        throw(
-            IS.DataFormatError(
-                "$path is a directory; format = :sienna writes a single archive file",
-            ),
-        )
-    end
-    if isfile(path) && !force
-        throw(
-            IS.DataFormatError(
-                "$path already exists; pass force = true to overwrite the archive",
-            ),
-        )
-    end
-    mkpath(dirname(path))
-    mktempdir() do dir
-        bundle = joinpath(dir, "case")
+    # `IS.create_sienna_archive` owns the container — the extension rule, the guards, and the
+    # compression. What is PSY's is only what goes inside it.
+    IS.create_sienna_archive(path; force = force) do bundle
         # The archive keeps InfraStore's own `.sqlite` — see the format notes at the top of
         # this file for why that is what makes `:sienna` the lossless one.
         _to_file_json(
@@ -302,9 +277,6 @@ function _to_file_sienna(
             write_catalog = true,
         )
         _write_sienna_extras(sys, bundle, pretty)
-        open(CodecZlib.GzipCompressorStream, path, "w") do io
-            Tar.create(bundle, io)
-        end
     end
     @info "Serialized System to $path"
     return nothing
@@ -339,13 +311,13 @@ value passed here outranks the document's.
 function from_file(path::AbstractString; system_kwargs...)
     if isdir(path)
         return _from_file_json(path; system_kwargs...)
-    elseif lowercase(splitext(path)[2]) == SIENNA_ARCHIVE_EXTENSION
+    elseif IS.is_sienna_archive(path)
         return _from_file_sienna(path; system_kwargs...)
     else
         throw(
             IS.DataFormatError(
                 "$path is not a serialized System bundle directory or a " *
-                "$SIENNA_ARCHIVE_EXTENSION archive",
+                "$(IS.SIENNA_ARCHIVE_EXTENSION) archive",
             ),
         )
     end
@@ -370,19 +342,9 @@ function _from_file_json(dir::AbstractString; system_kwargs...)
 end
 
 function _from_file_sienna(path::AbstractString; system_kwargs...)
-    if !isfile(path)
-        throw(IS.DataFormatError("$path does not exist"))
-    end
-    # `mktempdir()` (default `cleanup = true`) registers the directory for atexit deletion, so
-    # it lives for the rest of the session rather than leaking permanently in the OS temp root.
-    # This matters when `time_series_read_only = true`: IS then opens the extracted sidecar in
-    # place instead of copying it, so the extracted directory must outlive this function.
-    # Otherwise (the default read path), IS copies the sidecar to its own working location
-    # before opening it, and the extracted directory is no longer needed after that copy.
-    dir = mktempdir()
-    open(CodecZlib.GzipDecompressorStream, path, "r") do io
-        Tar.extract(io, dir)
-    end
+    # The extracted directory outlives this call, which `time_series_read_only = true` needs:
+    # IS then opens the extracted sidecar in place rather than copying it out first.
+    dir = IS.extract_sienna_archive(path)
     sys = _from_file_json(dir; system_kwargs...)
     _load_sienna_extras!(sys, dir)
     return sys
