@@ -740,3 +740,18 @@ Enumeration of market-bid curve-clearing styles. Corresponds to ERCOT's DAM `Pri
 - `FIXED = 1`: The bid clears as one indivisible all-or-nothing package over its period.
 - `VARIABLE = 2`: Divisible quantity, block-priced; cannot set the settlement-point price.
 """ CurveStyles
+
+IS.@scoped_enum(
+    CurveMultiHour,
+    SINGLE_HOUR = 0,
+    MULTI_HOUR = 1,
+)
+@doc """
+Enumeration of market-bid multi-hour block indicators. Corresponds to ERCOT's DAM `PriceCurve`
+`multiHourBlock` field (`false` | `true`). Independent of [`CurveStyles`](@ref): the curve
+style is the quantity structure of the bid, this is its time structure, and the two compose.
+
+# Values
+- `SINGLE_HOUR = 0`: Each hour of the bid clears independently (default).
+- `MULTI_HOUR = 1`: The bid must be awarded as one block across every hour it covers.
+""" CurveMultiHour

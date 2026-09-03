@@ -402,6 +402,7 @@ export AngleUnits
 export ACBusTypes
 export CurveStyles
 export FACTSOperationModes
+export CurveMultiHour
 export VSCDCControlModes
 export VSCACControlModes
 export FACTSShuntControlType
@@ -579,6 +580,7 @@ export get_incremental_slope, set_incremental_slope!
 export get_decremental_slope, set_decremental_slope!
 export get_curve_style, set_curve_style!
 export get_import_offer_curves, set_import_offer_curves!
+export get_curve_multihour, set_curve_multihour!
 export get_export_offer_curves, set_export_offer_curves!
 export get_import_variable_cost, get_export_variable_cost
 export get_energy_import_weekly_limit, set_energy_import_weekly_limit!

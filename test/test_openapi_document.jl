@@ -356,6 +356,7 @@ end
     offers = get_ancillary_service_offers(mbc2)
     @test length(offers) == 1
     @test get_name(only(offers)) == "RESERVE"
+    @test get_curve_multihour(mbc2) == CurveMultiHour.SINGLE_HOUR
     @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
 end
 
@@ -433,6 +434,23 @@ end
 """Build a `System` with one `ThermalStandard` (`gen1`) carrying a
 `MarketBidTimeSeriesCost` and one `OnlineReserve{ReserveUp}` (`RESERVE`) the generator
 contributes to. Returns `(sys, gen, svc)`. Shared by the two testsets below: export cannot
+@testset "_curve_multihour_from_wire rejects an out-of-range integer" begin
+    sys, gen = _market_bid_cost_fixture()
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        document_path = joinpath(dir, "system.json")
+        txt = read(document_path, String)
+        @test occursin("\"curve_multihour\":0", txt)
+        write(
+            document_path,
+            replace(txt, "\"curve_multihour\":0" => "\"curve_multihour\":2"),
+        )
+        @test_throws "curve_multihour 2 is not a valid CurveMultiHour value" from_file(
+            System, dir,
+        )
+    end
+end
+
 carry `ancillary_service_offers` for this cost type (the id-filling pass is gated on
 `MarketBidCost`, `export_document.jl`, out of edit scope), so one test proves export errors
 loudly instead of dropping them, and the other proves import resolves them correctly when a
@@ -596,6 +614,28 @@ end
 @testset "ThermalMultiStart round trip: multi-start fields and MarketBidCost" begin
     sys = System(100.0)
     bus = ACBus(nothing)
+@testset "MarketBidTimeSeriesCost round trip: curve_multihour" begin
+    sys, gen = _mbtc_extension_fixture(;
+        curve_style = CurveStyles.VARIABLE,
+        curve_multihour = CurveMultiHour.MULTI_HOUR,
+    )
+
+    # Same wire convention as curve_style: a plain integer (0/1).
+    wire = PSY.convert_cost_to_openapi(get_operation_cost(gen))
+    @test wire.curve_style == 2
+    @test wire.curve_multihour == 1
+
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+        gen2 = get_component(ThermalStandard, sys2, "gen1")
+        mbtc2 = get_operation_cost(gen2)
+        @test mbtc2 isa MarketBidTimeSeriesCost
+        @test get_curve_style(mbtc2) == CurveStyles.VARIABLE
+        @test get_curve_multihour(mbtc2) == CurveMultiHour.MULTI_HOUR
+    end
+end
+
     bus.name = "bus1"
     bus.number = 1
     bus.bustype = ACBusTypes.REF

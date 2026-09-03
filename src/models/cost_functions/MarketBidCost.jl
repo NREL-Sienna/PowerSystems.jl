@@ -2,9 +2,9 @@
 $(TYPEDEF)
 $(TYPEDFIELDS)
 
-    MarketBidCost(minimum_energy_offer, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style)
-    MarketBidCost(; minimum_energy_offer, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style)
-    MarketBidCost(minimum_energy_offer, start_up::Real, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style)
+    MarketBidCost(minimum_energy_offer, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style, curve_multihour)
+    MarketBidCost(; minimum_energy_offer, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style, curve_multihour)
+    MarketBidCost(minimum_energy_offer, start_up::Real, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers, incremental_slope, decremental_slope, curve_style, curve_multihour)
 
 An operating cost for static (non-time-varying) market bids of energy and ancillary
 services. For time-varying bids, use [`MarketBidTimeSeriesCost`](@ref).
@@ -28,6 +28,8 @@ mutable struct MarketBidCost{U <: IS.AbstractUnitSystem} <: OfferCurveCost
     decremental_slope::Bool
     "Curve-clearing style for the bid ([`CurveStyles`](@ref)); CURVE (default) is ordinary divisible price-setting. A non-CURVE value is mutually exclusive with linear interpolation (`incremental_slope`/`decremental_slope`) on either offer curve."
     curve_style::CurveStyles
+    "Multi-hour block indicator for the bid ([`CurveMultiHour`](@ref)); SINGLE_HOUR (default) clears each hour independently, MULTI_HOUR must be awarded as one block across every hour the bid covers. Independent of `curve_style`."
+    curve_multihour::CurveMultiHour
 end
 
 const ZERO_OFFER_CURVE = CostCurve(PiecewiseIncrementalCurve(0.0, [0.0, 0.0], [0.0]))
@@ -42,6 +44,7 @@ function MarketBidCost(;
     incremental_slope = false,
     decremental_slope = false,
     curve_style = CurveStyles.CURVE,
+    curve_multihour = CurveMultiHour.SINGLE_HOUR,
 )
     U_inc = typeof(get_power_units(incremental_offer_curves))
     U_dec = typeof(get_power_units(decremental_offer_curves))
@@ -55,7 +58,7 @@ function MarketBidCost(;
         minimum_energy_offer, start_up, shut_down,
         incremental_offer_curves, decremental_offer_curves,
         ancillary_service_offers,
-        incremental_slope, decremental_slope, curve_style,
+        incremental_slope, decremental_slope, curve_style, curve_multihour,
     )
 end
 
@@ -80,6 +83,7 @@ function MarketBidCost(
     incremental_slope = false,
     decremental_slope = false,
     curve_style = CurveStyles.CURVE,
+    curve_multihour = CurveMultiHour.SINGLE_HOUR,
 )
     start_up_multi = single_start_up_to_stages(start_up)
     return MarketBidCost(;
@@ -92,6 +96,7 @@ function MarketBidCost(
         incremental_slope = incremental_slope,
         decremental_slope = decremental_slope,
         curve_style = curve_style,
+        curve_multihour = curve_multihour,
     )
 end
 
@@ -113,6 +118,8 @@ get_incremental_slope(value::MarketBidCost) = value.incremental_slope
 get_decremental_slope(value::MarketBidCost) = value.decremental_slope
 """Get [`MarketBidCost`](@ref) `curve_style`."""
 get_curve_style(value::MarketBidCost) = value.curve_style
+"""Get [`MarketBidCost`](@ref) `curve_multihour`."""
+get_curve_multihour(value::MarketBidCost) = value.curve_multihour
 
 """Set [`MarketBidCost`](@ref) `minimum_energy_offer`."""
 set_minimum_energy_offer!(value::MarketBidCost, val) = value.minimum_energy_offer = val
@@ -135,6 +142,8 @@ set_incremental_slope!(value::MarketBidCost, val) = value.incremental_slope = va
 set_decremental_slope!(value::MarketBidCost, val) = value.decremental_slope = val
 """Set [`MarketBidCost`](@ref) `curve_style`."""
 set_curve_style!(value::MarketBidCost, val) = value.curve_style = val
+"""Set [`MarketBidCost`](@ref) `curve_multihour`."""
+set_curve_multihour!(value::MarketBidCost, val) = value.curve_multihour = val
 
 """Auxiliary Method for setting up start up that are not multi-start"""
 function set_start_up!(value::MarketBidCost, val::Real)

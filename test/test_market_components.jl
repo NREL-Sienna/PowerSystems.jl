@@ -31,6 +31,13 @@ end
     @test CurveStyles.VARIABLE.value == 2
 end
 
+@testset "CurveMultiHour numeric contract" begin
+    # Same wire convention as `curve_style`: SiennaSchemas' `curve_multihour` is a plain
+    # integer (0/1), not a string enum; pin the mapping.
+    @test CurveMultiHour.SINGLE_HOUR.value == 0
+    @test CurveMultiHour.MULTI_HOUR.value == 1
+end
+
 @testset "MarketBidCost extensions" begin
     c = MarketBidCost(; incremental_slope = true)
     @test get_incremental_slope(c)
@@ -40,6 +47,36 @@ end
 
     c2 = MarketBidCost(; curve_style = CurveStyles.FIXED)
     @test get_curve_style(c2) == CurveStyles.FIXED
+
+    @test get_curve_multihour(MarketBidCost(nothing)) == CurveMultiHour.SINGLE_HOUR
+    @test get_curve_multihour(c2) == CurveMultiHour.SINGLE_HOUR
+    c3 = MarketBidCost(; curve_multihour = CurveMultiHour.MULTI_HOUR)
+    @test get_curve_multihour(c3) == CurveMultiHour.MULTI_HOUR
+    @test get_curve_style(c3) == CurveStyles.CURVE
+    set_curve_multihour!(c3, CurveMultiHour.SINGLE_HOUR)
+    @test get_curve_multihour(c3) == CurveMultiHour.SINGLE_HOUR
+
+    # The quantity switch (curve_style) and the time switch (curve_multihour) are independent:
+    # every combination constructs, and multi-hour does not trip the slope exclusivity check.
+    c4 = MarketBidCost(;
+        curve_style = CurveStyles.FIXED,
+        curve_multihour = CurveMultiHour.MULTI_HOUR,
+    )
+    @test get_curve_style(c4) == CurveStyles.FIXED
+    @test get_curve_multihour(c4) == CurveMultiHour.MULTI_HOUR
+    c5 = MarketBidCost(;
+        incremental_slope = true,
+        curve_multihour = CurveMultiHour.MULTI_HOUR,
+    )
+    @test get_incremental_slope(c5)
+    @test get_curve_multihour(c5) == CurveMultiHour.MULTI_HOUR
+
+    # The positional (single start-up value) constructor forwards the kwarg.
+    c6 = MarketBidCost(
+        LinearCurve(0.0), 10.0, LinearCurve(0.0);
+        curve_multihour = CurveMultiHour.MULTI_HOUR,
+    )
+    @test get_curve_multihour(c6) == CurveMultiHour.MULTI_HOUR
 
     @test_throws ArgumentError MarketBidCost(;
         incremental_slope = true,
@@ -84,6 +121,21 @@ end
     @test !get_incremental_slope(mbtc)
     @test !get_decremental_slope(mbtc)
     @test get_curve_style(mbtc) == CurveStyles.CURVE
+    @test get_curve_multihour(mbtc) == CurveMultiHour.SINGLE_HOUR
+
+    mbtc_multihour = MarketBidTimeSeriesCost(;
+        minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
+        start_up = su_key,
+        shut_down = IS.TimeSeriesLinearCurve(sd_key),
+        incremental_offer_curves = make_market_bid_ts_curve(inc_key),
+        decremental_offer_curves = make_market_bid_ts_curve(dec_key),
+        curve_style = CurveStyles.VARIABLE,
+        curve_multihour = CurveMultiHour.MULTI_HOUR,
+    )
+    @test get_curve_style(mbtc_multihour) == CurveStyles.VARIABLE
+    @test get_curve_multihour(mbtc_multihour) == CurveMultiHour.MULTI_HOUR
+    set_curve_multihour!(mbtc_multihour, CurveMultiHour.SINGLE_HOUR)
+    @test get_curve_multihour(mbtc_multihour) == CurveMultiHour.SINGLE_HOUR
 
     mbtc_slope = MarketBidTimeSeriesCost(;
         minimum_energy_offer = IS.TimeSeriesLinearCurve(nl_key),
@@ -125,7 +177,7 @@ end
     )
 end
 
-@testset "CurveStyles round-trips through JSON serialization" begin
+@testset "CurveStyles and CurveMultiHour round-trip through JSON serialization" begin
     sys = System(100.0)
     bus = ACBus(nothing)
     bus.bustype = ACBusTypes.REF
@@ -137,6 +189,7 @@ end
     mbc = MarketBidCost(;
         start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
         curve_style = CurveStyles.FIXED,
+        curve_multihour = CurveMultiHour.MULTI_HOUR,
     )
     set_operation_cost!(gen, mbc)
 
@@ -145,6 +198,7 @@ end
     sys2 = System(path)
     gen2 = get_component(ThermalStandard, sys2, "curve_style_gen")
     @test get_curve_style(get_operation_cost(gen2)) == CurveStyles.FIXED
+    @test get_curve_multihour(get_operation_cost(gen2)) == CurveMultiHour.MULTI_HOUR
 end
 
 @testset "MarketBidTimeSeriesCost keys survive JSON round trip as association ids" begin
