@@ -8,7 +8,7 @@ The Sienna power-system **data model**: the `System` container plus ~210 compone
 
 ## System file I/O — `to_file` / `from_file` only
 
-`src/openapi/file_io.jl` owns the whole surface. Two formats, one serializer: `:sienna` builds the same
+`src/openapi/file_io.jl` owns the surface. Two formats, one serializer: `:sienna` builds the same
 bundle `:json` does and archives it, so there is no second writer to keep in sync.
 
 ```julia
@@ -16,22 +16,39 @@ to_file(sys, path; format = :json, unit_system = :component_base, force = false,
 from_file(path; system_kwargs...)   # no type argument — format is inferred from `path`
 ```
 
-- **`format = :json`** — `path` is a **directory** holding `system.json` (the OpenAPI document, via
-  `PD.write_document`) plus, only when the system has time series, the InfraStore pair
-  `time_series.h5` + `time_series.h5.sqlite` (via `IS.serialize(store, path)`). A system with no time
-  series gets the document alone and a null `time_series_storage_file` — never an empty HDF5 file.
-  **Not the intended end state:** `:json` is specified as *two* artifacts — the association tables
-  belong in the document, and only `:sienna` carries the sql tables as their own member. That needs an
-  InfraStore change and is blocked on it; see below.
-- **`format = :sienna`** — `path` is a single **`.sn`** file (tar + gzip of that bundle). The extension is
-  **enforced on write**: it is how `from_file` recognizes an archive, so a non-`.sn` path is refused
-  rather than silently producing an unreadable file. `:sienna` also only ever writes
-  `:component_base` and throws on any other `unit_system` — the archive format exists to avoid a
-  conversion pass.
-- **`from_file`** infers: directory → `:json`, `.sn` file → `:sienna`, anything else → `DataFormatError`.
+- **`format = :json`** — a **directory** of **two** members: `system.json` (the OpenAPI document, via
+  `PD.write_document`) and, only when the system has time series, `time_series.h5`. No `.sqlite`: the
+  document's `time_series_associations` table already holds every row of that catalog, down to each
+  row's `association_id` and its `data_hash` pointer into the arrays, so `from_openapi` replays those
+  rows into a freshly minted catalog instead. A system with no time series gets the document alone and
+  a null `time_series_storage_file` — never an empty HDF5 file.
+- **`format = :sienna`** — a single **`.sn`** file holding those two plus `time_series.h5.sqlite`
+  (InfraStore's own catalog, authoritative on read) and `sienna_extras.json`. **Lossless**; `:json` is
+  not. Only ever writes `:component_base` and throws on any other `unit_system` — the archive format
+  exists to avoid a conversion pass.
+- **`from_file`** infers: directory → `:json`, `.sn` → `:sienna`, anything else → `DataFormatError`.
 - The keyword is **`unit_system`**, not `power_units` — it governs every convertible field (`:mva`,
-  `:ohm`, `:siemens`), not just power. `to_openapi` keeps its own separate `power_units` keyword; don't
+  `:ohm`, `:siemens`), not just power. `to_openapi` keeps its own separate `power_units`; don't
   conflate them.
+
+**The archive container is not PSY's.** `IS.create_sienna_archive` / `IS.extract_sienna_archive` /
+`IS.is_sienna_archive` own the `.sn` extension rule, the write guards and the tar+gzip, so
+PowerSystemsInvestmentsPortfolios can produce the same format. `Tar` and `CodecZlib` are IS
+dependencies, not PSY's — do not re-add them here. What stays here is only what goes *inside* the
+archive.
+
+**The one knob that separates the formats** is `to_openapi(sys; write_catalog::Bool)`, dispatched by
+`_write_sidecar`: `false` (`:json`) calls `IS.serialize_arrays`, `true` (`:sienna`) calls
+`IS.serialize`. The rows land in `doc.time_series_associations` either way — the keyword adds a file,
+it does not move them.
+
+**The read path takes no format flag.** `_load_time_series_associations!` dispatches on whether the
+adopted store brought rows (`_catalog_is_authoritative`): an empty catalog means the document is the
+catalog and its rows are replayed, ids included; a populated one outranks the document and the rows
+are only validated against it. That second path is what a `.sn`, an older three-file bundle, and a
+PowerSystemCaseBuilder cache all take, so this is not a flag day. The replay runs **before** the
+component pass — a `MarketBidTimeSeriesCost` resolves its `association_id` against the store while its
+owner is being built.
 
 **`System(::AbstractString)` throws `DataFormatError` and names its replacement** — `.json` → `from_file`;
 `.raw`/`.m` → PowerFlowFileParser.jl; anything else → generic. Do not "restore" a constructor here, and do
@@ -47,39 +64,44 @@ build on it.)
 `_post_deserialize_handling` (and with it `assign_new_ids` on read — no read path can reach it),
 `from_dict(::Type{System}, …)`, `deserialize_components!`, and `test/test_serialization.jl`.
 
-### Open: the two-file `:json` bundle needs an InfraStore change
+### What each format carries
 
-Decided direction, blocked on upstream. InfraStore keeps owning the `.h5`; the association tables move
-into `system.json`; `.sqlite` becomes a `:sienna`-only member. Write-side is trivial (let
-`IS.serialize` write the pair, then drop the catalog). **The read side cannot be done from Julia** —
-verified empirically, both sanctioned routes are refused by design:
+Only one of the three things that used to be lost is actually format-dependent.
 
-- Rebuilding a catalog from the document rows into a fresh store fails: *"cannot import
-  'max_active_power' (owner 2): it names array e325cc34…, which this store does not hold. An import
-  writes rows only — the arrays arrive with the artifact — so the row would be a dangling reference"*
-  (`InfraStore.InvalidParameterError`).
-- Pairing a rebuilt catalog with the bundle's real `.h5` fails: *"the HDF5 file and its catalog do not
-  carry the same generation stamp (HDF5: 920b7fed…, catalog: none)"* (`MismatchedArtifactError`). The
-  stamp lives in the HDF5 and pairs it to one specific catalog, so even a byte-perfect rebuild is
-  rejected — the guard is about artifact provenance, not metadata content.
+| State | `:sienna` | `:json` | Where it lives |
+| --- | --- | --- | --- |
+| Frequency | kept | kept | An optional field of the document itself. It was dropped only because `from_openapi` never applied it. |
+| Subsystem membership | kept | **dropped, warned** | `sienna_extras.json` — the document has no representation for it. |
+| Masked components | kept | kept | **Derived, not recorded.** `mask_component!` is not exported; the only masking path is `handle_component_addition!(sys, ::StaticInjectionSubsystem)`, which `add_component!` re-runs on import. Do not add a list for it — that would give one truth two writers. |
 
-`open_store` requires `$path.sqlite` in both `:attached` and `:memory` modes, and `Store(; path=…)`
-throws `StoreExistsError` on an existing artifact (`overwrite=true` discards the arrays). So there is no
-keyword for "arrays exist, build me a fresh catalog."
+`_warn_on_bundle_data_loss` is called only from the `:json` branch, because it is the only lossy
+format. Do not turn it back into a format dispatch: `Val(format)` running before `to_file`'s own
+`else error(...)` turns a typo'd format into a `MethodError` on an internal helper.
 
-**What to ask InfraStore for:** a sanctioned way to adopt an existing, generation-stamped `.h5` under a
-freshly created empty catalog — the deliberate case — as distinct from the accidental orphan the stamp
-guard exists to catch (see InfraStore's own test `"an abandoned in-memory catalog leaves a half
-artifact"`). Once it lands, the Julia side is small and already half-built:
-`IS.import_time_series_association_rows!` is committed on InfrastructureSystems' `jd/serialization_refactor`
-branch (`6d84ee4f`), and PSY needs a `:json`-without-catalog branch in `_system_with_sidecar` that
-replays `doc.time_series_associations` instead of validating against a catalog.
+`sienna_extras.json` holds one map keyed by the document's own component ids (PSY sets each component
+to its document id before adding it, so no translation step), sorted for byte-reproducibility:
+`{"subsystems": {"west": [1, 2]}}`.
 
-**What the format cannot carry** — `_warn_on_bundle_data_loss` warns (never errors) at export:
-`subsystems` have no representation at all; masked components are exported by id but nothing guarantees
-they come back masked; a `frequency` other than `DEFAULT_SYSTEM_FREQUENCY` is written to the document but
-import applies only name/description, so it reads back at the default. There is **no migration path** from
-pre-cutover files — regenerate them.
+**Frequency needs the constructor, not a setter.** `System` is immutable and takes `frequency` at
+construction, so `_frequency_kwarg` threads the document's value into `_system_with_sidecar` as a
+`NamedTuple` that is *empty* when the document names none — which is what keeps a document predating
+the field from resetting a 50 Hz system to the default.
+
+**Caller keywords outrank the document.** `name`, `description` and `frequency` all name document
+fields; a value passed to `from_file`/`from_openapi` wins over the document's, and fields the caller
+did not name still come from the document. `_apply_document_metadata!` takes the supplied keyword set
+to skip the ones it must not overwrite. Keep the three consistent — they used to split, with
+`frequency` honouring the caller and `name`/`description` silently overwriting.
+
+There is **no migration path** from pre-cutover files — regenerate them.
+
+**Upstream this needs, and is blocked on until released:** `IS.serialize_arrays`,
+`IS.deserialize_arrays`, `IS.import_time_series_association_rows!` and the three
+`*_sienna_archive` functions (InfrastructureSystems `jd/arrays_only_sidecar`, PR #632), which in
+turn need `Store::persist_arrays_to` and `Store::open_without_catalog` from infrastore
+(NatLabRockies/infrastore#71), which needs `NonSequentialTimeSeries.timestamps_uri` from
+SiennaSchemas. Merge order is bottom-up. `[compat] InfraStore` stays as it is until those ship —
+no compat bumps before release.
 
 ## Downstream blast radius
 
