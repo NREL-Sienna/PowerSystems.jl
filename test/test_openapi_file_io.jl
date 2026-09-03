@@ -10,10 +10,9 @@ _close_sidecar_store!(sys::System) =
         bundle = joinpath(dir, "case")
         to_file(sys, bundle; unit_system = :component_base)
 
-        # All members present, and nothing else. The InfraStore sidecar is a pair: the
-        # arrays in `.h5` and its catalog in the `.sqlite` sibling.
-        @test sort(readdir(bundle)) ==
-              ["system.json", "time_series.h5", "time_series.h5.sqlite"]
+        # All members present, and nothing else. Two, not three: the document carries the
+        # association rows, so `:json` writes no `.sqlite` — that is a `:sienna`-only member.
+        @test sort(readdir(bundle)) == ["system.json", "time_series.h5"]
 
         sys2 = from_file(bundle)
 
@@ -103,7 +102,7 @@ end
     sys = _file_io_fixture(; with_time_series = false)
     mktempdir() do dir
         @test_throws(
-            "$(PSY.SIENNA_ARCHIVE_EXTENSION)",
+            "$(IS.SIENNA_ARCHIVE_EXTENSION)",
             to_file(sys, joinpath(dir, "case.tar.gz"); format = :sienna),
         )
         @test !isfile(joinpath(dir, "case.tar.gz"))
@@ -165,22 +164,23 @@ end
     IS.mask_component!(masked_sys.data, gen)
     @test !isempty(IS.get_masked_components(Component, masked_sys.data))
     mktempdir() do dir
-        @test_logs(
-            (:warn, r"masked component"),
-            match_mode = :any,
-            to_file(masked_sys, joinpath(dir, "case")),
-        )
+        # No warning: masking is not recorded because it is re-derived on read, when the
+        # owning `StaticInjectionSubsystem` is added. `mask_component!` here reaches a state
+        # the public API cannot, which is why this fixture has to call IS directly.
+        to_file(masked_sys, joinpath(dir, "case"))
+        @test sort(readdir(joinpath(dir, "case"))) == ["system.json"]
     end
 end
 
-@testset "to_file: warns on non-default frequency, not the default" begin
+@testset "frequency survives the round trip in both formats" begin
     freq_sys = System(100.0; frequency = 50.0)
     mktempdir() do dir
-        @test_logs(
-            (:warn, r"[Ff]requency"),
-            match_mode = :any,
-            to_file(freq_sys, joinpath(dir, "case")),
-        )
+        bundle = joinpath(dir, "case")
+        to_file(freq_sys, bundle)
+        @test get_frequency(from_file(bundle)) == 50.0
+        archive = joinpath(dir, "case.sn")
+        to_file(freq_sys, archive; format = :sienna)
+        @test get_frequency(from_file(archive)) == 50.0
     end
 
     default_sys = _file_io_fixture(; with_time_series = false)
@@ -257,15 +257,15 @@ end
     end
 end
 
-@testset "to_file: force clears the InfraStore catalog sidecar, not just the .h5" begin
-    # A system with time series writes time_series.h5 *and* time_series.h5.sqlite (the
-    # InfraStore catalog). Overwriting with a time-series-free system under force = true must
-    # leave neither behind.
+@testset "to_file: force clears a catalog sidecar an older bundle left behind" begin
+    # `:json` writes no `.sqlite` of its own, but a bundle written before that change has one,
+    # and `persist_arrays_to` refuses to publish arrays beside a catalog whose rows would then
+    # point into the file it just replaced. So `force` has to clear it.
     mktempdir() do dir
         bundle = joinpath(dir, "case")
         to_file(_file_io_fixture(), bundle; unit_system = :component_base)
-        @test sort(readdir(bundle)) ==
-              ["system.json", "time_series.h5", "time_series.h5.sqlite"]
+        @test sort(readdir(bundle)) == ["system.json", "time_series.h5"]
+        touch(joinpath(bundle, "time_series.h5.sqlite"))  # what an older PSY left
 
         to_file(
             _file_io_fixture(; with_time_series = false),
