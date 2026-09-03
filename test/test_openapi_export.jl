@@ -1501,6 +1501,7 @@ _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
 
         outage = GeometricDistributionForcedOutage(;
             mean_time_to_recovery = 1.0, outage_transition_probability = 0.5,
+            identifier = "gen1_forced",
         )
         add_supplemental_attribute!(sys, gen, outage)
 
@@ -1524,6 +1525,7 @@ _export_thermal_gen(bus; name = "gen1") = ThermalStandard(;
         outage2 = only(get_supplemental_attributes(GeometricDistributionForcedOutage, gen2))
         # The attribute's id is stable across the round trip, exactly like a component's.
         @test IS.get_id(outage2) == IS.get_id(outage)
+        @test get_identifier(outage2) == "gen1_forced"
         ts2 = get_time_series(SingleTimeSeries, outage2, "outage_series")
         @test TimeSeries.values(PSY.get_data(ts2)) == [0.1, 0.2, 0.3]
     end

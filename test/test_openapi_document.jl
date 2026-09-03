@@ -259,12 +259,15 @@ end
     fixed = PSY.from_openapi(fixed_po, refs)
     @test PSY.get_outage_status(fixed) == 1.0
     @test get_monitored_components(fixed) == Set{Base.UUID}()
+    @test isnothing(get_identifier(fixed))
 
     planned_po = PSY.PO.PlannedOutage(;
         id = 5, outage_schedule = "maintenance_2024", monitored_components = [1],
+        identifier = "block_12",
     )
     planned = PSY.from_openapi(planned_po, refs)
     @test get_outage_schedule(planned) == "maintenance_2024"
+    @test get_identifier(planned) == "block_12"
 
     plant_po = PSY.PO.ThermalPowerPlant(; id = 6, name = "plant1")
     plant = PSY.from_openapi(plant_po, refs)
@@ -353,10 +356,10 @@ end
     @test get_incremental_slope(mbc2)
     @test !get_decremental_slope(mbc2)
     @test get_curve_style(mbc2) == CurveStyles.CURVE
+    @test get_curve_multihour(mbc2) == CurveMultiHour.SINGLE_HOUR
     offers = get_ancillary_service_offers(mbc2)
     @test length(offers) == 1
     @test get_name(only(offers)) == "RESERVE"
-    @test get_curve_multihour(mbc2) == CurveMultiHour.SINGLE_HOUR
     @test only(offers) === get_component(OnlineReserve{ReserveUp}, sys2, "RESERVE")
 end
 
@@ -431,9 +434,6 @@ end
     end
 end
 
-"""Build a `System` with one `ThermalStandard` (`gen1`) carrying a
-`MarketBidTimeSeriesCost` and one `OnlineReserve{ReserveUp}` (`RESERVE`) the generator
-contributes to. Returns `(sys, gen, svc)`. Shared by the two testsets below: export cannot
 @testset "_curve_multihour_from_wire rejects an out-of-range integer" begin
     sys, gen = _market_bid_cost_fixture()
     mktempdir() do dir
@@ -451,6 +451,9 @@ contributes to. Returns `(sys, gen, svc)`. Shared by the two testsets below: exp
     end
 end
 
+"""Build a `System` with one `ThermalStandard` (`gen1`) carrying a
+`MarketBidTimeSeriesCost` and one `OnlineReserve{ReserveUp}` (`RESERVE`) the generator
+contributes to. Returns `(sys, gen, svc)`. Shared by the two testsets below: export cannot
 carry `ancillary_service_offers` for this cost type (the id-filling pass is gated on
 `MarketBidCost`, `export_document.jl`, out of edit scope), so one test proves export errors
 loudly instead of dropping them, and the other proves import resolves them correctly when a
@@ -611,9 +614,6 @@ end
     end
 end
 
-@testset "ThermalMultiStart round trip: multi-start fields and MarketBidCost" begin
-    sys = System(100.0)
-    bus = ACBus(nothing)
 @testset "MarketBidTimeSeriesCost round trip: curve_multihour" begin
     sys, gen = _mbtc_extension_fixture(;
         curve_style = CurveStyles.VARIABLE,
@@ -636,6 +636,9 @@ end
     end
 end
 
+@testset "ThermalMultiStart round trip: multi-start fields and MarketBidCost" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     bus.bustype = ACBusTypes.REF

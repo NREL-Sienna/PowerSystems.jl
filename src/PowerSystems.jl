@@ -325,6 +325,7 @@ export get_mean_time_to_recovery
 export get_outage_transition_probability
 export get_outage_schedule
 export get_monitored_components
+export get_identifier
 export set_monitored_components!
 export clear_monitored_components!
 export add_monitored_component!
@@ -401,8 +402,8 @@ export TransmissionInterface
 export AngleUnits
 export ACBusTypes
 export CurveStyles
-export FACTSOperationModes
 export CurveMultiHour
+export FACTSOperationModes
 export VSCDCControlModes
 export VSCACControlModes
 export FACTSShuntControlType
@@ -579,8 +580,8 @@ export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_incremental_slope, set_incremental_slope!
 export get_decremental_slope, set_decremental_slope!
 export get_curve_style, set_curve_style!
-export get_import_offer_curves, set_import_offer_curves!
 export get_curve_multihour, set_curve_multihour!
+export get_import_offer_curves, set_import_offer_curves!
 export get_export_offer_curves, set_export_offer_curves!
 export get_import_variable_cost, get_export_variable_cost
 export get_energy_import_weekly_limit, set_energy_import_weekly_limit!
