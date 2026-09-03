@@ -259,12 +259,15 @@ end
     fixed = PSY.from_openapi(fixed_po, refs)
     @test PSY.get_outage_status(fixed) == 1.0
     @test get_monitored_components(fixed) == Set{Base.UUID}()
+    @test isnothing(get_identifier(fixed))
 
     planned_po = PSY.PO.PlannedOutage(;
         id = 5, outage_schedule = "maintenance_2024", monitored_components = [1],
+        identifier = "block_12",
     )
     planned = PSY.from_openapi(planned_po, refs)
     @test get_outage_schedule(planned) == "maintenance_2024"
+    @test get_identifier(planned) == "block_12"
 
     plant_po = PSY.PO.ThermalPowerPlant(; id = 6, name = "plant1")
     plant = PSY.from_openapi(plant_po, refs)
@@ -353,6 +356,7 @@ end
     @test get_incremental_slope(mbc2)
     @test !get_decremental_slope(mbc2)
     @test get_curve_style(mbc2) == CurveStyles.CURVE
+    @test get_curve_multihour(mbc2) == CurveMultiHour.SINGLE_HOUR
     offers = get_ancillary_service_offers(mbc2)
     @test length(offers) == 1
     @test get_name(only(offers)) == "RESERVE"
@@ -427,6 +431,23 @@ end
         txt = read(document_path, String)
         write(document_path, replace(txt, "\"curve_style\":0" => "\"curve_style\":7"))
         @test_throws "curve_style 7 is not a valid CurveStyles value" from_file(System, dir)
+    end
+end
+
+@testset "_curve_multihour_from_wire rejects an out-of-range integer" begin
+    sys, gen = _market_bid_cost_fixture()
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        document_path = joinpath(dir, "system.json")
+        txt = read(document_path, String)
+        @test occursin("\"curve_multihour\":0", txt)
+        write(
+            document_path,
+            replace(txt, "\"curve_multihour\":0" => "\"curve_multihour\":2"),
+        )
+        @test_throws "curve_multihour 2 is not a valid CurveMultiHour value" from_file(
+            System, dir,
+        )
     end
 end
 
@@ -590,6 +611,28 @@ end
         @test !get_incremental_slope(mbtc2)
         @test !get_decremental_slope(mbtc2)
         @test get_curve_style(mbtc2) == CurveStyles.FIXED
+    end
+end
+
+@testset "MarketBidTimeSeriesCost round trip: curve_multihour" begin
+    sys, gen = _mbtc_extension_fixture(;
+        curve_style = CurveStyles.VARIABLE,
+        curve_multihour = CurveMultiHour.MULTI_HOUR,
+    )
+
+    # Same wire convention as curve_style: a plain integer (0/1).
+    wire = PSY.convert_cost_to_openapi(get_operation_cost(gen))
+    @test wire.curve_style == 2
+    @test wire.curve_multihour == 1
+
+    mktempdir() do dir
+        to_file(sys, dir; force = true)
+        sys2 = from_file(System, dir)
+        gen2 = get_component(ThermalStandard, sys2, "gen1")
+        mbtc2 = get_operation_cost(gen2)
+        @test mbtc2 isa MarketBidTimeSeriesCost
+        @test get_curve_style(mbtc2) == CurveStyles.VARIABLE
+        @test get_curve_multihour(mbtc2) == CurveMultiHour.MULTI_HOUR
     end
 end
 

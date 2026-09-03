@@ -168,6 +168,20 @@ function _curve_style_from_wire(id::Integer)
     return CurveStyles(Int(id))
 end
 
+"""Wire representation of [`CurveMultiHour`](@ref): a plain integer (0/1), the same
+convention as `curve_style`."""
+function _curve_multihour_from_wire(id::Integer)
+    if id ∉ (0, 1)
+        throw(
+            ArgumentError(
+                "convert_cost: curve_multihour $id is not a valid CurveMultiHour value; " *
+                "expected 0 (SINGLE_HOUR) or 1 (MULTI_HOUR)",
+            ),
+        )
+    end
+    return CurveMultiHour(Int(id))
+end
+
 convert_cost(vc::PC.TimeSeriesInputOutputCurve, store) =
     TimeSeriesInputOutputCurve(convert_cost(vc.function_data, store), vc.input_at_zero)
 convert_cost(vc::PC.TimeSeriesInputOutputCurve) = convert_cost(vc, _current_import_store())
@@ -380,6 +394,9 @@ function convert_cost(po::PC.MarketBidCost)
         curve_style = _curve_style_from_wire(
             _require(po.curve_style, "MarketBidCost.curve_style"),
         ),
+        curve_multihour = _curve_multihour_from_wire(
+            _require(po.curve_multihour, "MarketBidCost.curve_multihour"),
+        ),
     )
 end
 
@@ -458,6 +475,9 @@ function convert_cost(po::PC.MarketBidTimeSeriesCost, store)
         ),
         curve_style = _curve_style_from_wire(
             _require(po.curve_style, "MarketBidTimeSeriesCost.curve_style"),
+        ),
+        curve_multihour = _curve_multihour_from_wire(
+            _require(po.curve_multihour, "MarketBidTimeSeriesCost.curve_multihour"),
         ),
     )
 end
