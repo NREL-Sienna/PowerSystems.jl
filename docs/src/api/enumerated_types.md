@@ -103,9 +103,9 @@ EIA Annual Energy Review. `ThermalFuels` has the options:
 
 ## [Operational States](@id opstate_list)
 
-Each committable [`ThermalGen`](@ref) generator has a field for `status::OperationalStates`,
-the running on/off lifecycle of an in-service unit. `OperationalStates` values are mutually
-exclusive:
+Each committable [`ThermalGen`](@ref) generator, as well as [`HydroDispatch`](@ref) and
+[`HybridSystem`](@ref), has a field for `status::OperationalStates`, the running on/off
+lifecycle of an in-service unit. `OperationalStates` values are mutually exclusive:
 
 | Name       | Description                      |
 |:---------- |:-------------------------------- |

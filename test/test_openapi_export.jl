@@ -590,7 +590,7 @@ end
         active_power_limits = (min = 0.0, max = 0.4),
         reactive_power_limits = (min = -0.15, max = 0.15),
         ramp_limits = (up = 0.1, down = 0.1), time_limits = (up = 1.0, down = 1.0),
-        base_power = 100.0, status = true, time_at_status = 50.0,
+        base_power = 100.0, status = OperationalStates.ONLINE, time_at_status = 50.0,
         operation_cost = hydro_cost,
     )
     ren_cost = RenewableGenerationCost(;

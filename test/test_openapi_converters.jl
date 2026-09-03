@@ -751,7 +751,7 @@ end
         reactive_power_limits = PSY.IC.MinMax(; min = -15.0, max = 15.0),
         ramp_limits = PSY.IC.UpDown(; up = 10.0, down = 10.0),
         time_limits = PSY.IC.UpDown(; up = 1.0, down = 1.0),
-        base_power = 100.0, status = true, time_at_status = 50.0,
+        base_power = 100.0, status = "ONLINE", time_at_status = 50.0,
         operation_cost = hydro_cost_po,
     )
     ror_natural = PSY.from_openapi(ror_po, refs, NU)

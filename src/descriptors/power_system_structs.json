@@ -4772,11 +4772,11 @@
                     "validation_action": "warn"
                 },
                 {
-                    "null_value": "false",
-                    "default": "false",
+                    "null_value": "OperationalStates.OFFLINE",
+                    "default": "OperationalStates.OFFLINE",
                     "name": "status",
-                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
-                    "data_type": "Bool"
+                    "comment": "Operating state of the unit at the start of a simulation. Options are listed [here](@ref opstate_list)",
+                    "data_type": "OperationalStates"
                 },
                 {
                     "null_value": "INFINITE_TIME",
@@ -6460,10 +6460,10 @@
                     "data_type": "Bool"
                 },
                 {
-                    "null_value": "false",
+                    "null_value": "OperationalStates.OFFLINE",
                     "name": "status",
-                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
-                    "data_type": "Bool"
+                    "comment": "Operating state of the unit at the start of a simulation. Options are listed [here](@ref opstate_list)",
+                    "data_type": "OperationalStates"
                 },
                 {
                     "name": "bus",
