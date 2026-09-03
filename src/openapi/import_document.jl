@@ -526,10 +526,17 @@ Carry the document's system-level metadata onto `sys`.
 Only `name` and `description` are applied here (`base_power` is a `from_openapi` kwarg, not a
 document field). `frequency` cannot be — `System` is immutable and takes it at construction —
 so [`_system_with_sidecar`](@ref) applies it there, via [`_frequency_kwarg`](@ref).
+
+`supplied` is the set of keywords the caller passed, and a field named in it is left alone: a
+caller who writes `name = ...` meant it, and overwriting that with the document's value would
+discard it silently. This is the same precedence `frequency` already has, where the caller's
+keyword is merged after the document's — the three document-owned keywords now agree instead
+of splitting on which one happens to be applied after construction.
 """
-function _apply_document_metadata!(sys::System, doc::PD.SystemDocument)
-    _apply_metadata_field!(set_name!, sys, PD.get_name(doc))
-    _apply_metadata_field!(set_description!, sys, PD.get_description(doc))
+function _apply_document_metadata!(sys::System, doc::PD.SystemDocument, supplied)
+    :name in supplied || _apply_metadata_field!(set_name!, sys, PD.get_name(doc))
+    :description in supplied ||
+        _apply_metadata_field!(set_description!, sys, PD.get_description(doc))
     return nothing
 end
 
@@ -581,6 +588,9 @@ but supplies no `time_series_storage_path`, and any drift this validation catche
 self-interpretable via its own `power_units`/`base_power`. It defaults to the same `100.0`
 `System`'s own constructor defaults to.
 
+A caller's `name`, `description` or `frequency` outranks the document's; every other
+document field is applied unconditionally.
+
 `system_kwargs` pass straight through to the fresh `System(base_power; system_kwargs...)`
 this builds (e.g. `time_series_in_memory`, `time_series_directory`, `time_series_read_only`,
 `runchecks` — `System`'s own `SYSTEM_KWARGS`); an unsupported key still errors, from
@@ -596,7 +606,7 @@ function from_openapi(
     _check_no_unconverted_component_types(doc.components)
 
     sys = _system_with_sidecar(base_power, doc, time_series_storage_path; system_kwargs...)
-    _apply_document_metadata!(sys, doc)
+    _apply_document_metadata!(sys, doc, keys(system_kwargs))
 
     store = if isnothing(time_series_storage_path)
         nothing

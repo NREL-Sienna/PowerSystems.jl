@@ -328,6 +328,11 @@ the bundle directory — so a bundle stays readable after being moved or renamed
 names a sidecar which is not present errors rather than yielding a system silently missing its
 time series.
 
+Of `System`'s keywords, `time_series_read_only` and `time_series_directory` are the two that
+change how the bundle is *read* — read-only opens the sidecar in place, otherwise it is copied
+to a working location first. `name`, `description` and `frequency` name document fields, and a
+value passed here outranks the document's.
+
 `system_kwargs` pass through to the `System` being built (`time_series_in_memory`,
 `time_series_directory`, `runchecks`, ...).
 """
