@@ -732,8 +732,8 @@ IS.@scoped_enum(
     VARIABLE = 2,
 )
 @doc """
-Enumeration of market-bid curve-clearing styles. Corresponds to ERCOT's DAM `PriceCurve`
-`curveStyle` field (`"CURVE"` | `"FIXED"` | `"VARIABLE"`).
+Enumeration of market-bid curve-clearing styles: the quantity structure of a bid, submitted
+as a divisible curve, a fixed block, or a variable block.
 
 # Values
 - `CURVE = 0`: Ordinary divisible price-setting curve (default).
@@ -747,9 +747,9 @@ IS.@scoped_enum(
     MULTI_HOUR = 1,
 )
 @doc """
-Enumeration of market-bid multi-hour block indicators. Corresponds to ERCOT's DAM `PriceCurve`
-`multiHourBlock` field (`false` | `true`). Independent of [`CurveStyles`](@ref): the curve
-style is the quantity structure of the bid, this is its time structure, and the two compose.
+Enumeration of market-bid multi-hour block indicators: the time structure of a bid.
+Independent of [`CurveStyles`](@ref): the curve style is the quantity structure of the bid,
+this is its time structure, and the two compose.
 
 # Values
 - `SINGLE_HOUR = 0`: Each hour of the bid clears independently (default).

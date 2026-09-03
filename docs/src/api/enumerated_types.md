@@ -182,8 +182,8 @@ tap changer, which can be used to determine the tap position during power flow c
 ## [Market Bid Curve Styles](@id curvestyles_list)
 
 `CurveStyles` is the curve-clearing style of a [`MarketBidCost`](@ref) or
-[`MarketBidTimeSeriesCost`](@ref), the quantity structure of the bid. It corresponds to
-ERCOT's DAM `PriceCurve` `curveStyle` field. A non-`CURVE` value is mutually exclusive with
+[`MarketBidTimeSeriesCost`](@ref), the quantity structure of the bid: a divisible curve, a
+fixed block, or a variable block. A non-`CURVE` value is mutually exclusive with
 linear interpolation (`incremental_slope`/`decremental_slope`). `CurveStyles` has the options:
 
 | Name       | Description                                                              |
@@ -195,9 +195,8 @@ linear interpolation (`incremental_slope`/`decremental_slope`). `CurveStyles` ha
 ## [Market Bid Multi-Hour Blocks](@id curvemultihour_list)
 
 `CurveMultiHour` is the multi-hour block indicator of a [`MarketBidCost`](@ref) or
-[`MarketBidTimeSeriesCost`](@ref), the time structure of the bid. It corresponds to ERCOT's
-DAM `PriceCurve` `multiHourBlock` field and is independent of `CurveStyles`: the two switches
-compose. `CurveMultiHour` has the options:
+[`MarketBidTimeSeriesCost`](@ref), the time structure of the bid. It is independent of
+`CurveStyles`: the two switches compose. `CurveMultiHour` has the options:
 
 | Name          | Description                                                      |
 |:------------- |:---------------------------------------------------------------- |
