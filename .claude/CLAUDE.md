@@ -20,6 +20,9 @@ from_file(path; system_kwargs...)   # no type argument — format is inferred fr
   `PD.write_document`) plus, only when the system has time series, the InfraStore pair
   `time_series.h5` + `time_series.h5.sqlite` (via `IS.serialize(store, path)`). A system with no time
   series gets the document alone and a null `time_series_storage_file` — never an empty HDF5 file.
+  **Not the intended end state:** `:json` is specified as *two* artifacts — the association tables
+  belong in the document, and only `:sienna` carries the sql tables as their own member. That needs an
+  InfraStore change and is blocked on it; see below.
 - **`format = :sienna`** — `path` is a single **`.sn`** file (tar + gzip of that bundle). The extension is
   **enforced on write**: it is how `from_file` recognizes an archive, so a non-`.sn` path is refused
   rather than silently producing an unreadable file. `:sienna` also only ever writes
@@ -43,6 +46,34 @@ build on it.)
 **Deleted, stays deleted:** `src/data_format_conversions.jl`, `DATA_FORMAT_VERSION`,
 `_post_deserialize_handling` (and with it `assign_new_ids` on read — no read path can reach it),
 `from_dict(::Type{System}, …)`, `deserialize_components!`, and `test/test_serialization.jl`.
+
+### Open: the two-file `:json` bundle needs an InfraStore change
+
+Decided direction, blocked on upstream. InfraStore keeps owning the `.h5`; the association tables move
+into `system.json`; `.sqlite` becomes a `:sienna`-only member. Write-side is trivial (let
+`IS.serialize` write the pair, then drop the catalog). **The read side cannot be done from Julia** —
+verified empirically, both sanctioned routes are refused by design:
+
+- Rebuilding a catalog from the document rows into a fresh store fails: *"cannot import
+  'max_active_power' (owner 2): it names array e325cc34…, which this store does not hold. An import
+  writes rows only — the arrays arrive with the artifact — so the row would be a dangling reference"*
+  (`InfraStore.InvalidParameterError`).
+- Pairing a rebuilt catalog with the bundle's real `.h5` fails: *"the HDF5 file and its catalog do not
+  carry the same generation stamp (HDF5: 920b7fed…, catalog: none)"* (`MismatchedArtifactError`). The
+  stamp lives in the HDF5 and pairs it to one specific catalog, so even a byte-perfect rebuild is
+  rejected — the guard is about artifact provenance, not metadata content.
+
+`open_store` requires `$path.sqlite` in both `:attached` and `:memory` modes, and `Store(; path=…)`
+throws `StoreExistsError` on an existing artifact (`overwrite=true` discards the arrays). So there is no
+keyword for "arrays exist, build me a fresh catalog."
+
+**What to ask InfraStore for:** a sanctioned way to adopt an existing, generation-stamped `.h5` under a
+freshly created empty catalog — the deliberate case — as distinct from the accidental orphan the stamp
+guard exists to catch (see InfraStore's own test `"an abandoned in-memory catalog leaves a half
+artifact"`). Once it lands, the Julia side is small and already half-built:
+`IS.import_time_series_association_rows!` is committed on InfrastructureSystems' `jd/serialization_refactor`
+branch (`6d84ee4f`), and PSY needs a `:json`-without-catalog branch in `_system_with_sidecar` that
+replays `doc.time_series_associations` instead of validating against a catalog.
 
 **What the format cannot carry** — `_warn_on_bundle_data_loss` warns (never errors) at export:
 `subsystems` have no representation at all; masked components are exported by id but nothing guarantees
