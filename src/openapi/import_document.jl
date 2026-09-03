@@ -524,14 +524,27 @@ _apply_metadata_field!(setter, sys::System, value) = setter(sys, value)
 Carry the document's system-level metadata onto `sys`.
 
 Only `name` and `description` are applied here (`base_power` is a `from_openapi` kwarg, not a
-document field). `frequency` is deliberately not applied: `System`'s own default stands, and a
-document that omits it must not silently reset it.
+document field). `frequency` cannot be — `System` is immutable and takes it at construction —
+so [`_system_with_sidecar`](@ref) applies it there, via [`_frequency_kwarg`](@ref).
 """
 function _apply_document_metadata!(sys::System, doc::PD.SystemDocument)
     _apply_metadata_field!(set_name!, sys, PD.get_name(doc))
     _apply_metadata_field!(set_description!, sys, PD.get_description(doc))
     return nothing
 end
+
+"""
+The `frequency = ...` keyword the document asks for, as a `NamedTuple` to splat into
+`System`'s constructor — empty when the document names none.
+
+`frequency` is an optional field of the document and a construction-time keyword of an
+immutable `System`, so it can only be applied here, not assigned afterwards. Empty-when-absent
+is what keeps the original guarantee intact: a document that predates the field cannot
+silently reset a 50 Hz system to the 60 Hz default. A caller's own `frequency` in
+`system_kwargs` wins, since it is merged after this one.
+"""
+_frequency_kwarg(::Nothing) = (;)
+_frequency_kwarg(value) = (; frequency = Float64(value))
 
 """
 $(TYPEDSIGNATURES)
@@ -549,11 +562,13 @@ forward or same-type reference — e.g. a cascading `HydroReservoir` chain — s
 `supplemental_attribute_associations`
 (plus `plant_associations`/`combined_cycle_associations` for the plant-family ones) and
 reserve membership from `service_associations`, and — when `time_series_storage_path` is
-given — adopts the HDF5 sidecar wholesale as the System's own time series store. There is no
-per-row ingestion of `doc.time_series_associations`: those rows are informational (the
-sidecar's catalog is authoritative), so instead of being replayed they are cross-checked
-against it by [`_validate_time_series_associations!`](@ref) — a validation pass that writes
-nothing and throws if the two disagree.
+given — adopts the HDF5 sidecar as the System's own time series store.
+
+What happens to `doc.time_series_associations` depends on what the sidecar brought. The
+bundle [`to_file`](@ref) writes is arrays only, so its catalog arrives empty and the
+document's rows *are* the catalog: they are replayed into it, ids included. A sidecar that
+came with its own `.sqlite` is authoritative instead, and the rows are cross-checked against
+it rather than written. See [`_load_time_series_associations!`](@ref).
 
 Errors loudly (naming the offending type, id, or field) rather than silently skipping:
 a component type with no registered converter, an unresolved attribute/plant/service
@@ -588,6 +603,7 @@ function from_openapi(
     else
         sys.data.time_series_manager.data_store
     end
+    _load_time_series_associations!(sys, doc, store)
     refs = OpenAPIRefs(base_power; store = store)
 
     # Bound for the whole component pass: a `MarketBidTimeSeriesCost`/time-series-backed
@@ -622,10 +638,40 @@ function from_openapi(
 
     load_supplemental_attribute_associations!(sys, refs, doc)
 
-    _validate_time_series_associations!(sys, doc, time_series_storage_path)
-
     return sys
 end
+
+"""
+Put the document's `time_series_associations` rows into `store`, or cross-check them against
+the rows it already has.
+
+Which one depends on what the bundle carried, not on which format wrote it — `from_openapi`
+is public and does not know its producer. An arrays-only sidecar arrives with a freshly
+minted, empty catalog, so the document's rows are replayed, ids included; that is what keeps
+a cost's `association_id` resolving to the series it named. A sidecar that brought its own
+`.sqlite` is authoritative instead and the rows are only validated against it — the path a
+`.sn` archive, an older bundle, and a PowerSystemCaseBuilder cache all take.
+
+Runs before the component pass, not after it: a `MarketBidTimeSeriesCost` or time-series
+`FuelCurve` resolves its `association_id` against the store while its owner is being built,
+so the rows have to be there first.
+"""
+_load_time_series_associations!(::System, ::PD.SystemDocument, ::Nothing) = nothing
+
+function _load_time_series_associations!(sys::System, doc::PD.SystemDocument, store)
+    isempty(doc.time_series_associations) && return nothing
+    if _catalog_is_authoritative(store)
+        return _validate_time_series_associations!(sys, doc)
+    end
+    IS.import_time_series_association_rows!(
+        store, JSON.json(doc.time_series_associations),
+    )
+    return nothing
+end
+
+"""Whether the adopted store brought its own association rows, in which case they outrank the
+document's. A count, not a listing: the answer is a yes/no and the catalog can be large."""
+_catalog_is_authoritative(store) = !iszero(IS.get_num_time_series(store))
 
 """
 A `System` whose time series store is the document's InfraStore sidecar, adopted rather than
@@ -643,13 +689,17 @@ function _system_with_sidecar(
     time_series_storage_path;
     system_kwargs...,
 )
-    isnothing(time_series_storage_path) && return System(base_power; system_kwargs...)
+    # The document's own frequency first, the caller's keywords second, so an explicit
+    # `frequency =` still wins. This is the only place it can be applied: `System` is
+    # immutable and takes it at construction.
+    kwargs = (; _frequency_kwarg(PD.get_frequency(doc))..., system_kwargs...)
+    isnothing(time_series_storage_path) && return System(base_power; kwargs...)
     isfile(time_series_storage_path) || error(
         "from_openapi(System, doc): time_series_storage_path " *
         "\"$time_series_storage_path\" does not exist",
     )
-    read_only = get(system_kwargs, :time_series_read_only, false)
-    directory = get(system_kwargs, :time_series_directory, nothing)
+    read_only = get(kwargs, :time_series_read_only, false)
+    directory = get(kwargs, :time_series_directory, nothing)
     store = IS.open_deserialized_infrastore_store(
         String(time_series_storage_path), directory, read_only,
     )
@@ -665,7 +715,7 @@ function _system_with_sidecar(
         attribute_manager,
         IS.InfrastructureSystemsInternal(),
     )
-    return System(data, base_power; system_kwargs...)
+    return System(data, base_power; kwargs...)
 end
 
 """
@@ -685,14 +735,7 @@ the bundle is corrupt and throws `IS.DataFormatError` naming the row and, for dr
 differing fields. Sidecar rows the document does not mention are tolerated (`@debug`-logged)
 — a document only ever names the owners it carries.
 """
-function _validate_time_series_associations!(
-    sys::System,
-    doc::PD.SystemDocument,
-    time_series_storage_path,
-)
-    (isnothing(time_series_storage_path) || isempty(doc.time_series_associations)) &&
-        return nothing
-
+function _validate_time_series_associations!(sys::System, doc::PD.SystemDocument)
     store_rows = [
         _unwrap_oneof(row) for row in IS.openapi_time_series_association_rows(sys.data)
     ]

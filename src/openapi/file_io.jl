@@ -1,8 +1,35 @@
 # A serialized System is written as either:
-#   - format = :json    a directory holding system.json (the OpenAPI document, written/read
-#                        via PowerOpenAPIModels) + time_series.h5 + time_series.h5.sqlite (the
-#                        InfraStore sidecar PSY writes/reads via IS's storage layer)
-#   - format = :sienna   the same three files, tar+gzip'd into one `.sn` file
+#
+#   - format = :json     a directory of two members
+#
+#                            case/
+#                              system.json      the OpenAPI document
+#                              time_series.h5   the InfraStore arrays
+#
+#   - format = :sienna   three members, tar+gzip'd into one `.sn` file
+#
+#                            case.sn
+#                              system.json
+#                              time_series.h5
+#                              time_series.h5.sqlite   InfraStore's own catalog
+#
+#                        Entries sit at the archive root rather than under a `case/` prefix,
+#                        because `Tar.create` archives a directory's contents, not the
+#                        directory itself.
+#
+# The third member is the difference between the formats, and it is a difference about
+# **where the association tables live** rather than about compression:
+#
+#   :sienna keeps InfraStore's `.sqlite`, so the store is restored from its own tables. It
+#   is the lossless native format — the catalog holds columns the OpenAPI wire form has no
+#   field for — and it is Sienna-only, since reading it means reading InfraStore's catalog.
+#
+#   :json writes the arrays alone and records the associations in the document's own
+#   `time_series_associations` table, which `from_openapi` replays into a freshly minted
+#   catalog. That is what makes it two files any non-Julia reader can consume, and it is
+#   bounded by what the wire form can express.
+#
+# `to_openapi(sys; write_catalog)` is the knob.
 #
 # The document records only the sidecar's basename, so the pair moves together.
 
@@ -12,11 +39,28 @@ const SYSTEM_DOCUMENT_FILE = "system.json"
 """HDF5 sidecar member of a serialized System directory."""
 const TIME_SERIES_FILE = "time_series.h5"
 
-"""SQLite catalog IS.serialize writes alongside the HDF5 sidecar."""
+"""InfraStore's SQLite catalog, beside the HDF5 sidecar.
+
+A member of a `:sienna` bundle and not of a `:json` one — that is the difference between the
+formats. Named here either way, because a directory being overwritten is cleared of it: the
+arrays-only write refuses to publish beside a catalog whose rows would then point into the
+file it just replaced.
+"""
 const TIME_SERIES_CATALOG_FILE = TIME_SERIES_FILE * ".sqlite"
 
 """Extension for a single-file, compressed System archive."""
 const SIENNA_ARCHIVE_EXTENSION = ".sn"
+
+"""
+Archive member holding the System state the OpenAPI document has no representation for.
+
+`format = :sienna` only, and it holds exactly one thing: subsystem membership. Everything
+else a System carries is either in the document already (frequency, so both formats keep it)
+or derived from it on read — masked components are re-masked by
+`handle_component_addition!(sys, ::StaticInjectionSubsystem)` when the owning
+`StaticInjectionSubsystem` is added, so recording them would give one truth two writers.
+"""
+const SIENNA_EXTRAS_FILE = "sienna_extras.json"
 
 """
 Whether `sys` has any time series, and therefore needs a sidecar written.
@@ -27,22 +71,71 @@ rather than an empty HDF5 file that would imply the data went missing.
 has_time_series_data(sys::System) = !iszero(IS.get_num_time_series(sys.data))
 
 """
-Warn when `sys` carries state the OpenAPI document format cannot represent, so a `to_file`
-round trip does not silently drop it. There is no plan yet for either.
+Warn when `sys` carries state `format = :json` cannot represent, so a round trip does not
+silently drop it.
+
+Called only from the `:json` branch, because it is the only lossy format:
+[`SIENNA_EXTRAS_FILE`](@ref) carries what the document cannot. Frequency is in neither list —
+it is an optional field of the document itself, so both formats keep it.
 """
 function _warn_on_bundle_data_loss(sys::System)
     if !isempty(get_subsystems(sys))
-        @warn "System has user-defined subsystems; to_file/from_file does not represent " *
-              "them, and they will not survive the round trip."
+        @warn "System has user-defined subsystems; format = :json does not represent " *
+              "them, and they will not survive the round trip. Use format = :sienna to " *
+              "keep them."
     end
-    if !isempty(IS.get_masked_components(Component, sys.data))
-        @warn "System has masked components; to_file/from_file does not guarantee they " *
-              "survive the round trip."
+    return nothing
+end
+
+"""
+$(TYPEDSIGNATURES)
+
+Write the `:sienna` extras member into an already-built bundle directory.
+
+Component ids are the document's own ids, so the two members agree without a translation
+step: PSY sets each component to its document id before adding it on import. Ids are sorted
+so the file is byte-reproducible for a given System.
+"""
+function _write_sienna_extras(sys::System, dir::AbstractString, pretty::Bool)
+    subsystems = Dict(
+        name => sort!(collect(get_component_ids(sys, name))) for
+        name in get_subsystems(sys)
+    )
+    open(joinpath(dir, SIENNA_EXTRAS_FILE), "w") do io
+        _print_extras(io, Dict("subsystems" => subsystems), pretty)
     end
-    if get_frequency(sys) != DEFAULT_SYSTEM_FREQUENCY
-        @warn "System frequency is $(get_frequency(sys)) Hz; the document records it, but " *
-              "from_file restores the default $DEFAULT_SYSTEM_FREQUENCY Hz, so it will not " *
-              "survive the round trip."
+    return nothing
+end
+
+"""Honour `to_file`'s `pretty` for this member too, so a bundle is not half indented."""
+_print_extras(io::IO, extras::AbstractDict, pretty::Bool) =
+    pretty ? JSON.print(io, extras, 2) : JSON.print(io, extras)
+
+"""
+$(TYPEDSIGNATURES)
+
+Apply the `:sienna` extras member to a System just built from the bundle's document.
+
+`IS.get_component(sys, id)` throws `ArgumentError` naming the id when the file references a
+component the document does not carry, which is the right outcome: the two members are written
+together from one System, so a mismatch means the archive is corrupt rather than merely old.
+"""
+function _load_sienna_extras!(sys::System, dir::AbstractString)
+    path = joinpath(dir, SIENNA_EXTRAS_FILE)
+    if !isfile(path)
+        throw(
+            IS.DataFormatError(
+                "$SIENNA_ARCHIVE_EXTENSION archive is missing its $SIENNA_EXTRAS_FILE " *
+                "member; it was not written by to_file(...; format = :sienna)",
+            ),
+        )
+    end
+    extras = JSON.parsefile(path; dicttype = Dict{String, Any})
+    for (name, ids) in extras["subsystems"]
+        add_subsystem!(sys, name)
+        for id in ids
+            add_component_to_subsystem!(sys, name, IS.get_component(sys, Int(id)))
+        end
     end
     return nothing
 end
@@ -77,10 +170,12 @@ Write `sys` to `path`.
 
 # The `format` keyword
 
-  - `:json` (default) — `path` is a directory; writes `system.json` + `time_series.h5` +
-    `time_series.h5.sqlite` into it (the sidecar files only when `sys` has time series).
-  - `:sienna` — `path` is a single file (conventionally ending `.sn`); writes the same three
-    members into a temporary directory and archives it with `Tar` + gzip.
+  - `:json` (default) — `path` is a directory; writes `system.json` + `time_series.h5` into it
+    (the sidecar only when `sys` has time series). The document carries the store's
+    association rows, so no SQLite catalog is written.
+  - `:sienna` — `path` is a single file (conventionally ending `.sn`); writes those two plus
+    `time_series.h5.sqlite` (InfraStore's own catalog) and `sienna_extras.json` into a
+    temporary directory and archives it with `Tar` + gzip. Lossless; `:json` is not.
 
 # The `unit_system` keyword
 
@@ -109,8 +204,10 @@ back correctly, and a blob missing the field is an error rather than a guess (se
 `from_openapi`). Writing then reading therefore returns what you exported regardless of which
 basis you chose.
 
-`sys.subsystems`/masked components have no representation in the document; `to_file` warns
-(does not error) when either is present.
+`sys.subsystems` has no representation in the document, so `format = :json` warns (does not
+error) when the System has any; `format = :sienna` keeps them in `sienna_extras.json`. Masked
+components need no such handling either way — they are re-masked on read when their owning
+`StaticInjectionSubsystem` is added.
 """
 function to_file(
     sys::System,
@@ -120,8 +217,8 @@ function to_file(
     force::Bool = false,
     pretty::Bool = false,
 )
-    _warn_on_bundle_data_loss(sys)
     if format === :json
+        _warn_on_bundle_data_loss(sys)
         _to_file_json(sys, path; unit_system = unit_system, force = force, pretty = pretty)
     elseif format === :sienna
         if unit_system !== :component_base
@@ -143,11 +240,16 @@ function _to_file_json(
     unit_system::Symbol,
     force::Bool,
     pretty::Bool,
+    write_catalog::Bool = false,
 )
     _prepare_bundle_dir(dir, force)
     storage_path = _sidecar_path_for_write(sys, dir)
-    doc =
-        to_openapi(sys; power_units = unit_system, time_series_storage_path = storage_path)
+    doc = to_openapi(
+        sys;
+        power_units = unit_system,
+        time_series_storage_path = storage_path,
+        write_catalog = write_catalog,
+    )
     PD.write_document(
         doc,
         joinpath(dir, SYSTEM_DOCUMENT_FILE);
@@ -189,13 +291,17 @@ function _to_file_sienna(
     mkpath(dirname(path))
     mktempdir() do dir
         bundle = joinpath(dir, "case")
+        # The archive keeps InfraStore's own `.sqlite` — see the format notes at the top of
+        # this file for why that is what makes `:sienna` the lossless one.
         _to_file_json(
             sys,
             bundle;
             unit_system = :component_base,
             force = true,
             pretty = pretty,
+            write_catalog = true,
         )
+        _write_sienna_extras(sys, bundle, pretty)
         open(CodecZlib.GzipCompressorStream, path, "w") do io
             Tar.create(bundle, io)
         end
@@ -272,7 +378,9 @@ function _from_file_sienna(path::AbstractString; system_kwargs...)
     open(CodecZlib.GzipDecompressorStream, path, "r") do io
         Tar.extract(io, dir)
     end
-    return _from_file_json(dir; system_kwargs...)
+    sys = _from_file_json(dir; system_kwargs...)
+    _load_sienna_extras!(sys, dir)
+    return sys
 end
 
 """
