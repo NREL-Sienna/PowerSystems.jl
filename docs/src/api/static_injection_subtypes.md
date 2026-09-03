@@ -55,7 +55,7 @@ Here, "`MinMax` (optional)" means `Union{MinMax, Nothing}`, with `nothing` repes
 | `prime_mover_type` | ✅        | ✅                           | ✅                              | ✅                       | ✅                      | ✅                          |
 | `fuel`             | ✅        | ❌                           | ❌                              | ❌                       | ❌                      | ❌                          |
 | `status`           | ✅        | ❌                           | ❌                              | ✅                       | ❌                      | ✅                          |
-| `must_run`         | ✅        | ❌                           | ❌                              | ❌                       | ❌                      | ✅                          |
+| `commitment_mode`  | ✅        | ❌                           | ❌                              | ❌                       | ❌                      | ✅                          |
 | `ramp_limits`      | ✅        | ❌                           | ❌                              | ✅                       | ✅                      | ✅                          |
 | `time_limits`      | ✅        | ❌                           | ❌                              | ✅                       | ✅                      | ✅                          |
 | `power_factor`     | ❌        | ✅                           | ✅                              | ❌                       | ❌                      | ❌                          |

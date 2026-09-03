@@ -101,6 +101,36 @@ EIA Annual Energy Review. `ThermalFuels` has the options:
 | `OTHER`                                                                                                                            | OTH           | Other type of fuel                                                                                                                  |
 | *Asterisk denotes fuel codes not directly from the current EIA 923 form but kept for compatibility with older versions of the form |               |                                                                                                                                     |
 
+## [Operational States](@id opstate_list)
+
+Each committable [`ThermalGen`](@ref) generator, as well as [`HydroDispatch`](@ref) and
+[`HybridSystem`](@ref), has a field for `status::OperationalStates`, the running on/off
+lifecycle of an in-service unit. `OperationalStates` values are mutually exclusive:
+
+| Name       | Description                      |
+|:---------- |:-------------------------------- |
+| `OFFLINE`  | Shut down and not synchronized   |
+| `STARTUP`  | In its start-up sequence         |
+| `ONLINE`   | Synchronized and able to produce |
+| `SHUTDOWN` | In its shut-down sequence        |
+
+Availability is not one of these values: a unit on outage is `available = false`, and an
+`OFFLINE` unit that is `available = true` is in service and eligible for re-commitment.
+
+## [Commitment Modes](@id commit_list)
+
+Each committable [`ThermalGen`](@ref) generator has a field for
+`commitment_mode::CommitmentModes`, why the unit is (or would be) committed, orthogonal to
+`OperationalStates`. `CommitmentModes` has the options:
+
+| Name             | Description                                                                                        |
+|:---------------- |:-------------------------------------------------------------------------------------------------- |
+| `UNCOMMITTED`    | Not committed; the unit is offline but available                                                   |
+| `COMMITTED`      | Committed by the scheduling process (a planning model's commitment decision or a cleared schedule) |
+| `SELF_SCHEDULED` | Scheduled by its owner rather than by the scheduling process                                       |
+| `RELIABILITY`    | Committed by the system operator for reliability rather than by the scheduling process             |
+| `MUST_RUN`       | Required to run by contract or operating constraint                                                |
+
 ## [Energy Storage](@id storagetech_list)
 
 `StorageTech` defines the storage technology used in an energy [`Storage`](@ref) system, based
