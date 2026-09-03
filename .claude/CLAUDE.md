@@ -4,6 +4,49 @@ The Sienna power-system **data model**: the `System` container plus ~210 compone
 
 **This branch has NO parsers.** `src/parsers/` was removed in the psy6 line; all Matpower/PSSE/table parsing lives in PowerFlowFileParser.jl (and PSB's parser wrappers). Do not re-add parsing here.
 
+**There is also NO native JSON serializer.** `to_file`/`from_file` are the only way a `System` reaches or leaves disk — see "System file I/O" below before touching anything serialization-shaped.
+
+## System file I/O — `to_file` / `from_file` only
+
+`src/openapi/file_io.jl` owns the whole surface. Two formats, one serializer: `:sienna` builds the same
+bundle `:json` does and archives it, so there is no second writer to keep in sync.
+
+```julia
+to_file(sys, path; format = :json, unit_system = :component_base, force = false, pretty = false)
+from_file(path; system_kwargs...)   # no type argument — format is inferred from `path`
+```
+
+- **`format = :json`** — `path` is a **directory** holding `system.json` (the OpenAPI document, via
+  `PD.write_document`) plus, only when the system has time series, the InfraStore pair
+  `time_series.h5` + `time_series.h5.sqlite` (via `IS.serialize(store, path)`). A system with no time
+  series gets the document alone and a null `time_series_storage_file` — never an empty HDF5 file.
+- **`format = :sienna`** — `path` is a single **`.sn`** file (tar + gzip of that bundle). The extension is
+  **enforced on write**: it is how `from_file` recognizes an archive, so a non-`.sn` path is refused
+  rather than silently producing an unreadable file. `:sienna` also only ever writes
+  `:component_base` and throws on any other `unit_system` — the archive format exists to avoid a
+  conversion pass.
+- **`from_file`** infers: directory → `:json`, `.sn` file → `:sienna`, anything else → `DataFormatError`.
+- The keyword is **`unit_system`**, not `power_units` — it governs every convertible field (`:mva`,
+  `:ohm`, `:siemens`), not just power. `to_openapi` keeps its own separate `power_units` keyword; don't
+  conflate them.
+
+**Everything from the old native path now throws `DataFormatError` and names its replacement** — do not
+"restore" any of it, and do not add a shim: `System(::AbstractString)` (`.json` → `from_file`;
+`.raw`/`.m` → PowerFlowFileParser.jl; anything else → generic), and `to_json`/`from_json`/`IS.serialize`/
+`IS.deserialize` applied to a `System`. Those four stay exported for components and other types; only the
+`System` methods refuse, because the generic `InfrastructureSystemsType` fallthrough would otherwise write
+a JSON file nothing can read.
+
+**Deleted, stays deleted:** `src/data_format_conversions.jl`, `DATA_FORMAT_VERSION`,
+`_post_deserialize_handling` (and with it `assign_new_ids` on read — no read path can reach it),
+`from_dict(::Type{System}, …)`, `deserialize_components!`, and `test/test_serialization.jl`.
+
+**What the format cannot carry** — `_warn_on_bundle_data_loss` warns (never errors) at export:
+`subsystems` have no representation at all; masked components are exported by id but nothing guarantees
+they come back masked; a `frequency` other than `DEFAULT_SYSTEM_FREQUENCY` is written to the document but
+import applies only name/description, so it reads back at the default. There is **no migration path** from
+pre-cutover files — regenerate them.
+
 ## Downstream blast radius
 
 PNM, PF, POM, and PSB all consume PSY; SiennaSchemas mirrors PSY component fields (JSON schemas), so field renames/retypes create schema drift the sync tooling must catch. After a PSY change:
@@ -11,6 +54,22 @@ PNM, PF, POM, and PSB all consume PSY; SiennaSchemas mirrors PSY component field
 1. compile-smoke the stack: `julia --project=<psy6-workspace-root> -e 'using PowerNetworkMatrices, PowerFlows, PowerOperationsModels, PowerSystemCaseBuilder'`
 2. **clear PSB's `data/serialized_system/` cache** — it has no version-aware invalidation, and stale cached systems produce confusing deserialization failures downstream.
 3. if the change touched a component field also present in SiennaSchemas, flag the schema counterpart (example of real drift: `head_to_volume_factor` moved to `FunctionData` in PSY commit `ed30a682` while `SiennaSchemas/Operations/StaticInjection/HydroReservoir.json` still `$ref`s `ValueCurve`).
+
+**Open cross-repo break (as of the `to_file`/`from_file` cutover):** two packages still call the
+pre-cutover signatures from their own source and are knowingly left broken until they get their own PRs.
+Expect their suites — and anything using PSB fixtures, which is most of the stack — to fail with
+`MethodError: no method matching from_file(::Type{System}, ::String)` until then. Neither is PSY's to fix
+from this side:
+
+- **PowerSystemCaseBuilder** — `src/build_system.jl:113` and `:139`, `src/parsers/openapi_pipeline.jl:30`.
+  Its system cache calls both old signatures, so most `build_system` calls throw. `test_component_selector.jl`
+  calls `PSB.build_system` at module top level, which aborts an unfiltered `runtests.jl` before later files load.
+- **PowerOperationsModels** — `src/operation/decision_model.jl:235`, `src/operation/emulation_model.jl:293`.
+  `to_file(sys, dir; power_units = …)` under IOM's *default* `system_to_file` setting, inside a try/catch
+  that reports a successful solve as `FAILED` rather than surfacing the error.
+
+Both need the same two mechanical edits: `power_units` → `unit_system`, and drop `System` from
+`from_file`'s arguments.
 
 ## Source layout — the non-obvious parts
 
@@ -76,7 +135,7 @@ Five concrete transformer types became two, and series data moved onto a nested 
 - Setters take **tagged** values and reject bare floats: `set_rating_b!(line, 0.9 * PSY.SU)`.
 - PSY extends `IS._strip_units` (required by the IS codegen contract) and overrides `IS.default_units(::Component)` to return `SU` for time-series multipliers.
 - **`with_units_base` / `set_units_base_system!` / `get_units_base` are GONE** (verified against `origin/psy6`: all three `isdefined(PowerSystems, …) == false`). The stateful units system was fully removed in the psy6 line — see `7ffbbdf8d` "remove last pieces of stateful units system". Every value is read with an explicit unit argument instead. The `UnitSystem` enum still exists as display metadata, but there is no setter. Downstream code calling any of the three must migrate to explicit unit args, not look for a replacement setter.
-- Serialization stores component values in **device base**; there is no natural-units export path yet (documented-not-implemented; the OpenAPI/GridDB pipeline expects natural units — that converter is the unclosed loop).
+- Serialization writes on whichever basis `to_file`'s `unit_system` names — `:component_base` (device base, the representation PSY stores, no conversion) or `:natural_units` (MW/MVAr/MVA, what a reader outside Sienna generally wants). A write is *uniform*: PSY tracks no per-component basis, so the choice stamps every power-bearing blob in the document. A read is *per component*: each blob converts according to the basis it carries, and a blob missing the field errors rather than guessing. `format = :sienna` is `:component_base` only.
 - Cost curves default to `power_units = IS.NaturalUnit()`; `CostCurve{T,U}`/`FuelCurve{T,U}` carry the unit as a type parameter (IS4).
 - Units test filter: `julia --project=test test/runtests.jl test_units` (fast, ~22 s).
 
