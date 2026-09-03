@@ -256,8 +256,11 @@ function System(file_path::AbstractString; kwargs...)
     if ext == ".json"
         throw(
             DataFormatError(
-                "System($(repr(file_path))) no longer deserializes a system. Use " *
-                "from_file($(repr(file_path))) instead.",
+                "System($(repr(file_path))) no longer deserializes a system. The old " *
+                "single-file native JSON format has no reader anymore. from_file reads a " *
+                "bundle directory or a $SIENNA_ARCHIVE_EXTENSION archive written by to_file — " *
+                "a single .json path is neither. A system serialized in the old format must " *
+                "be rebuilt from source and re-serialized with the current to_file.",
             ),
         )
     elseif ext in (".raw", ".m")
@@ -275,22 +278,6 @@ function System(file_path::AbstractString; kwargs...)
                 "Matpower/PSSE file.",
             ),
         )
-    end
-end
-
-function _post_deserialize_handling(sys::System; runchecks = true, assign_new_ids = false)
-    runchecks && check(sys)
-    if assign_new_ids
-        assign_new_uuid!(sys)
-        for component in get_components(Component, sys)
-            IS.assign_new_id!(sys, component)
-        end
-        for component in
-            IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-            IS.assign_new_id!(sys, component)
-        end
-        # Note: this does not change UUIDs for time series data because they are
-        # shared with components.
     end
 end
 

@@ -379,6 +379,8 @@ end
 @testset "roundtrip: MarketBidCost with a service bid" begin
     sys = System(100.0)
     generators = [ThermalStandard(nothing), ThermalMultiStart(nothing)]
+    expected_curves = Vector{Any}(undef, 2)
+    expected_ts_values = Vector{Any}(undef, 2)
     for i in 1:2
         bus = ACBus(nothing)
         bus.name = "bus" * string(i)
@@ -404,6 +406,8 @@ end
         set_operation_cost!(gen, market_bid)
         add_component!(sys, gen)
         ta = TimeSeries.TimeArray(dates, data)
+        expected_curves[i] = cc
+        expected_ts_values[i] = TimeSeries.values(ta)
         power_units = IS.NaturalUnit()
         service = OnlineReserve{ReserveDown}(;
             name = "init_$i",
@@ -429,6 +433,22 @@ end
     sys2 = roundtrip_system(sys)
     @test length(collect(get_components(ThermalStandard, sys2))) == 1
     @test length(collect(get_components(ThermalMultiStart, sys2))) == 1
+
+    gen_types = [ThermalStandard, ThermalMultiStart]
+    for i in 1:2
+        gen2 = only(collect(get_components(gen_types[i], sys2)))
+        op_cost2 = get_operation_cost(gen2)
+        @test op_cost2 isa MarketBidCost
+        @test get_function_data(get_value_curve(get_incremental_offer_curves(op_cost2))) ==
+              get_function_data(get_value_curve(expected_curves[i]))
+
+        service2 = get_component(OnlineReserve{ReserveDown}, sys2, "init_$i")
+        @test service2 !== nothing
+        @test service2 in get_ancillary_service_offers(op_cost2)
+
+        ts2 = get_time_series(SingleTimeSeries, gen2, "init_$i")
+        @test TimeSeries.values(get_data(ts2)) == expected_ts_values[i]
+    end
 end
 
 # An ORDC rides on the reserve's own `variable`, so this covers a reserve carrying one.
@@ -462,6 +482,11 @@ end
     sys2 = roundtrip_system(sys)
     service2 = get_component(OnlineReserve{ReserveDown}, sys2, "init")
     @test service2 !== nothing
+
+    variable2 = get_variable(service2)
+    @test variable2 !== nothing
+    @test get_function_data(get_value_curve(variable2)) ==
+          get_function_data(get_value_curve(cc))
 end
 
 @testset "roundtrip: System field metadata (name/description)" begin
