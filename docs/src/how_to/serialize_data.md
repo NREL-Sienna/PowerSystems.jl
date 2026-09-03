@@ -11,6 +11,17 @@ There are two formats:
   - `format = :sienna` — the same three members, tar+gzip'd into one file (conventionally named
     `*.sn`).
 
+!!! warning
+
+    There is no migration path from the old single-file native JSON format (written by the
+    removed `IS.to_json`/`System(path)` constructor) or from a `to_file`/`from_file` bundle
+    written before this format. A `System` serialized in either old shape must be rebuilt from
+    source and re-serialized with the current `to_file`.
+
+    A round trip through `to_file`/`from_file` also does not yet preserve a `System`'s
+    user-defined subsystems or masked components (for example, some internal use of
+    `HybridSystem` subcomponents). `to_file` warns when it detects either, but does not error.
+
 ## Write data
 
 Build (or load) the `System` you want to save. Here's a small hand-built one to illustrate

@@ -2,7 +2,6 @@ using Test
 using PowerSystems
 using InfrastructureSystems
 import InfrastructureSystems as IS
-import JSON
 import PowerSystemCaseBuilder as PSB
 const PSY = PowerSystems
 

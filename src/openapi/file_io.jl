@@ -235,11 +235,13 @@ function _from_file_json(dir::AbstractString; system_kwargs...)
 end
 
 function _from_file_sienna(path::AbstractString; system_kwargs...)
-    # Not cleaned up here: the returned System's time series are read from the extracted
-    # sidecar lazily, so the directory must outlive this function. It lives under the OS temp
-    # root for the rest of the session, same lifetime contract as a :json bundle the caller
-    # opened from a directory they later delete out from under it.
-    dir = mktempdir(; cleanup = false)
+    # `mktempdir()` (default `cleanup = true`) registers the directory for atexit deletion, so
+    # it lives for the rest of the session rather than leaking permanently in the OS temp root.
+    # This matters when `time_series_read_only = true`: IS then opens the extracted sidecar in
+    # place instead of copying it, so the extracted directory must outlive this function.
+    # Otherwise (the default read path), IS copies the sidecar to its own working location
+    # before opening it, and the extracted directory is no longer needed after that copy.
+    dir = mktempdir()
     open(CodecZlib.GzipDecompressorStream, path, "r") do io
         Tar.extract(io, dir)
     end
