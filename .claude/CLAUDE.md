@@ -30,12 +30,15 @@ from_file(path; system_kwargs...)   # no type argument — format is inferred fr
   `:ohm`, `:siemens`), not just power. `to_openapi` keeps its own separate `power_units` keyword; don't
   conflate them.
 
-**Everything from the old native path now throws `DataFormatError` and names its replacement** — do not
-"restore" any of it, and do not add a shim: `System(::AbstractString)` (`.json` → `from_file`;
-`.raw`/`.m` → PowerFlowFileParser.jl; anything else → generic), and `to_json`/`from_json`/`IS.serialize`/
-`IS.deserialize` applied to a `System`. Those four stay exported for components and other types; only the
-`System` methods refuse, because the generic `InfrastructureSystemsType` fallthrough would otherwise write
-a JSON file nothing can read.
+**`System(::AbstractString)` throws `DataFormatError` and names its replacement** — `.json` → `from_file`;
+`.raw`/`.m` → PowerFlowFileParser.jl; anything else → generic. Do not "restore" a constructor here, and do
+not add a shim.
+
+**`to_json`/`from_json` are no longer exported from PSY at all** — a `System` reaches disk only through
+`to_file`/`from_file`, so PSY stops offering the JSON-document verbs entirely rather than offering them
+with a `System`-shaped hole. (`serialize`/`deserialize` are still exported for components and other
+types; note that `IS.serialize(sys)` on a whole `System` returns a dict nothing can read back, so don't
+build on it.)
 
 **Deleted, stays deleted:** `src/data_format_conversions.jl`, `DATA_FORMAT_VERSION`,
 `_post_deserialize_handling` (and with it `assign_new_ids` on read — no read path can reach it),

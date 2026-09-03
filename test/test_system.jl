@@ -678,16 +678,10 @@ end
     end
 end
 
-@testset "System is not serialized as a single JSON document" begin
-    sys = System(100.0)
-    p = joinpath(mktempdir(), "sys.json")
-    @test_throws "to_file" to_json(sys, p)
-    @test !isfile(p)
-    @test_throws "to_file" to_json(sys)
-    @test_throws "to_file" to_json(IOBuffer(), sys)
-    @test_throws "to_file" from_json(p, System)
-    @test_throws "to_file" IS.serialize(sys)
-    @test_throws "to_file" IS.deserialize(System, Dict())
+@testset "to_json/from_json are not part of the System API" begin
+    # PSY no longer exports them: a System reaches disk only through to_file/from_file.
+    @test !(:to_json in names(PowerSystems))
+    @test !(:from_json in names(PowerSystems))
 end
 
 @testset "Test deepcopy with runchecks" begin

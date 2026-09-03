@@ -612,8 +612,6 @@ export get_description
 export set_description!
 export get_frequency
 export get_frequency_droop
-export to_json
-export from_json
 export serialize
 export deserialize
 export clear_ext!
