@@ -12,6 +12,9 @@ const SYSTEM_DOCUMENT_FILE = "system.json"
 """HDF5 sidecar member of a serialized System directory."""
 const TIME_SERIES_FILE = "time_series.h5"
 
+"""SQLite catalog IS.serialize writes alongside the HDF5 sidecar."""
+const TIME_SERIES_CATALOG_FILE = TIME_SERIES_FILE * ".sqlite"
+
 """Extension for a single-file, compressed System archive."""
 const SIENNA_ARCHIVE_EXTENSION = ".sn"
 
@@ -36,6 +39,11 @@ function _warn_on_bundle_data_loss(sys::System)
         @warn "System has masked components; to_file/from_file does not guarantee they " *
               "survive the round trip."
     end
+    if get_frequency(sys) != DEFAULT_SYSTEM_FREQUENCY
+        @warn "System frequency is $(get_frequency(sys)) Hz; the document records it, but " *
+              "from_file restores the default $DEFAULT_SYSTEM_FREQUENCY Hz, so it will not " *
+              "survive the round trip."
+    end
     return nothing
 end
 
@@ -44,7 +52,7 @@ function _prepare_bundle_dir(dir::AbstractString, force::Bool)
         mkpath(dir)
         return nothing
     end
-    for member in (SYSTEM_DOCUMENT_FILE, TIME_SERIES_FILE)
+    for member in (SYSTEM_DOCUMENT_FILE, TIME_SERIES_FILE, TIME_SERIES_CATALOG_FILE)
         path = joinpath(dir, member)
         if isfile(path) && !force
             throw(
@@ -156,6 +164,21 @@ function _to_file_sienna(
     force::Bool,
     pretty::Bool,
 )
+    if lowercase(splitext(path)[2]) != SIENNA_ARCHIVE_EXTENSION
+        throw(
+            IS.DataFormatError(
+                "$path does not end in $SIENNA_ARCHIVE_EXTENSION; format = :sienna requires " *
+                "that extension so from_file can recognize the archive on read.",
+            ),
+        )
+    end
+    if isdir(path)
+        throw(
+            IS.DataFormatError(
+                "$path is a directory; format = :sienna writes a single archive file",
+            ),
+        )
+    end
     if isfile(path) && !force
         throw(
             IS.DataFormatError(
@@ -163,6 +186,7 @@ function _to_file_sienna(
             ),
         )
     end
+    mkpath(dirname(path))
     mktempdir() do dir
         bundle = joinpath(dir, "case")
         _to_file_json(
@@ -191,7 +215,7 @@ _sidecar_path_for_write(::Val{true}, dir::AbstractString) = joinpath(dir, TIME_S
 $(TYPEDSIGNATURES)
 
 Read a `System` written by [`to_file`](@ref). `path` may be a `:json`-format directory or a
-`:sienna` `.sn` archive — the format is inferred from `path` (a directory, or an archive file).
+`:sienna` `.sn` archive — the format is inferred from `path` (a directory, or a `.sn` file).
 
 The sidecar is located by the document's own `time_series_storage_file`, resolved relative to
 the bundle directory — so a bundle stays readable after being moved or renamed. A document that
@@ -235,6 +259,9 @@ function _from_file_json(dir::AbstractString; system_kwargs...)
 end
 
 function _from_file_sienna(path::AbstractString; system_kwargs...)
+    if !isfile(path)
+        throw(IS.DataFormatError("$path does not exist"))
+    end
     # `mktempdir()` (default `cleanup = true`) registers the directory for atexit deletion, so
     # it lives for the rest of the session rather than leaking permanently in the OS temp root.
     # This matters when `time_series_read_only = true`: IS then opens the extracted sidecar in

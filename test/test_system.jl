@@ -670,26 +670,24 @@ end
     @test_throws DataFormatError System("data.invalid")
 
     # .json: point at from_file.
-    err = try
-        System("sys.json")
-        nothing
-    catch e
-        e
-    end
-    @test err isa DataFormatError
-    @test occursin("from_file", err.msg)
+    @test_throws "from_file" System("sys.json")
 
     # .raw / .m: point at PowerFlowFileParser.jl, not this package.
     for ext in (".raw", ".m")
-        err = try
-            System("case$ext")
-            nothing
-        catch e
-            e
-        end
-        @test err isa DataFormatError
-        @test occursin("PowerFlowFileParser", err.msg)
+        @test_throws "PowerFlowFileParser" System("case$ext")
     end
+end
+
+@testset "System is not serialized as a single JSON document" begin
+    sys = System(100.0)
+    p = joinpath(mktempdir(), "sys.json")
+    @test_throws "to_file" to_json(sys, p)
+    @test !isfile(p)
+    @test_throws "to_file" to_json(sys)
+    @test_throws "to_file" to_json(IOBuffer(), sys)
+    @test_throws "to_file" from_json(p, System)
+    @test_throws "to_file" IS.serialize(sys)
+    @test_throws "to_file" IS.deserialize(System, Dict())
 end
 
 @testset "Test deepcopy with runchecks" begin

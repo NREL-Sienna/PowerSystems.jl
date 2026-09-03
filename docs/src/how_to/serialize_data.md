@@ -94,8 +94,8 @@ jq '.components.ThermalStandard[] | select(.active_power > 2.3)' system.json
 
 ## Read a bundle or archive back into a `System`
 
-`from_file` infers the format from `path` — a directory reads as a `:json` bundle, a file
-reads as a `:sienna` archive:
+`from_file` infers the format from `path` — a directory reads as a `:json` bundle, a `.sn`
+file reads as a `:sienna` archive:
 
 ```@repl serialize_data
 sys2 = from_file(bundle)

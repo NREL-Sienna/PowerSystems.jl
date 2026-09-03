@@ -281,6 +281,47 @@ function System(file_path::AbstractString; kwargs...)
     end
 end
 
+function _system_json_error_message()
+    return "A System is no longer serialized as a single JSON document. Use to_file to " *
+           "write a bundle directory (system.json + time_series.h5 + " *
+           "time_series.h5.sqlite) or a $SIENNA_ARCHIVE_EXTENSION archive of that bundle, " *
+           "and from_file to read either back."
+end
+
+"""
+`IS.to_json`/`IS.from_json` on a whole `System` no longer produce a readable file — a System
+is not serialized as a single JSON document any more. Use [`to_file`](@ref)/[`from_file`](@ref).
+"""
+function IS.to_json(::System, ::AbstractString; kwargs...)
+    throw(DataFormatError(_system_json_error_message()))
+end
+
+function IS.to_json(::System; kwargs...)
+    throw(DataFormatError(_system_json_error_message()))
+end
+
+function IS.to_json(::IO, ::System; kwargs...)
+    throw(DataFormatError(_system_json_error_message()))
+end
+
+function IS.from_json(::Union{IO, String}, ::Type{System}; kwargs...)
+    throw(DataFormatError(_system_json_error_message()))
+end
+
+"""
+`IS.serialize`/`IS.deserialize` on a whole `System` are not a supported entry point — nothing
+internal to PSY or IS calls them on a `System`, and the generic `InfrastructureSystemsType`
+path they'd otherwise fall through to does not produce something [`from_file`](@ref) can read.
+Use [`to_file`](@ref)/[`from_file`](@ref).
+"""
+function IS.serialize(::System)
+    throw(DataFormatError(_system_json_error_message()))
+end
+
+function IS.deserialize(::Type{System}, ::Dict; kwargs...)
+    throw(DataFormatError(_system_json_error_message()))
+end
+
 """
 Construct a System from a subsystem of an existing system.
 

@@ -99,6 +99,41 @@ end
     end
 end
 
+@testset "to_file: .sn requires the .sn extension" begin
+    sys = _file_io_fixture(; with_time_series = false)
+    mktempdir() do dir
+        @test_throws(
+            "$(PSY.SIENNA_ARCHIVE_EXTENSION)",
+            to_file(sys, joinpath(dir, "case.tar.gz"); format = :sienna),
+        )
+        @test !isfile(joinpath(dir, "case.tar.gz"))
+    end
+end
+
+@testset "to_file: .sn refuses an existing directory at path" begin
+    sys = _file_io_fixture(; with_time_series = false)
+    mktempdir() do dir
+        target = joinpath(dir, "case.sn")
+        mkpath(target)
+        @test_throws IS.DataFormatError to_file(sys, target; format = :sienna)
+    end
+end
+
+@testset "to_file: .sn creates missing parent directories" begin
+    sys = _file_io_fixture(; with_time_series = false)
+    mktempdir() do dir
+        archive = joinpath(dir, "out", "sub", "case.sn")
+        @test isnothing(to_file(sys, archive; format = :sienna))
+        @test isfile(archive)
+    end
+end
+
+@testset "from_file: missing .sn archive errors loudly" begin
+    mktempdir() do dir
+        @test_throws IS.DataFormatError from_file(joinpath(dir, "missing.sn"))
+    end
+end
+
 @testset "to_file: warns on subsystems and masked components" begin
     # A user-defined subsystem is any component added to one via `IS.add_component_to_subsystem!`
     # (the primitive `add_subsystem!`/`add_component_to_subsystem!` wrap) — no PSB fixture
@@ -138,6 +173,22 @@ end
     end
 end
 
+@testset "to_file: warns on non-default frequency, not the default" begin
+    freq_sys = System(100.0; frequency = 50.0)
+    mktempdir() do dir
+        @test_logs(
+            (:warn, r"[Ff]requency"),
+            match_mode = :any,
+            to_file(freq_sys, joinpath(dir, "case")),
+        )
+    end
+
+    default_sys = _file_io_fixture(; with_time_series = false)
+    mktempdir() do dir
+        @test_nowarn to_file(default_sys, joinpath(dir, "case"))
+    end
+end
+
 @testset "from_file: time_series_read_only bundle with a supplemental attribute" begin
     # `_system_with_sidecar` cannot clear the adopted store's association rows when it is
     # opened read-only, so the import replay has to tolerate rows that are already there.
@@ -153,8 +204,7 @@ end
 
         attrs = PSY.get_supplemental_attributes(gen2)
         @test length(attrs) == 1
-        attr = first(attrs)
-        @test attr isa EmissionsData
+        attr = only(PSY.get_supplemental_attributes(EmissionsData, gen2))
         @test get_name(attr) == "g1_CO2"
 
         ts = get_time_series(SingleTimeSeries, gen2, "max_active_power")
@@ -204,6 +254,26 @@ end
         to_file(_file_io_fixture(), bundle; unit_system = :component_base)
         rm(joinpath(bundle, "time_series.h5"))
         @test_throws IS.DataFormatError from_file(bundle)
+    end
+end
+
+@testset "to_file: force clears the InfraStore catalog sidecar, not just the .h5" begin
+    # A system with time series writes time_series.h5 *and* time_series.h5.sqlite (the
+    # InfraStore catalog). Overwriting with a time-series-free system under force = true must
+    # leave neither behind.
+    mktempdir() do dir
+        bundle = joinpath(dir, "case")
+        to_file(_file_io_fixture(), bundle; unit_system = :component_base)
+        @test sort(readdir(bundle)) ==
+              ["system.json", "time_series.h5", "time_series.h5.sqlite"]
+
+        to_file(
+            _file_io_fixture(; with_time_series = false),
+            bundle;
+            unit_system = :component_base,
+            force = true,
+        )
+        @test readdir(bundle) == ["system.json"]
     end
 end
 
