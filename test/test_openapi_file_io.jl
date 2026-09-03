@@ -375,3 +375,188 @@ end
         @test IS.get_time_series_values(gen2, key2) == values
     end
 end
+
+@testset "roundtrip: MarketBidCost with a service bid" begin
+    sys = System(100.0)
+    generators = [ThermalStandard(nothing), ThermalMultiStart(nothing)]
+    for i in 1:2
+        bus = ACBus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+        gen = generators[i]
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        initial_time = Dates.DateTime("2020-01-01T00:00:00")
+        end_time = Dates.DateTime("2020-01-01T23:00:00")
+        dates = collect(initial_time:Dates.Hour(1):end_time)
+        data =
+            PiecewiseStepData.(
+                [[i, i + 1, i + 2] for i in 1.0:24.0],
+                [[i, i + 1] for i in 1.0:24.0],
+            )
+        cc = make_market_bid_curve([0.0, 100.0, 200.0], [25.0, 30.0], 10.0)
+        market_bid = MarketBidCost(;
+            incremental_offer_curves = cc,
+            start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
+        )
+        set_operation_cost!(gen, market_bid)
+        add_component!(sys, gen)
+        ta = TimeSeries.TimeArray(dates, data)
+        power_units = IS.NaturalUnit()
+        service = OnlineReserve{ReserveDown}(;
+            name = "init_$i",
+            available = false,
+            time_frame = 0.0,
+            requirement = 0.0,
+            sustained_time = 0.0,
+            max_output_fraction = 1.0,
+            max_participation_factor = 1.0,
+            deployed_fraction = 0.0,
+            ext = Dict{String, Any}(),
+        )
+        add_component!(sys, service)
+        add_service!(gen, service, sys)
+        set_service_bid!(
+            sys,
+            gen,
+            service,
+            IS.SingleTimeSeries(; name = "init_$i", data = ta),
+            power_units,
+        )
+    end
+    sys2 = roundtrip_system(sys)
+    @test length(collect(get_components(ThermalStandard, sys2))) == 1
+    @test length(collect(get_components(ThermalMultiStart, sys2))) == 1
+end
+
+# An ORDC rides on the reserve's own `variable`, so this covers a reserve carrying one.
+@testset "roundtrip: reserve with a demand curve" begin
+    sys = System(100.0)
+    devices = []
+    for i in 1:2
+        bus = ACBus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    cc = CostCurve(
+        PiecewiseIncrementalCurve(0.0, [0.0, 100.0, 200.0], [25.0, 30.0]),
+    )
+    service = OnlineReserve{ReserveDown}(;
+        variable = cc,
+        name = "init",
+        available = false,
+        time_frame = 0.0,
+    )
+    add_service!(sys, service, devices)
+
+    sys2 = roundtrip_system(sys)
+    service2 = get_component(OnlineReserve{ReserveDown}, sys2, "init")
+    @test service2 !== nothing
+end
+
+@testset "roundtrip: System field metadata (name/description)" begin
+    # frequency is deliberately NOT asserted here: src/openapi/import_document.jl's
+    # _apply_document_metadata! (pre-existing on this branch, unrelated to this plan) only
+    # applies name/description on import — the System's own default frequency stands rather
+    # than being silently overwritten by the document. Export does write frequency; import
+    # ignores it by design. Discovered during Task 7 implementation; ruled to match actual,
+    # deliberate behavior rather than assert on it.
+    name = "my_system"
+    description = "test"
+    sys = System(100; frequency = 50.0, name = name, description = description)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+
+    sys2 = roundtrip_system(sys)
+    @test get_name(sys2) == name
+    @test get_description(sys2) == description
+end
+
+@testset "roundtrip: supplemental attributes on outages" begin
+    # Hand-built rather than via `create_system_with_outages()` (test/common.jl): that helper
+    # is PSB-backed (`PSB.build_system(PSITestSystems, "c_sys5_uc"; ...)`), and PSB's own
+    # build/cache path still calls the pre-this-plan to_file/from_file signatures — see the
+    # "Known limitation" section above. This covers the same thing that test exists to cover
+    # (multiple supplemental attribute types on one component survive the round trip) without
+    # routing through PSB.
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.name = "gen1"
+    gen.bus = bus
+    add_component!(sys, gen)
+    add_supplemental_attribute!(
+        sys,
+        gen,
+        GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [1.0, 2.0])),
+    )
+    add_supplemental_attribute!(
+        sys,
+        gen,
+        GeometricDistributionForcedOutage(;
+            mean_time_to_recovery = 1.0,
+            outage_transition_probability = 0.5,
+        ),
+    )
+    sys2 = roundtrip_system(sys)
+    gen2 = get_component(ThermalStandard, sys2, "gen1")
+    @test length(PSY.get_supplemental_attributes(gen2)) == 2
+end
+
+@testset "roundtrip: shared time series dedupe through the store" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.name = "gen1"
+    gen.bus = bus
+    gen.base_power = 1.0
+    gen.active_power = 1.2
+    gen.reactive_power = 2.3
+    gen.active_power_limits = (0.0, 5.0)
+    add_component!(sys, gen)
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    end_time = Dates.DateTime("2020-01-01T23:00:00")
+    dates = collect(initial_time:Dates.Hour(1):end_time)
+    data = rand(length(dates))
+    ta = TimeSeries.TimeArray(dates, data, ["1"])
+    ts1a = SingleTimeSeries(; name = "max_active_power", data = ta)
+    add_time_series!(sys, gen, ts1a)
+    # The same array under a second name. The store is content-addressed, so the two
+    # associations share one underlying array (asserted below).
+    ts2a = SingleTimeSeries(ts1a, "max_reactive_power")
+    add_time_series!(sys, gen, ts2a)
+
+    sys2 = roundtrip_system(sys)
+    @test IS.get_num_time_series(sys2.data) == 1
+    gen2 = get_component(ThermalStandard, sys2, "gen1")
+    ts1b = get_time_series(SingleTimeSeries, gen2, "max_active_power")
+    ts2b = get_time_series(SingleTimeSeries, gen2, "max_reactive_power")
+    @test ts1b.data == ts2b.data
+    ta_vals = TimeSeries.values(ta)
+    @test get_time_series_values(gen2, ts1b; start_time = initial_time) == ta_vals
+    @test get_time_series_values(gen2, ts2b; start_time = initial_time) == ta_vals
+end
