@@ -1500,10 +1500,21 @@ function add_time_series!(
     features::Union{Nothing, Dict} = nothing,
     base_field::Union{Nothing, Symbol} = nothing,
 )
-    for component in components
-        _validate_time_series_labels(component, time_series, base_field)
+    # One pass: each add checks its own component, so a single-pass iterator works too.
+    # The block stores the shared array once, as IS's bulk add does.
+    keys = time_series_transaction(sys) do txn
+        [
+            add_time_series!(txn, c, time_series; features = features,
+                base_field = base_field) for c in components
+        ]
     end
-    return IS.add_time_series!(sys.data, components, time_series; features = features)
+    isempty(keys) && throw(
+        ArgumentError(
+            "`components` is empty; there is nothing to associate " *
+            "$(summary(time_series)) with",
+        ),
+    )
+    return keys
 end
 
 """

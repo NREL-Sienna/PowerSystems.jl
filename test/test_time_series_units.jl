@@ -108,6 +108,25 @@
     @test read_ts("txn_cu", u"MW") ≈ [50.0, 100.0, 200.0]
     @test read_ts("txn_cu_vec", u"MW") ≈ [50.0, 100.0, 200.0]
 
+    # The bulk add takes base_field through to every component, from any iterable,
+    # single-pass ones included.
+    for (name, owners) in (
+        ("bulk_vec", [gen]),
+        ("bulk_iter", get_components(ThermalStandard, sys)),
+        ("bulk_stateful", Iterators.Stateful([gen])),
+    )
+        cu_bulk = series(name; unit_system = IS.CU, quantity_kind = "active_power")
+        keys = add_time_series!(sys, owners, cu_bulk; base_field = :base_power)
+        @test length(keys) == 1
+        @test read_ts(name, u"MW") ≈ [50.0, 100.0, 200.0]
+    end
+    @test_throws ArgumentError add_time_series!(
+        sys,
+        ThermalStandard[],
+        series("bulk_empty"; unit_system = IS.CU, quantity_kind = "active_power");
+        base_field = :base_power,
+    )
+
     # Unlabeled series still attach, but cannot be read in units.
     add_time_series!(sys, gen, series("bare"))
     @test_throws ArgumentError read_ts("bare", u"MW")
