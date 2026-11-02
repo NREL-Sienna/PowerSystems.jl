@@ -49,18 +49,32 @@ _is_per_unit(u::Unitful.Units) = any(
 )
 
 # A `units` string names the units outright (`"CU hr^-1"` for a CU flow). Without one,
-# `unit_system = CU` means plain `u"CU"`. With one, `CU` requires it to be per unit: a
-# natural label beside `CU` would contradict it.
+# `unit_system = CU` means plain `u"CU"`. The basis and the units must agree: `CU` takes
+# per-unit units, `NU` natural ones. `SU` is not a stored basis.
 function _ts_source_units(labels)
-    is_cu = IS.get_unit_system(labels) isa IS.ComponentBaseUnit
+    name = IS.get_name(labels)
+    system = IS.get_unit_system(labels)
+    system isa IS.SystemBaseUnit && throw(
+        ArgumentError(
+            "time series \"$name\" declares unit_system SU, which is not supported for " *
+            "stored values; store it in CU or NU",
+        ),
+    )
+    is_cu = system isa IS.ComponentBaseUnit
     s = IS.get_units(labels)
     isnothing(s) && return is_cu ? u"CU" : nothing
     units = get(() -> Unitful.uparse(s), STRING_TO_UNIT, s)
     is_cu && !_is_per_unit(units) &&
         throw(
             ArgumentError(
-                "time series \"$(IS.get_name(labels))\" declares unit_system CU but units " *
-                "$units; with CU, units must be per unit (CU, or CU hr^-1 for a flow) or unset",
+                "time series \"$name\" declares unit_system CU but units $units; with CU, " *
+                "units must be per unit (CU, or CU hr^-1 for a flow) or unset",
+            ),
+        )
+    system isa IS.NaturalUnit && _is_per_unit(units) &&
+        throw(
+            ArgumentError(
+                "time series \"$name\" declares unit_system NU but per-unit units $units",
             ),
         )
     return units
@@ -101,8 +115,9 @@ _cu_rule(::Component, ::AbstractPowerCategory) = (:base_power, u"CU")
 _cu_rule(::Union{Service, Topology}, ::AbstractPowerCategory) = nothing
 _cu_rule(::_RequirementReserve, ::ActivePowerCategory) = (:requirement, u"CU")
 _cu_rule(::Any, ::Any) = nothing
-_cu_rule(::EnergyReservoirStorage, q::Symbol) =
-    q === :Energy ? (:storage_capacity, u"CU") : nothing
+# A battery's energy is per unit of its capacity; its power follows the device rule.
+_cu_rule(s::EnergyReservoirStorage, q::Symbol) =
+    q === :Energy ? (:storage_capacity, u"CU") : _cu_rule(s, TIME_SERIES_QUANTITIES[q])
 function _cu_rule(r::HydroReservoir, q::Symbol)
     get_level_data_type(r) == ReservoirDataType.HEAD && return nothing
     quantities = _reservoir_quantities(r)
@@ -220,16 +235,23 @@ _ts_conversion_factor(c::HydroReservoir, ::UnitCategory, from, to) =
     _capacity_conversion_factor(c, from, to)
 # A reserve's CU is a fraction of its `requirement`, but the units engine reads CU as a
 # fraction of `base_power`. So CU is resolved here and only natural units and SU reach the
-# engine; both sides go through MW.
-_ts_conversion_factor(r::_RequirementReserve, ::ActivePowerCategory, from, to) =
-    _reserve_mw(r, from) / _reserve_mw(r, to)
+# engine; both sides go through MW. The only per-unit form is plain CU.
+function _ts_conversion_factor(r::_RequirementReserve, ::ActivePowerCategory, from, to)
+    from == to && return 1.0
+    mw_per_to = _reserve_mw(r, to)
+    iszero(mw_per_to) && throw(
+        ArgumentError("$(summary(r)) has a zero requirement, so it has no fraction in CU"),
+    )
+    return _reserve_mw(r, from) / mw_per_to
+end
 
-_reserve_mw(r, u) =
+function _reserve_mw(r, u)
     if _is_per_unit(u)
-        get_requirement(r, u"MW")
-    else
-        ustrip(u"MW", convert_units(r, 1.0 * u, ACTIVE_POWER, u"MW"))
+        u == u"CU" || throw(Unitful.DimensionError(u, u"CU"))
+        return get_requirement(r, u"MW")
     end
+    return ustrip(u"MW", convert_units(r, 1.0 * u, ACTIVE_POWER, u"MW"))
+end
 
 # Both sides go through natural units: CU (or CU/hr) is that much of the capacity, and SU
 # (SU*hr for energy) that much of the system base in MW. Water quantities have no SU, so

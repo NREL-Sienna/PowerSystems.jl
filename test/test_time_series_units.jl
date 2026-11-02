@@ -36,6 +36,18 @@
         base_field = :base_power,
     )
     @test read_ts("cu_explicit", u"MW") ≈ [50.0, 100.0, 200.0]
+    # NU takes natural units only, and SU is not a stored basis.
+    @test_throws ArgumentError add_time_series!(
+        sys,
+        gen,
+        series("nu_cu"; unit_system = IS.NU, units = "CU", quantity_kind = "active_power");
+        base_field = :base_power,
+    )
+    @test_throws ArgumentError add_time_series!(
+        sys,
+        gen,
+        series("su_mw"; unit_system = IS.SU, units = "MW", quantity_kind = "active_power"),
+    )
     @test_throws ArgumentError add_time_series!(
         sys,
         gen,
@@ -139,6 +151,23 @@ end
     @test read_ts(reservoir, "energy", u"SU*hr") ≈ [1.0, 2.0, 4.0]
     @test read_ts(reservoir, "mwh", u"SU*hr") ≈ [2.0, 4.0, 8.0]
     @test read_ts(battery, "energy", u"SU*hr") ≈ [0.8, 1.6, 3.2]
+
+    # A battery's power follows the device rule: CU of its base_power.
+    battery_base = get_base_power(battery, u"NU")
+    add_time_series!(
+        sys,
+        battery,
+        SingleTimeSeries("p", ta; unit_system = IS.CU, quantity_kind = "active_power");
+        base_field = :base_power,
+    )
+    @test read_ts(battery, "p", u"MW") ≈ [0.2, 0.4, 0.8] .* battery_base
+    add_time_series!(
+        sys,
+        battery,
+        SingleTimeSeries("p_mw", ta; unit_system = IS.NU, units = "MW",
+            quantity_kind = "active_power"),
+    )
+    @test read_ts(battery, "p_mw", u"CU") ≈ [0.2, 0.4, 0.8] ./ battery_base
 end
 
 @testset "Time series units labels: power on generators, fluids on reservoirs" begin
@@ -282,6 +311,26 @@ end
     @test read_mw(u"MW") ≈ [20.0, 40.0, 80.0]
     @test read_mw(u"CU") ≈ [0.4, 0.8, 1.6]
     @test read_mw(u"SU") ≈ [0.2, 0.4, 0.8]
+    # CU is the only per-unit form a reserve's power takes.
+    @test_throws Unitful.DimensionError read_ts(u"CU/hr")
+    @test_throws Unitful.DimensionError read_ts(u"CU^2")
+
+    # A zero requirement (the constructors' default) still reads CU back as stored.
+    idle = OnlineReserve{ReserveUp}(nothing)
+    set_name!(idle, "idle")
+    add_service!(sys, idle, Device[])
+    @test iszero(get_requirement(idle, u"MW"))
+    add_time_series!(sys, idle, cu; base_field = :requirement)
+    add_time_series!(
+        sys,
+        idle,
+        SingleTimeSeries("mw", ta; unit_system = IS.NU, units = "MW",
+            quantity_kind = "active_power"),
+    )
+    read_idle(name, units) = get_time_series_values(SingleTimeSeries, idle, name, units)
+    @test read_idle("requirement", u"CU") ≈ [0.2, 0.4, 0.8]
+    @test read_idle("requirement", u"MW") ≈ [0.0, 0.0, 0.0]
+    @test_throws ArgumentError read_idle("mw", u"CU")
 
     @test_throws ArgumentError add_time_series!(
         sys,
