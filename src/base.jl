@@ -1506,6 +1506,52 @@ function add_time_series!(
     return IS.add_time_series!(sys.data, components, time_series; features = features)
 end
 
+"""
+Add time series data to a component inside a [`time_series_transaction`](@ref) block.
+Checks the series' units labels as the direct method does; `base_field` is as there.
+"""
+function add_time_series!(
+    txn::IS.TimeSeriesContext,
+    component::Component,
+    time_series::TimeSeriesData;
+    features::Union{Nothing, Dict} = nothing,
+    base_field::Union{Nothing, Symbol} = nothing,
+)
+    _validate_time_series_labels(component, time_series, base_field)
+    # This method extends IS's function, so a plain call would dispatch back here.
+    return invoke(
+        IS.add_time_series!,
+        Tuple{IS.TimeSeriesContext, IS.TimeSeriesOwners, TimeSeriesData},
+        txn,
+        component,
+        time_series;
+        features = features,
+    )
+end
+
+"""
+Add the same time series data to several components inside a
+[`time_series_transaction`](@ref) block, checking each as the direct method does.
+"""
+function add_time_series!(
+    txn::IS.TimeSeriesContext,
+    components::AbstractVector{<:Component},
+    time_series::TimeSeriesData;
+    features::Union{Nothing, Dict} = nothing,
+    base_field::Union{Nothing, Symbol} = nothing,
+)
+    isempty(components) && throw(
+        ArgumentError(
+            "`components` is empty; there is nothing to associate " *
+            "$(summary(time_series)) with",
+        ),
+    )
+    return [
+        add_time_series!(txn, c, time_series; features = features, base_field = base_field)
+        for c in components
+    ]
+end
+
 #=
 # TODO 1.0: do we need this functionality? not currently present in IS
 """

@@ -90,6 +90,24 @@
         series("unknown"; units = "MW", quantity_kind = "Foo"),
     )
 
+    # A transaction block checks the labels too, and takes base_field.
+    txn_cu = series("txn_cu"; unit_system = IS.CU, quantity_kind = "active_power")
+    @test_throws ArgumentError time_series_transaction(
+        txn -> add_time_series!(txn, gen, txn_cu),
+        sys,
+    )
+    @test !has_time_series(gen, SingleTimeSeries, "txn_cu")
+    time_series_transaction(sys) do txn
+        add_time_series!(txn, gen,
+            series("txn_cu"; unit_system = IS.CU,
+                quantity_kind = "active_power"); base_field = :base_power)
+        add_time_series!(txn, [gen],
+            series("txn_cu_vec"; unit_system = IS.CU,
+                quantity_kind = "active_power"); base_field = :base_power)
+    end
+    @test read_ts("txn_cu", u"MW") ≈ [50.0, 100.0, 200.0]
+    @test read_ts("txn_cu_vec", u"MW") ≈ [50.0, 100.0, 200.0]
+
     # Unlabeled series still attach, but cannot be read in units.
     add_time_series!(sys, gen, series("bare"))
     @test_throws ArgumentError read_ts("bare", u"MW")
