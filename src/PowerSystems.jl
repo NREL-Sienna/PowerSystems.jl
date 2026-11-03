@@ -113,7 +113,7 @@ export InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
 export ProductionVariableCostCurve, CostCurve, FuelCurve
-export LossCurve, AnyLossCurve
+export LossCurve, AnyLossCurve, CurrentLossCurve
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
 
@@ -123,6 +123,7 @@ export OperationalCost,
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export HydroReservoirCost
 export get_fuel_cost, get_fuel_cost_time_series, set_fuel_cost!, get_vom_cost
+export get_fuel_units, get_x_units, get_y_units
 export is_market_bid_curve, make_market_bid_curve, make_market_bid_ts_curve
 export make_import_curve, make_export_curve, make_import_export_ts_curve
 export TimeSeriesLinearCurve, TimeSeriesQuadraticCurve, TimeSeriesPiecewisePointCurve
@@ -683,8 +684,8 @@ export UnitSystem # internal.jl
 # PowerSystems` is enough to write them without also importing Unitful.
 # `PerUnit` carries the generic `u"CU"`/`u"SU"`/`u"NU"`: Unitful's `u"..."` only finds
 # unit modules bound by name in the caller, so re-exporting it is what makes them work
-# after `using PowerSystems`.
-export @u_str, PerUnit
+# after `using PowerSystems`. `CommodityUnits` does the same for `u"USD"`/`u"MMBtu"`.
+export @u_str, PerUnit, CommodityUnits
 # Unit-system markers: cost curves' `U` parameter and the OpenAPI export mode.
 export CU, SU, NU, ComponentBaseUnit, SystemBaseUnit, NaturalUnit
 export AbstractRelativeUnit
@@ -757,7 +758,7 @@ const IC = InfrastructureCoreOpenAPIModels
 const PC = PowerCoreOpenAPIModels
 const PO = PowerOperationsOpenAPIModels
 const PTS = InfrastructureTimeSeriesOpenAPIModels
-using Unitful: @u_str, @unit, @dimension, @refunit, Quantity, Units, uconvert, ustrip
+using Unitful: @u_str, @unit, Quantity, Units, uconvert, ustrip
 
 # Unit-system markers live in IS; PSY re-exports them for downstream packages.
 # `get_value`/`set_value` are IS's units-interface generics: PSY EXTENDS them
@@ -768,11 +769,13 @@ import InfrastructureSystems:
     SystemBaseUnit,
     NaturalUnit,
     PerUnit,
+    CommodityUnits,
     CU,
     SU,
     NU,
     get_value,
     set_value
+using InfrastructureSystems.CommodityUnits: USD, MMBtu
 
 # Import InfrastructureSystems both as full module name (needed for internal macros like @forward)
 # and with alias for convenient usage throughout the codebase
@@ -932,6 +935,7 @@ import InfrastructureSystems:
     QuadraticCurve,
     LossCurve,
     AnyLossCurve,
+    CurrentLossCurve,
     PiecewisePointCurve,
     PiecewiseIncrementalCurve,
     PiecewiseAverageCurve,
@@ -957,6 +961,9 @@ import InfrastructureSystems:
     get_startup_fuel_offtake,
     get_power_units,
     get_fuel_cost,
+    get_fuel_units,
+    get_x_units,
+    get_y_units,
     get_fuel_cost_time_series,
     convert_power_units
 
