@@ -1860,6 +1860,20 @@ end
         @test get_voltage_limits_from(vsc_no_limits) == (min = 0.0, max = 999.9)
         @test get_voltage_limits_to(vsc_no_limits) == (min = 0.0, max = 999.9)
     end
+
+    # An unset remote bus is `Absent` on the wire (a document omitting the field), not
+    # `nothing`: it must read back as `nothing`, as `InterconnectingConverter`'s does.
+    vsc_po_no_remote = _po_with(
+        vsc_po;
+        id = 23, name = "vsc4",
+        remote_bus_control_from = PSY.IC.ABSENT,
+        remote_bus_control_to = PSY.IC.ABSENT,
+    )
+    for val in (CU, NU)
+        vsc_no_remote = PSY.from_openapi(vsc_po_no_remote, refs, val)
+        @test isnothing(get_remote_bus_control_from(vsc_no_remote))
+        @test isnothing(get_remote_bus_control_to(vsc_no_remote))
+    end
 end
 
 @testset "OpenAPI converters: TwoTerminalVSCLine AC_VOLTAGE setpoint in kV" begin

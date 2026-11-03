@@ -1345,8 +1345,8 @@ function from_openapi(
         voltage_limits_to = _or_default(po.voltage_limits_to, (min = 0.0, max = 999.9)),
         dc_voltage_droop_to = _or_default(po.dc_voltage_droop_to, 0.0),
         rated_dc_voltage = rated_dc_voltage,
-        remote_bus_control_from = po.remote_bus_control_from,
-        remote_bus_control_to = po.remote_bus_control_to,
+        remote_bus_control_from = _or_default(po.remote_bus_control_from, nothing),
+        remote_bus_control_to = _or_default(po.remote_bus_control_to, nothing),
         base_power = base_power,
         operational_flow_limit = _or_default(
             po.operational_flow_limit,
