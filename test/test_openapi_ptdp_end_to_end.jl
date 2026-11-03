@@ -337,7 +337,7 @@ function _ptdp_e2e_verify_time_series(doc, sys::System, staged, label::AbstractS
         # (b) the row's own columns describe what came back.
         @test length(loaded) == row.length
         @test Dates.Millisecond(IS.get_resolution(loaded)) == resolution
-        @test IS.get_initial_timestamp(loaded) == Dates.DateTime(row.initial_timestamp)
+        @test IS.get_initial_timestamp(loaded) == row.initial_timestamp.value
 
         # (c) values and timestamps, exactly, against the series PTDP staged.
         expected_values = IS.get_array(series)
