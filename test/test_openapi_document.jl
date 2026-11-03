@@ -951,3 +951,38 @@ end
     @test get_phase_angle_correction_curve(angle) == curve
     @test isnothing(get_tap_ratio_correction_curve(angle))
 end
+
+"""`make_openapi_test_doc` with `bus2` moved to a second area, so `load1` (at `bus2`) is an
+off-area load of `area1`."""
+function _off_area_load_doc(out_of_area_load_ids)
+    doc = make_openapi_test_doc()
+    area1 = only(doc["components"]["Area"])
+    area1["scheduled_net_interchange"] = nothing
+    area1["out_of_area_load_ids"] = out_of_area_load_ids
+    area2 = openapi_raw(
+        PSY.PO.Area(;
+            id = 10, name = "area2", base_power = 100.0,
+            power_units = PSY.IC.UnitSystem("NATURAL_UNITS"),
+            scheduled_net_interchange = -25.0,
+        ),
+    )
+    push!(doc["components"]["Area"], area2)
+    doc["components"]["ACBus"][2]["area"] = 10
+    return doc
+end
+
+@testset "from_openapi(System, doc): Area net interchange and off-area loads" begin
+    sys = PSY.from_openapi(System, to_test_document(_off_area_load_doc([7])))
+    area1 = get_component(Area, sys, "area1")
+    area2 = get_component(Area, sys, "area2")
+    @test get_scheduled_net_interchange(area1, u"MW") === nothing
+    @test get_out_of_area_loads(area1) == [get_component(PowerLoad, sys, "load1")]
+    @test get_scheduled_net_interchange(area2, u"MW") ≈ -25.0
+    @test isempty(get_out_of_area_loads(area2))
+
+    unknown = to_test_document(_off_area_load_doc([999]))
+    @test_throws r"area1.*999" PSY.from_openapi(System, unknown)
+
+    not_a_load = to_test_document(_off_area_load_doc([3]))
+    @test_throws r"area1.*3.*ElectricLoad" PSY.from_openapi(System, not_a_load)
+end
