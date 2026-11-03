@@ -8,9 +8,9 @@ way the generated field getters do.
 =#
 
 """
-Quantities a time series may declare. A `UnitCategory` entry can be stored per unit
-on its owner's base power. A bare unit names a quantity's natural unit; such a quantity is
-stored in natural units, or in CU of a storage capacity where `_cu_base_field` allows.
+Quantities a time series may declare. A `UnitCategory` entry is a power; a bare unit names a
+quantity's natural unit. Which of them may be stored in CU, and of what, is
+[`_cu_base_field`](@ref).
 """
 const TIME_SERIES_QUANTITIES = Dict{Symbol, Any}(
     :ActivePower => ACTIVE_POWER,
@@ -40,15 +40,12 @@ function _ts_quantity(labels)
     return q
 end
 
-"""The reserves with a `requirement` field."""
-const _RequirementReserve = Union{OnlineReserve, OfflineReserve, GroupReserve}
-
 _is_per_unit(u::Unitful.Units) = any(
     d -> typeof(d).parameters[1] === :GenericComponentBase,
     typeof(Unitful.dimension(u)).parameters[1],
 )
 
-# A `units` string names the units outright (`"CU hr^-1"` for a CU flow). Without one,
+# A `units` string names the units outright. Without one,
 # `unit_system = CU` means plain `u"CU"`. The basis and the units must agree: `CU` takes
 # per-unit units, `NU` natural ones. `SU` is not a stored basis.
 function _ts_source_units(labels)
@@ -68,7 +65,7 @@ function _ts_source_units(labels)
         throw(
             ArgumentError(
                 "time series \"$name\" declares unit_system CU but units $units; with CU, " *
-                "units must be per unit (CU, or CU hr^-1 for a flow) or unset",
+                "units must be CU or unset",
             ),
         )
     system isa IS.NaturalUnit && _is_per_unit(units) &&
@@ -98,40 +95,27 @@ fluids to reservoirs: a hydro generator takes power quantities only, and a reser
 the level and flow quantities of its `level_data_type`.
 """
 _accepts_quantity(::Component, ::Symbol) = true
-_accepts_quantity(::HydroGen, q::Symbol) =
-    TIME_SERIES_QUANTITIES[q] isa AbstractPowerCategory
+_accepts_quantity(::HydroGen, q::Symbol) = _is_power(q)
 _accepts_quantity(r::HydroReservoir, q::Symbol) = q in _reservoir_quantities(r)
 
 """
-How `owner` stores quantity `q` per unit: the field a CU series is a fraction of, and the
-per-unit units it must be in (`u"CU"`, or `u"CU/hr"` for a flow, which is a fraction of the
-capacity per hour). `nothing` when `q` is natural units only on `owner`. Services and
-topology take natural units only, except a reserve's power, which is a fraction of its
-`requirement`. A `HEAD` reservoir is natural units only too: head is not conserved and is
-measured above sea level, so a fraction of it means nothing.
+The field a CU series of quantity `q` on `owner` is a fraction of, or `nothing` when `q` is
+natural units only there. Only two things take CU: a device's power, a fraction of its
+`base_power`, and a battery's stored energy, a fraction of its `storage_capacity`.
+Everything else is natural units only: reservoirs (levels and flows alike), services and
+topology.
 """
-_cu_rule(owner, q::Symbol) = _cu_rule(owner, TIME_SERIES_QUANTITIES[q])
-_cu_rule(::Component, ::AbstractPowerCategory) = (:base_power, u"CU")
-_cu_rule(::Union{Service, Topology}, ::AbstractPowerCategory) = nothing
-_cu_rule(::_RequirementReserve, ::ActivePowerCategory) = (:requirement, u"CU")
-_cu_rule(::Any, ::Any) = nothing
-# A battery's energy is per unit of its capacity; its power follows the device rule.
-_cu_rule(s::EnergyReservoirStorage, q::Symbol) =
-    q === :Energy ? (:storage_capacity, u"CU") : _cu_rule(s, TIME_SERIES_QUANTITIES[q])
-function _cu_rule(r::HydroReservoir, q::Symbol)
-    get_level_data_type(r) == ReservoirDataType.HEAD && return nothing
-    quantities = _reservoir_quantities(r)
-    q === quantities.level && return (:storage_level_limits, u"CU")
-    q === quantities.flow && return (:storage_level_limits, u"CU/hr")
-    return nothing
-end
+_cu_base_field(::Component, q::Symbol) = _is_power(q) ? :base_power : nothing
+_cu_base_field(::Union{Service, Topology, HydroReservoir}, ::Symbol) = nothing
+_cu_base_field(::EnergyReservoirStorage, q::Symbol) =
+    q === :Energy ? :storage_capacity : _is_power(q) ? :base_power : nothing
 
-# 1.0 CU of a storage level, in natural units. `conversion_factor` turns a non-MWh medium
+_is_power(q::Symbol) = TIME_SERIES_QUANTITIES[q] isa AbstractPowerCategory
+
+# 1.0 CU of a battery's stored energy, in MWh. `conversion_factor` turns a non-MWh medium
 # (e.g. liters of hydrogen) into MWh.
 _cu_capacity(s::EnergyReservoirStorage) =
     get_storage_capacity(s, u"MW") * get_conversion_factor(s) * u"MW*hr"
-_cu_capacity(r::HydroReservoir) =
-    get_storage_level_limits(r).max * TIME_SERIES_QUANTITIES[_reservoir_quantities(r).level]
 
 _ts_natural_unit(cat::UnitCategory) = natural_unit(cat)
 _ts_natural_unit(u::Unitful.Units) = u
@@ -166,18 +150,17 @@ function _check_time_series_labels(owner::Component, labels)
         )
         return nothing
     end
-    rule = _cu_rule(owner, q)
-    isnothing(rule) && throw(
+    field = _cu_base_field(owner, q)
+    isnothing(field) && throw(
         ArgumentError(
             "$(summary(owner)) does not accept $q time series in CU; store \"$name\" in " *
             "natural units",
         ),
     )
-    field, cu_units = rule
-    Unitful.dimension(units) == Unitful.dimension(cu_units) || throw(
+    units == u"CU" || throw(
         ArgumentError(
-            "time series \"$name\" is $q on $(summary(owner)), stored per unit in " *
-            "$cu_units, but its units are $units",
+            "time series \"$name\" is $q on $(summary(owner)), stored in CU, but its " *
+            "units are $units",
         ),
     )
     hasfield(typeof(owner), field) || throw(
@@ -188,7 +171,7 @@ end
 
 """
 Check a series' units labels against the component it is being attached to. `base_field`
-names the owner field a CU series is a fraction of, and must match `_cu_rule`; it is
+names the owner field a CU series is a fraction of, and must match `_cu_base_field`; it is
 checked here and not stored.
 """
 function _validate_time_series_labels(
@@ -228,32 +211,14 @@ end
 # Every quantity in the vocabulary converts linearly, so one factor covers the whole series.
 _ts_conversion_factor(c, cat::UnitCategory, from, to) =
     ustrip(to, convert_units(c, 1.0 * from, cat, to))
-# Storage quantities, and a reservoir's power flows, are per unit of a capacity instead.
+# A battery's energy is per unit of its capacity instead. A reservoir has no `base_power`, so
+# its power flows (an energy reservoir's) also go through natural units.
 _ts_conversion_factor(c, ::Unitful.Units, from, to) =
     _capacity_conversion_factor(c, from, to)
 _ts_conversion_factor(c::HydroReservoir, ::UnitCategory, from, to) =
     _capacity_conversion_factor(c, from, to)
-# A reserve's CU is a fraction of its `requirement`, but the units engine reads CU as a
-# fraction of `base_power`. So CU is resolved here and only natural units and SU reach the
-# engine; both sides go through MW. The only per-unit form is plain CU.
-function _ts_conversion_factor(r::_RequirementReserve, ::ActivePowerCategory, from, to)
-    from == to && return 1.0
-    mw_per_to = _reserve_mw(r, to)
-    iszero(mw_per_to) && throw(
-        ArgumentError("$(summary(r)) has a zero requirement, so it has no fraction in CU"),
-    )
-    return _reserve_mw(r, from) / mw_per_to
-end
 
-function _reserve_mw(r, u)
-    if _is_per_unit(u)
-        u == u"CU" || throw(Unitful.DimensionError(u, u"CU"))
-        return get_requirement(r, u"MW")
-    end
-    return ustrip(u"MW", convert_units(r, 1.0 * u, ACTIVE_POWER, u"MW"))
-end
-
-# Both sides go through natural units: CU (or CU/hr) is that much of the capacity, and SU
+# Both sides go through natural units: CU is that much of the capacity, and SU
 # (SU*hr for energy) that much of the system base in MW. Water quantities have no SU, so
 # reading one in SU fails on its dimension.
 _capacity_conversion_factor(c, from, to) =
@@ -310,7 +275,7 @@ function get_time_series_values(
         throw(
             ArgumentError("time series \"$name\" is $q, not $quantity"),
         )
-    _is_per_unit(units) && isnothing(_cu_rule(component, q)) &&
+    _is_per_unit(units) && isnothing(_cu_base_field(component, q)) &&
         throw(
             ArgumentError(
                 "$(summary(component)) has no CU base for $q, so \"$name\" cannot be read " *

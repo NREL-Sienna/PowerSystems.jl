@@ -132,13 +132,9 @@
     @test_throws ArgumentError read_ts("bare", u"MW")
 end
 
-@testset "Time series units labels: CU of a storage capacity" begin
+@testset "Time series units labels: CU of a battery's capacity" begin
     sys, _ = _sys_with_thermal()
     bus = get_component(ACBus, sys, "b1")
-    reservoir = HydroReservoir(nothing)
-    set_storage_level_limits!(reservoir, (min = 0.0, max = 500.0))
-    set_level_data_type!(reservoir, ReservoirDataType.ENERGY)
-    add_component!(sys, reservoir)
     battery = EnergyReservoirStorage(nothing)
     set_bus!(battery, bus)
     set_storage_capacity!(battery, 4.0u"CU")
@@ -147,47 +143,26 @@ end
 
     stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 3)
     ta = TimeSeries.TimeArray(stamps, [0.2, 0.4, 0.8])
-    level(quantity) =
-        SingleTimeSeries(quantity, ta; unit_system = IS.CU, quantity_kind = quantity)
-    read_ts(owner, name, units) =
-        get_time_series_values(SingleTimeSeries, owner, name, units)
+    read_ts(name, units) = get_time_series_values(SingleTimeSeries, battery, name, units)
 
-    energy = level("energy")
+    energy = SingleTimeSeries("energy", ta; unit_system = IS.CU, quantity_kind = "energy")
     @test_throws ArgumentError add_time_series!(
         sys,
-        reservoir,
+        battery,
         energy;
         base_field = :base_power,
     )
-    add_time_series!(sys, reservoir, energy; base_field = :storage_level_limits)
-    @test read_ts(reservoir, "energy", u"MW*hr") ≈ [100.0, 200.0, 400.0]
-    @test read_ts(reservoir, "energy", u"CU") ≈ [0.2, 0.4, 0.8]
-    @test_throws Unitful.DimensionError read_ts(reservoir, "energy", u"SU")
-
-    # A reservoir accounting in energy has no CU volume.
-    @test_throws ArgumentError add_time_series!(
-        sys,
-        reservoir,
-        level("volume");
-        base_field = :storage_level_limits,
-    )
-
     add_time_series!(sys, battery, energy; base_field = :storage_capacity)
-    @test read_ts(battery, "energy", u"MW*hr") ≈ [80.0, 160.0, 320.0]
+    @test read_ts("energy", u"MW*hr") ≈ [80.0, 160.0, 320.0]
+    @test read_ts("energy", u"CU") ≈ [0.2, 0.4, 0.8]
+    # Energy reads in SU*hr, on the 100 MVA system base; plain SU is a power.
+    @test read_ts("energy", u"SU*hr") ≈ [0.8, 1.6, 3.2]
 
-    # Stored in natural units, read in CU: a fraction of the capacity (500 MWh; 400 MWh).
+    # Stored in natural units, read in CU: a fraction of the 400 MWh capacity.
     mwh = SingleTimeSeries("mwh", ta .* 1000.0; unit_system = IS.NU, units = "MW*hr",
         quantity_kind = "energy")
-    add_time_series!(sys, reservoir, mwh)
-    @test read_ts(reservoir, "mwh", u"CU") ≈ [0.4, 0.8, 1.6]
-    @test read_ts(reservoir, "mwh", u"MW*hr") ≈ [200.0, 400.0, 800.0]
     add_time_series!(sys, battery, mwh)
-    @test read_ts(battery, "mwh", u"CU") ≈ [0.5, 1.0, 2.0]
-
-    # Energy reads in SU*hr, on the 100 MVA system base; plain SU is a power.
-    @test read_ts(reservoir, "energy", u"SU*hr") ≈ [1.0, 2.0, 4.0]
-    @test read_ts(reservoir, "mwh", u"SU*hr") ≈ [2.0, 4.0, 8.0]
-    @test read_ts(battery, "energy", u"SU*hr") ≈ [0.8, 1.6, 3.2]
+    @test read_ts("mwh", u"CU") ≈ [0.5, 1.0, 2.0]
 
     # A battery's power follows the device rule: CU of its base_power.
     battery_base = get_base_power(battery, u"NU")
@@ -197,14 +172,14 @@ end
         SingleTimeSeries("p", ta; unit_system = IS.CU, quantity_kind = "active_power");
         base_field = :base_power,
     )
-    @test read_ts(battery, "p", u"MW") ≈ [0.2, 0.4, 0.8] .* battery_base
+    @test read_ts("p", u"MW") ≈ [0.2, 0.4, 0.8] .* battery_base
     add_time_series!(
         sys,
         battery,
         SingleTimeSeries("p_mw", ta; unit_system = IS.NU, units = "MW",
             quantity_kind = "active_power"),
     )
-    @test read_ts(battery, "p_mw", u"CU") ≈ [0.2, 0.4, 0.8] ./ battery_base
+    @test read_ts("p_mw", u"CU") ≈ [0.2, 0.4, 0.8] ./ battery_base
 end
 
 @testset "Time series units labels: power on generators, fluids on reservoirs" begin
@@ -227,8 +202,8 @@ end
     stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 3)
     ta = TimeSeries.TimeArray(stamps, [0.2, 0.4, 0.8])
     series(name; kwargs...) = SingleTimeSeries(name, ta; kwargs...)
-    cu_flow(name, quantity) = series(name; unit_system = IS.CU, units = "CU hr^-1",
-        quantity_kind = quantity)
+    read_ts(owner, name, units) =
+        get_time_series_values(SingleTimeSeries, owner, name, units)
 
     # A hydro generator takes power only.
     inflow = series("inflow"; units = "m^3/s", quantity_kind = "VolumeFlowRate")
@@ -240,41 +215,35 @@ end
         base_field = :base_power,
     )
 
-    # An energy reservoir's flows are power, per unit of capacity per hour.
-    add_time_series!(
-        sys,
-        energy_reservoir,
-        cu_flow("inflow", "ActivePower");
-        base_field = :storage_level_limits,
-    )
-    @test get_time_series_values(SingleTimeSeries, energy_reservoir, "inflow", u"MW") ≈
-          [100.0, 200.0, 400.0]
-    # Stored in MW, read in CU/hr: a fraction of the 500 MWh capacity per hour.
-    add_time_series!(
-        sys,
-        energy_reservoir,
-        series(
-            "inflow_mw";
-            unit_system = IS.NU,
-            units = "MW",
-            quantity_kind = "ActivePower",
-        ),
-    )
-    @test get_time_series_values(
-        SingleTimeSeries, energy_reservoir, "inflow_mw", u"CU/hr") ≈ [0.2, 0.4, 0.8] ./ 500
-    @test_throws Unitful.DimensionError get_time_series_values(
-        SingleTimeSeries, energy_reservoir, "inflow_mw", u"CU")
-    # An energy reservoir's flows read in SU, on the 100 MVA system base.
-    @test get_time_series_values(SingleTimeSeries, energy_reservoir, "inflow", u"SU") ≈
-          [1.0, 2.0, 4.0]
-    @test get_time_series_values(SingleTimeSeries, energy_reservoir, "inflow_mw", u"SU") ≈
-          [0.2, 0.4, 0.8] ./ 100
-    @test_throws ArgumentError add_time_series!(
-        sys,
-        energy_reservoir,
-        series("cu_power"; unit_system = IS.CU, quantity_kind = "ActivePower");
-        base_field = :storage_level_limits,
-    )
+    # A reservoir is natural units only, levels and flows alike, whatever it accounts in.
+    for (owner, quantity) in
+        ((energy_reservoir, "energy"), (energy_reservoir, "ActivePower"),
+        (head_reservoir, "head"), (head_reservoir, "VolumeFlowRate"))
+        cu = series("cu_$quantity"; unit_system = IS.CU, quantity_kind = quantity)
+        @test_throws ArgumentError add_time_series!(sys, owner, cu)
+        for base_field in (:storage_level_limits, :base_power)
+            @test_throws ArgumentError add_time_series!(
+                sys,
+                owner,
+                cu;
+                base_field = base_field,
+            )
+        end
+    end
+
+    # An energy reservoir's levels are energy and its flows power.
+    add_time_series!(sys, energy_reservoir,
+        series("level"; unit_system = IS.NU, units = "MW*hr", quantity_kind = "energy"))
+    add_time_series!(sys, energy_reservoir,
+        series("inflow"; unit_system = IS.NU, units = "MW", quantity_kind = "ActivePower"))
+    @test read_ts(energy_reservoir, "level", u"MW*hr") ≈ [0.2, 0.4, 0.8]
+    @test read_ts(energy_reservoir, "inflow", u"kW") ≈ [200.0, 400.0, 800.0]
+    # On the 100 MVA system base: SU*hr for the level, SU for the flow.
+    @test read_ts(energy_reservoir, "level", u"SU*hr") ≈ [0.2, 0.4, 0.8] ./ 100
+    @test read_ts(energy_reservoir, "inflow", u"SU") ≈ [0.2, 0.4, 0.8] ./ 100
+    # No CU base on a reservoir, so nothing reads as a fraction of its 500 MWh.
+    @test_throws ArgumentError read_ts(energy_reservoir, "level", u"CU")
+    @test_throws ArgumentError read_ts(energy_reservoir, "inflow", u"CU")
     @test_throws ArgumentError add_time_series!(
         sys,
         energy_reservoir,
@@ -282,29 +251,16 @@ end
     )
     @test_throws ArgumentError add_time_series!(sys, energy_reservoir, inflow)
 
-    # A head reservoir is natural units only.
-    @test_throws ArgumentError add_time_series!(
-        sys,
-        head_reservoir,
-        series("target"; unit_system = IS.CU, quantity_kind = "head");
-        base_field = :storage_level_limits,
-    )
     add_time_series!(
         sys,
         head_reservoir,
         series("target"; units = "m", quantity_kind = "Head"),
     )
     add_time_series!(sys, head_reservoir, inflow)
-    @test get_time_series_values(SingleTimeSeries, head_reservoir, "inflow", u"m^3/hr") ≈
-          [0.2, 0.4, 0.8] .* 3600
-    # No CU base on a head reservoir, so a natural head is not read as a fraction of 300 m.
-    @test_throws ArgumentError get_time_series_values(
-        SingleTimeSeries, head_reservoir, "target", u"CU")
-    @test_throws ArgumentError get_time_series_values(
-        SingleTimeSeries, head_reservoir, "inflow", u"CU/hr")
+    @test read_ts(head_reservoir, "inflow", u"m^3/hr") ≈ [0.2, 0.4, 0.8] .* 3600
+    @test_throws ArgumentError read_ts(head_reservoir, "target", u"CU")
     # Water has no system base.
-    @test_throws Unitful.DimensionError get_time_series_values(
-        SingleTimeSeries, head_reservoir, "inflow", u"SU")
+    @test_throws Unitful.DimensionError read_ts(head_reservoir, "inflow", u"SU")
 
     # Series loaded without `add_time_series!` (the document import path) are checked too.
     IS.add_time_series!(
@@ -316,63 +272,34 @@ end
     @test_throws ArgumentError PSY._check_all_time_series_labels(sys)
 end
 
-@testset "Time series units labels: CU of a reserve requirement" begin
+@testset "Time series units labels: a reserve requirement is natural units only" begin
     sys = System(100.0)
     reserve = OnlineReserve{ReserveUp}(nothing)
     add_service!(sys, reserve, Device[])
     set_requirement!(reserve, 0.5u"SU")
     stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 3)
     ta = TimeSeries.TimeArray(stamps, [0.2, 0.4, 0.8])
-    cu = SingleTimeSeries(
-        "requirement",
-        ta;
-        unit_system = IS.CU,
-        quantity_kind = "active_power",
-    )
     read_ts(units) = get_time_series_values(SingleTimeSeries, reserve, "requirement", units)
 
-    @test_throws ArgumentError add_time_series!(sys, reserve, cu; base_field = :base_power)
-    add_time_series!(sys, reserve, cu; base_field = :requirement)
-    @test read_ts(u"MW") ≈ [10.0, 20.0, 40.0]
-    @test read_ts(u"SU") ≈ [0.1, 0.2, 0.4]
-    @test read_ts(u"CU") ≈ [0.2, 0.4, 0.8]
+    cu = SingleTimeSeries("requirement", ta; unit_system = IS.CU,
+        quantity_kind = "active_power")
+    for base_field in (nothing, :requirement, :base_power)
+        @test_throws ArgumentError add_time_series!(
+            sys,
+            reserve,
+            cu;
+            base_field = base_field,
+        )
+    end
 
-    # Stored in natural units, CU still means a fraction of the 50 MW requirement.
     add_time_series!(
         sys,
         reserve,
-        SingleTimeSeries("mw", ta .* 100.0; unit_system = IS.NU, units = "MW",
+        SingleTimeSeries("requirement", ta .* 100.0; unit_system = IS.NU, units = "MW",
             quantity_kind = "active_power"),
     )
-    read_mw(units) = get_time_series_values(SingleTimeSeries, reserve, "mw", units)
-    @test read_mw(u"MW") ≈ [20.0, 40.0, 80.0]
-    @test read_mw(u"CU") ≈ [0.4, 0.8, 1.6]
-    @test read_mw(u"SU") ≈ [0.2, 0.4, 0.8]
-    # CU is the only per-unit form a reserve's power takes.
-    @test_throws Unitful.DimensionError read_ts(u"CU/hr")
-    @test_throws Unitful.DimensionError read_ts(u"CU^2")
-
-    # A zero requirement (the constructors' default) still reads CU back as stored.
-    idle = OnlineReserve{ReserveUp}(nothing)
-    set_name!(idle, "idle")
-    add_service!(sys, idle, Device[])
-    @test iszero(get_requirement(idle, u"MW"))
-    add_time_series!(sys, idle, cu; base_field = :requirement)
-    add_time_series!(
-        sys,
-        idle,
-        SingleTimeSeries("mw", ta; unit_system = IS.NU, units = "MW",
-            quantity_kind = "active_power"),
-    )
-    read_idle(name, units) = get_time_series_values(SingleTimeSeries, idle, name, units)
-    @test read_idle("requirement", u"CU") ≈ [0.2, 0.4, 0.8]
-    @test read_idle("requirement", u"MW") ≈ [0.0, 0.0, 0.0]
-    @test_throws ArgumentError read_idle("mw", u"CU")
-
-    @test_throws ArgumentError add_time_series!(
-        sys,
-        reserve,
-        SingleTimeSeries("q", ta; unit_system = IS.CU, quantity_kind = "reactive_power");
-        base_field = :requirement,
-    )
+    @test read_ts(u"MW") ≈ [20.0, 40.0, 80.0]
+    @test read_ts(u"SU") ≈ [0.2, 0.4, 0.8]
+    # Not even as a fraction of the 50 MW requirement.
+    @test_throws ArgumentError read_ts(u"CU")
 end
