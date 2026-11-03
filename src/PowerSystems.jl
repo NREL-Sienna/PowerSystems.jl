@@ -157,6 +157,7 @@ export RenewableDispatch
 export ThermalGen
 export ThermalStandard
 export ThermalMultiStart
+export LogicalGenerationUnit
 
 export ElectricLoad
 export StaticLoad
