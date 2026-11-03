@@ -1,8 +1,8 @@
 #=
 Units labels on time series (prototype for PowerSystems.jl#1807).
 
-InfrastructureSystems stores a series' `units`, `quantity_kind` and `unit_system` labels
-without interpreting them. This file gives them meaning: a closed quantity vocabulary,
+InfrastructureSystems stores a series' `units`, `quantity_kind`, `unit_system` and
+`per_unit_of` labels without interpreting them. This file gives them meaning: a closed quantity vocabulary,
 validation when a series is attached, and a getter that converts to the caller's units the
 way the generated field getters do.
 =#
@@ -10,7 +10,7 @@ way the generated field getters do.
 """
 Quantities a time series may declare. A `UnitCategory` entry is a power; a bare unit names a
 quantity's natural unit. Which of them may be stored in CU, and of what, is
-[`_cu_base_field`](@ref).
+`_per_unit_of`.
 """
 const TIME_SERIES_QUANTITIES = Dict{Symbol, Any}(
     :ActivePower => ACTIVE_POWER,
@@ -105,9 +105,9 @@ natural units only there. Only two things take CU: a device's power, a fraction 
 Everything else is natural units only: reservoirs (levels and flows alike), services and
 topology.
 """
-_cu_base_field(::Component, q::Symbol) = _is_power(q) ? :base_power : nothing
-_cu_base_field(::Union{Service, Topology, HydroReservoir}, ::Symbol) = nothing
-_cu_base_field(::EnergyReservoirStorage, q::Symbol) =
+_per_unit_of(::Component, q::Symbol) = _is_power(q) ? :base_power : nothing
+_per_unit_of(::Union{Service, Topology, HydroReservoir}, ::Symbol) = nothing
+_per_unit_of(::EnergyReservoirStorage, q::Symbol) =
     q === :Energy ? :storage_capacity : _is_power(q) ? :base_power : nothing
 
 _is_power(q::Symbol) = TIME_SERIES_QUANTITIES[q] isa AbstractPowerCategory
@@ -121,16 +121,26 @@ _ts_natural_unit(cat::UnitCategory) = natural_unit(cat)
 _ts_natural_unit(u::Unitful.Units) = u
 
 """
-Check a series' units labels (a series or its metadata) against `owner`. Returns the field a
-CU series is a fraction of, or `nothing` for a natural or unlabeled series.
+Check a series' units labels (a series or its metadata) against `owner`, when it is attached
+and again when a system is read back. A CU series must declare `per_unit_of`, the field
+`_per_unit_of` says it is a fraction of; it is redundant with that rule, but makes
+the stored series say what it is a fraction of without anyone knowing the rule.
 """
 function _check_time_series_labels(owner::Component, labels)
     name = IS.get_name(labels)
+    per_unit_of = IS.get_per_unit_of(labels)
+    isnothing(per_unit_of) || IS.get_unit_system(labels) isa IS.ComponentBaseUnit ||
+        throw(
+            ArgumentError(
+                "time series \"$name\" declares per_unit_of = \"$per_unit_of\"; that applies " *
+                "to CU series only",
+            ),
+        )
     units = _ts_source_units(labels)
     q = _ts_quantity(labels)
     # ponytail: unlabeled series pass unchecked so PSB keeps building; require labels once
     # PSB and PTDP write them everywhere.
-    isnothing(units) && isnothing(q) && return nothing
+    isnothing(units) && isnothing(q) && return
     isnothing(q) && throw(
         ArgumentError("time series \"$name\" declares units $units but no quantity"),
     )
@@ -148,9 +158,9 @@ function _check_time_series_labels(owner::Component, labels)
                 "$(_ts_natural_unit(kind)), but its units are $units",
             ),
         )
-        return nothing
+        return
     end
-    field = _cu_base_field(owner, q)
+    field = _per_unit_of(owner, q)
     isnothing(field) && throw(
         ArgumentError(
             "$(summary(owner)) does not accept $q time series in CU; store \"$name\" in " *
@@ -166,29 +176,17 @@ function _check_time_series_labels(owner::Component, labels)
     hasfield(typeof(owner), field) || throw(
         ArgumentError("$(summary(owner)) has no `$field` for CU series \"$name\""),
     )
-    return field
-end
-
-"""
-Check a series' units labels against the component it is being attached to. `base_field`
-names the owner field a CU series is a fraction of, and must match `_cu_base_field`; it is
-checked here and not stored.
-"""
-function _validate_time_series_labels(
-    owner::Component,
-    ts::TimeSeriesData,
-    base_field::Union{Nothing, Symbol},
-)
-    expected = _check_time_series_labels(owner, ts)
-    expected === base_field && return
-    name = get_name(ts)
-    isnothing(expected) && throw(
-        ArgumentError("time series \"$name\": `base_field` applies to CU series only"),
+    per_unit_of == string(field) && return
+    isnothing(per_unit_of) && throw(
+        ArgumentError(
+            "CU time series \"$name\" on $(summary(owner)) must declare " *
+            "per_unit_of = \"$field\"",
+        ),
     )
     throw(
         ArgumentError(
-            "time series \"$name\" on $(summary(owner)) is a fraction of `$expected`; " *
-            "pass `base_field = :$expected`",
+            "time series \"$name\" on $(summary(owner)) is a fraction of `$field`, not " *
+            "`$per_unit_of`",
         ),
     )
 end
@@ -196,7 +194,6 @@ end
 """
 Check the units labels of every series in `sys`. The document import path bulk-loads its
 associations without `add_time_series!`, so it runs this once its components are built.
-The base field is not stored, so only the labels themselves are checked.
 """
 function _check_all_time_series_labels(sys::System)
     for component in get_components(Component, sys)
@@ -275,7 +272,7 @@ function get_time_series_values(
         throw(
             ArgumentError("time series \"$name\" is $q, not $quantity"),
         )
-    _is_per_unit(units) && isnothing(_cu_base_field(component, q)) &&
+    _is_per_unit(units) && isnothing(_per_unit_of(component, q)) &&
         throw(
             ArgumentError(
                 "$(summary(component)) has no CU base for $q, so \"$name\" cannot be read " *

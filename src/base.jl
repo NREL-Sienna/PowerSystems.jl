@@ -1429,9 +1429,10 @@ Returns a key that can later be used to retrieve the time series data.
 
 Throws ArgumentError if the component is not stored in the system, or if the series' units
 labels do not fit the component. Only a device's power and a battery's stored energy may be
-stored in CU; such a series must pass `base_field`, the component field its values are a
-fraction of (`:base_power` for power, `:storage_capacity` for a battery's energy). Every
-other series, a reservoir's, a service's or a topology's, is natural units only.
+stored in CU; such a series must declare `per_unit_of`, the component field its values are a
+fraction of (`"base_power"` for power, `"storage_capacity"` for a battery's energy), when it
+is constructed. Every other series, a reservoir's, a service's or a topology's, is natural
+units only.
 
 # Examples
 ```julia
@@ -1461,9 +1462,8 @@ function add_time_series!(
     component::Component,
     time_series::TimeSeriesData;
     features::Union{Nothing, Dict} = nothing,
-    base_field::Union{Nothing, Symbol} = nothing,
 )
-    _validate_time_series_labels(component, time_series, base_field)
+    _check_time_series_labels(component, time_series)
     return IS.add_time_series!(sys.data, component, time_series; features = features)
 end
 
@@ -1500,37 +1500,22 @@ function add_time_series!(
     components,
     time_series::TimeSeriesData;
     features::Union{Nothing, Dict} = nothing,
-    base_field::Union{Nothing, Symbol} = nothing,
 )
-    # One pass: each add checks its own component, so a single-pass iterator works too.
-    # The block stores the shared array once, as IS's bulk add does.
-    keys = time_series_transaction(sys) do txn
-        [
-            add_time_series!(txn, c, time_series; features = features,
-                base_field = base_field) for c in components
-        ]
-    end
-    isempty(keys) && throw(
-        ArgumentError(
-            "`components` is empty; there is nothing to associate " *
-            "$(summary(time_series)) with",
-        ),
-    )
-    return keys
+    return IS.add_time_series!(sys.data, components, time_series; features = features)
 end
 
 """
 Add time series data to a component inside a [`time_series_transaction`](@ref) block.
-Checks the series' units labels as the direct method does; `base_field` is as there.
+Checks the series' units labels as the direct method does. IS's bulk adds come through here
+for each component, so they are checked too.
 """
 function add_time_series!(
     txn::IS.TimeSeriesContext,
     component::Component,
     time_series::TimeSeriesData;
     features::Union{Nothing, Dict} = nothing,
-    base_field::Union{Nothing, Symbol} = nothing,
 )
-    _validate_time_series_labels(component, time_series, base_field)
+    _check_time_series_labels(component, time_series)
     # This method extends IS's function, so a plain call would dispatch back here.
     return invoke(
         IS.add_time_series!,
@@ -1540,29 +1525,6 @@ function add_time_series!(
         time_series;
         features = features,
     )
-end
-
-"""
-Add the same time series data to several components inside a
-[`time_series_transaction`](@ref) block, checking each as the direct method does.
-"""
-function add_time_series!(
-    txn::IS.TimeSeriesContext,
-    components::AbstractVector{<:Component},
-    time_series::TimeSeriesData;
-    features::Union{Nothing, Dict} = nothing,
-    base_field::Union{Nothing, Symbol} = nothing,
-)
-    isempty(components) && throw(
-        ArgumentError(
-            "`components` is empty; there is nothing to associate " *
-            "$(summary(time_series)) with",
-        ),
-    )
-    return [
-        add_time_series!(txn, c, time_series; features = features, base_field = base_field)
-        for c in components
-    ]
 end
 
 #=

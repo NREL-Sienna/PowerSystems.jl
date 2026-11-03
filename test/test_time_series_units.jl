@@ -4,44 +4,42 @@
     stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 3)
     ta = TimeSeries.TimeArray(stamps, [0.2, 0.4, 0.8])
     series(name; kwargs...) = SingleTimeSeries(name, ta; kwargs...)
+    cu_series(name; kwargs...) = series(name; unit_system = IS.CU,
+        quantity_kind = "active_power", per_unit_of = "base_power", kwargs...)
     read_ts(name, units; kwargs...) =
         get_time_series_values(SingleTimeSeries, gen, name, units; kwargs...)
 
-    # CU: the base field is required, must match, and the owner must accept CU.
-    cu = series("cu"; unit_system = IS.CU, quantity_kind = "active_power")
-    @test_throws ArgumentError add_time_series!(sys, gen, cu)
-    @test_throws ArgumentError add_time_series!(sys, gen, cu; base_field = :rating)
-    @test_throws ArgumentError add_time_series!(sys, bus, cu; base_field = :base_power)
-    add_time_series!(sys, gen, cu; base_field = :base_power)
+    # CU: per_unit_of is required, must match, and the owner must accept CU.
+    @test_throws ArgumentError add_time_series!(
+        sys,
+        gen,
+        cu_series("cu"; per_unit_of = nothing),
+    )
+    @test_throws ArgumentError add_time_series!(
+        sys,
+        gen,
+        cu_series("cu"; per_unit_of = "rating"),
+    )
+    @test_throws ArgumentError add_time_series!(sys, bus, cu_series("cu"))
+    add_time_series!(sys, gen, cu_series("cu"))
     @test read_ts("cu", u"MW") ≈ [50.0, 100.0, 200.0]
     @test read_ts("cu", u"SU") ≈ [0.5, 1.0, 2.0]
     @test read_ts("cu", u"CU"; quantity = :ActivePower) ≈ [0.2, 0.4, 0.8]
     @test_throws ArgumentError read_ts("cu", u"CU"; quantity = :ReactivePower)
+    # The label is stored with the series.
+    @test IS.get_per_unit_of(get_time_series(SingleTimeSeries, gen, "cu")) == "base_power"
 
     # With CU, `units` may only restate the per-unit basis; a natural label contradicts it.
     for units in ("MW", "m^3/s", "kg")
-        @test_throws ArgumentError add_time_series!(
-            sys,
-            gen,
-            series("cu_$units"; unit_system = IS.CU, units = units,
-                quantity_kind = "active_power");
-            base_field = :base_power,
-        )
+        @test_throws ArgumentError add_time_series!(sys, gen, cu_series("cu_$units"; units))
     end
-    add_time_series!(
-        sys,
-        gen,
-        series("cu_explicit"; unit_system = IS.CU, units = "CU",
-            quantity_kind = "active_power");
-        base_field = :base_power,
-    )
+    add_time_series!(sys, gen, cu_series("cu_explicit"; units = "CU"))
     @test read_ts("cu_explicit", u"MW") ≈ [50.0, 100.0, 200.0]
     # NU takes natural units only, and SU is not a stored basis.
     @test_throws ArgumentError add_time_series!(
         sys,
         gen,
-        series("nu_cu"; unit_system = IS.NU, units = "CU", quantity_kind = "active_power");
-        base_field = :base_power,
+        series("nu_cu"; unit_system = IS.NU, units = "CU", quantity_kind = "active_power"),
     )
     @test_throws ArgumentError add_time_series!(
         sys,
@@ -51,20 +49,20 @@
     @test_throws ArgumentError add_time_series!(
         sys,
         gen,
-        series("cu_rate"; unit_system = IS.CU, units = "CU hr^-1",
-            quantity_kind = "active_power");
-        base_field = :base_power,
+        cu_series("cu_rate"; units = "CU hr^-1"),
     )
 
-    # Natural units: the dimension must match the quantity.
+    # Natural units: the dimension must match the quantity, and per_unit_of is CU only.
     add_time_series!(sys, gen, series("mw"; units = "MW", quantity_kind = "ActivePower"))
     @test read_ts("mw", u"CU") ≈ [0.2, 0.4, 0.8] ./ 250.0
     @test_throws ArgumentError add_time_series!(
         sys,
         gen,
-        series("mw_cu_base"; units = "MW", quantity_kind = "ActivePower");
-        base_field = :base_power,
+        series("mw_per_unit_of"; units = "MW", quantity_kind = "ActivePower",
+            per_unit_of = "base_power"),
     )
+    @test_throws ArgumentError add_time_series!(sys, gen,
+        series("bare_per_unit_of"; per_unit_of = "base_power"))
     @test_throws ArgumentError add_time_series!(
         sys,
         gen,
@@ -78,53 +76,47 @@
     @test read_ts("flow", u"m^3/hr") ≈ [0.2, 0.4, 0.8] .* 3600
 
     # Quantities without a CU base, and quantities outside the vocabulary.
-    @test_throws ArgumentError add_time_series!(
-        sys,
-        gen,
-        series("cu_energy"; unit_system = IS.CU, quantity_kind = "energy");
-        base_field = :base_power,
-    )
+    @test_throws ArgumentError add_time_series!(sys, gen,
+        cu_series("cu_energy"; quantity_kind = "energy"))
     @test_throws ArgumentError add_time_series!(
         sys,
         gen,
         series("unknown"; units = "MW", quantity_kind = "Foo"),
     )
 
-    # A transaction block checks the labels too, and takes base_field.
-    txn_cu = series("txn_cu"; unit_system = IS.CU, quantity_kind = "active_power")
+    # A transaction block checks the labels too, for single and bulk adds.
+    txn_cu = cu_series("txn_cu"; per_unit_of = nothing)
     @test_throws ArgumentError time_series_transaction(
         txn -> add_time_series!(txn, gen, txn_cu),
         sys,
     )
+    @test_throws ArgumentError time_series_transaction(
+        txn -> add_time_series!(txn, [gen], txn_cu),
+        sys,
+    )
     @test !has_time_series(gen, SingleTimeSeries, "txn_cu")
     time_series_transaction(sys) do txn
-        add_time_series!(txn, gen,
-            series("txn_cu"; unit_system = IS.CU,
-                quantity_kind = "active_power"); base_field = :base_power)
-        add_time_series!(txn, [gen],
-            series("txn_cu_vec"; unit_system = IS.CU,
-                quantity_kind = "active_power"); base_field = :base_power)
+        add_time_series!(txn, gen, cu_series("txn_cu"))
+        add_time_series!(txn, [gen], cu_series("txn_cu_vec"))
     end
     @test read_ts("txn_cu", u"MW") ≈ [50.0, 100.0, 200.0]
     @test read_ts("txn_cu_vec", u"MW") ≈ [50.0, 100.0, 200.0]
 
-    # The bulk add takes base_field through to every component, from any iterable,
-    # single-pass ones included.
+    # The bulk add checks every component, from any iterable, single-pass ones included.
+    @test_throws ArgumentError add_time_series!(sys, [gen], txn_cu)
     for (name, owners) in (
         ("bulk_vec", [gen]),
         ("bulk_iter", get_components(ThermalStandard, sys)),
         ("bulk_stateful", Iterators.Stateful([gen])),
     )
-        cu_bulk = series(name; unit_system = IS.CU, quantity_kind = "active_power")
-        keys = add_time_series!(sys, owners, cu_bulk; base_field = :base_power)
+        keys = add_time_series!(sys, owners, cu_series(name))
         @test length(keys) == 1
         @test read_ts(name, u"MW") ≈ [50.0, 100.0, 200.0]
     end
     @test_throws ArgumentError add_time_series!(
         sys,
         ThermalStandard[],
-        series("bulk_empty"; unit_system = IS.CU, quantity_kind = "active_power");
-        base_field = :base_power,
+        cu_series("bulk_empty"),
     )
 
     # Unlabeled series still attach, but cannot be read in units.
@@ -145,14 +137,10 @@ end
     ta = TimeSeries.TimeArray(stamps, [0.2, 0.4, 0.8])
     read_ts(name, units) = get_time_series_values(SingleTimeSeries, battery, name, units)
 
-    energy = SingleTimeSeries("energy", ta; unit_system = IS.CU, quantity_kind = "energy")
-    @test_throws ArgumentError add_time_series!(
-        sys,
-        battery,
-        energy;
-        base_field = :base_power,
-    )
-    add_time_series!(sys, battery, energy; base_field = :storage_capacity)
+    energy(per_unit_of) = SingleTimeSeries("energy", ta; unit_system = IS.CU,
+        quantity_kind = "energy", per_unit_of = per_unit_of)
+    @test_throws ArgumentError add_time_series!(sys, battery, energy("base_power"))
+    add_time_series!(sys, battery, energy("storage_capacity"))
     @test read_ts("energy", u"MW*hr") ≈ [80.0, 160.0, 320.0]
     @test read_ts("energy", u"CU") ≈ [0.2, 0.4, 0.8]
     # Energy reads in SU*hr, on the 100 MVA system base; plain SU is a power.
@@ -169,8 +157,8 @@ end
     add_time_series!(
         sys,
         battery,
-        SingleTimeSeries("p", ta; unit_system = IS.CU, quantity_kind = "active_power");
-        base_field = :base_power,
+        SingleTimeSeries("p", ta; unit_system = IS.CU, quantity_kind = "active_power",
+            per_unit_of = "base_power"),
     )
     @test read_ts("p", u"MW") ≈ [0.2, 0.4, 0.8] .* battery_base
     add_time_series!(
@@ -211,23 +199,18 @@ end
     add_time_series!(
         sys,
         hydro,
-        series("max_active_power"; unit_system = IS.CU, quantity_kind = "active_power");
-        base_field = :base_power,
+        series("max_active_power"; unit_system = IS.CU, quantity_kind = "active_power",
+            per_unit_of = "base_power"),
     )
 
     # A reservoir is natural units only, levels and flows alike, whatever it accounts in.
     for (owner, quantity) in
         ((energy_reservoir, "energy"), (energy_reservoir, "ActivePower"),
         (head_reservoir, "head"), (head_reservoir, "VolumeFlowRate"))
-        cu = series("cu_$quantity"; unit_system = IS.CU, quantity_kind = quantity)
-        @test_throws ArgumentError add_time_series!(sys, owner, cu)
-        for base_field in (:storage_level_limits, :base_power)
-            @test_throws ArgumentError add_time_series!(
-                sys,
-                owner,
-                cu;
-                base_field = base_field,
-            )
+        for per_unit_of in (nothing, "storage_level_limits", "base_power")
+            cu = series("cu_$quantity"; unit_system = IS.CU, quantity_kind = quantity,
+                per_unit_of = per_unit_of)
+            @test_throws ArgumentError add_time_series!(sys, owner, cu)
         end
     end
 
@@ -281,15 +264,10 @@ end
     ta = TimeSeries.TimeArray(stamps, [0.2, 0.4, 0.8])
     read_ts(units) = get_time_series_values(SingleTimeSeries, reserve, "requirement", units)
 
-    cu = SingleTimeSeries("requirement", ta; unit_system = IS.CU,
-        quantity_kind = "active_power")
-    for base_field in (nothing, :requirement, :base_power)
-        @test_throws ArgumentError add_time_series!(
-            sys,
-            reserve,
-            cu;
-            base_field = base_field,
-        )
+    for per_unit_of in (nothing, "requirement", "base_power")
+        cu = SingleTimeSeries("requirement", ta; unit_system = IS.CU,
+            quantity_kind = "active_power", per_unit_of = per_unit_of)
+        @test_throws ArgumentError add_time_series!(sys, reserve, cu)
     end
 
     add_time_series!(
@@ -302,4 +280,29 @@ end
     @test read_ts(u"SU") ≈ [0.2, 0.4, 0.8]
     # Not even as a fraction of the 50 MW requirement.
     @test_throws ArgumentError read_ts(u"CU")
+end
+
+@testset "Time series units labels: per_unit_of survives every file form" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, component_base = 250.0)
+    stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 3)
+    add_time_series!(
+        sys,
+        gen,
+        SingleTimeSeries("cu", TimeSeries.TimeArray(stamps, [0.2, 0.4, 0.8]);
+            unit_system = IS.CU, quantity_kind = "active_power", per_unit_of = "base_power",
+        ),
+    )
+    mktempdir() do dir
+        for path in ("case", "case.json", "case.sns")
+            to_file(sys, joinpath(dir, path))
+            # Importing checks the stored labels, per_unit_of included.
+            sys2 = from_file(joinpath(dir, path))
+            gen2 = get_component(ThermalStandard, sys2, get_name(gen))
+            ts = get_time_series(SingleTimeSeries, gen2, "cu")
+            @test IS.get_per_unit_of(ts) == "base_power"
+            @test get_time_series_values(SingleTimeSeries, gen2, "cu", u"MW") ≈
+                  [50.0, 100.0, 200.0]
+            IS.close!(IS.get_data_store(sys2.data.time_series_manager))
+        end
+    end
 end
