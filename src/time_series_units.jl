@@ -59,6 +59,10 @@ function _ts_source_units(labels)
     )
     is_cu = system isa IS.ComponentBaseUnit
     s = IS.get_units(labels)
+    system isa IS.NaturalUnit && isnothing(s) &&
+        throw(
+            ArgumentError("time series \"$name\" declares unit_system NU but no units"),
+        )
     isnothing(s) && return is_cu ? u"CU" : nothing
     units = get(() -> Unitful.uparse(s), STRING_TO_UNIT, s)
     is_cu && !_is_per_unit(units) &&
@@ -102,10 +106,11 @@ _accepts_quantity(r::HydroReservoir, q::Symbol) = q in _reservoir_quantities(r)
 The field a CU series of quantity `q` on `owner` is a fraction of, or `nothing` when `q` is
 natural units only there. Only two things take CU: a device's power, a fraction of its
 `base_power`, and a battery's stored energy, a fraction of its `storage_capacity`.
-Everything else is natural units only: reservoirs (levels and flows alike), services and
-topology.
+Everything else is natural units only: reservoirs (levels and flows alike), services,
+topology, and any owner without a `base_power` field.
 """
-_per_unit_of(::Component, q::Symbol) = _is_power(q) ? :base_power : nothing
+_per_unit_of(c::Component, q::Symbol) =
+    _is_power(q) && hasfield(typeof(c), :base_power) ? :base_power : nothing
 _per_unit_of(::Union{Service, Topology, HydroReservoir}, ::Symbol) = nothing
 _per_unit_of(::EnergyReservoirStorage, q::Symbol) =
     q === :Energy ? :storage_capacity : _is_power(q) ? :base_power : nothing
@@ -173,9 +178,6 @@ function _check_time_series_labels(owner::Component, labels)
             "units are $units",
         ),
     )
-    hasfield(typeof(owner), field) || throw(
-        ArgumentError("$(summary(owner)) has no `$field` for CU series \"$name\""),
-    )
     per_unit_of == string(field) && return
     isnothing(per_unit_of) && throw(
         ArgumentError(
@@ -206,8 +208,10 @@ function _check_all_time_series_labels(sys::System)
 end
 
 # Every quantity in the vocabulary converts linearly, so one factor covers the whole series.
+# `convert_units` resolves a generic `u"NU"` to the natural unit, so strip what it returns
+# rather than converting back to `to`.
 _ts_conversion_factor(c, cat::UnitCategory, from, to) =
-    ustrip(to, convert_units(c, 1.0 * from, cat, to))
+    ustrip(convert_units(c, 1.0 * from, cat, to))
 # A battery's energy is per unit of its capacity instead. A reservoir has no `base_power`, so
 # its power flows (an energy reservoir's) also go through natural units.
 _ts_conversion_factor(c, ::Unitful.Units, from, to) =

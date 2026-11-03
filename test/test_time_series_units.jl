@@ -55,6 +55,19 @@
     # Natural units: the dimension must match the quantity, and per_unit_of is CU only.
     add_time_series!(sys, gen, series("mw"; units = "MW", quantity_kind = "ActivePower"))
     @test read_ts("mw", u"CU") ≈ [0.2, 0.4, 0.8] ./ 250.0
+    @test read_ts("mw", u"NU") ≈ [0.2, 0.4, 0.8]
+    @test read_ts("cu", u"NU") ≈ [50.0, 100.0, 200.0]
+    # An owner without a `base_power` field has no CU base, on attach or on read.
+    shunt = SwitchedAdmittance(nothing)
+    set_name!(shunt, "shunt")
+    set_bus!(shunt, bus)
+    add_component!(sys, shunt)
+    @test_throws ArgumentError add_time_series!(sys, shunt, cu_series("cu"))
+    add_time_series!(sys, shunt, series("mw"; units = "MW", quantity_kind = "ActivePower"))
+    @test_throws ArgumentError get_time_series_values(SingleTimeSeries, shunt, "mw", u"CU")
+    # Declaring NU means declaring units too.
+    @test_throws ArgumentError add_time_series!(sys, gen,
+        series("nu_bare"; unit_system = IS.NU))
     @test_throws ArgumentError add_time_series!(
         sys,
         gen,
