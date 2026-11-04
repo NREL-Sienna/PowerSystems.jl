@@ -258,13 +258,11 @@ end
     # Water has no system base.
     @test_throws Unitful.DimensionError read_ts(head_reservoir, "inflow", u"SU")
 
-    # Series loaded without `add_time_series!` (the document import path) are checked too.
-    IS.add_time_series!(
-        sys.data,
-        hydro,
-        series("inflow"; units = "m^3/s",
-            quantity_kind = "VolumeFlowRate"),
-    )
+    # IS's own add runs the same check.
+    bad_inflow = series("inflow"; units = "m^3/s", quantity_kind = "VolumeFlowRate")
+    @test_throws ArgumentError IS.add_time_series!(sys.data, hydro, bad_inflow)
+    # Series loaded straight into the store (the document import path) are checked too.
+    IS.infrastore_add_time_series!(sys.data.time_series_manager, hydro, bad_inflow)
     @test_throws ArgumentError PSY._check_all_time_series_labels(sys)
 end
 

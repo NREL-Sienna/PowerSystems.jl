@@ -109,8 +109,8 @@ natural units only there. Only two things take CU: a device's power, a fraction 
 Everything else is natural units only: reservoirs (levels and flows alike), services,
 topology, and any owner without a `base_power` field.
 """
-_per_unit_of(c::Component, q::Symbol) =
-    _is_power(q) && hasfield(typeof(c), :base_power) ? :base_power : nothing
+_per_unit_of(::T, q::Symbol) where {T <: Component} =
+    _is_power(q) && hasfield(T, :base_power) ? :base_power : nothing
 _per_unit_of(::Union{Service, Topology, HydroReservoir}, ::Symbol) = nothing
 _per_unit_of(::EnergyReservoirStorage, q::Symbol) =
     q === :Energy ? :storage_capacity : _is_power(q) ? :base_power : nothing
@@ -192,6 +192,10 @@ function _check_time_series_labels(owner::Component, labels)
         ),
     )
 end
+
+# Every add, direct, bulk or in a transaction, reaches IS's single add, which calls this.
+IS.check_time_series_owner(owner::Component, time_series::TimeSeriesData) =
+    _check_time_series_labels(owner, time_series)
 
 """
 Check the units labels of every series in `sys`. The document import path bulk-loads its

@@ -1463,7 +1463,6 @@ function add_time_series!(
     time_series::TimeSeriesData;
     features::Union{Nothing, Dict} = nothing,
 )
-    _check_time_series_labels(component, time_series)
     return IS.add_time_series!(sys.data, component, time_series; features = features)
 end
 
@@ -1502,29 +1501,6 @@ function add_time_series!(
     features::Union{Nothing, Dict} = nothing,
 )
     return IS.add_time_series!(sys.data, components, time_series; features = features)
-end
-
-"""
-Add time series data to a component inside a [`time_series_transaction`](@ref) block.
-Checks the series' units labels as the direct method does. IS's bulk adds come through here
-for each component, so they are checked too.
-"""
-function add_time_series!(
-    txn::IS.TimeSeriesContext,
-    component::Component,
-    time_series::TimeSeriesData;
-    features::Union{Nothing, Dict} = nothing,
-)
-    _check_time_series_labels(component, time_series)
-    # This method extends IS's function, so a plain call would dispatch back here.
-    return invoke(
-        IS.add_time_series!,
-        Tuple{IS.TimeSeriesContext, IS.TimeSeriesOwners, TimeSeriesData},
-        txn,
-        component,
-        time_series;
-        features = features,
-    )
 end
 
 #=
