@@ -193,9 +193,12 @@ function _check_time_series_labels(owner::Component, labels)
     )
 end
 
-# Every add, direct, bulk or in a transaction, reaches IS's single add, which calls this.
-IS.check_time_series_owner(owner::Component, time_series::TimeSeriesData) =
-    _check_time_series_labels(owner, time_series)
+# IS calls this before every series is attached: each add, direct, bulk or in a transaction,
+# and each copy (with the source's metadata).
+IS.check_time_series_owner(
+    owner::Component,
+    labels::Union{TimeSeriesData, IS.TimeSeriesMetadata},
+) = _check_time_series_labels(owner, labels)
 
 """
 Check the units labels of every series in `sys`. The document import path bulk-loads its
