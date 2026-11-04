@@ -718,6 +718,7 @@ export get_operating_mode
 export get_operation_cost
 export get_operational_flow_limit
 export get_operational_flow_limit_unitful
+export get_out_of_area_loads
 export get_outflow
 export get_outflow_limits
 export get_output_active_power_limits
@@ -815,6 +816,8 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_scheduled_dc_voltage
+export get_scheduled_net_interchange
+export get_scheduled_net_interchange_unitful
 export get_secondary_circuit
 export get_self_discharge
 export get_services
@@ -1446,6 +1449,7 @@ export set_number_of_tap_positions!
 export set_operating_mode!
 export set_operation_cost!
 export set_operational_flow_limit!
+export set_out_of_area_loads!
 export set_outflow!
 export set_outflow_limits!
 export set_output_active_power_limits!
@@ -1520,6 +1524,7 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
+export set_scheduled_net_interchange!
 export set_secondary_circuit!
 export set_self_discharge!
 export set_services!

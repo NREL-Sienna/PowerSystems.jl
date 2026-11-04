@@ -35,6 +35,10 @@ function to_openapi(area::Area, refs::OpenAPIRefs, ::ComponentBaseUnit)
         peak_active_power = get_peak_active_power(area, u"SU"),
         peak_reactive_power = get_peak_reactive_power(area, u"SU"),
         load_response = get_load_response(area),
+        scheduled_net_interchange = _scale_optional_po(
+            get_scheduled_net_interchange(area, u"SU"), 1.0,
+        ),
+        out_of_area_load_ids = _hydro_unit_ids(refs, get_out_of_area_loads(area)),
         base_power = get_base_power(refs),
         power_units = _power_units_string(CU),
     )
@@ -47,6 +51,10 @@ function to_openapi(area::Area, refs::OpenAPIRefs, ::NaturalUnit)
         peak_active_power = get_peak_active_power(area, u"SU") * get_base_power(refs),
         peak_reactive_power = get_peak_reactive_power(area, u"SU") * get_base_power(refs),
         load_response = get_load_response(area),
+        scheduled_net_interchange = _scale_optional_po(
+            get_scheduled_net_interchange(area, u"SU"), get_base_power(refs),
+        ),
+        out_of_area_load_ids = _hydro_unit_ids(refs, get_out_of_area_loads(area)),
         base_power = get_base_power(refs),
         power_units = _power_units_string(NU),
     )

@@ -145,27 +145,71 @@ by-omission, not nullable) gets that default rather than failing to build `Area`
 _load_response(::Union{Nothing, IC.Absent}) = 0.0
 _load_response(v::Real) = Float64(v)
 
+"""`out_of_area_load_ids` names loads, which convert after `Area` in `DOCUMENT_PLAN`, so the
+resolution is deferred until every component is registered."""
+function _defer_out_of_area_loads!(
+    area::Area,
+    refs::OpenAPIRefs,
+    ::Union{Nothing, IC.Absent},
+)
+    return area
+end
+
+function _defer_out_of_area_loads!(area::Area, refs::OpenAPIRefs, ids)
+    defer_ref!(
+        refs,
+        () -> set_out_of_area_loads!(
+            area,
+            ElectricLoad[_out_of_area_load(refs, area, id) for id in ids],
+        ),
+    )
+    return area
+end
+
+function _out_of_area_load(refs::OpenAPIRefs, area::Area, id::Integer)
+    has_ref(refs, id) || error(
+        "Area $(get_name(area)): out_of_area_load_ids entry $id names no component in " *
+        "the document",
+    )
+    return _as_out_of_area_load(refs[id], area, id)
+end
+
+_as_out_of_area_load(load::ElectricLoad, ::Area, ::Integer) = load
+
+function _as_out_of_area_load(component, area::Area, id::Integer)
+    return error(
+        "Area $(get_name(area)): out_of_area_load_ids entry $id names " *
+        "$(summary(component)), expected an ElectricLoad",
+    )
+end
+
 function from_openapi(po::PO.Area, refs::OpenAPIRefs, ::ComponentBaseUnit)
-    return Area(;
+    area = Area(;
         name = po.name,
         peak_active_power = _or_default(po.peak_active_power, 0.0),
         peak_reactive_power = _or_default(po.peak_reactive_power, 0.0),
         load_response = _load_response(po.load_response),
+        scheduled_net_interchange = _or_default(po.scheduled_net_interchange, nothing),
         base_power = _require_base_power("Area", po.id, po.base_power),
         input_basis = u"CU",
     )
+    return _defer_out_of_area_loads!(area, refs, po.out_of_area_load_ids)
 end
 
 function from_openapi(po::PO.Area, refs::OpenAPIRefs, ::NaturalUnit)
     bp = _require_base_power("Area", po.id, po.base_power)
-    return Area(;
+    area = Area(;
         name = po.name,
         peak_active_power = _or_default(po.peak_active_power, 0.0) / bp,
         peak_reactive_power = _or_default(po.peak_reactive_power, 0.0) / bp,
         load_response = _load_response(po.load_response),
+        scheduled_net_interchange = _or_default(
+            po.scheduled_net_interchange, nothing, /, bp,
+        ),
         base_power = bp,
         input_basis = u"CU",
     )
+    return _defer_out_of_area_loads!(area, refs, po.out_of_area_load_ids)
 end
 
 function from_openapi(po::PO.LoadZone, refs::OpenAPIRefs, ::ComponentBaseUnit)
