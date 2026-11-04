@@ -741,6 +741,54 @@ end
     end
 end
 
+@testset "LogicalGenerationUnit round trip" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    unit = LogicalGenerationUnit(;
+        input_basis = u"CU",
+        name = "cc1_2x1",
+        available = true,
+        status = OperationalStates.ONLINE,
+        bus = bus,
+        active_power = 0.5,
+        reactive_power = 0.0,
+        rating = 1.2,
+        prime_mover_type = PrimeMovers.CC,
+        fuel = ThermalFuels.NATURAL_GAS,
+        active_power_limits = (min = 0.3, max = 1.0),
+        reactive_power_limits = nothing,
+        ramp_limits = (up = 0.05, down = 0.04),
+        power_trajectory = (startup = 0.3, shutdown = 0.3),
+        time_limits = (up = 4.0, down = 2.0),
+        start_time_limits = (hot = 8.0, warm = 12.0, cold = 24.0),
+        start_types = 3,
+        operation_cost = ThermalGenerationCost(nothing),
+        base_power = 400.0,
+        commitment_mode = CommitmentModes.MUST_RUN,
+    )
+    add_component!(sys, unit)
+
+    for units in (CU, NU)
+        sys2 = from_openapi(System, to_openapi(sys; units = units))
+        unit2 = get_component(LogicalGenerationUnit, sys2, "cc1_2x1")
+        @test get_base_power(unit2) == 400.0
+        @test get_prime_mover_type(unit2) == PrimeMovers.CC
+        @test get_fuel(unit2) == ThermalFuels.NATURAL_GAS
+        @test get_active_power_limits(unit2, u"CU") == (min = 0.3, max = 1.0)
+        @test get_ramp_limits(unit2, u"CU/minute") == (up = 0.05, down = 0.04)
+        @test get_power_trajectory(unit2, u"CU") == (startup = 0.3, shutdown = 0.3)
+        @test get_time_limits(unit2) == (up = 4.0, down = 2.0)
+        @test get_start_time_limits(unit2) == (hot = 8.0, warm = 12.0, cold = 24.0)
+        @test get_start_types(unit2) == 3
+        @test get_commitment_mode(unit2) == CommitmentModes.MUST_RUN
+        @test get_name(get_bus(unit2)) == "bus1"
+    end
+end
+
 @testset "SeriesCompensator round trip: control modes and optional fields" begin
     sys = System(100.0)
     buses = map(1:2) do n

@@ -63,6 +63,10 @@ const DOCUMENT_PLAN = [
         key = "ThermalMultiStart",
         addable = true,
     ),
+    (
+        po_type = PO.LogicalGenerationUnit, psy_type = LogicalGenerationUnit,
+        key = "LogicalGenerationUnit", addable = true,
+    ),
     (po_type = PO.PowerLoad, psy_type = PowerLoad, key = "PowerLoad", addable = true),
     (
         po_type = PO.StandardLoad,
