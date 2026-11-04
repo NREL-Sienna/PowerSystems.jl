@@ -6378,7 +6378,7 @@
         {
             "struct_name": "LogicalGenerationUnit",
             "openapi_type": "LogicalGenerationUnit",
-            "docstring": "A logical generation unit: a market-facing unit that the operator dispatches and commits as one resource, such as one configuration of a combined cycle plant.\n\nA logical unit holds its own limits, ramps, start-up data and costs, independent of the physical units behind it. Its `bus` is where it injects when a model represents logical units instead of physical ones. It has the start-up representation of [`ThermalMultiStart`](@ref), with no fuel and no dynamic model.",
+            "docstring": "A logical generation unit: a market-facing unit that the operator dispatches and commits as one resource, such as one configuration of a combined cycle plant.\n\nA logical unit holds its own limits, ramps, start-up data and costs, independent of the physical units behind it. Its `bus` is where it injects when a model represents logical units instead of physical ones. It has the start-up representation of [`ThermalMultiStart`](@ref), with no dynamic model.",
             "fields": [
                 {
                     "null_value": "init",
@@ -6444,6 +6444,12 @@
                     "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers.Value"
+                },
+                {
+                    "name": "fuel",
+                    "comment": "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)",
+                    "null_value": "ThermalFuels.OTHER",
+                    "data_type": "ThermalFuels.Value"
                 },
                 {
                     "name": "active_power_limits",

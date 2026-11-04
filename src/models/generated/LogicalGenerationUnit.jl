@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         reactive_power::Float64
         rating::Float64
         prime_mover_type::PrimeMovers.Value
+        fuel::ThermalFuels.Value
         active_power_limits::MinMax
         reactive_power_limits::Union{Nothing, MinMax}
         ramp_limits::Union{Nothing, UpDown}
@@ -33,7 +34,7 @@ This file is auto-generated. Do not edit.
 
 A logical generation unit: a market-facing unit that the operator dispatches and commits as one resource, such as one configuration of a combined cycle plant.
 
-A logical unit holds its own limits, ramps, start-up data and costs, independent of the physical units behind it. Its `bus` is where it injects when a model represents logical units instead of physical ones. It has the start-up representation of [`ThermalMultiStart`](@ref), with no fuel and no dynamic model.
+A logical unit holds its own limits, ramps, start-up data and costs, independent of the physical units behind it. Its `bus` is where it injects when a model represents logical units instead of physical ones. It has the start-up representation of [`ThermalMultiStart`](@ref), with no dynamic model.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
@@ -44,6 +45,7 @@ A logical unit holds its own limits, ramps, start-up data and costs, independent
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
 - `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
 - `prime_mover_type::PrimeMovers.Value`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `fuel::ThermalFuels.Value`: Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`: Ramp up and ramp down limits (MW/min), validation range: `(0, nothing)`
@@ -78,6 +80,8 @@ mutable struct LogicalGenerationUnit <: StaticInjection
     rating::Float64
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers.Value
+    "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)"
+    fuel::ThermalFuels.Value
     "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax
     "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
@@ -110,12 +114,12 @@ mutable struct LogicalGenerationUnit <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function LogicalGenerationUnit(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, commitment_mode=CommitmentModes.COMMITTED, switching_times=nothing, ext=Dict{String, Any}(), )
-    LogicalGenerationUnit(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, commitment_mode, switching_times, ext, InfrastructureSystemsInternal(), )
+function LogicalGenerationUnit(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, commitment_mode=CommitmentModes.COMMITTED, switching_times=nothing, ext=Dict{String, Any}(), )
+    LogicalGenerationUnit(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, commitment_mode, switching_times, ext, InfrastructureSystemsInternal(), )
 end
 
-function LogicalGenerationUnit(; name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, commitment_mode=CommitmentModes.COMMITTED, switching_times=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), input_basis::Unitful.Units, )
-    value = LogicalGenerationUnit(name, available, status, bus, _placeholder(active_power), _placeholder(reactive_power), _placeholder(rating), prime_mover_type, _placeholder(active_power_limits), _placeholder(reactive_power_limits), _placeholder(ramp_limits), _placeholder(power_trajectory), time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, commitment_mode, switching_times, ext, internal, )
+function LogicalGenerationUnit(; name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, commitment_mode=CommitmentModes.COMMITTED, switching_times=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), input_basis::Unitful.Units, )
+    value = LogicalGenerationUnit(name, available, status, bus, _placeholder(active_power), _placeholder(reactive_power), _placeholder(rating), prime_mover_type, fuel, _placeholder(active_power_limits), _placeholder(reactive_power_limits), _placeholder(ramp_limits), _placeholder(power_trajectory), time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, commitment_mode, switching_times, ext, internal, )
     set_active_power!(value, _tag(active_power, input_basis, Val(:mw)))
     set_reactive_power!(value, _tag(reactive_power, input_basis, Val(:mvar)))
     set_rating!(value, _tag(rating, input_basis, Val(:mva)))
@@ -138,6 +142,7 @@ function LogicalGenerationUnit(::Nothing)
         reactive_power=0.0,
         rating=0.0,
         prime_mover_type=PrimeMovers.OT,
+        fuel=ThermalFuels.OTHER,
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         ramp_limits=nothing,
@@ -190,6 +195,8 @@ InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{LogicalGene
 InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{LogicalGenerationUnit}) = u"CU"
 """Get [`LogicalGenerationUnit`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::LogicalGenerationUnit) = value.prime_mover_type
+"""Get [`LogicalGenerationUnit`](@ref) `fuel`."""
+get_fuel(value::LogicalGenerationUnit) = value.fuel
 """Get [`LogicalGenerationUnit`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `u"SU"`, `u"CU"`, `u"NU"`, `u"MW"`). For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
 get_active_power_limits(value::LogicalGenerationUnit, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mw), units))
 """Get [`LogicalGenerationUnit`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `u"SU"`, `u"CU"`, `u"MW"`). For a bare number see [`get_active_power_limits`](@ref)."""
@@ -262,6 +269,8 @@ set_rating!(value::LogicalGenerationUnit, val) = value.rating = set_value(value,
 set_rating!(value::LogicalGenerationUnit, val::_UntaggedNumber) = _units_tag_required(set_rating!, value, :rating, Val(:mva), val)
 """Set [`LogicalGenerationUnit`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::LogicalGenerationUnit, val) = value.prime_mover_type = val
+"""Set [`LogicalGenerationUnit`](@ref) `fuel`."""
+set_fuel!(value::LogicalGenerationUnit, val) = value.fuel = val
 """Set [`LogicalGenerationUnit`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::LogicalGenerationUnit, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mw))
 set_active_power_limits!(value::LogicalGenerationUnit, val::_UntaggedNumber) = _units_tag_required(set_active_power_limits!, value, :active_power_limits, Val(:mw), val)
@@ -308,6 +317,7 @@ function from_openapi(po::PO.LogicalGenerationUnit, refs::OpenAPIRefs, ::Compone
         reactive_power = po.reactive_power,
         rating = po.rating,
         prime_mover_type = PrimeMovers.Value(po.prime_mover_type.value),
+        fuel = ThermalFuels.Value(po.fuel.value),
         active_power_limits = _or_default(po.active_power_limits, nothing),
         reactive_power_limits = _or_default(po.reactive_power_limits, nothing),
         ramp_limits = _or_default(po.ramp_limits, nothing),
@@ -334,6 +344,7 @@ function from_openapi(po::PO.LogicalGenerationUnit, refs::OpenAPIRefs, ::Natural
         reactive_power = po.reactive_power / po.base_power,
         rating = po.rating / po.base_power,
         prime_mover_type = PrimeMovers.Value(po.prime_mover_type.value),
+        fuel = ThermalFuels.Value(po.fuel.value),
         active_power_limits = _or_default(po.active_power_limits, nothing, (/), po.base_power),
         reactive_power_limits = _or_default(po.reactive_power_limits, nothing, (/), po.base_power),
         ramp_limits = _or_default(po.ramp_limits, nothing, (/), po.base_power),
@@ -365,6 +376,7 @@ function to_openapi(value::LogicalGenerationUnit, refs::OpenAPIRefs, ::Component
         reactive_power = get_reactive_power(value, u"CU"),
         rating = get_rating(value, u"CU"),
         prime_mover_type = PO.PrimeMovers(string(get_prime_mover_type(value))),
+        fuel = PO.ThermalFuels(string(get_fuel(value))),
         active_power_limits = _minmax_po(get_active_power_limits(value, u"CU")),
         reactive_power_limits = _minmax_po_optional(get_reactive_power_limits(value, u"CU")),
         ramp_limits = _updown_po_optional(get_ramp_limits(value, u"CU/minute")),
@@ -392,6 +404,7 @@ function to_openapi(value::LogicalGenerationUnit, refs::OpenAPIRefs, ::NaturalUn
         reactive_power = get_reactive_power(value, u"CU") * _get_base_power(value),
         rating = get_rating(value, u"CU") * _get_base_power(value),
         prime_mover_type = PO.PrimeMovers(string(get_prime_mover_type(value))),
+        fuel = PO.ThermalFuels(string(get_fuel(value))),
         active_power_limits = _minmax_po_scaled(get_active_power_limits(value, u"CU"), _get_base_power(value)),
         reactive_power_limits = _minmax_po_scaled_optional(get_reactive_power_limits(value, u"CU"), _get_base_power(value)),
         ramp_limits = _updown_po_scaled_optional(get_ramp_limits(value, u"CU/minute"), _get_base_power(value)),
