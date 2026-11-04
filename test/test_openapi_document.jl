@@ -757,7 +757,7 @@ end
         active_power = 0.5,
         reactive_power = 0.0,
         rating = 1.2,
-        prime_mover_type = PrimeMovers.CA,
+        prime_mover_type = PrimeMovers.CC,
         fuel = ThermalFuels.NATURAL_GAS,
         active_power_limits = (min = 0.3, max = 1.0),
         reactive_power_limits = nothing,
@@ -776,7 +776,7 @@ end
         sys2 = from_openapi(System, to_openapi(sys; units = units))
         unit2 = get_component(LogicalGenerationUnit, sys2, "cc1_2x1")
         @test get_base_power(unit2) == 400.0
-        @test get_prime_mover_type(unit2) == PrimeMovers.CA
+        @test get_prime_mover_type(unit2) == PrimeMovers.CC
         @test get_fuel(unit2) == ThermalFuels.NATURAL_GAS
         @test get_active_power_limits(unit2, u"CU") == (min = 0.3, max = 1.0)
         @test get_ramp_limits(unit2, u"CU/minute") == (up = 0.05, down = 0.04)
