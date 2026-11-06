@@ -411,7 +411,6 @@ export VSCACControlModes
 export LCCControlMode
 export FACTSShuntControlType
 export SwitchedAdmittanceControlMode
-export SeriesCompensatorControlMode
 export DiscreteControlledBranchStatus
 export DiscreteControlledBranchType
 export PrimeMovers

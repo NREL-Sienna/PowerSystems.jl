@@ -377,7 +377,7 @@ function from_openapi(po::PO.GenericArcImpedance, refs::OpenAPIRefs, ::NaturalUn
 end
 
 # ── SeriesCompensator ──────────────────────────────────────────────────────────
-# As `GenericArcImpedance`: `r`/`x`/`reactance_limits` pass through as system-base pu, and
+# As `GenericArcImpedance`: `r`/`x` pass through as system-base pu, and
 # only the "COMPONENT_BASE" `parameter_units` is accepted. Power fields divide by the
 # system base under `NaturalUnit`.
 
@@ -412,11 +412,7 @@ function _series_compensator_from_openapi(po, refs::OpenAPIRefs, power_base::Flo
         r = po.r,
         x = po.x,
         rating = po.rating / power_base,
-        control_mode = _or_default(po.control_mode, SeriesCompensatorControlMode.FIXED),
-        reactance_limits = _or_default(po.reactance_limits, nothing),
-        active_power_flow_setpoint = _or_default(
-            po.active_power_flow_setpoint, nothing, /, power_base,
-        ),
+        bypassed = _or_default(po.bypassed, false),
         rating_b = _or_default(po.rating_b, nothing, /, power_base),
         rating_c = _or_default(po.rating_c, nothing, /, power_base),
         base_power = _require_base_power("SeriesCompensator", po.id, po.base_power),

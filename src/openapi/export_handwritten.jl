@@ -446,7 +446,7 @@ end
 
 # ── SeriesCompensator ──────────────────────────────────────────────────────────
 # As `GenericArcImpedance`: export writes the "COMPONENT_BASE" `parameter_units` the import
-# side accepts; `r`/`x`/`reactance_limits` are system-base pu in both methods.
+# side accepts; `r`/`x` are system-base pu in both methods.
 
 function to_openapi(branch::SeriesCompensator, refs::OpenAPIRefs, ::ComponentBaseUnit)
     return _series_compensator_to_openapi(branch, refs, 1.0, CU)
@@ -473,11 +473,7 @@ function _series_compensator_to_openapi(
         r = get_r(branch, u"SU"),
         x = get_x(branch, u"SU"),
         rating = get_rating(branch, u"SU") * power_base,
-        control_mode = PO.SeriesCompensatorControlMode(string(get_control_mode(branch))),
-        reactance_limits = _minmax_po_optional(get_reactance_limits(branch, u"SU")),
-        active_power_flow_setpoint = _scale_optional_po(
-            get_active_power_flow_setpoint(branch, u"SU"), power_base,
-        ),
+        bypassed = get_bypassed(branch),
         rating_b = _scale_optional_po(get_rating_b(branch, u"SU"), power_base),
         rating_c = _scale_optional_po(get_rating_c(branch, u"SU"), power_base),
         operational_flow_limit = _operational_flow_limit_po_scaled_optional(
