@@ -444,26 +444,26 @@ function to_openapi(branch::GenericArcImpedance, refs::OpenAPIRefs, ::NaturalUni
     )
 end
 
-# ── SeriesAdmittance ──────────────────────────────────────────────────────────
+# ── SeriesCompensator ──────────────────────────────────────────────────────────
 # As `GenericArcImpedance`: export writes the "COMPONENT_BASE" `parameter_units` the import
 # side accepts; `r`/`x` are system-base pu in both methods.
 
-function to_openapi(branch::SeriesAdmittance, refs::OpenAPIRefs, ::ComponentBaseUnit)
-    return _series_admittance_to_openapi(branch, refs, 1.0, CU)
+function to_openapi(branch::SeriesCompensator, refs::OpenAPIRefs, ::ComponentBaseUnit)
+    return _series_compensator_to_openapi(branch, refs, 1.0, CU)
 end
 
-function to_openapi(branch::SeriesAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
-    return _series_admittance_to_openapi(branch, refs, get_base_power(refs), NU)
+function to_openapi(branch::SeriesCompensator, refs::OpenAPIRefs, ::NaturalUnit)
+    return _series_compensator_to_openapi(branch, refs, get_base_power(refs), NU)
 end
 
 # `power_base` scales the system-base pu power fields: 1.0 for pu, the system base for natural.
-function _series_admittance_to_openapi(
-    branch::SeriesAdmittance,
+function _series_compensator_to_openapi(
+    branch::SeriesCompensator,
     refs::OpenAPIRefs,
     power_base::Float64,
     units,
 )
-    return PO.SeriesAdmittance(;
+    return PO.SeriesCompensator(;
         id = component_id(refs, branch),
         name = get_name(branch),
         available = get_available(branch),

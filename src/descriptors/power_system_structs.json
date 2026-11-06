@@ -1121,8 +1121,8 @@
             "supertype": "ACTransmission"
         },
         {
-            "struct_name": "SeriesAdmittance",
-            "docstring": "A fixed series admittance on an [`Arc`](@ref): a series capacitor or reactor, or an AC line without charging susceptance, with constant `r` and `x` (the CIM `SeriesCompensator`). Out of service is `available = false`; a bypassed device (`bypassed = true`) is shorted into a zero-impedance tie",
+            "struct_name": "SeriesCompensator",
+            "docstring": "A fixed series compensator on an [`Arc`](@ref) (the CIM `SeriesCompensator`): a series capacitor or reactor, or an AC line without charging susceptance, with constant `r` and `x`. Out of service is `available = false`; a bypassed device (`bypassed = true`) is shorted into a zero-impedance tie",
             "fields": [
                 {
                     "null_value": "init",

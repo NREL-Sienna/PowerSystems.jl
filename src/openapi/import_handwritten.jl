@@ -30,7 +30,7 @@
 
 for T in (
     :Area, :LoadZone, :TransmissionInterface, :Line, :GenericArcImpedance,
-    :DiscreteControlledACBranch, :SeriesAdmittance, :TransformerCircuit,
+    :DiscreteControlledACBranch, :SeriesCompensator, :TransformerCircuit,
     :EnergyReservoirStorage,
     :TwoTerminalGenericHVDCLine, :TwoTerminalLCCLine, :TwoTerminalVSCLine, :Source,
     :InterconnectingConverter, :HybridSystem, :FACTSControlDevice,
@@ -376,34 +376,34 @@ function from_openapi(po::PO.GenericArcImpedance, refs::OpenAPIRefs, ::NaturalUn
     )
 end
 
-# ── SeriesAdmittance ──────────────────────────────────────────────────────────
+# ── SeriesCompensator ──────────────────────────────────────────────────────────
 # As `GenericArcImpedance`: `r`/`x` pass through as system-base pu, and
 # only the "COMPONENT_BASE" `parameter_units` is accepted. Power fields divide by the
 # system base under `NaturalUnit`.
 
-const SERIES_ADMITTANCE_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
+const SERIES_COMPENSATOR_PARAM_UNITS_IMPLEMENTED = Set(["COMPONENT_BASE"])
 
-_check_series_admittance_param_units(po) = _check_unit_basis(
+_check_series_compensator_param_units(po) = _check_unit_basis(
     po.parameter_units,
-    SERIES_ADMITTANCE_PARAM_UNITS_IMPLEMENTED,
-    "SeriesAdmittance.parameter_units",
+    SERIES_COMPENSATOR_PARAM_UNITS_IMPLEMENTED,
+    "SeriesCompensator.parameter_units",
     " for $(po.name)",
     "COMPONENT_BASE",
 )
 
-function from_openapi(po::PO.SeriesAdmittance, refs::OpenAPIRefs, ::ComponentBaseUnit)
-    return _series_admittance_from_openapi(po, refs, 1.0)
+function from_openapi(po::PO.SeriesCompensator, refs::OpenAPIRefs, ::ComponentBaseUnit)
+    return _series_compensator_from_openapi(po, refs, 1.0)
 end
 
-function from_openapi(po::PO.SeriesAdmittance, refs::OpenAPIRefs, ::NaturalUnit)
-    sbp = _require_base_power("SeriesAdmittance", po.id, po.base_power)
-    return _series_admittance_from_openapi(po, refs, sbp)
+function from_openapi(po::PO.SeriesCompensator, refs::OpenAPIRefs, ::NaturalUnit)
+    sbp = _require_base_power("SeriesCompensator", po.id, po.base_power)
+    return _series_compensator_from_openapi(po, refs, sbp)
 end
 
 # `power_base` is 1.0 when the power fields are already pu, the system base when natural.
-function _series_admittance_from_openapi(po, refs::OpenAPIRefs, power_base::Float64)
-    _check_series_admittance_param_units(po)
-    return SeriesAdmittance(;
+function _series_compensator_from_openapi(po, refs::OpenAPIRefs, power_base::Float64)
+    _check_series_compensator_param_units(po)
+    return SeriesCompensator(;
         name = po.name,
         available = po.available,
         active_power_flow = po.active_power_flow / power_base,
@@ -415,7 +415,7 @@ function _series_admittance_from_openapi(po, refs::OpenAPIRefs, power_base::Floa
         bypassed = _or_default(po.bypassed, false),
         rating_b = _or_default(po.rating_b, nothing, /, power_base),
         rating_c = _or_default(po.rating_c, nothing, /, power_base),
-        base_power = _require_base_power("SeriesAdmittance", po.id, po.base_power),
+        base_power = _require_base_power("SeriesCompensator", po.id, po.base_power),
         operational_flow_limit = _or_default(
             po.operational_flow_limit, nothing, /, power_base,
         ),

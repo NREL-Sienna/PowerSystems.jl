@@ -33,9 +33,9 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [sources]
 InfrastructureSystems = {rev = "IS4", url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git"}
-PowerFlowFileParser = {url = "https://github.com/Sienna-Platform/PowerFlowFileParser.jl.git", rev = "rh/series-admittance"}  # temporary: revert after the SeriesAdmittance PRs merge
+PowerFlowFileParser = {url = "https://github.com/Sienna-Platform/PowerFlowFileParser.jl.git", rev = "rh/series-admittance"}  # temporary: revert after the SeriesCompensator PRs merge
 PowerSystemCaseBuilder = {rev = "jd/sdk-0.3", url = "https://github.com/Sienna-Platform/PowerSystemCaseBuilder.jl.git"}
-PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "rh/series-admittance", subdir = "PowerOperationsOpenAPIModels.jl"}  # temporary: revert after the SeriesAdmittance PRs merge
+PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "rh/series-admittance", subdir = "PowerOperationsOpenAPIModels.jl"}  # temporary: revert after the SeriesCompensator PRs merge
 PowerSystems = {path = ".."}
 PowerTableDataParser = {url = "https://github.com/NLR-Sienna/PowerTableDataParser.jl.git", rev = "psy6"}
 

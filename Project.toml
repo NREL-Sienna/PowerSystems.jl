@@ -29,7 +29,7 @@ InfraStore = "6aee0376-896a-4a59-96ff-12f221c99746"
 # EnumX move this branch follows (IS #643, merged), and InfraStore 0.14 is registered with
 # its own native library - the co-dev pins are retired.
 InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "IS4"}
-# Temporary: revert after the SeriesAdmittance PRs merge.
+# Temporary: revert after the SeriesCompensator PRs merge.
 PowerOperationsOpenAPIModels = {url = "https://github.com/Sienna-Platform/PowerOpenAPIModels.git", rev = "rh/series-admittance", subdir = "PowerOperationsOpenAPIModels.jl"}
 
 [compat]

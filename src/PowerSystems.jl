@@ -73,7 +73,7 @@ export Branch
 export StaticInjection
 export StaticInjectionSubsystem
 export DiscreteControlledACBranch
-export SeriesAdmittance
+export SeriesCompensator
 export ACBranch
 export ACTransmission
 export TwoWindingTransformer

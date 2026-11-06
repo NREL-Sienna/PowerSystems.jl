@@ -741,7 +741,7 @@ end
     end
 end
 
-@testset "SeriesAdmittance round trip: bypassed and optional fields" begin
+@testset "SeriesCompensator round trip: bypassed and optional fields" begin
     sys = System(100.0)
     buses = map(1:2) do n
         bus = ACBus(nothing)
@@ -754,7 +754,7 @@ end
     end
     arc = Arc(; from = buses[1], to = buses[2])
     add_component!(sys, arc)
-    admittance(name; kwargs...) = SeriesAdmittance(;
+    compensator(name; kwargs...) = SeriesCompensator(;
         name = name, available = true, active_power_flow = 0.0,
         reactive_power_flow = 0.0,
         arc = arc, r = 0.0, x = -0.0125, rating = 17.0,
@@ -762,16 +762,16 @@ end
     )
     add_component!(
         sys,
-        admittance("fixed";
+        compensator("fixed";
             rating_b = 20.0,
             operational_flow_limit = (
                 from_to = (min = 0.0, max = 15.0), to_from = (min = 0.0, max = 12.0)),
         ),
     )
-    add_component!(sys, admittance("bypassed"; bypassed = true))
+    add_component!(sys, compensator("bypassed"; bypassed = true))
 
     function check(sys2)
-        unit(name) = get_component(SeriesAdmittance, sys2, name)
+        unit(name) = get_component(SeriesCompensator, sys2, name)
         fixed = unit("fixed")
         @test get_x(fixed, u"SU") == -0.0125
         @test get_r(fixed, u"SU") == 0.0
