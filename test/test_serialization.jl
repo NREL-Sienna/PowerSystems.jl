@@ -1,6 +1,9 @@
 @testset "Test JSON serialization of RTS data with immutable time series" begin
-    sys =
-        PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; time_series_read_only = true)
+    sys = PSB.build_system(
+        PSITestSystems,
+        "test_RTS_GMLC_sys";
+        time_series_read_only = true,
+    )
     sys2, result = validate_serialization(sys; time_series_read_only = true)
     @test result
     @test_throws ArgumentError clear_time_series!(sys2)
@@ -90,11 +93,10 @@ end
         initial_time = Dates.DateTime("2020-01-01T00:00:00")
         end_time = Dates.DateTime("2020-01-01T23:00:00")
         dates = collect(initial_time:Dates.Hour(1):end_time)
-        data =
-            PiecewiseStepData.(
-                [[i, i + 1, i + 2] for i in 1.0:24.0],
-                [[i, i + 1] for i in 1.0:24.0],
-            )
+        data = PiecewiseStepData.(
+            [[i, i + 1, i + 2] for i in 1.0:24.0],
+            [[i, i + 1] for i in 1.0:24.0],
+        )
         market_bid = MarketBidCost(nothing)
         set_operation_cost!(gen, market_bid)
         add_component!(sys, gen)
@@ -174,7 +176,8 @@ end
         typeof(subcomponent),
         sys2.data,
         get_name(subcomponent),
-    ) !== nothing
+    ) !==
+        nothing
 end
 
 @testset "Test deserialization with new UUIDs" begin
@@ -194,6 +197,44 @@ end
     @test result
 end
 
+@testset "Test JSON serialization of MarketBidCost with whole-valued float costs" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen_whole"
+    add_component!(sys, gen)
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    dates = collect(initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"))
+    data = PiecewiseStepData.(
+        [[i, i + 1, i + 2] for i in 1.0:24.0],
+        [[i, i + 1] for i in 1.0:24.0],
+    )
+    # Whole-valued floats are read back from JSON as Int64.
+    market_bid = MarketBidCost(0.0, 0.0, 0.0)
+    set_operation_cost!(gen, market_bid)
+    power_units = UnitSystem.NATURAL_UNITS
+    ta = TimeSeries.TimeArray(dates, data)
+    set_incremental_variable_cost!(
+        sys,
+        gen,
+        IS.SingleTimeSeries(; name = "variable_cost", data = ta),
+        power_units,
+    )
+    sys2, result = validate_serialization(sys)
+    @test result
+    gen2 = get_component(ThermalStandard, sys2, "gen_whole")
+    cost2 = get_operation_cost(gen2)
+    @test cost2 isa MarketBidCost
+    @test get_no_load_cost(cost2) === 0.0
+    @test get_shut_down(cost2) === 0.0
+    @test get_start_up(cost2) == get_start_up(market_bid)
+end
+
 @testset "Test verification of invalid ext fields" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     gen = first(get_components(ThermalStandard, sys))
@@ -210,10 +251,7 @@ end
     @test_logs(
         (:error, r"only basic types are allowed"),
         match_mode = :any,
-        @test_throws(
-            ErrorException,
-            to_json(sys, filename, force = true),
-        ),
+        @test_throws(ErrorException, to_json(sys, filename, force = true)),
     )
 end
 
@@ -344,16 +382,10 @@ end
             ta_vals = TimeSeries.values(ta)
             expected1 = use_scaling_factor ? ta_vals * get_max_active_power(gen) : ta_vals
             expected2 = use_scaling_factor ? ta_vals * get_max_reactive_power(gen) : ta_vals
-            @test get_time_series_values(
-                gen2,
-                ts1b,
-                start_time = initial_time;
-            ) == expected1
-            @test get_time_series_values(
-                gen2,
-                ts2b,
-                start_time = initial_time,
-            ) == expected2
+            @test get_time_series_values(gen2, ts1b, start_time = initial_time;
+            ) ==
+                expected1
+            @test get_time_series_values(gen2, ts2b, start_time = initial_time) == expected2
         end
     end
 end
@@ -379,8 +411,10 @@ end
 @testset "Serialization round-trip of HVDC 14-bus casebuilder systems" begin
     # HVDC system-level coverage sourced from PowerSystemCaseBuilder (no raw checked into PSY):
     # each case is a full 14-bus AC system with one converter line replacing the bus 2-3 AC line.
-    for (name, converter) in
-        (("c_sys14_hvdc_vsc", TwoTerminalVSCLine), ("c_sys14_hvdc_lcc", TwoTerminalLCCLine))
+    for (name, converter) in (
+            ("c_sys14_hvdc_vsc", TwoTerminalVSCLine),
+            ("c_sys14_hvdc_lcc", TwoTerminalLCCLine),
+        )
         sys = PSB.build_system(PSB.PSITestSystems, name; add_forecasts = false)
         @test length(collect(get_components(converter, sys))) == 1
         _, result = validate_serialization(sys)
@@ -420,28 +454,34 @@ end
     # Rewrite the VSC component to the pre-5.x Bool schema: drop the enum/new fields, add the flags.
     raw = JSON3.read(read(path, String), Dict{String, Any})
     rewritten = Ref(0)
-    rewrite!(x) =
-        if x isa Dict
-            md = get(x, "__metadata__", nothing)
-            if md isa Dict && occursin("TwoTerminalVSCLine", string(get(md, "type", "")))
-                for k in (
-                    "dc_control_from", "ac_control_from", "dc_control_to", "ac_control_to",
-                    "dc_voltage_droop_from", "dc_voltage_droop_to", "rated_dc_voltage",
-                    "remote_bus_control_from", "remote_bus_control_to", "rmpct_from",
+    rewrite!(x) = if x isa Dict
+        md = get(x, "__metadata__", nothing)
+        if md isa Dict && occursin("TwoTerminalVSCLine", string(get(md, "type", "")))
+            for k in (
+                    "dc_control_from",
+                    "ac_control_from",
+                    "dc_control_to",
+                    "ac_control_to",
+                    "dc_voltage_droop_from",
+                    "dc_voltage_droop_to",
+                    "rated_dc_voltage",
+                    "remote_bus_control_from",
+                    "remote_bus_control_to",
+                    "rmpct_from",
                     "rmpct_to",
                 )
-                    delete!(x, k)
-                end
-                x["dc_voltage_control_from"] = true
-                x["ac_voltage_control_from"] = false
-                x["dc_voltage_control_to"] = false
-                x["ac_voltage_control_to"] = false
-                rewritten[] += 1
+                delete!(x, k)
             end
-            foreach(rewrite!, values(x))
-        elseif x isa AbstractVector
-            foreach(rewrite!, x)
+            x["dc_voltage_control_from"] = true
+            x["ac_voltage_control_from"] = false
+            x["dc_voltage_control_to"] = false
+            x["ac_voltage_control_to"] = false
+            rewritten[] += 1
         end
+        foreach(rewrite!, values(x))
+    elseif x isa AbstractVector
+        foreach(rewrite!, x)
+    end
     rewrite!(raw)
     @test rewritten[] == 1
     open(io -> JSON3.write(io, raw), path, "w")
@@ -461,10 +501,26 @@ end
     # Some serialized systems carry `Bool` values in the `*_control_*` fields rather than the
     # scoped-enum names. `Bool <: Integer`, so IS's generic scoped-enum `convert` resolves them
     # in the keyword constructor that the component deserializer calls.
-    bus_from = ACBus(1, "bus_from", true, ACBusTypes.REF, 0.0, 1.0,
-        (min = 0.9, max = 1.1), 230.0)
-    bus_to = ACBus(2, "bus_to", true, ACBusTypes.PV, 0.0, 1.0,
-        (min = 0.9, max = 1.1), 230.0)
+    bus_from = ACBus(
+        1,
+        "bus_from",
+        true,
+        ACBusTypes.REF,
+        0.0,
+        1.0,
+        (min = 0.9, max = 1.1),
+        230.0,
+    )
+    bus_to = ACBus(
+        2,
+        "bus_to",
+        true,
+        ACBusTypes.PV,
+        0.0,
+        1.0,
+        (min = 0.9, max = 1.1),
+        230.0,
+    )
     arc = Arc(bus_from, bus_to)
     vsc = TwoTerminalVSCLine(;
         name = "vsc_bool_modes",

@@ -62,6 +62,27 @@ MarketBidCost(
     ancillary_service_offers,
 )
 
+"Auxiliary constructor for no_load_cost::Integer and shut_down::Integer together"
+MarketBidCost(
+    no_load_cost::Integer,
+    start_up::Union{TimeSeriesKey, StartUpStages},
+    shut_down::Integer,
+    incremental_offer_curves,
+    decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
+    ancillary_service_offers,
+) = MarketBidCost(
+    Float64(no_load_cost),
+    start_up,
+    Float64(shut_down),
+    incremental_offer_curves,
+    decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
+    ancillary_service_offers,
+)
+
 "Auxiliary constructor for no_load_cost::Integer"
 MarketBidCost(
     no_load_cost::Integer,
